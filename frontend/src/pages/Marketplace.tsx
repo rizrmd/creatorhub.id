@@ -1,10 +1,10 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Search, SlidersHorizontal, Star, CheckCircle, Zap, Award,
   Instagram, Youtube, Users, Megaphone, TrendingUp, Wallet,
   LayoutGrid, List, RotateCcw, X, Flame, MessageSquare, MapPin,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -326,10 +326,25 @@ function parseRange(val: string): { min?: number; max?: number } {
 
 export default function Marketplace() {
   const navigate = useNavigate();
-  const [filters, setFilters] = useState<CreatorListParams>({ page: 1, pageSize: 20, verified: true });
-  const [search, setSearch] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [filters, setFilters] = useState<CreatorListParams>(() => ({
+    page: 1,
+    pageSize: 20,
+    verified: true,
+    city: searchParams.get("city") ?? undefined,
+  }));
+  const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [listView, setListView] = useState(false);
+
+  useEffect(() => {
+    const city = searchParams.get("city");
+    const q = searchParams.get("search");
+    if (city) setFilters((f) => ({ ...f, city, page: 1 }));
+    if (q) setSearch(q);
+    if (city || q) setSearchParams({}, { replace: true });
+  }, []);
 
   const [followersVal, setFollowersVal] = useState("all");
   const [engagementVal, setEngagementVal] = useState("all");

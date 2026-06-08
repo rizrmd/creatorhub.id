@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Users, Megaphone, TrendingUp, DollarSign, ArrowUpRight, RefreshCw, FileText, Heart, Radio } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -6,10 +7,10 @@ import { Button } from "@/components/ui/button";
 import { MapContainer, TileLayer, CircleMarker, Tooltip } from "react-leaflet";
 
 const stats = [
-  { label: "Total Kreator", value: "1.247", change: "+18.6%", icon: Users, color: "bg-blue-50 text-blue-600" },
-  { label: "Kampanye Aktif", value: "8", change: "+12.4%", icon: Megaphone, color: "bg-orange-50 text-orange-600" },
-  { label: "Avg. Engagement", value: "3.87%", change: "+0.6%", icon: TrendingUp, color: "bg-cyan-50 text-cyan-600" },
-  { label: "Budget Dikelola", value: "Rp 8.42B", change: "+24.7%", icon: DollarSign, color: "bg-amber-50 text-amber-600" },
+  { label: "Total Kreator", value: "1.247", change: "+18.6%", icon: Users, color: "bg-blue-50 text-blue-600", href: "/marketplace" },
+  { label: "Kampanye Aktif", value: "8", change: "+12.4%", icon: Megaphone, color: "bg-orange-50 text-orange-600", href: "/campaigns" },
+  { label: "Avg. Engagement", value: "3.87%", change: "+0.6%", icon: TrendingUp, color: "bg-cyan-50 text-cyan-600", href: "/analytics" },
+  { label: "Budget Dikelola", value: "Rp 8.42B", change: "+24.7%", icon: DollarSign, color: "bg-amber-50 text-amber-600", href: "/payments" },
 ];
 
 const cities = [
@@ -33,16 +34,17 @@ const statusColor: Record<string, string> = {
 };
 
 const initialActivities = [
-  { text: "Nadia Aurellia menerima tawaran kampanye Ramadan", time: "2 menit lalu", type: "success" },
-  { text: "Kampanye 'Brand Awareness Q1' dibuat", time: "15 menit lalu", type: "info" },
-  { text: "Reza Alvaro diundang ke kampanye baru", time: "1 jam lalu", type: "info" },
-  { text: "Pembayaran Rp 8.000.000 ke Andi Pratama selesai", time: "3 jam lalu", type: "success" },
-  { text: "Laporan analytics Q4 tersedia", time: "5 jam lalu", type: "info" },
-  { text: "Dimas Arya bergabung sebagai kreator baru", time: "6 jam lalu", type: "success" },
-  { text: "Brief kampanye 'Summer Getaway' dikirim ke 3 kreator", time: "8 jam lalu", type: "info" },
+  { text: "Nadia Aurellia menerima tawaran kampanye Ramadan", time: "2 menit lalu", type: "success", href: "/campaigns" },
+  { text: "Kampanye 'Brand Awareness Q1' dibuat", time: "15 menit lalu", type: "info", href: "/campaigns" },
+  { text: "Reza Alvaro diundang ke kampanye baru", time: "1 jam lalu", type: "info", href: "/marketplace" },
+  { text: "Pembayaran Rp 8.000.000 ke Andi Pratama selesai", time: "3 jam lalu", type: "success", href: "/payments" },
+  { text: "Laporan analytics Q4 tersedia", time: "5 jam lalu", type: "info", href: "/analytics" },
+  { text: "Dimas Arya bergabung sebagai kreator baru", time: "6 jam lalu", type: "success", href: "/marketplace" },
+  { text: "Brief kampanye 'Summer Getaway' dikirim ke 3 kreator", time: "8 jam lalu", type: "info", href: "/campaigns" },
 ];
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [activities, setActivities] = useState(initialActivities);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -50,8 +52,8 @@ export default function Dashboard() {
     setRefreshing(true);
     setTimeout(() => {
       setActivities([
-        { text: "Andi Pratama mengunggah konten kampanye terbaru", time: "Baru saja", type: "success" },
-        { text: "Maya Putri mengkonfirmasi jadwal posting", time: "1 menit lalu", type: "info" },
+        { text: "Andi Pratama mengunggah konten kampanye terbaru", time: "Baru saja", type: "success", href: "/campaigns" },
+        { text: "Maya Putri mengkonfirmasi jadwal posting", time: "1 menit lalu", type: "info", href: "/marketplace" },
         ...initialActivities.slice(0, 5),
       ]);
       setRefreshing(false);
@@ -67,10 +69,14 @@ export default function Dashboard() {
         <p className="text-sm text-slate-500 mt-1">Selamat datang kembali, Arif Budiman</p>
       </div>
 
-      {/* Stats */}
+      {/* Stats — each card is clickable */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {stats.map((s) => (
-          <Card key={s.label}>
+          <Card
+            key={s.label}
+            className="cursor-pointer hover:shadow-md hover:border-slate-300 transition-all"
+            onClick={() => navigate(s.href)}
+          >
             <CardContent className="p-5">
               <div className="flex items-start justify-between">
                 <div>
@@ -94,7 +100,10 @@ export default function Dashboard() {
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base">KOL Geographic Distribution (Indonesia)</CardTitle>
+            <div>
+              <CardTitle className="text-base">KOL Geographic Distribution (Indonesia)</CardTitle>
+              <p className="text-xs text-slate-400 mt-0.5">Klik kota untuk filter kreator di Marketplace</p>
+            </div>
             <Badge variant="secondary">1.000+ Kreator</Badge>
           </div>
         </CardHeader>
@@ -123,26 +132,33 @@ export default function Dashboard() {
                       color: "#fff",
                       weight: 2,
                     }}
+                    eventHandlers={{
+                      click: () => navigate(`/marketplace?city=${encodeURIComponent(city.name)}`),
+                    }}
                   >
                     <Tooltip permanent={false} direction="top">
-                      <span className="font-medium">{city.name}</span>: {city.count} kreator
+                      <span className="font-medium">{city.name}</span>: {city.count} kreator — klik untuk filter
                     </Tooltip>
                   </CircleMarker>
                 ))}
               </MapContainer>
             </div>
             {/* Legend */}
-            <div className="w-44 shrink-0 p-4 border-l border-slate-100 space-y-2 overflow-auto">
+            <div className="w-44 shrink-0 p-4 border-l border-slate-100 space-y-1.5 overflow-auto">
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Top Kota</p>
               {sortedCities.map((city) => (
-                <div key={city.name} className="flex items-center gap-2">
+                <button
+                  key={city.name}
+                  onClick={() => navigate(`/marketplace?city=${encodeURIComponent(city.name)}`)}
+                  className="w-full flex items-center gap-2 py-1 px-1.5 rounded-lg hover:bg-slate-100 transition-colors text-left group"
+                >
                   <span
                     className="w-2.5 h-2.5 rounded-full shrink-0"
                     style={{ backgroundColor: statusColor[city.status] }}
                   />
-                  <span className="text-xs text-slate-700 flex-1 truncate">{city.name}</span>
-                  <span className="text-xs font-semibold text-slate-500">{city.count}</span>
-                </div>
+                  <span className="text-xs text-slate-700 flex-1 truncate group-hover:text-blue-600 transition-colors">{city.name}</span>
+                  <span className="text-xs font-semibold text-slate-400">{city.count}</span>
+                </button>
               ))}
             </div>
           </div>
@@ -151,11 +167,15 @@ export default function Dashboard() {
 
       {/* Creator vs Amplifier Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
+        <Card
+          className="cursor-pointer hover:shadow-md transition-all"
+          onClick={() => navigate("/analytics")}
+        >
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <FileText className="w-4 h-4 text-blue-600" />
               Creator Activity
+              <span className="ml-auto text-xs text-slate-400 font-normal">→ Analytics</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -190,11 +210,15 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card
+          className="cursor-pointer hover:shadow-md transition-all"
+          onClick={() => navigate("/media-monitoring")}
+        >
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <Heart className="w-4 h-4 text-pink-500" />
               Amplifier Activity
+              <span className="ml-auto text-xs text-slate-400 font-normal">→ Media Monitoring</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -249,15 +273,20 @@ export default function Dashboard() {
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-1">
           {activities.map((a, i) => (
-            <div key={i} className="flex items-start gap-3 p-2 rounded-lg hover:bg-slate-50 transition-colors">
+            <button
+              key={i}
+              onClick={() => navigate(a.href)}
+              className="w-full flex items-start gap-3 p-2.5 rounded-lg hover:bg-slate-50 transition-colors text-left group"
+            >
               <div className={`w-2 h-2 rounded-full mt-2 shrink-0 ${a.type === "success" ? "bg-green-500" : "bg-blue-500"}`} />
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-slate-700">{a.text}</p>
+                <p className="text-sm text-slate-700 group-hover:text-blue-700 transition-colors">{a.text}</p>
                 <p className="text-xs text-slate-400 mt-0.5">{a.time}</p>
               </div>
-            </div>
+              <ArrowUpRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-blue-500 shrink-0 mt-1 transition-colors" />
+            </button>
           ))}
         </CardContent>
       </Card>
