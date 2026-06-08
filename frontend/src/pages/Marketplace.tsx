@@ -2,8 +2,9 @@ import { useState, useRef } from "react";
 import {
   Search, SlidersHorizontal, Star, CheckCircle, Zap, Award,
   Instagram, Youtube, Users, Megaphone, TrendingUp, Wallet,
-  LayoutGrid, List, RotateCcw, X,
+  LayoutGrid, List, RotateCcw, X, Flame, MessageSquare, MapPin,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -45,6 +46,15 @@ const PRICE_OPTIONS = [
   { label: "Rp 13M+", value: "13000000-0" },
 ];
 
+const CATEGORY_COLORS: Record<string, string> = {
+  lifestyle: "bg-purple-100 text-purple-700",
+  travel: "bg-blue-100 text-blue-700",
+  beauty: "bg-pink-100 text-pink-700",
+  tech: "bg-slate-100 text-slate-700",
+  food: "bg-orange-100 text-orange-700",
+  sports: "bg-green-100 text-green-700",
+};
+
 const platformIcon = (p: string) => {
   if (p === "instagram") return <Instagram className="w-3 h-3" />;
   if (p === "youtube") return <Youtube className="w-3 h-3" />;
@@ -60,11 +70,7 @@ function StatCard({ label, value, icon: Icon, color, loading }: {
         <div className="flex items-start justify-between">
           <div>
             <p className="text-sm text-slate-500">{label}</p>
-            {loading ? (
-              <Skeleton className="h-7 w-24 mt-1" />
-            ) : (
-              <p className="text-2xl font-bold text-slate-800 mt-1">{value}</p>
-            )}
+            {loading ? <Skeleton className="h-7 w-24 mt-1" /> : <p className="text-2xl font-bold text-slate-800 mt-1">{value}</p>}
           </div>
           <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}>
             <Icon className="w-5 h-5" />
@@ -75,30 +81,26 @@ function StatCard({ label, value, icon: Icon, color, loading }: {
   );
 }
 
-function CreatorCard({ creator, selected, onToggle, listView }: {
-  creator: Creator; selected: boolean; onToggle: () => void; listView: boolean;
+function CreatorCard({ creator, selected, onToggle, onCardClick, listView }: {
+  creator: Creator; selected: boolean; onToggle: () => void; onCardClick: () => void; listView: boolean;
 }) {
+  const catColor = CATEGORY_COLORS[creator.category] ?? "bg-slate-100 text-slate-700";
+
   if (listView) {
     return (
-      <Card className={`cursor-pointer transition-all hover:shadow-md ${selected ? "ring-2 ring-blue-500" : ""}`}>
+      <Card
+        className={`cursor-pointer transition-all hover:shadow-md ${selected ? "ring-2 ring-blue-500" : ""}`}
+        onClick={onCardClick}
+      >
         <CardContent className="p-3">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden shrink-0 relative">
               {creator.imageUrl && (
-                <img
-                  src={creator.imageUrl}
-                  alt={creator.name}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                    e.currentTarget.nextElementSibling?.removeAttribute("style");
-                  }}
-                />
+                <img src={creator.imageUrl} alt={creator.name} className="w-full h-full object-cover"
+                  onError={(e) => { e.currentTarget.style.display = "none"; e.currentTarget.nextElementSibling?.removeAttribute("style"); }} />
               )}
-              <div
-                className="absolute inset-0 flex items-center justify-center text-sm font-bold text-slate-500"
-                style={creator.imageUrl ? { display: "none" } : undefined}
-              >
+              <div className="absolute inset-0 flex items-center justify-center text-sm font-bold text-slate-500"
+                style={creator.imageUrl ? { display: "none" } : undefined}>
                 {creator.name[0]}
               </div>
             </div>
@@ -107,22 +109,19 @@ function CreatorCard({ creator, selected, onToggle, listView }: {
                 <p className="font-semibold text-slate-800 text-sm truncate">{creator.name}</p>
                 {creator.verified && <CheckCircle className="w-3.5 h-3.5 text-blue-500 shrink-0" />}
               </div>
-              <p className="text-xs text-slate-500">{creator.city} · <span className="capitalize">{creator.category}</span></p>
+              <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                <MapPin className="w-3 h-3" />{creator.city}
+                <span className={`px-1.5 py-0 rounded-full text-[10px] font-medium capitalize ${catColor}`}>{creator.category}</span>
+              </div>
             </div>
             <div className="hidden sm:flex items-center gap-4 text-xs text-slate-600">
               <span className="font-medium">{creator.followersText}</span>
               <span className="font-medium">{creator.engagementRate}% ER</span>
-              <span className="flex items-center gap-0.5">
-                <Star className="w-3 h-3 fill-amber-400 text-amber-400" />{creator.rating}
-              </span>
+              <span className="flex items-center gap-0.5"><Star className="w-3 h-3 fill-amber-400 text-amber-400" />{creator.rating}</span>
               <span className="font-semibold text-slate-700">{creator.priceText}</span>
             </div>
-            <Button
-              size="sm"
-              variant={selected ? "outline" : "default"}
-              className="h-7 text-xs shrink-0"
-              onClick={(e) => { e.stopPropagation(); onToggle(); }}
-            >
+            <Button size="sm" variant={selected ? "outline" : "default"} className="h-7 text-xs shrink-0"
+              onClick={(e) => { e.stopPropagation(); onToggle(); }}>
               {selected ? "Hapus" : "+ Brief"}
             </Button>
           </div>
@@ -132,38 +131,39 @@ function CreatorCard({ creator, selected, onToggle, listView }: {
   }
 
   return (
-    <Card className={`cursor-pointer transition-all hover:shadow-md ${selected ? "ring-2 ring-blue-500" : ""}`}>
+    <Card
+      className={`cursor-pointer transition-all hover:shadow-md ${selected ? "ring-2 ring-blue-500" : ""}`}
+      onClick={onCardClick}
+    >
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
           <div className="w-14 h-14 rounded-xl bg-slate-200 overflow-hidden shrink-0 relative">
             {creator.imageUrl && (
-              <img
-                src={creator.imageUrl}
-                alt={creator.name}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.currentTarget.style.display = "none";
-                  e.currentTarget.nextElementSibling?.removeAttribute("style");
-                }}
-              />
+              <img src={creator.imageUrl} alt={creator.name} className="w-full h-full object-cover"
+                onError={(e) => { e.currentTarget.style.display = "none"; e.currentTarget.nextElementSibling?.removeAttribute("style"); }} />
             )}
-            <div
-              className="absolute inset-0 flex items-center justify-center text-lg font-bold text-slate-500"
-              style={creator.imageUrl ? { display: "none" } : undefined}
-            >
+            <div className="absolute inset-0 flex items-center justify-center text-lg font-bold text-slate-500"
+              style={creator.imageUrl ? { display: "none" } : undefined}>
               {creator.name[0]}
             </div>
+            {selected && (
+              <div className="absolute inset-0 bg-blue-600/20 flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-blue-600" />
+              </div>
+            )}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5">
               <p className="font-semibold text-slate-800 text-sm truncate">{creator.name}</p>
               {creator.verified && <CheckCircle className="w-3.5 h-3.5 text-blue-500 shrink-0" />}
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">{creator.city}</p>
+            <div className="flex items-center gap-1 text-xs text-slate-500 mt-0.5">
+              <MapPin className="w-3 h-3 shrink-0" />{creator.city}
+            </div>
             <div className="flex flex-wrap gap-1 mt-1.5">
-              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 capitalize">
+              <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-medium capitalize ${catColor}`}>
                 {creator.category}
-              </Badge>
+              </span>
               {creator.fastResponse && (
                 <Badge variant="warning" className="text-[10px] px-1.5 py-0">
                   <Zap className="w-2.5 h-2.5 mr-0.5" /> Cepat
@@ -189,8 +189,7 @@ function CreatorCard({ creator, selected, onToggle, listView }: {
           </div>
           <div className="text-center">
             <p className="text-sm font-bold text-slate-800 flex items-center justify-center gap-0.5">
-              <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-              {creator.rating}
+              <Star className="w-3 h-3 fill-amber-400 text-amber-400" />{creator.rating}
             </p>
             <p className="text-[10px] text-slate-500">Rating</p>
           </div>
@@ -206,18 +205,116 @@ function CreatorCard({ creator, selected, onToggle, listView }: {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold text-slate-700">{creator.priceText}</span>
-            <Button
-              size="sm"
-              variant={selected ? "outline" : "default"}
-              className="h-7 text-xs"
-              onClick={(e) => { e.stopPropagation(); onToggle(); }}
-            >
+            <Button size="sm" variant={selected ? "outline" : "default"} className="h-7 text-xs"
+              onClick={(e) => { e.stopPropagation(); onToggle(); }}>
               {selected ? "Hapus" : "+ Brief"}
             </Button>
           </div>
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+function CreatorProfileModal({ creator, selected, onToggle, onClose, onChat }: {
+  creator: Creator; selected: boolean; onToggle: () => void; onClose: () => void; onChat: () => void;
+}) {
+  const catColor = CATEGORY_COLORS[creator.category] ?? "bg-slate-100 text-slate-700";
+  return (
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="sr-only">Creator Profile</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          {/* Header */}
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-slate-200 overflow-hidden shrink-0">
+              {creator.imageUrl ? (
+                <img src={creator.imageUrl} alt={creator.name} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-xl font-bold text-slate-500">{creator.name[0]}</div>
+              )}
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <h2 className="font-bold text-slate-800 text-lg">{creator.name}</h2>
+                {creator.verified && <CheckCircle className="w-4 h-4 text-blue-500" />}
+              </div>
+              <p className="text-sm text-slate-500">
+                {creator.city}, Indonesia · <span className="capitalize">{creator.category}</span>
+              </p>
+              <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-medium capitalize ${catColor}`}>
+                {creator.category}
+              </span>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-3 bg-slate-50 rounded-xl p-4">
+            <div className="text-center">
+              <p className="text-base font-bold text-slate-800">{creator.followersText}</p>
+              <p className="text-xs text-slate-500 mt-0.5">Followers</p>
+            </div>
+            <div className="text-center border-x border-slate-200">
+              <p className="text-base font-bold text-slate-800">{creator.engagementRate}%</p>
+              <p className="text-xs text-slate-500 mt-0.5">Engagement</p>
+            </div>
+            <div className="text-center">
+              <p className="text-base font-bold text-slate-800 flex items-center justify-center gap-0.5">
+                <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />{creator.rating}
+              </p>
+              <p className="text-xs text-slate-500 mt-0.5">Rating</p>
+            </div>
+          </div>
+
+          {/* Bio */}
+          {creator.bio && (
+            <div>
+              <h3 className="text-sm font-semibold text-slate-700 mb-1">About Creator</h3>
+              <p className="text-sm text-slate-600 leading-relaxed">{creator.bio}</p>
+            </div>
+          )}
+
+          {/* Platforms */}
+          <div>
+            <h3 className="text-sm font-semibold text-slate-700 mb-2">Active Platforms</h3>
+            <div className="flex gap-2">
+              {creator.platforms.map((p) => (
+                <span key={p} className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border
+                  ${p === "instagram" ? "border-pink-200 bg-pink-50 text-pink-700" :
+                    p === "tiktok" ? "border-slate-300 bg-slate-800 text-white" :
+                    "border-red-200 bg-red-50 text-red-700"}`}>
+                  {platformIcon(p)}
+                  <span className="capitalize">{p}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+            <div>
+              <p className="text-xs text-slate-500">Starting Price</p>
+              <p className="text-base font-bold text-slate-800">{creator.priceText}</p>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" className="gap-1.5" onClick={onChat}>
+                <MessageSquare className="w-3.5 h-3.5" /> Chat
+              </Button>
+              <Button variant="outline" size="sm" onClick={onClose}>Close</Button>
+              <Button
+                size="sm"
+                variant={selected ? "destructive" : "default"}
+                onClick={() => { onToggle(); onClose(); }}
+              >
+                {selected ? "Remove from Brief" : "Invite to Campaign"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -228,7 +325,8 @@ function parseRange(val: string): { min?: number; max?: number } {
 }
 
 export default function Marketplace() {
-  const [filters, setFilters] = useState<CreatorListParams>({ page: 1, pageSize: 20 });
+  const navigate = useNavigate();
+  const [filters, setFilters] = useState<CreatorListParams>({ page: 1, pageSize: 20, verified: true });
   const [search, setSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [listView, setListView] = useState(false);
@@ -240,6 +338,8 @@ export default function Marketplace() {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showCreateCampaign, setShowCreateCampaign] = useState(false);
   const [campaignForm, setCampaignForm] = useState({ title: "", description: "", budget: "" });
+
+  const [profileCreator, setProfileCreator] = useState<Creator | null>(null);
 
   const advMinPrice = useRef("");
   const advMaxPrice = useRef("");
@@ -281,6 +381,10 @@ export default function Marketplace() {
     setFilters((f) => ({ ...f, minPrice: min, maxPrice: max, page: 1 }));
   };
 
+  const toggleQuick = (key: "verified" | "topRated" | "fastResponse") => {
+    setFilters((f) => ({ ...f, [key]: f[key] ? undefined : true, page: 1 }));
+  };
+
   const handleCreateCampaign = async () => {
     if (!campaignForm.title) return;
     await createMutation.mutateAsync({
@@ -297,30 +401,10 @@ export default function Marketplace() {
   const selectedCreators = data?.data.filter((c) => selectedIds.includes(c.id)) ?? [];
 
   const statCards = [
-    {
-      label: "Total Kreator",
-      value: stats ? stats.totalCreators.toLocaleString("id-ID") : "–",
-      icon: Users,
-      color: "text-blue-600 bg-blue-50",
-    },
-    {
-      label: "Kampanye Aktif",
-      value: stats ? stats.activeCampaigns.toLocaleString("id-ID") : "–",
-      icon: Megaphone,
-      color: "text-orange-600 bg-orange-50",
-    },
-    {
-      label: "Avg. Engagement",
-      value: stats ? `${stats.avgEngagementRate.toFixed(2)}%` : "–",
-      icon: TrendingUp,
-      color: "text-cyan-600 bg-cyan-50",
-    },
-    {
-      label: "Budget Dikelola",
-      value: stats ? formatRupiah(stats.totalBudget) : "–",
-      icon: Wallet,
-      color: "text-amber-600 bg-amber-50",
-    },
+    { label: "Total Kreator", value: stats ? stats.totalCreators.toLocaleString("id-ID") : "–", icon: Users, color: "text-blue-600 bg-blue-50" },
+    { label: "Kampanye Aktif", value: stats ? stats.activeCampaigns.toLocaleString("id-ID") : "–", icon: Megaphone, color: "text-orange-600 bg-orange-50" },
+    { label: "Avg. Engagement", value: stats ? `${stats.avgEngagementRate.toFixed(2)}%` : "–", icon: TrendingUp, color: "text-cyan-600 bg-cyan-50" },
+    { label: "Budget Dikelola", value: stats ? formatRupiah(stats.totalBudget) : "–", icon: Wallet, color: "text-amber-600 bg-amber-50" },
   ];
 
   return (
@@ -329,9 +413,7 @@ export default function Marketplace() {
         {/* Stats */}
         <div className="p-4 border-b border-slate-200 bg-white">
           <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
-            {statCards.map((s) => (
-              <StatCard key={s.label} {...s} loading={statsLoading} />
-            ))}
+            {statCards.map((s) => <StatCard key={s.label} {...s} loading={statsLoading} />)}
           </div>
         </div>
 
@@ -339,116 +421,53 @@ export default function Marketplace() {
         <div className="px-4 pt-3 pb-0 bg-white flex flex-wrap items-center gap-2">
           <div className="relative flex-1 min-w-48">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <Input
-              placeholder="Cari nama kreator..."
-              className="pl-9"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+            <Input placeholder="Cari nama kreator..." className="pl-9" value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
 
-          <Select
-            value={filters.category ?? "all"}
-            onValueChange={(v) => setFilters((f) => ({ ...f, category: v === "all" ? undefined : v, page: 1 }))}
-          >
-            <SelectTrigger className="w-36">
-              <SelectValue placeholder="Kategori" />
-            </SelectTrigger>
+          <Select value={filters.category ?? "all"} onValueChange={(v) => setFilters((f) => ({ ...f, category: v === "all" ? undefined : v, page: 1 }))}>
+            <SelectTrigger className="w-36"><SelectValue placeholder="Kategori" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Semua Kategori</SelectItem>
-              {CATEGORIES.map((c) => (
-                <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>
-              ))}
+              {CATEGORIES.map((c) => <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>)}
             </SelectContent>
           </Select>
 
-          <Select
-            value={filters.platform ?? "all"}
-            onValueChange={(v) => setFilters((f) => ({ ...f, platform: v === "all" ? undefined : v, page: 1 }))}
-          >
-            <SelectTrigger className="w-36">
-              <SelectValue placeholder="Platform" />
-            </SelectTrigger>
+          <Select value={filters.platform ?? "all"} onValueChange={(v) => setFilters((f) => ({ ...f, platform: v === "all" ? undefined : v, page: 1 }))}>
+            <SelectTrigger className="w-36"><SelectValue placeholder="Platform" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Semua Platform</SelectItem>
-              {PLATFORMS.map((p) => (
-                <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>
-              ))}
+              {PLATFORMS.map((p) => <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>)}
             </SelectContent>
           </Select>
 
-          <Select
-            value={filters.city ?? "all"}
-            onValueChange={(v) => setFilters((f) => ({ ...f, city: v === "all" ? undefined : v, page: 1 }))}
-          >
-            <SelectTrigger className="w-32">
-              <SelectValue placeholder="Kota" />
-            </SelectTrigger>
+          <Select value={filters.city ?? "all"} onValueChange={(v) => setFilters((f) => ({ ...f, city: v === "all" ? undefined : v, page: 1 }))}>
+            <SelectTrigger className="w-32"><SelectValue placeholder="Kota" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Semua Kota</SelectItem>
-              {CITIES.map((c) => (
-                <SelectItem key={c} value={c}>{c}</SelectItem>
-              ))}
+              {CITIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
 
         {/* Filters row 2 */}
-        <div className="px-4 py-2 bg-white border-b border-slate-200 flex flex-wrap items-center gap-2">
+        <div className="px-4 py-2 bg-white flex flex-wrap items-center gap-2">
           <Select value={followersVal} onValueChange={applyFollowers}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="Followers" />
-            </SelectTrigger>
-            <SelectContent>
-              {FOLLOWERS_OPTIONS.map((o) => (
-                <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
-              ))}
-            </SelectContent>
+            <SelectTrigger className="w-40"><SelectValue placeholder="Followers" /></SelectTrigger>
+            <SelectContent>{FOLLOWERS_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
           </Select>
 
           <Select value={engagementVal} onValueChange={applyEngagement}>
-            <SelectTrigger className="w-36">
-              <SelectValue placeholder="Engagement" />
-            </SelectTrigger>
-            <SelectContent>
-              {ENGAGEMENT_OPTIONS.map((o) => (
-                <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
-              ))}
-            </SelectContent>
+            <SelectTrigger className="w-36"><SelectValue placeholder="Engagement" /></SelectTrigger>
+            <SelectContent>{ENGAGEMENT_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
           </Select>
 
           <Select value={priceVal} onValueChange={applyPrice}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="Harga" />
-            </SelectTrigger>
-            <SelectContent>
-              {PRICE_OPTIONS.map((o) => (
-                <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
-              ))}
-            </SelectContent>
+            <SelectTrigger className="w-40"><SelectValue placeholder="Harga" /></SelectTrigger>
+            <SelectContent>{PRICE_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
           </Select>
 
-          <Select
-            value={filters.verified === undefined ? "all" : filters.verified ? "true" : "false"}
-            onValueChange={(v) => setFilters((f) => ({ ...f, verified: v === "all" ? undefined : v === "true", page: 1 }))}
-          >
-            <SelectTrigger className="w-32">
-              <SelectValue placeholder="Verified" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Semua</SelectItem>
-              <SelectItem value="true">Verified</SelectItem>
-              <SelectItem value="false">Belum Verified</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select
-            value={filters.sortBy ?? "all"}
-            onValueChange={(v) => setFilters((f) => ({ ...f, sortBy: v === "all" ? undefined : v }))}
-          >
-            <SelectTrigger className="w-36">
-              <SelectValue placeholder="Urutkan" />
-            </SelectTrigger>
+          <Select value={filters.sortBy ?? "all"} onValueChange={(v) => setFilters((f) => ({ ...f, sortBy: v === "all" ? undefined : v }))}>
+            <SelectTrigger className="w-36"><SelectValue placeholder="Urutkan" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Relevansi</SelectItem>
               <SelectItem value="followers">Followers</SelectItem>
@@ -460,39 +479,52 @@ export default function Marketplace() {
 
           <div className="flex-1" />
 
+          {/* Quick filter toggles */}
+          <button
+            onClick={() => toggleQuick("topRated")}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+              filters.topRated ? "bg-orange-500 border-orange-500 text-white" : "border-slate-200 text-slate-600 hover:border-orange-300"
+            }`}
+          >
+            <Flame className="w-3.5 h-3.5" /> Top Rated
+          </button>
+          <button
+            onClick={() => toggleQuick("fastResponse")}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+              filters.fastResponse ? "bg-amber-500 border-amber-500 text-white" : "border-slate-200 text-slate-600 hover:border-amber-300"
+            }`}
+          >
+            <Zap className="w-3.5 h-3.5" /> Fast Response
+          </button>
+          <button
+            onClick={() => toggleQuick("verified")}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+              filters.verified ? "bg-blue-600 border-blue-600 text-white" : "border-slate-200 text-slate-600 hover:border-blue-300"
+            }`}
+          >
+            <CheckCircle className="w-3.5 h-3.5" /> Verified Only
+          </button>
+        </div>
+
+        {/* Row 3: results info + actions */}
+        <div className="px-4 py-1.5 bg-white border-b border-slate-200 flex items-center gap-2">
+          <p className="text-xs text-slate-500 flex-1">
+            {isLoading ? "Memuat..." : `${data?.total ?? 0} kreator ditemukan`}
+          </p>
           <Button variant="outline" size="sm" onClick={resetFilters} className="gap-1.5">
             <RotateCcw className="w-3.5 h-3.5" /> Reset
           </Button>
-          <Button
-            variant="outline" size="icon" className="h-9 w-9"
-            onClick={() => setShowAdvanced(true)}
-          >
+          <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => setShowAdvanced(true)}>
             <SlidersHorizontal className="w-4 h-4" />
           </Button>
           <div className="flex border border-slate-200 rounded-md overflow-hidden">
-            <button
-              onClick={() => setListView(false)}
-              className={`p-2 ${!listView ? "bg-slate-100 text-slate-700" : "text-slate-400 hover:text-slate-600"}`}
-            >
+            <button onClick={() => setListView(false)} className={`p-2 ${!listView ? "bg-slate-100 text-slate-700" : "text-slate-400 hover:text-slate-600"}`}>
               <LayoutGrid className="w-4 h-4" />
             </button>
-            <button
-              onClick={() => setListView(true)}
-              className={`p-2 ${listView ? "bg-slate-100 text-slate-700" : "text-slate-400 hover:text-slate-600"}`}
-            >
+            <button onClick={() => setListView(true)} className={`p-2 ${listView ? "bg-slate-100 text-slate-700" : "text-slate-400 hover:text-slate-600"}`}>
               <List className="w-4 h-4" />
             </button>
           </div>
-        </div>
-
-        {/* Results info */}
-        <div className="px-4 py-1.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-          <p className="text-xs text-slate-500">
-            {isLoading ? "Memuat..." : `${data?.total ?? 0} kreator ditemukan`}
-          </p>
-          <p className="text-xs text-slate-500">
-            Halaman {filters.page} dari {data?.totalPages ?? 1}
-          </p>
         </div>
 
         {/* Grid / List */}
@@ -506,6 +538,13 @@ export default function Marketplace() {
                 </CardContent></Card>
               ))}
             </div>
+          ) : data?.data.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24 text-slate-400">
+              <Users className="w-12 h-12 mb-3 opacity-40" />
+              <p className="font-medium">Tidak ada kreator ditemukan</p>
+              <p className="text-sm mt-1">Coba ubah atau reset filter pencarian</p>
+              <Button variant="outline" size="sm" className="mt-4" onClick={resetFilters}>Reset Filter</Button>
+            </div>
           ) : (
             <div className={listView ? "space-y-2" : "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"}>
               {data?.data.map((creator) => (
@@ -514,6 +553,7 @@ export default function Marketplace() {
                   creator={creator}
                   selected={selectedIds.includes(creator.id)}
                   onToggle={() => toggleSelect(creator.id)}
+                  onCardClick={() => setProfileCreator(creator)}
                   listView={listView}
                 />
               ))}
@@ -522,18 +562,15 @@ export default function Marketplace() {
 
           {data && data.totalPages > 1 && (
             <div className="flex justify-center gap-2 mt-6">
-              <Button
-                variant="outline" size="sm"
-                disabled={filters.page === 1}
-                onClick={() => setFilters((f) => ({ ...f, page: (f.page ?? 1) - 1 }))}
-              >
+              <Button variant="outline" size="sm" disabled={filters.page === 1}
+                onClick={() => setFilters((f) => ({ ...f, page: (f.page ?? 1) - 1 }))}>
                 Sebelumnya
               </Button>
-              <Button
-                variant="outline" size="sm"
-                disabled={filters.page === data.totalPages}
-                onClick={() => setFilters((f) => ({ ...f, page: (f.page ?? 1) + 1 }))}
-              >
+              <span className="text-xs text-slate-500 self-center">
+                Halaman {filters.page} dari {data.totalPages}
+              </span>
+              <Button variant="outline" size="sm" disabled={filters.page === data.totalPages}
+                onClick={() => setFilters((f) => ({ ...f, page: (f.page ?? 1) + 1 }))}>
                 Berikutnya
               </Button>
             </div>
@@ -552,27 +589,20 @@ export default function Marketplace() {
           {selectedCreators.length === 0 ? (
             <div className="text-center py-12 text-slate-400">
               <p className="text-sm">Belum ada kreator dipilih</p>
-              <p className="text-xs mt-1">Klik "+ Brief" pada kartu kreator</p>
+              <p className="text-xs mt-1">Klik "+ Brief" atau klik kartu kreator</p>
             </div>
           ) : (
             selectedCreators.map((c) => (
               <div key={c.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
                 <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-semibold text-slate-600 overflow-hidden shrink-0">
-                  {c.imageUrl ? (
-                    <img src={c.imageUrl} alt={c.name} className="w-full h-full object-cover" />
-                  ) : (
-                    c.name[0]
-                  )}
+                  {c.imageUrl ? <img src={c.imageUrl} alt={c.name} className="w-full h-full object-cover" /> : c.name[0]}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-slate-800 truncate">{c.name}</p>
                   <p className="text-xs text-slate-500">{c.followersText} · {c.priceText}</p>
                 </div>
-                <Button
-                  variant="ghost" size="icon"
-                  className="h-7 w-7 text-slate-400 hover:text-red-500"
-                  onClick={() => toggleSelect(c.id)}
-                >
+                <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-red-500"
+                  onClick={() => toggleSelect(c.id)}>
                   <X className="w-3.5 h-3.5" />
                 </Button>
               </div>
@@ -584,16 +614,23 @@ export default function Marketplace() {
           <div className="p-4 border-t border-slate-200 space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-slate-500">Est. Total Budget</span>
-              <span className="font-bold text-slate-800">
-                {formatRupiah(selectedCreators.reduce((a, c) => a + c.price, 0))}
-              </span>
+              <span className="font-bold text-slate-800">{formatRupiah(selectedCreators.reduce((a, c) => a + c.price, 0))}</span>
             </div>
-            <Button className="w-full" onClick={() => setShowCreateCampaign(true)}>
-              Buat Kampanye
-            </Button>
+            <Button className="w-full" onClick={() => setShowCreateCampaign(true)}>Buat Kampanye</Button>
           </div>
         )}
       </aside>
+
+      {/* Creator Profile Modal */}
+      {profileCreator && (
+        <CreatorProfileModal
+          creator={profileCreator}
+          selected={selectedIds.includes(profileCreator.id)}
+          onToggle={() => toggleSelect(profileCreator.id)}
+          onClose={() => setProfileCreator(null)}
+          onChat={() => { setProfileCreator(null); navigate("/messages"); }}
+        />
+      )}
 
       {/* Advanced Filters Dialog */}
       <Dialog open={showAdvanced} onOpenChange={setShowAdvanced}>
@@ -604,30 +641,18 @@ export default function Marketplace() {
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-slate-700">Harga Minimum (Rp)</label>
-              <Input
-                type="number"
-                placeholder="Contoh: 5000000"
-                defaultValue={advMinPrice.current}
-                onChange={(e) => { advMinPrice.current = e.target.value; }}
-              />
+              <Input type="number" placeholder="Contoh: 5000000" defaultValue={advMinPrice.current}
+                onChange={(e) => { advMinPrice.current = e.target.value; }} />
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-slate-700">Harga Maksimum (Rp)</label>
-              <Input
-                type="number"
-                placeholder="Contoh: 15000000"
-                defaultValue={advMaxPrice.current}
-                onChange={(e) => { advMaxPrice.current = e.target.value; }}
-              />
+              <Input type="number" placeholder="Contoh: 15000000" defaultValue={advMaxPrice.current}
+                onChange={(e) => { advMaxPrice.current = e.target.value; }} />
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-slate-700">Rating Minimum</label>
-              <Select
-                onValueChange={(v) => setFilters((f) => ({ ...f, minRating: v === "all" ? undefined : Number(v) }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Semua Rating" />
-                </SelectTrigger>
+              <Select onValueChange={(v) => setFilters((f) => ({ ...f, minRating: v === "all" ? undefined : Number(v) }))}>
+                <SelectTrigger><SelectValue placeholder="Semua Rating" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Semua Rating</SelectItem>
                   <SelectItem value="3">3+</SelectItem>
@@ -638,19 +663,15 @@ export default function Marketplace() {
             </div>
             <div className="flex items-center gap-3">
               <label className="text-sm font-medium text-slate-700 flex-1">Hanya Fast Response</label>
-              <button
-                onClick={() => setFilters((f) => ({ ...f, fastResponse: !f.fastResponse }))}
-                className={`w-10 h-5 rounded-full relative transition-colors ${filters.fastResponse ? "bg-blue-600" : "bg-slate-200"}`}
-              >
+              <button onClick={() => setFilters((f) => ({ ...f, fastResponse: !f.fastResponse }))}
+                className={`w-10 h-5 rounded-full relative transition-colors ${filters.fastResponse ? "bg-blue-600" : "bg-slate-200"}`}>
                 <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${filters.fastResponse ? "right-0.5" : "left-0.5"}`} />
               </button>
             </div>
             <div className="flex items-center gap-3">
               <label className="text-sm font-medium text-slate-700 flex-1">Hanya Top Rated</label>
-              <button
-                onClick={() => setFilters((f) => ({ ...f, topRated: !f.topRated }))}
-                className={`w-10 h-5 rounded-full relative transition-colors ${filters.topRated ? "bg-blue-600" : "bg-slate-200"}`}
-              >
+              <button onClick={() => setFilters((f) => ({ ...f, topRated: !f.topRated }))}
+                className={`w-10 h-5 rounded-full relative transition-colors ${filters.topRated ? "bg-blue-600" : "bg-slate-200"}`}>
                 <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${filters.topRated ? "right-0.5" : "left-0.5"}`} />
               </button>
             </div>
@@ -665,9 +686,7 @@ export default function Marketplace() {
                 page: 1,
               }));
               setShowAdvanced(false);
-            }}>
-              Terapkan Filter
-            </Button>
+            }}>Terapkan Filter</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -681,28 +700,18 @@ export default function Marketplace() {
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-slate-700">Nama Kampanye</label>
-              <Input
-                placeholder="Contoh: Kampanye Summer 2025"
-                value={campaignForm.title}
-                onChange={(e) => setCampaignForm((f) => ({ ...f, title: e.target.value }))}
-              />
+              <Input placeholder="Contoh: Kampanye Summer 2025" value={campaignForm.title}
+                onChange={(e) => setCampaignForm((f) => ({ ...f, title: e.target.value }))} />
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-slate-700">Deskripsi</label>
-              <Input
-                placeholder="Deskripsi singkat kampanye..."
-                value={campaignForm.description}
-                onChange={(e) => setCampaignForm((f) => ({ ...f, description: e.target.value }))}
-              />
+              <Input placeholder="Deskripsi singkat kampanye..." value={campaignForm.description}
+                onChange={(e) => setCampaignForm((f) => ({ ...f, description: e.target.value }))} />
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-slate-700">Budget (Rp)</label>
-              <Input
-                type="number"
-                placeholder={String(selectedCreators.reduce((a, c) => a + c.price, 0))}
-                value={campaignForm.budget}
-                onChange={(e) => setCampaignForm((f) => ({ ...f, budget: e.target.value }))}
-              />
+              <Input type="number" placeholder={String(selectedCreators.reduce((a, c) => a + c.price, 0))}
+                value={campaignForm.budget} onChange={(e) => setCampaignForm((f) => ({ ...f, budget: e.target.value }))} />
             </div>
             <div className="bg-slate-50 rounded-lg p-3 text-sm text-slate-600">
               <p className="font-medium mb-1">Kreator yang dipilih:</p>

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, MessageSquare, Paperclip, ExternalLink } from "lucide-react";
+import { Send, MessageSquare, Paperclip, ExternalLink, Search } from "lucide-react";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -8,16 +9,27 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useChatChannels, useMessages, useSendMessage } from "@/hooks/useMessages";
 import { creatorsApi } from "@/lib/api";
-import type { Creator } from "@/types";
+import type { Creator, Message } from "@/types";
 import { cn } from "@/lib/utils";
 
+const AUTO_REPLIES = [
+  "Thanks for messaging, Arif! Let me review the brief and I'll send you a custom draft proposal.",
+  "Awesome. I'm checking my content calendar for June and I definitely have slot availability.",
+  "Sounds good. I can structure the Instagram reel exactly how you suggested.",
+  "Got it, Arif! I'll make sure the tech unboxing highlights the key features you mentioned.",
+  "I've noted that down. Talk to you soon!",
+];
+
 export default function Messages() {
+  const qc = useQueryClient();
   const [activeChannelId, setActiveChannelId] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
   const [attachment, setAttachment] = useState<string | null>(null);
   const [showProfile, setShowProfile] = useState(false);
   const [profileCreator, setProfileCreator] = useState<Creator | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [readChannelIds, setReadChannelIds] = useState<Set<string>>(new Set());
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -26,20 +38,50 @@ export default function Messages() {
   const sendMutation = useSendMessage(activeChannelId ?? "");
 
   const activeChannel = channels?.find((c) => c.id === activeChannelId);
-  const totalUnread = channels?.reduce((a, c) => a + c.unreadCount, 0) ?? 0;
+
+  const filteredChannels = channels?.filter((c) =>
+    c.creatorName.toLowerCase().includes(searchTerm.toLowerCase())
+  ) ?? [];
+
+  const getUnread = (channelId: string, original: number) =>
+    readChannelIds.has(channelId) ? 0 : original;
+
+  const totalUnread = channels?.reduce((a, c) => a + getUnread(c.id, c.unreadCount), 0) ?? 0;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const openChannel = (channelId: string) => {
+    setActiveChannelId(channelId);
+    setReadChannelIds((prev) => new Set([...prev, channelId]));
+  };
 
   const handleSend = async () => {
     if (!activeChannelId) return;
     let content = draft.trim();
     if (!content && !attachment) return;
     if (attachment) content = content ? `${content} [Lampiran: ${attachment}]` : `[Lampiran: ${attachment}]`;
+
     await sendMutation.mutateAsync(content);
     setDraft("");
     setAttachment(null);
+
+    const channelId = activeChannelId;
+    setTimeout(() => {
+      const reply = AUTO_REPLIES[Math.floor(Math.random() * AUTO_REPLIES.length)];
+      const fakeMsg: Message = {
+        id: `auto-${Date.now()}`,
+        channelId,
+        senderId: "creator",
+        senderType: "creator",
+        content: reply,
+        createdAt: new Date().toISOString(),
+      };
+      qc.setQueryData(["messages", channelId], (old: Message[] | undefined) =>
+        old ? [...old, fakeMsg] : [fakeMsg]
+      );
+    }, 1500);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,6 +107,10 @@ export default function Messages() {
     }
   };
 
+  const fastResponse = activeChannel
+    ? channels?.find((c) => c.id === activeChannel.id)
+    : null;
+
   return (
     <div className="flex h-full">
       {/* Channel list */}
@@ -77,6 +123,21 @@ export default function Messages() {
             </span>
           )}
         </div>
+
+        {/* Search */}
+        <div className="px-3 py-2 border-b border-slate-100">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search creators..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-8 pr-3 py-1.5 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+        </div>
+
         <div className="flex-1 overflow-auto">
           {loadingChannels ? (
             <div className="p-3 space-y-3">
@@ -90,37 +151,46 @@ export default function Messages() {
                 </div>
               ))}
             </div>
-          ) : channels && channels.length > 0 ? (
-            channels.map((ch) => (
-              <button
-                key={ch.id}
-                onClick={() => setActiveChannelId(ch.id)}
-                className={cn(
-                  "w-full flex items-center gap-3 p-3 text-left hover:bg-slate-50 transition-colors",
-                  activeChannelId === ch.id && "bg-blue-50"
-                )}
-              >
-                <div className="relative shrink-0">
-                  <Avatar className="w-10 h-10">
-                    <AvatarFallback className="bg-blue-100 text-blue-700">
-                      {ch.creatorName[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium text-slate-800 truncate">{ch.creatorName}</p>
-                    {ch.unreadCount > 0 && (
-                      <span className="w-5 h-5 bg-blue-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center shrink-0">
-                        {ch.unreadCount}
-                      </span>
-                    )}
+          ) : filteredChannels.length > 0 ? (
+            filteredChannels.map((ch) => {
+              const unread = getUnread(ch.id, ch.unreadCount);
+              return (
+                <button
+                  key={ch.id}
+                  onClick={() => openChannel(ch.id)}
+                  className={cn(
+                    "w-full flex items-center gap-3 p-3 text-left hover:bg-slate-50 transition-colors",
+                    activeChannelId === ch.id && "bg-blue-50"
+                  )}
+                >
+                  <div className="relative shrink-0">
+                    <Avatar className="w-10 h-10">
+                      <AvatarFallback className="bg-blue-100 text-blue-700">
+                        {ch.creatorName[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full" />
                   </div>
-                  <p className="text-xs text-slate-500 truncate">{ch.lastMessage || "Mulai percakapan..."}</p>
-                </div>
-              </button>
-            ))
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <p className={cn("text-sm truncate", unread > 0 ? "font-semibold text-slate-900" : "font-medium text-slate-800")}>
+                        {ch.creatorName}
+                      </p>
+                      {unread > 0 && (
+                        <span className="w-5 h-5 bg-blue-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center shrink-0">
+                          {unread}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-slate-500 truncate">{ch.lastMessage || "Mulai percakapan..."}</p>
+                  </div>
+                </button>
+              );
+            })
+          ) : searchTerm ? (
+            <div className="p-6 text-center text-slate-400 text-sm">
+              Tidak ditemukan "{searchTerm}"
+            </div>
           ) : (
             <div className="p-6 text-center text-slate-400 text-sm">Belum ada percakapan</div>
           )}
@@ -142,7 +212,9 @@ export default function Messages() {
               </div>
               <div>
                 <p className="font-medium text-slate-800 text-sm">{activeChannel.creatorName}</p>
-                <p className="text-xs text-green-600">Online · Fast responder</p>
+                <p className="text-xs text-green-600">
+                  {fastResponse ? "Online · Responds within minutes" : "Online"}
+                </p>
               </div>
               <Button
                 variant="outline" size="sm" className="ml-auto gap-1.5 text-xs"
@@ -181,7 +253,7 @@ export default function Messages() {
                   </div>
                 ))
               ) : (
-                <div className="flex-1 flex items-center justify-center text-slate-400 text-sm">
+                <div className="flex items-center justify-center h-full text-slate-400 text-sm">
                   Mulai percakapan dengan {activeChannel.creatorName}
                 </div>
               )}
@@ -197,12 +269,7 @@ export default function Messages() {
             )}
 
             <div className="p-3 bg-white border-t border-slate-200 flex gap-2">
-              <input
-                ref={fileInputRef}
-                type="file"
-                className="hidden"
-                onChange={handleFileChange}
-              />
+              <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} />
               <Button
                 variant="ghost" size="icon" className="text-slate-400 hover:text-slate-600"
                 onClick={() => fileInputRef.current?.click()}
@@ -210,7 +277,7 @@ export default function Messages() {
                 <Paperclip className="w-4 h-4" />
               </Button>
               <Input
-                placeholder="Ketik pesan untuk diskusi brief kampanye..."
+                placeholder="Type a message to discuss your campaign brief..."
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
@@ -225,7 +292,7 @@ export default function Messages() {
           <div className="flex-1 flex flex-col items-center justify-center text-slate-400">
             <MessageSquare className="w-12 h-12 mb-3 opacity-40" />
             <p className="text-sm font-medium">Select a conversation</p>
-            <p className="text-xs mt-1">Pilih kreator dari panel kiri untuk mulai chat</p>
+            <p className="text-xs mt-1">Pick a creator from the left side panel to start messaging in real-time.</p>
           </div>
         )}
       </div>
@@ -278,7 +345,7 @@ export default function Messages() {
                 <p className="text-sm text-slate-600 line-clamp-3">{profileCreator.bio}</p>
               )}
               <div className="flex justify-between text-sm">
-                <span className="text-slate-500">Harga per konten</span>
+                <span className="text-slate-500">Starting Price</span>
                 <span className="font-semibold text-slate-800">{profileCreator.priceText}</span>
               </div>
             </div>
