@@ -15,7 +15,16 @@ npm run build     # type-check (tsc) + production build → frontend/dist/
 
 There are no tests, no linter config, and no preview server script.
 
-> **After every code change**: `npm run dev` (watch mode) rebuilds automatically on save — no manual restart needed. If you add/remove a dependency, run `npm install` then restart the watch process.
+> **After every frontend code change**: rebuild with `npm run build`, then restart the backend so it serves the new `dist/`. Watch mode (`npm run dev`) auto-rebuilds on save but the backend must still be restarted to pick up the new files.
+>
+> **Restart sequence** (PowerShell from repo root):
+> ```powershell
+> cd frontend; npm run build
+> cd ..\backend
+> $p = (Get-NetTCPConnection -LocalPort 8080 -State Listen -ErrorAction SilentlyContinue).OwningProcess
+> if ($p) { Stop-Process -Id $p -Force; Start-Sleep -Milliseconds 500 }
+> Start-Process -FilePath .\creatorhub.exe -WorkingDirectory $PWD -NoNewWindow
+> ```
 
 ## Architecture
 
