@@ -5,6 +5,12 @@ node_modules/
 dist/
 *.local
 
+# Go executable
+backend/creatorhub
+backend/creatorhub.exe
+backend/creatorhub.exe~
+backend/*.exe~
+
 # OS
 .DS_Store
 Thumbs.db

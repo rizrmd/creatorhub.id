@@ -1,0 +1,192 @@
+package repository
+
+import (
+	"context"
+	"fmt"
+	"strings"
+
+	"github.com/jackc/pgx/v5/pgxpool"
+
+	"creatorhub/backend/internal/models"
+)
+
+type CreatorRepository struct {
+	db *pgxpool.Pool
+}
+
+func NewCreatorRepository(db *pgxpool.Pool) *CreatorRepository {
+	return &CreatorRepository{db: db}
+}
+
+func (r *CreatorRepository) List(ctx context.Context, params models.CreatorListParams) (*models.CreatorListResponse, error) {
+	if params.PageSize == 0 {
+		params.PageSize = 50
+	}
+	if params.Page == 0 {
+		params.Page = 1
+	}
+
+	where := []string{"1=1"}
+	args := []interface{}{}
+	argIdx := 1
+
+	if params.Category != "" {
+		where = append(where, fmt.Sprintf("c.category = $%d", argIdx))
+		args = append(args, params.Category)
+		argIdx++
+	}
+	if params.City != "" {
+		where = append(where, fmt.Sprintf("c.city ILIKE $%d", argIdx))
+		args = append(args, "%"+params.City+"%")
+		argIdx++
+	}
+	if params.Search != "" {
+		where = append(where, fmt.Sprintf("(c.name ILIKE $%d OR c.bio ILIKE $%d)", argIdx, argIdx))
+		args = append(args, "%"+params.Search+"%")
+		argIdx++
+	}
+	if params.MinFollowers > 0 {
+		where = append(where, fmt.Sprintf("c.followers >= $%d", argIdx))
+		args = append(args, params.MinFollowers)
+		argIdx++
+	}
+	if params.MaxFollowers > 0 {
+		where = append(where, fmt.Sprintf("c.followers <= $%d", argIdx))
+		args = append(args, params.MaxFollowers)
+		argIdx++
+	}
+	if params.MinRating > 0 {
+		where = append(where, fmt.Sprintf("c.rating >= $%d", argIdx))
+		args = append(args, params.MinRating)
+		argIdx++
+	}
+	if params.Platform != "" {
+		where = append(where, fmt.Sprintf("EXISTS (SELECT 1 FROM creator_platforms cp WHERE cp.creator_id = c.id AND cp.platform = $%d)", argIdx))
+		args = append(args, params.Platform)
+		argIdx++
+	}
+	if params.Verified != nil {
+		where = append(where, fmt.Sprintf("c.verified = $%d", argIdx))
+		args = append(args, *params.Verified)
+		argIdx++
+	}
+	if params.FastResponse != nil {
+		where = append(where, fmt.Sprintf("c.fast_response = $%d", argIdx))
+		args = append(args, *params.FastResponse)
+		argIdx++
+	}
+	if params.TopRated != nil {
+		where = append(where, fmt.Sprintf("c.top_rated = $%d", argIdx))
+		args = append(args, *params.TopRated)
+		argIdx++
+	}
+
+	whereClause := strings.Join(where, " AND ")
+
+	orderBy := "c.followers DESC"
+	if params.SortBy != "" {
+		validSorts := map[string]string{
+			"followers":  "c.followers",
+			"engagement": "c.engagement_rate",
+			"rating":     "c.rating",
+			"price":      "c.price",
+		}
+		if col, ok := validSorts[params.SortBy]; ok {
+			dir := "DESC"
+			if strings.ToUpper(params.SortDir) == "ASC" {
+				dir = "ASC"
+			}
+			orderBy = col + " " + dir
+		}
+	}
+
+	var total int64
+	if err := r.db.QueryRow(ctx, fmt.Sprintf(`SELECT COUNT(*) FROM creators c WHERE %s`, whereClause), args...).Scan(&total); err != nil {
+		return nil, err
+	}
+
+	offset := (params.Page - 1) * params.PageSize
+	dataArgs := append(args, params.PageSize, offset)
+
+	dataQuery := fmt.Sprintf(`
+		SELECT
+			c.id, c.name, c.city, c.country, c.category,
+			c.followers, c.followers_text, c.engagement_rate,
+			c.price, c.price_text, c.verified, c.rating,
+			c.fast_response, c.top_rated, c.image_url, c.bio,
+			COALESCE(
+				(SELECT array_agg(cp.platform ORDER BY cp.platform)
+				 FROM creator_platforms cp WHERE cp.creator_id = c.id),
+				ARRAY[]::text[]
+			) AS platforms
+		FROM creators c
+		WHERE %s
+		ORDER BY %s
+		LIMIT $%d OFFSET $%d`,
+		whereClause, orderBy, argIdx, argIdx+1)
+
+	rows, err := r.db.Query(ctx, dataQuery, dataArgs...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	creators := []models.Creator{}
+	for rows.Next() {
+		var c models.Creator
+		if err := rows.Scan(
+			&c.ID, &c.Name, &c.City, &c.Country, &c.Category,
+			&c.Followers, &c.FollowersText, &c.EngagementRate,
+			&c.Price, &c.PriceText, &c.Verified, &c.Rating,
+			&c.FastResponse, &c.TopRated, &c.ImageURL, &c.Bio,
+			&c.Platforms,
+		); err != nil {
+			return nil, err
+		}
+		if c.Platforms == nil {
+			c.Platforms = []string{}
+		}
+		creators = append(creators, c)
+	}
+
+	totalPages := int((total + int64(params.PageSize) - 1) / int64(params.PageSize))
+
+	return &models.CreatorListResponse{
+		Data:       creators,
+		Total:      total,
+		Page:       params.Page,
+		PageSize:   params.PageSize,
+		TotalPages: totalPages,
+	}, nil
+}
+
+func (r *CreatorRepository) GetByID(ctx context.Context, id string) (*models.Creator, error) {
+	var c models.Creator
+	err := r.db.QueryRow(ctx, `
+		SELECT
+			c.id, c.name, c.city, c.country, c.category,
+			c.followers, c.followers_text, c.engagement_rate,
+			c.price, c.price_text, c.verified, c.rating,
+			c.fast_response, c.top_rated, c.image_url, c.bio,
+			COALESCE(
+				(SELECT array_agg(cp.platform ORDER BY cp.platform)
+				 FROM creator_platforms cp WHERE cp.creator_id = c.id),
+				ARRAY[]::text[]
+			) AS platforms
+		FROM creators c
+		WHERE c.id = $1`, id,
+	).Scan(
+		&c.ID, &c.Name, &c.City, &c.Country, &c.Category,
+		&c.Followers, &c.FollowersText, &c.EngagementRate,
+		&c.Price, &c.PriceText, &c.Verified, &c.Rating,
+		&c.FastResponse, &c.TopRated, &c.ImageURL, &c.Bio,
+		&c.Platforms,
+	)
+	if err != nil {
+		return nil, err
+	}
+	if c.Platforms == nil {
+		c.Platforms = []string{}
+	}
+	return &c, nil
+}
