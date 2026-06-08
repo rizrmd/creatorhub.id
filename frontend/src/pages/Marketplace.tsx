@@ -26,12 +26,22 @@ function CreatorCard({ creator, selected, onToggle }: { creator: Creator; select
         <div className="flex items-start gap-3">
           <div className="w-14 h-14 rounded-xl bg-slate-200 overflow-hidden shrink-0">
             {creator.imageUrl ? (
-              <img src={creator.imageUrl} alt={creator.name} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-lg font-bold text-slate-500">
-                {creator.name[0]}
-              </div>
-            )}
+              <img
+                src={creator.imageUrl}
+                alt={creator.name}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                  e.currentTarget.nextElementSibling?.removeAttribute("style");
+                }}
+              />
+            ) : null}
+            <div
+              className="w-full h-full flex items-center justify-center text-lg font-bold text-slate-500"
+              style={creator.imageUrl ? { display: "none" } : undefined}
+            >
+              {creator.name[0]}
+            </div>
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5">
