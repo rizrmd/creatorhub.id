@@ -1,16 +1,25 @@
 import { useState, useRef, useEffect } from "react";
 import { Send, MessageSquare, Paperclip, ExternalLink } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useChatChannels, useMessages, useSendMessage } from "@/hooks/useMessages";
+import { creatorsApi } from "@/lib/api";
+import type { Creator } from "@/types";
 import { cn } from "@/lib/utils";
 
 export default function Messages() {
   const [activeChannelId, setActiveChannelId] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
+  const [attachment, setAttachment] = useState<string | null>(null);
+  const [showProfile, setShowProfile] = useState(false);
+  const [profileCreator, setProfileCreator] = useState<Creator | null>(null);
+  const [profileLoading, setProfileLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: channels, isLoading: loadingChannels } = useChatChannels();
   const { data: messages, isLoading: loadingMessages } = useMessages(activeChannelId ?? "");
@@ -24,9 +33,36 @@ export default function Messages() {
   }, [messages]);
 
   const handleSend = async () => {
-    if (!draft.trim() || !activeChannelId) return;
-    await sendMutation.mutateAsync(draft.trim());
+    if (!activeChannelId) return;
+    let content = draft.trim();
+    if (!content && !attachment) return;
+    if (attachment) content = content ? `${content} [Lampiran: ${attachment}]` : `[Lampiran: ${attachment}]`;
+    await sendMutation.mutateAsync(content);
     setDraft("");
+    setAttachment(null);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAttachment(file.name);
+      toast.success(`File "${file.name}" siap dikirim`);
+    }
+    e.target.value = "";
+  };
+
+  const handleViewProfile = async () => {
+    if (!activeChannel?.creatorId) return;
+    setShowProfile(true);
+    setProfileLoading(true);
+    try {
+      const creator = await creatorsApi.getById(activeChannel.creatorId);
+      setProfileCreator(creator);
+    } catch {
+      toast.error("Gagal memuat profil kreator");
+    } finally {
+      setProfileLoading(false);
+    }
   };
 
   return (
@@ -108,7 +144,10 @@ export default function Messages() {
                 <p className="font-medium text-slate-800 text-sm">{activeChannel.creatorName}</p>
                 <p className="text-xs text-green-600">Online · Fast responder</p>
               </div>
-              <Button variant="outline" size="sm" className="ml-auto gap-1.5 text-xs">
+              <Button
+                variant="outline" size="sm" className="ml-auto gap-1.5 text-xs"
+                onClick={handleViewProfile}
+              >
                 <ExternalLink className="w-3.5 h-3.5" />
                 View Profile
               </Button>
@@ -149,8 +188,25 @@ export default function Messages() {
               <div ref={bottomRef} />
             </div>
 
+            {attachment && (
+              <div className="px-3 py-1.5 bg-blue-50 border-t border-blue-100 flex items-center gap-2 text-xs text-blue-700">
+                <Paperclip className="w-3.5 h-3.5" />
+                <span className="flex-1 truncate">{attachment}</span>
+                <button onClick={() => setAttachment(null)} className="text-blue-400 hover:text-blue-600">×</button>
+              </div>
+            )}
+
             <div className="p-3 bg-white border-t border-slate-200 flex gap-2">
-              <Button variant="ghost" size="icon" className="text-slate-400 hover:text-slate-600">
+              <input
+                ref={fileInputRef}
+                type="file"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+              <Button
+                variant="ghost" size="icon" className="text-slate-400 hover:text-slate-600"
+                onClick={() => fileInputRef.current?.click()}
+              >
                 <Paperclip className="w-4 h-4" />
               </Button>
               <Input
@@ -160,7 +216,7 @@ export default function Messages() {
                 onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
                 className="flex-1"
               />
-              <Button size="icon" onClick={handleSend} disabled={!draft.trim() || sendMutation.isPending}>
+              <Button size="icon" onClick={handleSend} disabled={(!draft.trim() && !attachment) || sendMutation.isPending}>
                 <Send className="w-4 h-4" />
               </Button>
             </div>
@@ -173,6 +229,62 @@ export default function Messages() {
           </div>
         )}
       </div>
+
+      {/* View Profile Dialog */}
+      <Dialog open={showProfile} onOpenChange={setShowProfile}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Profil Kreator</DialogTitle>
+          </DialogHeader>
+          {profileLoading ? (
+            <div className="space-y-3 py-4">
+              <Skeleton className="w-16 h-16 rounded-full mx-auto" />
+              <Skeleton className="h-5 w-40 mx-auto" />
+              <Skeleton className="h-4 w-32 mx-auto" />
+              <Skeleton className="h-16" />
+            </div>
+          ) : profileCreator ? (
+            <div className="py-2 space-y-4">
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-16 h-16 rounded-full bg-slate-200 overflow-hidden">
+                  {profileCreator.imageUrl ? (
+                    <img src={profileCreator.imageUrl} alt={profileCreator.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-xl font-bold text-slate-500">
+                      {profileCreator.name[0]}
+                    </div>
+                  )}
+                </div>
+                <div className="text-center">
+                  <p className="font-semibold text-slate-800">{profileCreator.name}</p>
+                  <p className="text-sm text-slate-500">{profileCreator.city} · <span className="capitalize">{profileCreator.category}</span></p>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-3 bg-slate-50 rounded-xl p-3">
+                <div className="text-center">
+                  <p className="text-sm font-bold text-slate-800">{profileCreator.followersText}</p>
+                  <p className="text-[10px] text-slate-500">Followers</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm font-bold text-slate-800">{profileCreator.engagementRate}%</p>
+                  <p className="text-[10px] text-slate-500">Engagement</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm font-bold text-slate-800">{profileCreator.rating}</p>
+                  <p className="text-[10px] text-slate-500">Rating</p>
+                </div>
+              </div>
+              {profileCreator.bio && (
+                <p className="text-sm text-slate-600 line-clamp-3">{profileCreator.bio}</p>
+              )}
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Harga per konten</span>
+                <span className="font-semibold text-slate-800">{profileCreator.priceText}</span>
+              </div>
+            </div>
+          ) : null}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import Layout from "@/components/layout/Layout";
 import Dashboard from "@/pages/Dashboard";
 import Marketplace from "@/pages/Marketplace";
 import Campaigns from "@/pages/Campaigns";
+import CampaignDetail from "@/pages/CampaignDetail";
 import Analytics from "@/pages/Analytics";
 import MediaMonitoring from "@/pages/MediaMonitoring";
 import Messages from "@/pages/Messages";
@@ -18,6 +19,7 @@ export default function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="marketplace" element={<Marketplace />} />
           <Route path="campaigns" element={<Campaigns />} />
+          <Route path="campaigns/:id" element={<CampaignDetail />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="media-monitoring" element={<MediaMonitoring />} />
           <Route path="messages" element={<Messages />} />

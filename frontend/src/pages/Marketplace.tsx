@@ -1,16 +1,19 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Search, SlidersHorizontal, Star, CheckCircle, Zap, Award,
   Instagram, Youtube, Users, Megaphone, TrendingUp, Wallet,
-  LayoutGrid, List, RotateCcw,
+  LayoutGrid, List, RotateCcw, X,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useCreators, useMarketplaceStats } from "@/hooks/useCreators";
+import { useCreateCampaign } from "@/hooks/useCampaigns";
 import type { Creator, CreatorListParams } from "@/types";
 import { formatRupiah } from "@/lib/utils";
 
@@ -227,12 +230,21 @@ function parseRange(val: string): { min?: number; max?: number } {
 export default function Marketplace() {
   const [filters, setFilters] = useState<CreatorListParams>({ page: 1, pageSize: 20 });
   const [search, setSearch] = useState("");
-  const [selectedIds, setSelectedIds] = useState<string[]>(["reza-alvaro", "nadia-aurel"]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [listView, setListView] = useState(false);
 
   const [followersVal, setFollowersVal] = useState("all");
   const [engagementVal, setEngagementVal] = useState("all");
   const [priceVal, setPriceVal] = useState("all");
+
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showCreateCampaign, setShowCreateCampaign] = useState(false);
+  const [campaignForm, setCampaignForm] = useState({ title: "", description: "", budget: "" });
+
+  const advMinPrice = useRef("");
+  const advMaxPrice = useRef("");
+
+  const createMutation = useCreateCampaign();
 
   const { data, isLoading } = useCreators({ ...filters, search: search || undefined });
   const { data: stats, isLoading: statsLoading } = useMarketplaceStats();
@@ -267,6 +279,19 @@ export default function Marketplace() {
     setPriceVal(val);
     const { min, max } = parseRange(val);
     setFilters((f) => ({ ...f, minPrice: min, maxPrice: max, page: 1 }));
+  };
+
+  const handleCreateCampaign = async () => {
+    if (!campaignForm.title) return;
+    await createMutation.mutateAsync({
+      title: campaignForm.title,
+      description: campaignForm.description,
+      budget: parseInt(campaignForm.budget) || 0,
+    });
+    setShowCreateCampaign(false);
+    setCampaignForm({ title: "", description: "", budget: "" });
+    setSelectedIds([]);
+    toast.success("Kampanye berhasil dibuat!");
   };
 
   const selectedCreators = data?.data.filter((c) => selectedIds.includes(c.id)) ?? [];
@@ -438,7 +463,10 @@ export default function Marketplace() {
           <Button variant="outline" size="sm" onClick={resetFilters} className="gap-1.5">
             <RotateCcw className="w-3.5 h-3.5" /> Reset
           </Button>
-          <Button variant="outline" size="icon" className="h-9 w-9">
+          <Button
+            variant="outline" size="icon" className="h-9 w-9"
+            onClick={() => setShowAdvanced(true)}
+          >
             <SlidersHorizontal className="w-4 h-4" />
           </Button>
           <div className="flex border border-slate-200 rounded-md overflow-hidden">
@@ -545,7 +573,7 @@ export default function Marketplace() {
                   className="h-7 w-7 text-slate-400 hover:text-red-500"
                   onClick={() => toggleSelect(c.id)}
                 >
-                  ×
+                  <X className="w-3.5 h-3.5" />
                 </Button>
               </div>
             ))
@@ -560,10 +588,137 @@ export default function Marketplace() {
                 {formatRupiah(selectedCreators.reduce((a, c) => a + c.price, 0))}
               </span>
             </div>
-            <Button className="w-full">Buat Kampanye</Button>
+            <Button className="w-full" onClick={() => setShowCreateCampaign(true)}>
+              Buat Kampanye
+            </Button>
           </div>
         )}
       </aside>
+
+      {/* Advanced Filters Dialog */}
+      <Dialog open={showAdvanced} onOpenChange={setShowAdvanced}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Filter Lanjutan</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-700">Harga Minimum (Rp)</label>
+              <Input
+                type="number"
+                placeholder="Contoh: 5000000"
+                defaultValue={advMinPrice.current}
+                onChange={(e) => { advMinPrice.current = e.target.value; }}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-700">Harga Maksimum (Rp)</label>
+              <Input
+                type="number"
+                placeholder="Contoh: 15000000"
+                defaultValue={advMaxPrice.current}
+                onChange={(e) => { advMaxPrice.current = e.target.value; }}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-700">Rating Minimum</label>
+              <Select
+                onValueChange={(v) => setFilters((f) => ({ ...f, minRating: v === "all" ? undefined : Number(v) }))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Semua Rating" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua Rating</SelectItem>
+                  <SelectItem value="3">3+</SelectItem>
+                  <SelectItem value="4">4+</SelectItem>
+                  <SelectItem value="4.5">4.5+</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center gap-3">
+              <label className="text-sm font-medium text-slate-700 flex-1">Hanya Fast Response</label>
+              <button
+                onClick={() => setFilters((f) => ({ ...f, fastResponse: !f.fastResponse }))}
+                className={`w-10 h-5 rounded-full relative transition-colors ${filters.fastResponse ? "bg-blue-600" : "bg-slate-200"}`}
+              >
+                <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${filters.fastResponse ? "right-0.5" : "left-0.5"}`} />
+              </button>
+            </div>
+            <div className="flex items-center gap-3">
+              <label className="text-sm font-medium text-slate-700 flex-1">Hanya Top Rated</label>
+              <button
+                onClick={() => setFilters((f) => ({ ...f, topRated: !f.topRated }))}
+                className={`w-10 h-5 rounded-full relative transition-colors ${filters.topRated ? "bg-blue-600" : "bg-slate-200"}`}
+              >
+                <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${filters.topRated ? "right-0.5" : "left-0.5"}`} />
+              </button>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAdvanced(false)}>Batal</Button>
+            <Button onClick={() => {
+              setFilters((f) => ({
+                ...f,
+                minPrice: advMinPrice.current ? Number(advMinPrice.current) : undefined,
+                maxPrice: advMaxPrice.current ? Number(advMaxPrice.current) : undefined,
+                page: 1,
+              }));
+              setShowAdvanced(false);
+            }}>
+              Terapkan Filter
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Campaign Dialog */}
+      <Dialog open={showCreateCampaign} onOpenChange={setShowCreateCampaign}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Buat Kampanye dengan {selectedCreators.length} Kreator</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-700">Nama Kampanye</label>
+              <Input
+                placeholder="Contoh: Kampanye Summer 2025"
+                value={campaignForm.title}
+                onChange={(e) => setCampaignForm((f) => ({ ...f, title: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-700">Deskripsi</label>
+              <Input
+                placeholder="Deskripsi singkat kampanye..."
+                value={campaignForm.description}
+                onChange={(e) => setCampaignForm((f) => ({ ...f, description: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-700">Budget (Rp)</label>
+              <Input
+                type="number"
+                placeholder={String(selectedCreators.reduce((a, c) => a + c.price, 0))}
+                value={campaignForm.budget}
+                onChange={(e) => setCampaignForm((f) => ({ ...f, budget: e.target.value }))}
+              />
+            </div>
+            <div className="bg-slate-50 rounded-lg p-3 text-sm text-slate-600">
+              <p className="font-medium mb-1">Kreator yang dipilih:</p>
+              {selectedCreators.map((c) => (
+                <span key={c.id} className="inline-block mr-2 text-xs text-slate-500">· {c.name}</span>
+              ))}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCreateCampaign(false)}>Batal</Button>
+            <Button onClick={handleCreateCampaign} disabled={createMutation.isPending || !campaignForm.title}>
+              {createMutation.isPending ? "Membuat..." : "Buat Kampanye"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Plus, Megaphone, Calendar, DollarSign, Trash2, Users } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCampaigns, useCreateCampaign, useDeleteCampaign } from "@/hooks/useCampaigns";
+import { useCampaigns, useCreateCampaign, useDeleteCampaign, useUpdateCampaign } from "@/hooks/useCampaigns";
 import { formatRupiah } from "@/lib/utils";
 import type { Campaign } from "@/types";
 
@@ -32,13 +34,6 @@ const statusLabel: Record<string, string> = {
   paused: "Dijeda",
 };
 
-const statusAction: Record<string, string> = {
-  active: "Kelola",
-  draft: "Edit Brief",
-  completed: "Lihat Laporan",
-  paused: "Lihat Detail",
-};
-
 const MOCK_KOL: Record<string, { hired: number; total: number }> = {};
 
 function getKol(c: Campaign) {
@@ -54,13 +49,18 @@ function getKol(c: Campaign) {
 }
 
 export default function Campaigns() {
+  const navigate = useNavigate();
   const { data: campaigns, isLoading } = useCampaigns();
   const createMutation = useCreateCampaign();
   const deleteMutation = useDeleteCampaign();
+  const updateMutation = useUpdateCampaign();
 
   const [tab, setTab] = useState<string>("all");
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ title: "", description: "", budget: "" });
+
+  const [editOpen, setEditOpen] = useState(false);
+  const [editForm, setEditForm] = useState({ id: "", title: "", description: "", budget: "" });
 
   const handleCreate = async () => {
     if (!form.title) return;
@@ -71,6 +71,35 @@ export default function Campaigns() {
     });
     setOpen(false);
     setForm({ title: "", description: "", budget: "" });
+    toast.success("Kampanye berhasil dibuat!");
+  };
+
+  const openEdit = (c: Campaign) => {
+    setEditForm({ id: c.id, title: c.title, description: c.description, budget: String(c.budget) });
+    setEditOpen(true);
+  };
+
+  const handleEdit = async () => {
+    if (!editForm.title) return;
+    await updateMutation.mutateAsync({
+      id: editForm.id,
+      data: { title: editForm.title, description: editForm.description, budget: parseInt(editForm.budget) || 0 },
+    });
+    setEditOpen(false);
+    toast.success("Kampanye berhasil diperbarui!");
+  };
+
+  const handleAction = (c: Campaign) => {
+    if (c.status === "active" || c.status === "paused") navigate(`/campaigns/${c.id}`);
+    else if (c.status === "draft") openEdit(c);
+    else if (c.status === "completed") navigate("/analytics");
+  };
+
+  const actionLabel: Record<string, string> = {
+    active: "Kelola",
+    draft: "Edit Brief",
+    completed: "Lihat Laporan",
+    paused: "Lihat Detail",
   };
 
   const filtered = tab === "all" ? (campaigns ?? []) : (campaigns ?? []).filter((c) => c.status === tab);
@@ -174,8 +203,11 @@ export default function Campaigns() {
                   </div>
 
                   <div className="flex gap-2 pt-1">
-                    <Button variant="outline" size="sm" className="flex-1 text-xs">
-                      {statusAction[c.status]}
+                    <Button
+                      variant="outline" size="sm" className="flex-1 text-xs"
+                      onClick={() => handleAction(c)}
+                    >
+                      {actionLabel[c.status]}
                     </Button>
                     <Button
                       variant="ghost" size="icon"
@@ -201,6 +233,7 @@ export default function Campaigns() {
         </div>
       )}
 
+      {/* Create dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
@@ -237,6 +270,45 @@ export default function Campaigns() {
             <Button variant="outline" onClick={() => setOpen(false)}>Batal</Button>
             <Button onClick={handleCreate} disabled={createMutation.isPending || !form.title}>
               {createMutation.isPending ? "Menyimpan..." : "Buat Kampanye"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit dialog */}
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Brief Kampanye</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-700">Nama Kampanye</label>
+              <Input
+                value={editForm.title}
+                onChange={(e) => setEditForm((f) => ({ ...f, title: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-700">Deskripsi</label>
+              <Input
+                value={editForm.description}
+                onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-700">Budget (Rp)</label>
+              <Input
+                type="number"
+                value={editForm.budget}
+                onChange={(e) => setEditForm((f) => ({ ...f, budget: e.target.value }))}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditOpen(false)}>Batal</Button>
+            <Button onClick={handleEdit} disabled={updateMutation.isPending || !editForm.title}>
+              {updateMutation.isPending ? "Menyimpan..." : "Simpan Perubahan"}
             </Button>
           </DialogFooter>
         </DialogContent>

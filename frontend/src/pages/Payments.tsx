@@ -1,7 +1,11 @@
+import { useState } from "react";
 import { Download, CheckCircle, Clock, XCircle, Shield, Lock, Plus } from "lucide-react";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { formatRupiah } from "@/lib/utils";
 
 const payments = [
@@ -22,7 +26,57 @@ const totalPaid = payments.filter((p) => p.status === "paid").reduce((a, p) => a
 const totalPending = payments.filter((p) => p.status === "pending").reduce((a, p) => a + p.amount, 0);
 const escrow = 120000000;
 
+function downloadBlob(content: string, filename: string, type = "text/plain") {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportCSV() {
+  const header = "Invoice,Kreator,Kampanye,Tanggal,Jumlah,Status";
+  const rows = payments.map((p) =>
+    `${p.id},${p.creator},${p.campaign},${p.date},${p.amount},${p.status}`
+  );
+  downloadBlob([header, ...rows].join("\n"), "payments.csv", "text/csv");
+  toast.success("CSV berhasil diunduh");
+}
+
+function downloadInvoice(p: typeof payments[0]) {
+  const content = [
+    "========================================",
+    "         INVOICE CREATORHUB.ID         ",
+    "========================================",
+    `Invoice No : #${p.id}`,
+    `Tanggal    : ${new Date(p.date).toLocaleDateString("id-ID")}`,
+    `Kreator    : ${p.creator}`,
+    `Kampanye   : ${p.campaign}`,
+    `Jumlah     : ${formatRupiah(p.amount)}`,
+    `Status     : ${statusConfig[p.status as keyof typeof statusConfig].label}`,
+    "========================================",
+    "Terima kasih telah menggunakan CreatorHub.id",
+  ].join("\n");
+  downloadBlob(content, `${p.id}.txt`);
+  toast.success(`Invoice ${p.id} diunduh`);
+}
+
 export default function Payments() {
+  const [showCardModal, setShowCardModal] = useState(false);
+  const [cardForm, setCardForm] = useState({ number: "", holder: "", expiry: "", cvv: "" });
+
+  const handleSaveCard = () => {
+    if (!cardForm.number || !cardForm.holder || !cardForm.expiry || !cardForm.cvv) {
+      toast.error("Semua field harus diisi");
+      return;
+    }
+    setShowCardModal(false);
+    setCardForm({ number: "", holder: "", expiry: "", cvv: "" });
+    toast.success("Kartu berhasil ditambahkan!");
+  };
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -30,7 +84,7 @@ export default function Payments() {
           <h1 className="text-2xl font-bold text-slate-800">Payments & Escrow</h1>
           <p className="text-sm text-slate-500 mt-1">Setujui pembayaran, pantau budget, dan unduh invoice</p>
         </div>
-        <Button variant="outline">
+        <Button variant="outline" onClick={exportCSV}>
           <Download className="w-4 h-4" />
           Export CSV
         </Button>
@@ -119,7 +173,10 @@ export default function Payments() {
                           </Badge>
                         </td>
                         <td className="px-4 py-3">
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-slate-700">
+                          <Button
+                            variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-slate-700"
+                            onClick={() => downloadInvoice(p)}
+                          >
                             <Download className="w-3.5 h-3.5" />
                           </Button>
                         </td>
@@ -166,7 +223,7 @@ export default function Payments() {
                 </div>
               </div>
 
-              <Button variant="outline" className="w-full mt-4 gap-2">
+              <Button variant="outline" className="w-full mt-4 gap-2" onClick={() => setShowCardModal(true)}>
                 <Plus className="w-4 h-4" />
                 Link New Corporate Card
               </Button>
@@ -174,6 +231,66 @@ export default function Payments() {
           </Card>
         </div>
       </div>
+
+      {/* Link Card Modal */}
+      <Dialog open={showCardModal} onOpenChange={setShowCardModal}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Tambah Kartu Baru</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-700">Nomor Kartu</label>
+              <Input
+                placeholder="•••• •••• •••• ••••"
+                maxLength={19}
+                value={cardForm.number}
+                onChange={(e) => {
+                  const v = e.target.value.replace(/\D/g, "").replace(/(.{4})/g, "$1 ").trim();
+                  setCardForm((f) => ({ ...f, number: v }));
+                }}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-700">Nama Pemegang Kartu</label>
+              <Input
+                placeholder="Nama sesuai kartu"
+                value={cardForm.holder}
+                onChange={(e) => setCardForm((f) => ({ ...f, holder: e.target.value.toUpperCase() }))}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-slate-700">Expired (MM/YY)</label>
+                <Input
+                  placeholder="MM/YY"
+                  maxLength={5}
+                  value={cardForm.expiry}
+                  onChange={(e) => {
+                    let v = e.target.value.replace(/\D/g, "");
+                    if (v.length > 2) v = v.slice(0, 2) + "/" + v.slice(2, 4);
+                    setCardForm((f) => ({ ...f, expiry: v }));
+                  }}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-slate-700">CVV</label>
+                <Input
+                  placeholder="•••"
+                  type="password"
+                  maxLength={4}
+                  value={cardForm.cvv}
+                  onChange={(e) => setCardForm((f) => ({ ...f, cvv: e.target.value.replace(/\D/g, "") }))}
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCardModal(false)}>Batal</Button>
+            <Button onClick={handleSaveCard}>Simpan Kartu</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
