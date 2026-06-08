@@ -24,7 +24,14 @@ export interface CreatorListParams {
   platform?: string;
   minFollowers?: number;
   maxFollowers?: number;
+  minEngagement?: number;
+  maxEngagement?: number;
+  minPrice?: number;
+  maxPrice?: number;
   minRating?: number;
+  verified?: boolean;
+  fastResponse?: boolean;
+  topRated?: boolean;
   search?: string;
   sortBy?: string;
   sortDir?: string;
@@ -38,6 +45,13 @@ export interface CreatorListResponse {
   page: number;
   pageSize: number;
   totalPages: number;
+}
+
+export interface MarketplaceStats {
+  totalCreators: number;
+  activeCampaigns: number;
+  avgEngagementRate: number;
+  totalBudget: number;
 }
 
 export interface Campaign {

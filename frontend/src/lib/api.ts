@@ -3,6 +3,7 @@ import type {
   Creator,
   CreatorListParams,
   CreatorListResponse,
+  MarketplaceStats,
   Campaign,
   CreateCampaignRequest,
   ChatChannel,
@@ -18,6 +19,8 @@ export const creatorsApi = {
     api.get<CreatorListResponse>("/creators", { params }).then((r) => r.data),
   getById: (id: string) =>
     api.get<Creator>(`/creators/${id}`).then((r) => r.data),
+  stats: () =>
+    api.get<MarketplaceStats>("/creators/stats").then((r) => r.data),
 };
 
 export const campaignsApi = {

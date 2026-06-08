@@ -44,6 +44,18 @@ func (h *CreatorHandler) List(w http.ResponseWriter, r *http.Request) {
 	if v := q.Get("minRating"); v != "" {
 		params.MinRating, _ = strconv.ParseFloat(v, 64)
 	}
+	if v := q.Get("minEngagement"); v != "" {
+		params.MinEngagement, _ = strconv.ParseFloat(v, 64)
+	}
+	if v := q.Get("maxEngagement"); v != "" {
+		params.MaxEngagement, _ = strconv.ParseFloat(v, 64)
+	}
+	if v := q.Get("minPrice"); v != "" {
+		params.MinPrice, _ = strconv.ParseInt(v, 10, 64)
+	}
+	if v := q.Get("maxPrice"); v != "" {
+		params.MaxPrice, _ = strconv.ParseInt(v, 10, 64)
+	}
 	if v := q.Get("verified"); v != "" {
 		b := v == "true"
 		params.Verified = &b
@@ -63,6 +75,15 @@ func (h *CreatorHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusOK, result)
+}
+
+func (h *CreatorHandler) Stats(w http.ResponseWriter, r *http.Request) {
+	stats, err := h.repo.Stats(r.Context())
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	writeJSON(w, http.StatusOK, stats)
 }
 
 func (h *CreatorHandler) GetByID(w http.ResponseWriter, r *http.Request) {

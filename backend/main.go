@@ -54,6 +54,7 @@ func main() {
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Route("/creators", func(r chi.Router) {
 			r.Get("/", creatorHandler.List)
+			r.Get("/stats", creatorHandler.Stats)
 			r.Get("/{id}", creatorHandler.GetByID)
 		})
 		r.Route("/campaigns", func(r chi.Router) {

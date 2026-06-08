@@ -60,6 +60,26 @@ func (r *CreatorRepository) List(ctx context.Context, params models.CreatorListP
 		args = append(args, params.MinRating)
 		argIdx++
 	}
+	if params.MinEngagement > 0 {
+		where = append(where, fmt.Sprintf("c.engagement_rate >= $%d", argIdx))
+		args = append(args, params.MinEngagement)
+		argIdx++
+	}
+	if params.MaxEngagement > 0 {
+		where = append(where, fmt.Sprintf("c.engagement_rate <= $%d", argIdx))
+		args = append(args, params.MaxEngagement)
+		argIdx++
+	}
+	if params.MinPrice > 0 {
+		where = append(where, fmt.Sprintf("c.price >= $%d", argIdx))
+		args = append(args, params.MinPrice)
+		argIdx++
+	}
+	if params.MaxPrice > 0 {
+		where = append(where, fmt.Sprintf("c.price <= $%d", argIdx))
+		args = append(args, params.MaxPrice)
+		argIdx++
+	}
 	if params.Platform != "" {
 		where = append(where, fmt.Sprintf("EXISTS (SELECT 1 FROM creator_platforms cp WHERE cp.creator_id = c.id AND cp.platform = $%d)", argIdx))
 		args = append(args, params.Platform)
@@ -158,6 +178,18 @@ func (r *CreatorRepository) List(ctx context.Context, params models.CreatorListP
 		PageSize:   params.PageSize,
 		TotalPages: totalPages,
 	}, nil
+}
+
+func (r *CreatorRepository) Stats(ctx context.Context) (*models.MarketplaceStats, error) {
+	var s models.MarketplaceStats
+	err := r.db.QueryRow(ctx, `
+		SELECT
+			(SELECT COUNT(*) FROM creators) AS total_creators,
+			(SELECT COUNT(*) FROM campaigns WHERE status = 'active') AS active_campaigns,
+			(SELECT COALESCE(AVG(engagement_rate), 0) FROM creators) AS avg_engagement,
+			(SELECT COALESCE(SUM(budget), 0) FROM campaigns) AS total_budget
+	`).Scan(&s.TotalCreators, &s.ActiveCampaigns, &s.AvgEngagementRate, &s.TotalBudget)
+	return &s, err
 }
 
 func (r *CreatorRepository) GetByID(ctx context.Context, id string) (*models.Creator, error) {

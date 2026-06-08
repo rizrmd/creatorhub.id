@@ -17,3 +17,11 @@ export function useCreator(id: string) {
     enabled: !!id,
   });
 }
+
+export function useMarketplaceStats() {
+  return useQuery({
+    queryKey: ["marketplace-stats"],
+    queryFn: () => creatorsApi.stats(),
+    staleTime: 60_000,
+  });
+}

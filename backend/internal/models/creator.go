@@ -27,6 +27,9 @@ type CreatorListParams struct {
 	MinFollowers  int64
 	MaxFollowers  int64
 	MinEngagement float64
+	MaxEngagement float64
+	MinPrice      int64
+	MaxPrice      int64
 	MinRating     float64
 	Verified      *bool
 	FastResponse  *bool
@@ -36,6 +39,13 @@ type CreatorListParams struct {
 	SortDir       string
 	Page          int
 	PageSize      int
+}
+
+type MarketplaceStats struct {
+	TotalCreators      int64   `json:"totalCreators"`
+	ActiveCampaigns    int64   `json:"activeCampaigns"`
+	AvgEngagementRate  float64 `json:"avgEngagementRate"`
+	TotalBudget        int64   `json:"totalBudget"`
 }
 
 type CreatorListResponse struct {
