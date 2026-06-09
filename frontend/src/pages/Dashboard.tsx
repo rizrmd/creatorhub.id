@@ -29,7 +29,8 @@ const TOP_CREATORS = [
     rating: 4.9,
     earnings: "Rp 18.2k",
     avgFee: "avg fee",
-    avatarColor: "#3B82F6"
+    avatarColor: "#3B82F6",
+    rankColor: "#F59E0B"
   },
   {
     rank: 2,
@@ -39,7 +40,8 @@ const TOP_CREATORS = [
     rating: 4.8,
     earnings: "Rp 15.3k",
     avgFee: "avg fee",
-    avatarColor: "#22C55E"
+    avatarColor: "#22C55E",
+    rankColor: "#6B7280"
   },
   {
     rank: 3,
@@ -49,7 +51,8 @@ const TOP_CREATORS = [
     rating: 4.7,
     earnings: "Rp 12.1k",
     avgFee: "avg fee",
-    avatarColor: "#A855F7"
+    avatarColor: "#A855F7",
+    rankColor: "#F87171"
   },
 ];
 
@@ -61,10 +64,10 @@ const RECENT_ACTIVITY = [
 ];
 
 const QUICK_ACTIONS = [
-  { label: "New Campaign", icon: Plus, href: "/campaigns", color: "#3B82F6" },
-  { label: "Find Creators", icon: User, href: "/marketplace", color: "#22C55E" },
-  { label: "Launch Ads", icon: Rocket, href: "/campaigns", color: "#A855F7" },
-  { label: "View Reports", icon: TrendingUp, href: "/analytics", color: "#A855F7" },
+  { label: "New Campaign", subtitle: "Start a fresh brief", icon: Plus, href: "/campaigns", color: "#3B82F6" },
+  { label: "Find Creators", subtitle: "Browse talent pool", icon: User, href: "/marketplace", color: "#22C55E" },
+  { label: "Launch Ads", subtitle: "Boost your content", icon: Rocket, href: "/campaigns", color: "#A855F7" },
+  { label: "View Reports", subtitle: "Check performance", icon: TrendingUp, href: "/analytics", color: "#A855F7" },
 ];
 
 export default function Dashboard() {
@@ -207,13 +210,16 @@ export default function Dashboard() {
             <div className="grid grid-cols-2 gap-3">
               {QUICK_ACTIONS.map((action) => (
                 <button key={action.label} onClick={() => navigate(action.href)}
-                  className="flex flex-col items-center gap-2 p-4 rounded-xl border transition-all hover:shadow-md"
+                  className="flex items-center gap-3 p-3 rounded-xl border transition-all hover:shadow-md"
                   style={{ borderColor: "var(--ch-border)", background: "#F9FAFB" }}
                 >
-                  <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: action.color + "15" }}>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ background: action.color + "15" }}>
                     <action.icon style={{ width: 20, height: 20, color: action.color }} />
                   </div>
-                  <span className="text-[12px] font-semibold text-center leading-tight" style={{ color: "var(--ch-text)" }}>{action.label}</span>
+                  <div className="text-left">
+                    <span className="text-[12px] font-semibold leading-tight" style={{ color: "var(--ch-text)" }}>{action.label}</span>
+                    <p className="text-[10px] mt-0.5" style={{ color: "#6B7280" }}>{action.subtitle}</p>
+                  </div>
                 </button>
               ))}
             </div>
@@ -227,8 +233,8 @@ export default function Dashboard() {
             <div className="space-y-3">
               {TOP_CREATORS.map((creator, index) => (
                 <div key={index} className="flex items-center gap-3 p-3 rounded-lg" style={{ background: "#F9FAFB" }}>
-                  {/* Ranking Number - consistent color */}
-                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[11px] font-bold shrink-0" style={{ background: "#6B7280" }}>
+                  {/* Ranking Number - individual colors */}
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[11px] font-bold shrink-0" style={{ background: creator.rankColor }}>
                     {creator.rank}
                   </div>
                   {/* Creator Avatar */}
