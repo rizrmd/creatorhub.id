@@ -97,11 +97,11 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
   if (listView) {
     return (
       <div
-        className="cursor-pointer transition-all rounded-xl border"
+        className="cursor-pointer transition-all rounded-[14px] border"
         style={{
           background: "var(--ch-surface)",
           borderColor: selected ? "var(--ch-primary)" : "var(--ch-border)",
-          boxShadow: selected ? "0 0 0 2px var(--ch-primary)" : "var(--ch-shadow-sm)",
+          boxShadow: selected ? "0 0 0 3px rgba(37,99,235,.15)" : "var(--ch-shadow-sm)",
         }}
         onClick={onCardClick}
       >

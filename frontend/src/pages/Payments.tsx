@@ -113,7 +113,7 @@ export default function Payments() {
 
       {/* Wallet hero */}
       <div className="rounded-2xl p-6 text-white relative overflow-hidden"
-        style={{ background: "linear-gradient(135deg, #1e3a5f 0%, #2563EB 55%, #0369a1 100%)" }}>
+        style={{ background: "linear-gradient(135deg, #0F172A 0%, #1E293B 100%)" }}>
         <div className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-10 bg-white -translate-y-16 translate-x-16" />
         <div className="absolute bottom-0 left-0 w-40 h-40 rounded-full opacity-10 bg-white translate-y-12 -translate-x-12" />
         <div className="relative">
@@ -173,50 +173,53 @@ export default function Payments() {
             <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>Riwayat Transaksi</p>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
-                  {["Invoice", "Kreator", "Kampanye", "Tanggal", "Jumlah", "Status", ""].map((h, i) => (
-                    <th key={i} className={`px-4 py-3 text-[11px] font-semibold ${i >= 5 ? "text-center" : i >= 3 ? "text-right" : "text-left"} ${i === 2 ? "hidden sm:table-cell" : ""} ${i === 3 ? "hidden md:table-cell" : ""}`}
-                      style={{ color: "var(--ch-text-muted)" }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {payments.map((p) => {
-                  const cfg = statusChip[p.status as keyof typeof statusChip];
-                  const Icon = cfg.icon;
-                  return (
-                    <tr key={p.id} className="border-b transition-colors hover:bg-slate-50"
-                      style={{ borderColor: "var(--ch-border)" }}>
-                      <td className="px-4 py-3 text-[12px] font-mono" style={{ color: "var(--ch-text-muted)" }}>#{p.id}</td>
-                      <td className="px-4 py-3 text-[13px] font-semibold" style={{ color: "var(--ch-text)" }}>{p.creator}</td>
-                      <td className="px-4 py-3 text-[12px] hidden sm:table-cell" style={{ color: "var(--ch-text-muted)" }}>{p.campaign}</td>
-                      <td className="px-4 py-3 text-[12px] hidden md:table-cell text-right" style={{ color: "var(--ch-text-muted)" }}>
-                        {new Date(p.date).toLocaleDateString("id-ID")}
-                      </td>
-                      <td className="px-4 py-3 text-[13px] font-semibold text-right" style={{ color: "var(--ch-text)" }}>
-                        {formatRupiah(p.amount)}
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold"
-                          style={{ background: cfg.bg, color: cfg.fg }}>
-                          <Icon style={{ width: 10, height: 10 }} />
-                          {cfg.label}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <button className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:bg-slate-100"
-                          style={{ color: "var(--ch-text-soft)" }}
-                          onClick={() => downloadInvoice(p)}>
-                          <Download style={{ width: 13, height: 13 }} />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <div className="min-w-[800px]">
+              {/* Header */}
+              <div className="grid gap-4 px-4 py-3 border-b" style={{
+                gridTemplateColumns: "1.2fr 0.9fr 1.8fr 1.1fr 1fr 0.9fr auto",
+                borderColor: "var(--ch-border)"
+              }}>
+                {["Invoice", "Kreator", "Kampanye", "Tanggal", "Jumlah", "Status", ""].map((h, i) => (
+                  <div key={i} className={`font-semibold ${i >= 3 ? "text-right" : "text-left"} ${i === 2 ? "hidden sm:block" : ""}`}
+                    style={{ color: "var(--ch-text-muted)", fontSize: "10.5px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.4px" }}>
+                    {h}
+                  </div>
+                ))}
+              </div>
+              {/* Body */}
+              {payments.map((p) => {
+                const cfg = statusChip[p.status as keyof typeof statusChip];
+                const Icon = cfg.icon;
+                return (
+                  <div key={p.id} className="grid gap-4 px-4 py-3 border-b transition-colors hover:bg-[#F8FAFC]"
+                    style={{ borderColor: "var(--ch-border)", gridTemplateColumns: "1.2fr 0.9fr 1.8fr 1.1fr 1fr 0.9fr auto" }}>
+                    <div className="text-[12px] font-mono" style={{ color: "var(--ch-text-muted)" }}>#{p.id}</div>
+                    <div className="text-[13px] font-semibold" style={{ color: "var(--ch-text)" }}>{p.creator}</div>
+                    <div className="text-[12px] hidden sm:block" style={{ color: "var(--ch-text-muted)" }}>{p.campaign}</div>
+                    <div className="text-[12px] text-right" style={{ color: "var(--ch-text-muted)" }}>
+                      {new Date(p.date).toLocaleDateString("id-ID")}
+                    </div>
+                    <div className="text-[13px] font-semibold text-right" style={{ color: "var(--ch-text)" }}>
+                      {formatRupiah(p.amount)}
+                    </div>
+                    <div className="text-center">
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold"
+                        style={{ background: cfg.bg, color: cfg.fg }}>
+                        <Icon style={{ width: 10, height: 10 }} />
+                        {cfg.label}
+                      </span>
+                    </div>
+                    <div>
+                      <button className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:bg-slate-100"
+                        style={{ color: "var(--ch-text-soft)" }}
+                        onClick={() => downloadInvoice(p)}>
+                        <Download style={{ width: 13, height: 13 }} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 

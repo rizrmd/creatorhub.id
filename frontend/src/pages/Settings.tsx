@@ -152,7 +152,8 @@ export default function Settings() {
 
       <div className="flex gap-6">
         {/* Sidebar tabs */}
-        <div className="w-52 shrink-0 space-y-0.5">
+        <div className="w-52 shrink-0 bg-white border border-[var(--ch-border)] rounded-xl p-2 space-y-0.5"
+          style={{ borderColor: "var(--ch-border)" }}>
           {TABS.map((t) => {
             const Icon = t.icon;
             const active = activeTab === t.key;
@@ -160,7 +161,7 @@ export default function Settings() {
               <button
                 key={t.key}
                 onClick={() => setActiveTab(t.key)}
-                className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-semibold transition-colors text-left"
+                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-semibold transition-colors text-left"
                 style={active
                   ? { background: "var(--ch-primary-50)", color: "var(--ch-primary)" }
                   : { color: "var(--ch-text-muted)" }}
@@ -339,9 +340,10 @@ export default function Settings() {
                           setNotifications((n) => ({ ...n, [item.key]: !n[item.key] }));
                           toast.success(`${item.label} ${!notifications[item.key] ? "aktif" : "nonaktif"}`);
                         }}
-                        className="w-10 h-5 rounded-full relative shrink-0 transition-colors"
+                        className="w-[40px] h-[22px] rounded-full relative shrink-0 transition-colors"
                         style={{ background: notifications[item.key] ? "var(--ch-primary)" : "var(--ch-border)" }}>
-                        <span className="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform"
+                        <span className="absolute top-0.5 w-[18px] h-[18px] bg-white rounded-full shadow transition-transform"
+                          style={{ boxShadow: "0 1px 3px rgba(15,23,42,0.2)" }}
                           style={{ [notifications[item.key] ? "right" : "left"]: "2px" }} />
                       </button>
                     </div>

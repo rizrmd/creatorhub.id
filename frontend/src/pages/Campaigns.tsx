@@ -37,7 +37,7 @@ function getKol(c: Campaign) {
 function StatusBadge({ status }: { status: CampaignStatus }) {
   const s = CAMPAIGN_STATUS[status] ?? CAMPAIGN_STATUS.draft;
   return (
-    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold"
+    <span className="inline-flex items-center gap-1.25 px-2.25 py-0.75 rounded-full text-[11px] font-bold whitespace-nowrap flex-shrink-0"
       style={{ background: s.bg, color: s.fg }}>
       <span className="w-1.5 h-1.5 rounded-full" style={{ background: s.dot }} />
       {s.label}
@@ -171,7 +171,7 @@ export default function Campaigns() {
             const delivDone  = c.deliverables?.completed ?? 0;
             return (
               <div key={c.id}
-                className="rounded-xl border overflow-hidden transition-all cursor-pointer"
+                className="rounded-[14px] border overflow-hidden transition-all cursor-pointer hover:shadow-lg hover:-translate-y-0.5 hover:border-blue-200"
                 style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)", boxShadow: "var(--ch-shadow-sm)" }}
                 onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "var(--ch-shadow-md)")}
                 onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "var(--ch-shadow-sm)")}
@@ -181,7 +181,7 @@ export default function Campaigns() {
                 <div className="p-5">
                   <div className="flex items-start justify-between gap-2 mb-3">
                     <div className="min-w-0">
-                      <p className="text-[15px] font-bold leading-snug" style={{ color: "var(--ch-text)" }}>{c.title}</p>
+                      <p className="text-[16px] font-bold leading-tight tracking-[-0.2px]" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{c.title}</p>
                       {c.brand && <p className="text-[12px] mt-0.5" style={{ color: "var(--ch-text-muted)" }}>{c.brand}</p>}
                     </div>
                     <StatusBadge status={c.status as CampaignStatus} />
@@ -221,7 +221,7 @@ export default function Campaigns() {
                         </span>
                         <span className="font-semibold">{delivDone}/{delivTotal}</span>
                       </div>
-                      <div className="w-full rounded-full h-1.5" style={{ background: "var(--ch-border)" }}>
+                      <div className="w-full rounded-full h-1.5" style={{ background: "#F1F5F9" }}>
                         <div className="h-1.5 rounded-full transition-all" style={{ width: `${delivTotal > 0 ? (delivDone / delivTotal) * 100 : 0}%`, background: `hsl(${hue}, 70%, 55%)` }} />
                       </div>
                     </div>
@@ -234,7 +234,7 @@ export default function Campaigns() {
                         <span>Progress KOL</span>
                         <span className="font-semibold">{pct}%</span>
                       </div>
-                      <div className="w-full rounded-full h-1.5" style={{ background: "var(--ch-border)" }}>
+                      <div className="w-full rounded-full h-1.5" style={{ background: "#F1F5F9" }}>
                         <div className="h-1.5 rounded-full transition-all" style={{ width: `${pct}%`, background: `hsl(${hue}, 70%, 55%)` }} />
                       </div>
                     </div>

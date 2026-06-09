@@ -6,10 +6,10 @@ import {
 } from "recharts";
 
 const metrics = [
-  { label: "Total Impressi", value: "4.2M", change: "+15.2%", icon: Eye, hue: 220, positive: true },
-  { label: "Campaign ROI", value: "3.8x", change: "+0.4x", icon: TrendingUp, hue: 28, positive: true },
-  { label: "Avg. Engagement", value: "4.62%", change: "+0.75%", icon: MousePointer, hue: 188, positive: true },
-  { label: "Cost Per Engagement", value: "Rp 12.400", change: "-8.2%", icon: DollarSign, hue: 42, positive: true },
+  { label: "Total Reach", value: "8.4M", change: "+15.2% vs last month", icon: Eye, hue: 220, positive: true },
+  { label: "Avg. Engagement", value: "4.62%", change: "+0.75% vs last month", icon: MousePointer, hue: 188, positive: true },
+  { label: "Impressions", value: "12.8M", change: "+22.1% vs last month", icon: TrendingUp, hue: 28, positive: true },
+  { label: "ROAS", value: "3.8x", change: "+0.4x vs last month", icon: DollarSign, hue: 42, positive: true },
 ];
 
 const growthData = [
@@ -54,36 +54,94 @@ const maxCount = Math.max(...cities.map((c) => c.count));
 
 export default function Analytics() {
   const [hoveredCity, setHoveredCity] = useState<string | null>(null);
+  const [dateRange, setDateRange] = useState("30d");
+
+  const DATE_RANGES = [
+    { value: "7d", label: "7d" },
+    { value: "30d", label: "30d" },
+    { value: "90d", label: "90d" },
+    { value: "YTD", label: "YTD" },
+  ];
 
   return (
     <div className="p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
-      <div>
-        <h1 className="text-[28px] font-extrabold tracking-[-0.5px]"
-          style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-          Analytics Insights
-        </h1>
-        <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
-          Analisis performa, jangkauan, dan ROI seluruh kampanye
-        </p>
+      {/* Header with date selector */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-[28px] font-extrabold tracking-[-0.5px]"
+            style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            Analytics
+          </h1>
+          <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
+            Reach, engagement, ROI, and creator distribution across Indonesia.
+          </p>
+        </div>
+
+        {/* Date range selector */}
+        <div className="flex items-center gap-2">
+          {DATE_RANGES.map((range) => (
+            <button
+              key={range.value}
+              onClick={() => setDateRange(range.value)}
+              className={`px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-colors ${
+                dateRange === range.value
+                  ? "text-white"
+                  : "text-[var(--ch-text-muted)]"
+              }`}
+              style={{
+                background: dateRange === range.value ? "var(--ch-primary)" : "var(--ch-bg)",
+                border: dateRange === range.value ? "none" : "1px solid var(--ch-border)",
+              }}
+              onMouseEnter={(e) => {
+                if (dateRange !== range.value) {
+                  (e.currentTarget as HTMLElement).style.borderColor = "var(--ch-primary)";
+                  (e.currentTarget as HTMLElement).style.color = "var(--ch-primary)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (dateRange !== range.value) {
+                  (e.currentTarget as HTMLElement).style.borderColor = "var(--ch-border)";
+                  (e.currentTarget as HTMLElement).style.color = "var(--ch-text-muted)";
+                }
+              }}
+            >
+              {range.label}
+            </button>
+          ))}
+          <button
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-semibold border transition-colors"
+            style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)", background: "var(--ch-surface)" }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.borderColor = "var(--ch-primary)";
+              (e.currentTarget as HTMLElement).style.color = "var(--ch-primary)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.borderColor = "var(--ch-border)";
+              (e.currentTarget as HTMLElement).style.color = "var(--ch-text-muted)";
+            }}
+          >
+            Export
+          </button>
+        </div>
       </div>
 
       {/* KPI tiles */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {metrics.map((m) => (
           <div key={m.label}
-            className="rounded-xl border p-5 flex items-start justify-between"
-            style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+            className="rounded-[14px] border p-[18px] flex items-start justify-between"
+            style={{ background: "#FFFFFF", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
             <div>
-              <p className="text-[12px] font-medium" style={{ color: "var(--ch-text-muted)" }}>{m.label}</p>
-              <p className="text-[22px] font-extrabold mt-1" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{m.value}</p>
+              <p className="text-[13px] font-medium" style={{ color: "var(--ch-text-muted)" }}>{m.label}</p>
+              <p className="text-[26px] font-extrabold mt-1 tracking-[-0.5px]" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{m.value}</p>
               <span className="inline-flex items-center gap-1 text-[11px] font-bold mt-2 px-2 py-0.5 rounded-full"
                 style={{ background: m.positive ? "#DCFCE7" : "#FEE2E2", color: m.positive ? "#16A34A" : "#DC2626" }}>
                 {m.change}
               </span>
             </div>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+            <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
               style={{ background: `hsl(${m.hue}, 80%, 95%)`, color: `hsl(${m.hue}, 70%, 45%)` }}>
-              <m.icon style={{ width: 18, height: 18 }} />
+              <m.icon style={{ width: 24, height: 24 }} />
             </div>
           </div>
         ))}
@@ -210,6 +268,81 @@ export default function Analytics() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Demographics & Heatmap */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Demographics Card */}
+        <div className="rounded-[14px] border p-5"
+          style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+          <p className="text-[15px] font-bold mb-4" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            Audience Demographics
+          </p>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <span className="text-[13px] font-semibold" style={{ color: "var(--ch-text)" }}>Female</span>
+              <div className="flex-1 h-3 rounded-full" style={{ background: "#E5E7EB" }}>
+                <div className="h-3 rounded-full" style={{ width: "62%", background: "#EC4899" }} />
+              </div>
+              <span className="text-[13px] font-bold" style={{ color: "#EC4899" }}>62%</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-[13px] font-semibold" style={{ color: "var(--ch-text)" }}>Male</span>
+              <div className="flex-1 h-3 rounded-full" style={{ background: "#E5E7EB" }}>
+                <div className="h-3 rounded-full" style={{ width: "38%", background: "#2563EB" }} />
+              </div>
+              <span className="text-[13px] font-bold" style={{ color: "#2563EB" }}>38%</span>
+            </div>
+          </div>
+          <p className="text-[12px] mt-4" style={{ color: "var(--ch-text-muted)" }}>
+            Based on audience data from all active campaigns
+          </p>
+        </div>
+
+        {/* Best Posting Times Heatmap */}
+        <div className="rounded-[14px] border p-5"
+          style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+          <p className="text-[15px] font-bold mb-4" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            Best Posting Times
+          </p>
+          <div className="space-y-1">
+            {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
+              <div key={day} className="flex items-center gap-1">
+                <span className="text-[11px] font-medium w-8" style={{ color: "var(--ch-text-muted)" }}>{day}</span>
+                {Array.from({ length: 24 }).map((_, hour) => {
+                  const intensity = Math.random();
+                  const bgColor = intensity > 0.7 ? "#16A34A" : intensity > 0.4 ? "#FBBF24" : "#E5E7EB";
+                  return (
+                    <div
+                      key={hour}
+                      className="h-5 rounded-sm flex-1"
+                      style={{ background: bgColor }}
+                      title={`${hour}:00 - ${hour + 1}:00`}
+                    />
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center justify-between mt-3 text-[11px]" style={{ color: "var(--ch-text-muted)" }}>
+            <span>12 AM</span>
+            <div className="flex items-center gap-2">
+              <span className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded-sm" style={{ background: "#E5E7EB" }} />
+                Low
+              </span>
+              <span className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded-sm" style={{ background: "#FBBF24" }} />
+                Medium
+              </span>
+              <span className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded-sm" style={{ background: "#16A34A" }} />
+                High
+              </span>
+            </div>
+            <span>11 PM</span>
           </div>
         </div>
       </div>

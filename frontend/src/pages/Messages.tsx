@@ -108,7 +108,7 @@ export default function Messages() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-64px)]">
+    <div className="flex h-[calc(100vh-70px)]">
       {/* ─── Left: Thread list ─────────────────────────────── */}
       <aside className="w-[300px] shrink-0 border-r flex flex-col"
         style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
@@ -159,7 +159,7 @@ export default function Messages() {
               const active = activeChannelId === ch.id;
               return (
                 <button key={ch.id} onClick={() => openChannel(ch.id)}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-left border-b transition-colors"
+                  className="w-full flex items-center gap-2.5 px-3.5 py-3 text-left border-b transition-colors"
                   style={{
                     borderColor: "var(--ch-border)",
                     background: active ? "var(--ch-primary-50)" : "transparent",
@@ -252,10 +252,10 @@ export default function Messages() {
               ) : messages && messages.length > 0 ? (
                 messages.map((msg) => (
                   <div key={msg.id} className={`flex ${msg.senderType === "user" ? "justify-end" : "justify-start"}`}>
-                    <div className="max-w-[65%] px-4 py-2.5 rounded-2xl text-[13px]"
+                    <div className="max-w-[65%] px-[14px] py-2.5 text-[13.5px]"
                       style={msg.senderType === "user"
-                        ? { background: "var(--ch-primary)", color: "white", borderBottomRightRadius: 4 }
-                        : { background: "var(--ch-surface)", color: "var(--ch-text)", border: "1px solid var(--ch-border)", borderBottomLeftRadius: 4, boxShadow: "var(--ch-shadow-sm)" }}>
+                        ? { background: "linear-gradient(135deg, #2563EB, #1D4ED8)", color: "white", borderRadius: "14px 14px 4px 14px" }
+                        : { background: "var(--ch-surface)", color: "var(--ch-text)", border: "1px solid var(--ch-border)", borderRadius: "14px 14px 14px 4px", boxShadow: "var(--ch-shadow-sm)" }}>
                       {msg.content}
                     </div>
                   </div>
@@ -279,7 +279,7 @@ export default function Messages() {
             )}
 
             {/* Input */}
-            <div className="p-3 border-t flex gap-2"
+            <div className="px-4.5 py-2.5 border-t flex gap-2"
               style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
               <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} />
               <button
@@ -329,7 +329,7 @@ export default function Messages() {
             </p>
             <div className="flex items-center gap-3 mb-3">
               <div className="relative">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-[15px] font-bold overflow-hidden"
+                <div className="w-[70px] h-[70px] rounded-full flex items-center justify-center text-white text-[15px] font-bold overflow-hidden"
                   style={{ background: `hsl(${getHue(activeChannel.creatorName)}, 65%, 50%)` }}>
                   {activeChannel.creatorName[0]}
                 </div>

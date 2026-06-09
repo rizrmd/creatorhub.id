@@ -133,6 +133,7 @@ export default function Login() {
                 required
                 autoFocus
                 disabled={loading}
+                className="focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
 
@@ -146,7 +147,7 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={loading}
-                  className="pr-10"
+                  className="pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
                 <button
                   type="button"
@@ -172,7 +173,7 @@ export default function Login() {
 
             <Button
               type="submit"
-              className="w-full mt-2 font-bold text-[14px]"
+              className="w-full mt-2 font-bold text-[14px] transition-all duration-200 hover:opacity-90"
               disabled={loading}
               style={{ background: loading ? "var(--ch-border)" : "var(--ch-primary)", boxShadow: loading ? "none" : "var(--ch-nav-shadow)" }}>
               {loading ? "Masuk..." : "Masuk ke CreatorHub"}

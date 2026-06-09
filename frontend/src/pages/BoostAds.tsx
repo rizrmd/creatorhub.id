@@ -89,9 +89,9 @@ export default function BoostAds() {
 
   return (
     <div className="p-6 space-y-5" style={{ background: "var(--ch-bg)" }}>
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
+      {/* Header with Quota Cards */}
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex-1">
           <h1 className="text-[28px] font-extrabold tracking-[-0.5px] flex items-center gap-2.5"
             style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             <span className="w-9 h-9 rounded-xl flex items-center justify-center"
@@ -104,12 +104,54 @@ export default function BoostAds() {
             Amplifikasi konten kreator dengan iklan berbayar lintas platform
           </p>
         </div>
+
+        {/* Quota Cards */}
+        <div className="flex gap-3">
+          <div className="rounded-xl border px-4 py-2.5"
+            style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+            <p className="text-[11px] font-medium" style={{ color: "var(--ch-text-muted)" }}>Remaining Budget</p>
+            <p className="text-[15px] font-bold" style={{ color: "var(--ch-text)" }}>Rp 15jt</p>
+          </div>
+          <div className="rounded-xl border px-4 py-2.5"
+            style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+            <p className="text-[11px] font-medium" style={{ color: "var(--ch-text-muted)" }}>Remaining Quota</p>
+            <p className="text-[15px] font-bold" style={{ color: "var(--ch-text)" }}>847 ad clicks</p>
+          </div>
+        </div>
+
         <div className="flex items-center gap-2 text-[12px]"
           style={{ color: "var(--ch-text-muted)" }}>
           <TrendingUp style={{ width: 14, height: 14, color: "#16A34A" }} />
           <span style={{ color: "#16A34A", fontWeight: 600 }}>+34%</span>
           rata-rata peningkatan reach
         </div>
+      </div>
+
+      {/* 3-Step Stepper */}
+      <div className="flex items-center justify-between mb-4">
+        {[
+          { key: "campaign", label: "Campaign", completed: true },
+          { key: "adset", label: "Ad Set", completed: false },
+          { key: "creative", label: "Ads Creative", completed: false },
+        ].map((step, index) => (
+          <div key={step.key} className="flex-1 flex items-center gap-2">
+            <div className="flex items-center gap-2">
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold transition-colors ${
+                step.completed ? "text-white" : "text-[var(--ch-text-muted)]"
+              }`}
+                style={{ background: step.completed ? "#16A34A" : "var(--ch-border)" }}>
+                {step.completed ? "✓" : index + 1}
+              </div>
+              <span className={`text-[13px] font-semibold ${step.completed ? "" : "text-[var(--ch-text-muted)]"}`}
+                style={{ color: step.completed ? "var(--ch-text)" : undefined }}>
+                {step.label}
+              </span>
+            </div>
+            {index < 2 && (
+              <div className="flex-1 h-0.5 mx-2" style={{ background: step.completed ? "#16A34A" : "var(--ch-border)" }} />
+            )}
+          </div>
+        ))}
       </div>
 
       {/* Tabs */}
@@ -135,8 +177,36 @@ export default function BoostAds() {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           {/* Left: form */}
           <div className="lg:col-span-3 space-y-5">
+            {/* Campaign Objective Selection */}
+            <div className="rounded-[14px] border p-[22px]"
+              style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+              <p className="text-[13px] font-bold mb-3" style={{ color: "var(--ch-text)" }}>Campaign Objective</p>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { key: "awareness", label: "Awareness", icon: "👁️", desc: "Maximum reach and impressions" },
+                  { key: "engagement", label: "Engagement", icon: "💬", desc: "Drive interactions and conversations" },
+                  { key: "traffic", label: "Traffic", icon: "🔗", desc: "Send users to your website" },
+                  { key: "conversions", label: "Conversions", icon: "🎯", desc: "Drive sales and sign-ups" },
+                ].map((objective) => (
+                  <button
+                    key={objective.key}
+                    className="p-3 rounded-xl border text-left transition-all hover:shadow-md"
+                    style={{ borderColor: "var(--ch-border)", background: "var(--ch-bg)" }}
+                    onMouseEnter={(e) => (e.currentTarget as HTMLElement).style.borderColor = "var(--ch-primary)"}
+                    onMouseLeave={(e) => (e.currentTarget as HTMLElement).style.borderColor = "var(--ch-border)"}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xl">{objective.icon}</span>
+                      <span className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>{objective.label}</span>
+                    </div>
+                    <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>{objective.desc}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Campaign name */}
-            <div className="rounded-xl border p-5"
+            <div className="rounded-[14px] border p-[22px]"
               style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
               <p className="text-[13px] font-bold mb-3" style={{ color: "var(--ch-text)" }}>Nama Kampanye Iklan</p>
               <input
@@ -151,7 +221,7 @@ export default function BoostAds() {
             </div>
 
             {/* Budget slider */}
-            <div className="rounded-xl border p-5"
+            <div className="rounded-[14px] border p-[22px]"
               style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
               <div className="flex items-center justify-between mb-3">
                 <p className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>Daily Budget</p>
@@ -186,10 +256,10 @@ export default function BoostAds() {
             </div>
 
             {/* Ad format */}
-            <div className="rounded-xl border p-5"
+            <div className="rounded-[14px] border p-[22px]"
               style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
               <p className="text-[13px] font-bold mb-3" style={{ color: "var(--ch-text)" }}>Format Iklan</p>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-3">
                 {AD_FORMATS.map((f) => (
                   <button key={f.key}
                     onClick={() => setAdFormat(f.key)}
@@ -202,6 +272,30 @@ export default function BoostAds() {
                     <p className="text-[11px]" style={{ color: "var(--ch-text-soft)" }}>{f.desc}</p>
                   </button>
                 ))}
+              </div>
+            </div>
+
+            {/* Upload Zone */}
+            <div className="rounded-[14px] border-2 border-dashed p-[22px] text-center transition-colors cursor-pointer"
+              style={{ borderColor: "var(--ch-border)", background: "var(--ch-bg)" }}
+              onMouseEnter={(e) => (e.currentTarget as HTMLElement).style.borderColor = "var(--ch-primary)"}
+              onMouseLeave={(e) => (e.currentTarget as HTMLElement).style.borderColor = "var(--ch-border)"}>
+              <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3"
+                style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>
+                <Plus style={{ width: 24, height: 24 }} />
+              </div>
+              <p className="text-[13px] font-bold mb-1" style={{ color: "var(--ch-text)" }}>
+                Upload Ad Creative
+              </p>
+              <p className="text-[12px] mb-3" style={{ color: "var(--ch-text-muted)" }}>
+                Drag & drop file atau klik untuk browse
+              </p>
+              <div className="flex items-center justify-center gap-2 text-[11px]" style={{ color: "var(--ch-text-soft)" }}>
+                <span>MP4, MOV, JPG, PNG</span>
+                <span>•</span>
+                <span>Max 100MB</span>
+                <span>•</span>
+                <span>9:16 atau 1:1</span>
               </div>
             </div>
 
