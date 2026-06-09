@@ -64,11 +64,11 @@ export default function BoostAds() {
   };
 
   const handleLaunch = () => {
-    if (!campaignName) { toast.error("Nama kampanye iklan harus diisi"); return; }
+    if (!campaignName) { toast.error("Campaign name must be filled"); return; }
     setIsLaunching(true);
     setTimeout(() => {
       setIsLaunching(false);
-      toast.success("Kampanye iklan berhasil diluncurkan! 🚀");
+      toast.success("Ad campaign launched successfully! 🚀");
     }, 1800);
   };
 
@@ -208,7 +208,7 @@ export default function BoostAds() {
             {/* Campaign name */}
             <div className="rounded-[14px] border p-[22px]"
               style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-              <p className="text-[13px] font-bold mb-3" style={{ color: "var(--ch-text)" }}>Nama Kampanye Iklan</p>
+              <p className="text-[13px] font-bold mb-3" style={{ color: "var(--ch-text)" }}>Campaign Name</p>
               <input
                 className="w-full rounded-lg border px-3 py-2 text-[13px] outline-none transition-colors"
                 style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
@@ -251,7 +251,7 @@ export default function BoostAds() {
                 ))}
               </div>
               <div className="mt-3 p-3 rounded-lg text-[12px]" style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>
-                Estimasi reach: <strong>{(budget / 1200).toFixed(0)}–{(budget / 800).toFixed(0)} orang/hari</strong>
+                Estimated reach: <strong>{(budget / 1200).toFixed(0)}–{(budget / 800).toFixed(0)} people/day</strong>
               </div>
             </div>
 

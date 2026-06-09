@@ -38,10 +38,10 @@ export default function CreatorEarnings() {
       <div>
         <h1 className="text-[28px] font-extrabold tracking-[-0.5px]"
           style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-          Penghasilan
+          Earnings
         </h1>
-        <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
-          Pantau pemasukan dan riwayat pembayaran kamu
+        <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}">
+          Track your income and payment history
         </p>
       </div>
 
@@ -51,7 +51,7 @@ export default function CreatorEarnings() {
         <div className="absolute top-0 right-0 w-48 h-48 rounded-full opacity-10 bg-white -translate-y-12 translate-x-12" />
         <div className="relative">
           <p className="text-green-200 text-[13px] mb-1 flex items-center gap-1.5">
-            <DollarSign style={{ width: 13, height: 13 }} /> Total Penghasilan
+            <DollarSign style={{ width: 13, height: 13 }} /> Total Earnings
           </p>
           <p className="text-[32px] font-extrabold text-white tracking-tight"
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
@@ -59,15 +59,15 @@ export default function CreatorEarnings() {
           </p>
           <p className="text-green-200 text-[13px] mt-0.5 flex items-center gap-1">
             <TrendingUp style={{ width: 13, height: 13 }} />
-            <strong className="text-white">+28%</strong> vs bulan lalu
+            <strong className="text-white">+28%</strong> vs last month
           </p>
           <div className="flex gap-8 mt-4">
             <div>
-              <p className="text-green-200 text-[11px]">Sudah Dibayar</p>
+              <p className="text-green-200 text-[11px]">Already Paid</p>
               <p className="text-white font-bold text-[15px]">{formatRp(totalPaid)}</p>
             </div>
             <div>
-              <p className="text-green-200 text-[11px]">Dalam Proses</p>
+              <p className="text-green-200 text-[11px]">In Process</p>
               <p className="text-white font-bold text-[15px]">{formatRp(totalPending)}</p>
             </div>
           </div>
@@ -78,7 +78,7 @@ export default function CreatorEarnings() {
         {/* Monthly bar chart */}
         <div className="xl:col-span-2 rounded-xl border p-5"
           style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-          <p className="text-[14px] font-bold mb-4" style={{ color: "var(--ch-text)" }}>Penghasilan per Bulan</p>
+          <p className="text-[14px] font-bold mb-4" style={{ color: "var(--ch-text)" }}>Monthly Earnings</p>
           <div className="flex items-end gap-3 h-[140px]">
             {monthly.map((m) => (
               <div key={m.month} className="flex-1 flex flex-col items-center gap-1.5">
@@ -118,12 +118,12 @@ export default function CreatorEarnings() {
         style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
         <div className="px-5 py-4 border-b flex items-center justify-between"
           style={{ borderColor: "var(--ch-border)" }}>
-          <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>Riwayat Pembayaran</p>
+          <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>Payment History</p>
         </div>
         <table className="w-full">
           <thead>
             <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
-              {["ID", "Brand", "Kampanye", "Tanggal", "Jumlah", "Status", ""].map((h) => (
+              {["ID", "Brand", "Campaign", "Date", "Amount", "Status", ""].map((h) => (
                 <th key={h} className="px-4 py-3 text-left text-[11px] font-semibold"
                   style={{ color: "var(--ch-text-muted)" }}>{h}</th>
               ))}
@@ -146,12 +146,12 @@ export default function CreatorEarnings() {
                     <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold"
                       style={isPaid ? { background: "#DCFCE7", color: "#15803D" } : { background: "#FEF3C7", color: "#B45309" }}>
                       {isPaid ? <CheckCircle style={{ width: 9, height: 9 }} /> : <Clock style={{ width: 9, height: 9 }} />}
-                      {isPaid ? "Lunas" : "Menunggu"}
+                      {isPaid ? "Paid" : "Pending"}
                     </span>
                   </td>
                   <td className="px-4 py-3">
                     {isPaid && (
-                      <button onClick={() => toast.success(`Invoice ${p.id} diunduh`)}
+                      <button onClick={() => toast.success(`Invoice ${p.id} downloaded`)}
                         className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-slate-100 transition-colors"
                         style={{ color: "var(--ch-text-soft)" }}>
                         <Download style={{ width: 13, height: 13 }} />

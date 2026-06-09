@@ -7,10 +7,10 @@ import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 
 const PERKS = [
-  { emoji: "🚀", text: "Akses 10.000+ kreator terverifikasi" },
-  { emoji: "📊", text: "Analytics real-time & laporan otomatis" },
-  { emoji: "💰", text: "Escrow payment yang aman & terlindungi" },
-  { emoji: "🤖", text: "AI matching kreator-brand terbaik" },
+  { emoji: "🚀", text: "Access 10,000+ verified creators" },
+  { emoji: "📊", text: "Real-time analytics & automated reports" },
+  { emoji: "💰", text: "Secure escrow payment protection" },
+  { emoji: "🤖", text: "AI matching best creator-brand" },
 ];
 
 export default function Login() {
@@ -64,12 +64,12 @@ export default function Login() {
         <div className="relative">
           <h1 className="text-[36px] font-extrabold text-white leading-tight tracking-[-0.5px] mb-4"
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            Platform Manajemen<br />
-            Kampanye Influencer<br />
-            <span style={{ color: "#93C5FD" }}>#1 di Indonesia</span>
+            Influencer Campaign<br />
+            Management Platform<br />
+            <span style={{ color: "#93C5FD" }}">#1 in Indonesia</span>
           </h1>
           <p className="text-blue-200 text-[15px] mb-8">
-            Hubungkan brand Anda dengan 10.000+ kreator konten terbaik secara efisien.
+            Connect your brand with 10,000+ best content creators efficiently.
           </p>
           <div className="space-y-3">
             {PERKS.map((p) => (
@@ -116,10 +116,10 @@ export default function Login() {
 
           <h2 className="text-[26px] font-extrabold mb-1 tracking-[-0.5px]"
             style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            Masuk ke akun Anda
+            Sign in to your account
           </h2>
           <p className="text-[14px] mb-7" style={{ color: "var(--ch-text-muted)" }}>
-            Platform manajemen kampanye influencer terpadu
+            All-in-one influencer campaign management platform
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -162,12 +162,12 @@ export default function Login() {
             <div className="flex items-center justify-between text-[12px]">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" className="rounded" />
-                <span style={{ color: "var(--ch-text-muted)" }}>Ingat saya</span>
+                <span style={{ color: "var(--ch-text-muted)" }}>Remember me</span>
               </label>
               <button type="button" className="transition-colors"
                 style={{ color: "var(--ch-primary)" }}
-                onClick={() => toast.info("Fitur lupa password belum tersedia")}>
-                Lupa password?
+                onClick={() => toast.info("Forgot password feature not available")}>
+                Forgot password?
               </button>
             </div>
 
@@ -176,21 +176,21 @@ export default function Login() {
               className="w-full mt-2 font-bold text-[14px] transition-all duration-200 hover:opacity-90"
               disabled={loading}
               style={{ background: loading ? "var(--ch-border)" : "var(--ch-primary)", boxShadow: loading ? "none" : "var(--ch-nav-shadow)" }}>
-              {loading ? "Masuk..." : "Masuk ke CreatorHub"}
+              {loading ? "Signing in..." : "Sign in to CreatorHub"}
             </Button>
           </form>
 
           <div className="mt-6 pt-5 border-t text-center" style={{ borderColor: "var(--ch-border)" }}>
             <p className="text-[13px]" style={{ color: "var(--ch-text-muted)" }}>
-              Belum punya akun?{" "}
+              Don't have an account?{" "}
               <a href="/apply" style={{ color: "var(--ch-primary)", fontWeight: 600 }}>
-                Daftar sebagai kreator →
+                Sign up as a creator →
               </a>
             </p>
           </div>
 
           <p className="text-center text-[11px] mt-6" style={{ color: "var(--ch-text-soft)" }}>
-            CreatorHub.id © 2026 · Platform Kampanye Influencer Indonesia
+            CreatorHub.id © 2026 · Indonesia Influencer Campaign Platform
           </p>
         </div>
       </div>

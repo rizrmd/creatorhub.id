@@ -15,9 +15,9 @@ const payments = [
 ];
 
 const statusChip = {
-  paid:    { label: "Lunas",    bg: "#DCFCE7", fg: "#15803D", dot: "#16A34A", icon: CheckCircle },
-  pending: { label: "Menunggu", bg: "#FEF3C7", fg: "#B45309", dot: "#F59E0B", icon: Clock },
-  failed:  { label: "Gagal",    bg: "#FEE2E2", fg: "#B91C1C", dot: "#DC2626", icon: XCircle },
+  paid:    { label: "Paid",     bg: "#DCFCE7", fg: "#15803D", dot: "#16A34A", icon: CheckCircle },
+  pending: { label: "Pending",  bg: "#FEF3C7", fg: "#B45309", dot: "#F59E0B", icon: Clock },
+  failed:  { label: "Failed",   bg: "#FEE2E2", fg: "#B91C1C", dot: "#DC2626", icon: XCircle },
 };
 
 const monthlySpend = [
@@ -46,12 +46,12 @@ function downloadBlob(content: string, filename: string, type = "text/plain") {
 }
 
 function exportCSV() {
-  const header = "Invoice,Kreator,Kampanye,Tanggal,Jumlah,Status";
+  const header = "Invoice,Creator,Campaign,Date,Amount,Status";
   const rows = payments.map((p) =>
     `${p.id},${p.creator},${p.campaign},${p.date},${p.amount},${p.status}`
   );
   downloadBlob([header, ...rows].join("\n"), "payments.csv", "text/csv");
-  toast.success("CSV berhasil diunduh");
+  toast.success("CSV downloaded successfully");
 }
 
 function downloadInvoice(p: (typeof payments)[0]) {
@@ -61,16 +61,16 @@ function downloadInvoice(p: (typeof payments)[0]) {
     "         INVOICE CREATORHUB.ID         ",
     "========================================",
     `Invoice No : #${p.id}`,
-    `Tanggal    : ${new Date(p.date).toLocaleDateString("id-ID")}`,
-    `Kreator    : ${p.creator}`,
-    `Kampanye   : ${p.campaign}`,
-    `Jumlah     : ${formatRupiah(p.amount)}`,
+    `Date       : ${new Date(p.date).toLocaleDateString("id-ID")}`,
+    `Creator    : ${p.creator}`,
+    `Campaign   : ${p.campaign}`,
+    `Amount     : ${formatRupiah(p.amount)}`,
     `Status     : ${cfg.label}`,
     "========================================",
-    "Terima kasih telah menggunakan CreatorHub.id",
+    "Thank you for using CreatorHub.id",
   ].join("\n");
   downloadBlob(content, `${p.id}.txt`);
-  toast.success(`Invoice ${p.id} diunduh`);
+  toast.success(`Invoice ${p.id} downloaded`);
 }
 
 export default function Payments() {
@@ -84,7 +84,7 @@ export default function Payments() {
     }
     setShowCardModal(false);
     setCardForm({ number: "", holder: "", expiry: "", cvv: "" });
-    toast.success("Kartu berhasil ditambahkan!");
+    toast.success("Card added successfully!");
   };
 
   return (
@@ -127,15 +127,15 @@ export default function Payments() {
           <p className="text-blue-200 text-[13px] mt-0.5">Lifetime total spent</p>
           <div className="flex gap-8 mt-5">
             <div>
-              <p className="text-blue-200 text-[11px]">Tersedia</p>
+              <p className="text-blue-200 text-[11px]">Available</p>
               <p className="text-white font-bold text-[15px]">{formatRupiah(escrow)}</p>
             </div>
             <div>
-              <p className="text-blue-200 text-[11px]">Menunggu</p>
+              <p className="text-blue-200 text-[11px]">Pending</p>
               <p className="text-white font-bold text-[15px]">{formatRupiah(totalPending)}</p>
             </div>
             <div>
-              <p className="text-blue-200 text-[11px]">Dibayarkan</p>
+              <p className="text-blue-200 text-[11px]">Paid</p>
               <p className="text-white font-bold text-[15px]">{formatRupiah(totalPaid)}</p>
             </div>
           </div>
@@ -145,9 +145,9 @@ export default function Payments() {
       {/* Stats row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { label: "Total Dibayar", value: formatRupiah(totalPaid), sub: "Semua payout disetujui", icon: CheckCircle, hue: 142 },
-          { label: "Dalam Escrow", value: formatRupiah(escrow), sub: "Dilindungi Escrow", icon: Shield, hue: 220, lock: true },
-          { label: "Invoice Belum Lunas", value: formatRupiah(totalPending), sub: "Jatuh tempo 14 hari", icon: Clock, hue: 42 },
+          { label: "Total Paid", value: formatRupiah(totalPaid), sub: "All payouts approved", icon: CheckCircle, hue: 142 },
+          { label: "In Escrow", value: formatRupiah(escrow), sub: "Protected by Escrow", icon: Shield, hue: 220, lock: true },
+          { label: "Unpaid Invoices", value: formatRupiah(totalPending), sub: "Due in 14 days", icon: Clock, hue: 42 },
         ].map((stat) => (
           <div key={stat.label} className="rounded-xl border p-5 flex items-center gap-4"
             style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
@@ -170,7 +170,7 @@ export default function Payments() {
         <div className="xl:col-span-2 rounded-xl border overflow-hidden"
           style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
           <div className="px-5 py-4 border-b" style={{ borderColor: "var(--ch-border)" }}>
-            <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>Riwayat Transaksi</p>
+            <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>Transaction History</p>
           </div>
           <div className="overflow-x-auto">
             <div className="min-w-[800px]">
@@ -179,7 +179,7 @@ export default function Payments() {
                 gridTemplateColumns: "1.2fr 0.9fr 1.8fr 1.1fr 1fr 0.9fr auto",
                 borderColor: "var(--ch-border)"
               }}>
-                {["Invoice", "Kreator", "Kampanye", "Tanggal", "Jumlah", "Status", ""].map((h, i) => (
+                {["Invoice", "Creator", "Campaign", "Date", "Amount", "Status", ""].map((h, i) => (
                   <div key={i} className={`font-semibold ${i >= 3 ? "text-right" : "text-left"} ${i === 2 ? "hidden sm:block" : ""}`}
                     style={{ color: "var(--ch-text-muted)", fontSize: "10.5px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.4px" }}>
                     {h}
@@ -246,7 +246,7 @@ export default function Payments() {
           {/* Credit card */}
           <div className="rounded-xl border p-5 space-y-4"
             style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-            <p className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>Metode Pembayaran</p>
+            <p className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>Payment Method</p>
             <div className="rounded-2xl p-4 text-white relative overflow-hidden"
               style={{ background: "linear-gradient(135deg, #1e3a5f 0%, #2563EB 60%, #0369a1 100%)" }}>
               <div className="absolute top-0 right-0 w-24 h-24 rounded-full opacity-10 bg-white -translate-y-6 translate-x-6" />
@@ -286,11 +286,11 @@ export default function Payments() {
       <Dialog open={showCardModal} onOpenChange={setShowCardModal}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>Tambah Kartu Baru</DialogTitle>
+            <DialogTitle>Add New Card</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-700">Nomor Kartu</label>
+              <label className="text-sm font-medium text-slate-700">Card Number</label>
               <Input
                 placeholder="•••• •••• •••• ••••"
                 maxLength={19}
@@ -302,7 +302,7 @@ export default function Payments() {
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-700">Nama Pemegang Kartu</label>
+              <label className="text-sm font-medium text-slate-700">Cardholder Name</label>
               <Input
                 placeholder="Nama sesuai kartu"
                 value={cardForm.holder}
@@ -337,7 +337,7 @@ export default function Payments() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowCardModal(false)}>Batal</Button>
-            <Button onClick={handleSaveCard}>Simpan Kartu</Button>
+            <Button onClick={handleSaveCard}>Save Card</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

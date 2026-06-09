@@ -16,7 +16,7 @@ const TABS: { key: TabKey; label: string; icon: React.ElementType }[] = [
   { key: "workspace",     label: "Workspace",       icon: User },
   { key: "team",          label: "Team",             icon: Users },
   { key: "branding",      label: "Branding",         icon: Palette },
-  { key: "notifications", label: "Notifikasi",       icon: Bell },
+  { key: "notifications", label: "Notifications",  icon: Bell },
   { key: "integrations",  label: "Integrations",     icon: Zap },
   { key: "billing",       label: "Billing",          icon: CreditCard },
   { key: "security",      label: "Security",         icon: Shield },
@@ -86,20 +86,20 @@ export default function Settings() {
     const file = e.target.files?.[0];
     if (!file) return;
     setAvatarUrl(URL.createObjectURL(file));
-    toast.success("Foto profil berhasil diubah");
+    toast.success("Profile photo changed successfully");
   };
 
   const handleUpdateSecurity = () => {
     if (!currentPw || !newPw || !confirmPw) { toast.error("Semua field harus diisi"); return; }
     if (newPw !== confirmPw) { toast.error("Konfirmasi password tidak cocok"); return; }
-    if (newPw.length < 8) { toast.error("Password minimal 8 karakter"); return; }
-    toast.success("Password berhasil diperbarui!");
+    if (newPw.length < 8) { toast.error("Password must be at least 8 characters"); return; }
+    toast.success("Password updated successfully!");
     setCurrentPw(""); setNewPw(""); setConfirmPw("");
   };
 
   const handleCopyApiKey = () => {
-    if (apiKey.includes("•")) { toast.error("Generate key baru terlebih dahulu"); return; }
-    navigator.clipboard.writeText(apiKey).then(() => toast.success("API Key disalin!"));
+    if (apiKey.includes("•")) { toast.error("Please generate a new key first"); return; }
+    navigator.clipboard.writeText(apiKey).then(() => toast.success("API Key copied!"));
   };
 
   const handleEnable2FA = () => {
@@ -117,8 +117,8 @@ export default function Settings() {
   };
 
   const handleInvite = () => {
-    if (!inviteEmail.includes("@")) { toast.error("Email tidak valid"); return; }
-    toast.success(`Undangan terkirim ke ${inviteEmail}`);
+    if (!inviteEmail.includes("@")) { toast.error("Invalid email"); return; }
+    toast.success(`Invitation sent to ${inviteEmail}`);
     setInviteEmail("");
   };
 
@@ -182,7 +182,7 @@ export default function Settings() {
           {/* Workspace tab */}
           {activeTab === "workspace" && card(
             <>
-              {sectionTitle(<User style={{ width: 14, height: 14 }} />, "Profil Akun")}
+              {sectionTitle(<User style={{ width: 14, height: 14 }} />, "Account Profile")}
               <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
               <div className="flex items-center gap-4 mb-5">
                 <div className="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold text-white relative overflow-hidden"
@@ -195,12 +195,12 @@ export default function Settings() {
                 </div>
                 <div>
                   <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>Upload Photo</Button>
-                  <p className="text-[11px] mt-1" style={{ color: "var(--ch-text-soft)" }}>JPG, PNG. Maks 2MB</p>
+                  <p className="text-[11px] mt-1" style={{ color: "var(--ch-text-soft)" }}>JPG, PNG. Max 2MB</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 {[
-                  { label: "Nama Lengkap", field: "name" as const },
+                  { label: "Full Name", field: "name" as const },
                   { label: "Professional Role", field: "role" as const },
                   { label: "Business Email", field: "email" as const, type: "email" },
                   { label: "Agency Name", field: "agency" as const },
@@ -269,11 +269,11 @@ export default function Settings() {
                 ))}
               </div>
               <Separator className="mb-4" />
-              <p className="text-[13px] font-semibold mb-2" style={{ color: "var(--ch-text)" }}>Undang Anggota Baru</p>
+              <p className="text-[13px] font-semibold mb-2" style={{ color: "var(--ch-text)" }}>Invite New Member</p>
               <div className="flex gap-2">
-                <Input placeholder="email@perusahaan.com" type="email" value={inviteEmail}
+                <Input placeholder="email@company.com" type="email" value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)} className="flex-1" />
-                <Button onClick={handleInvite}>Undang</Button>
+                <Button onClick={handleInvite}>Invite</Button>
               </div>
             </>
           )}

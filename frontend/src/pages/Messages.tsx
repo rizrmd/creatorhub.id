@@ -183,7 +183,7 @@ export default function Messages() {
                       </p>
                     </div>
                     <p className="text-[11px] truncate" style={{ color: "var(--ch-text-muted)" }}>
-                      {ch.lastMessage || "Mulai percakapan..."}
+                      {ch.lastMessage || "Start conversation..."}
                     </p>
                   </div>
                   {unread > 0 && (
@@ -262,7 +262,7 @@ export default function Messages() {
                 ))
               ) : (
                 <div className="flex items-center justify-center h-full text-[13px]" style={{ color: "var(--ch-text-soft)" }}>
-                  Mulai percakapan dengan {activeChannel.creatorName}
+                  Start conversation with {activeChannel.creatorName}
                 </div>
               )}
               <div ref={bottomRef} />
@@ -293,7 +293,7 @@ export default function Messages() {
               <input
                 className="flex-1 rounded-xl border px-4 py-2 text-[13px] outline-none transition-colors"
                 style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
-                placeholder="Ketik pesan tentang brief kampanye..."
+                placeholder="Type a message about the campaign brief..."
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), handleSend())}
@@ -312,8 +312,8 @@ export default function Messages() {
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center gap-3" style={{ color: "var(--ch-text-soft)" }}>
             <MessageSquare style={{ width: 40, height: 40, opacity: 0.3 }} />
-            <p className="text-[14px] font-medium">Pilih percakapan</p>
-            <p className="text-[12px]">Pilih kreator di panel kiri untuk mulai chatting.</p>
+            <p className="text-[14px] font-medium">Select conversation</p>
+            <p className="text-[12px]">Select a creator from the left panel to start chatting.</p>
           </div>
         )}
       </div>

@@ -2,31 +2,31 @@ import { useState, useRef, useEffect } from "react";
 import { Send, Search, MessageSquare } from "lucide-react";
 
 const CHANNELS = [
-  { id: "1", brand: "ASUS", campaign: "ROG Phone Launch", lastMsg: "Kami tunggu konten pertamanya ya!", time: "10:42", unread: 2, online: true, avatar: "A", color: "#0078D4" },
-  { id: "2", brand: "Wardah", campaign: "Ramadan Glow", lastMsg: "Brief sudah dikirim, silakan dicek.", time: "Kemarin", unread: 0, online: false, avatar: "W", color: "#E91E8C" },
-  { id: "3", brand: "Tokopedia", campaign: "Flash Sale", lastMsg: "Terima kasih atas kolaborasinya!", time: "2 hari lalu", unread: 0, online: true, avatar: "T", color: "#42B549" },
+  { id: "1", brand: "ASUS", campaign: "ROG Phone Launch", lastMsg: "We're waiting for your first content!", time: "10:42", unread: 2, online: true, avatar: "A", color: "#0078D4" },
+  { id: "2", brand: "Wardah", campaign: "Ramadan Glow", lastMsg: "Brief has been sent, please check.", time: "Yesterday", unread: 0, online: false, avatar: "W", color: "#E91E8C" },
+  { id: "3", brand: "Tokopedia", campaign: "Flash Sale", lastMsg: "Thank you for your collaboration!", time: "2 days ago", unread: 0, online: true, avatar: "T", color: "#42B549" },
 ];
 
 const INITIAL_MESSAGES: Record<string, { id: string; text: string; from: "me" | "them"; time: string }[]> = {
   "1": [
-    { id: "m1", text: "Halo Tasya! Kami senang bisa kolaborasi untuk kampanye ROG Phone Launch 🎮", from: "them", time: "10:30" },
-    { id: "m2", text: "Hai! Siap banget! Produknya sudah saya terima, keren banget 🔥", from: "me", time: "10:35" },
-    { id: "m3", text: "Kami tunggu konten pertamanya ya! Deadline minggu depan.", from: "them", time: "10:42" },
+    { id: "m1", text: "Hi Tasya! We're excited to collaborate on the ROG Phone Launch campaign 🎮", from: "them", time: "10:30" },
+    { id: "m2", text: "Hey! Ready! I've received the product, it's awesome 🔥", from: "me", time: "10:35" },
+    { id: "m3", text: "We're waiting for your first content! Deadline is next week.", from: "them", time: "10:42" },
   ],
   "2": [
-    { id: "m1", text: "Selamat bergabung di kampanye Ramadan Glow, Tasya!", from: "them", time: "Kemarin 09:00" },
-    { id: "m2", text: "Brief sudah dikirim, silakan dicek.", from: "them", time: "Kemarin 09:05" },
+    { id: "m1", text: "Welcome to the Ramadan Glow campaign, Tasya!", from: "them", time: "Yesterday 09:00" },
+    { id: "m2", text: "Brief has been sent, please check.", from: "them", time: "Yesterday 09:05" },
   ],
   "3": [
-    { id: "m1", text: "Terima kasih atas kolaborasinya, konten kamu sangat bagus!", from: "them", time: "2 hari lalu" },
+    { id: "m1", text: "Thank you for your collaboration, your content is great!", from: "them", time: "2 days ago" },
   ],
 };
 
 const AUTO_REPLIES = [
-  "Terima kasih, kami akan segera merespons!",
-  "Baik, kami sudah menindaklanjuti permintaan kamu.",
-  "Konten kamu sudah di-review, hasilnya luar biasa! 🎉",
-  "Silakan lanjutkan sesuai brief yang sudah dikirimkan.",
+  "Thank you, we'll respond shortly!",
+  "Alright, we've followed up on your request.",
+  "Your content has been reviewed, it's outstanding! 🎉",
+  "Please proceed according to the brief that has been sent.",
 ];
 
 export default function CreatorMessages() {
@@ -42,11 +42,11 @@ export default function CreatorMessages() {
 
   const send = () => {
     if (!draft.trim()) return;
-    const newMsg = { id: Date.now().toString(), text: draft, from: "me" as const, time: "Baru saja" };
+    const newMsg = { id: Date.now().toString(), text: draft, from: "me" as const, time: "Just now" };
     setMessages((m) => ({ ...m, [activeId]: [...(m[activeId] ?? []), newMsg] }));
     setDraft("");
     setTimeout(() => {
-      const reply = { id: (Date.now() + 1).toString(), text: AUTO_REPLIES[Math.floor(Math.random() * AUTO_REPLIES.length)], from: "them" as const, time: "Baru saja" };
+      const reply = { id: (Date.now() + 1).toString(), text: AUTO_REPLIES[Math.floor(Math.random() * AUTO_REPLIES.length)], from: "them" as const, time: "Just now" };
       setMessages((m) => ({ ...m, [activeId]: [...(m[activeId] ?? []), reply] }));
     }, 1400);
   };
@@ -63,13 +63,13 @@ export default function CreatorMessages() {
       <div className="w-[300px] shrink-0 border-r flex flex-col"
         style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
         <div className="p-4 border-b" style={{ borderColor: "var(--ch-border)" }}>
-          <p className="text-[15px] font-bold mb-3" style={{ color: "var(--ch-text)" }}>Pesan</p>
+          <p className="text-[15px] font-bold mb-3" style={{ color: "var(--ch-text)" }}>Messages</p>
           <div className="relative">
             <Search style={{ width: 14, height: 14, position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--ch-text-soft)" }} />
             <input
               className="w-full rounded-lg border pl-8 pr-3 py-2 text-[12px] outline-none"
               style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
-              placeholder="Cari brand..."
+              placeholder="Search brands..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onFocus={(e) => (e.currentTarget.style.borderColor = "var(--ch-primary)")}
@@ -145,7 +145,7 @@ export default function CreatorMessages() {
               <input
                 className="flex-1 rounded-xl border px-4 py-2.5 text-[13px] outline-none resize-none"
                 style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
-                placeholder="Ketik pesan..."
+                placeholder="Type a message..."
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), send())}
@@ -166,7 +166,7 @@ export default function CreatorMessages() {
         <div className="flex-1 flex items-center justify-center flex-col gap-3"
           style={{ color: "var(--ch-text-soft)" }}>
           <MessageSquare style={{ width: 40, height: 40, opacity: 0.3 }} />
-          <p className="text-[14px]">Pilih percakapan</p>
+          <p className="text-[14px]">Select a conversation</p>
         </div>
       )}
     </div>

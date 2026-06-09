@@ -13,11 +13,11 @@ import type { Campaign, CampaignStatus } from "@/types";
 
 const STATUS_TABS = [
   { value: "all",       label: "Semua" },
-  { value: "active",    label: "Aktif" },
+  { value: "active",    label: "Active" },
   { value: "in-review", label: "In Review" },
   { value: "draft",     label: "Draft" },
-  { value: "completed", label: "Selesai" },
-  { value: "paused",    label: "Dijeda" },
+  { value: "completed", label: "Completed" },
+  { value: "paused",    label: "Paused" },
 ] as const;
 
 const MOCK_KOL: Record<string, { hired: number; total: number }> = {};
@@ -68,7 +68,7 @@ export default function Campaigns() {
     });
     setOpen(false);
     setForm({ title: "", description: "", budget: "" });
-    toast.success("Kampanye berhasil dibuat!");
+    toast.success("Campaign created successfully!");
   };
 
   const openEdit = (c: Campaign) => {
@@ -83,7 +83,7 @@ export default function Campaigns() {
       data: { title: editForm.title, description: editForm.description, budget: parseInt(editForm.budget) || 0 },
     });
     setEditOpen(false);
-    toast.success("Kampanye berhasil diperbarui!");
+    toast.success("Campaign updated successfully!");
   };
 
   const handleAction = (c: Campaign) => {
@@ -93,10 +93,10 @@ export default function Campaigns() {
   };
 
   const actionLabel: Record<string, string> = {
-    active: "Kelola",
+    active: "Manage",
     draft: "Edit Brief",
-    completed: "Lihat Laporan",
-    paused: "Lihat Detail",
+    completed: "View Report",
+    paused: "View Details",
   };
 
   const filtered = tab === "all" ? (campaigns ?? []) : (campaigns ?? []).filter((c) => c.status === tab);
@@ -106,9 +106,9 @@ export default function Campaigns() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-[28px] font-extrabold tracking-[-0.5px]" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            Kampanye
+            Campaigns
           </h1>
-          <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}>Kelola semua kampanye influencer marketing Anda</p>
+          <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}>Manage all your influencer marketing campaigns</p>
         </div>
         <button
           onClick={() => setOpen(true)}
@@ -118,7 +118,7 @@ export default function Campaigns() {
           onMouseLeave={(e) => (e.currentTarget.style.background = "var(--ch-primary)")}
         >
           <Plus style={{ width: 16, height: 16 }} />
-          Buat Kampanye
+          Create Campaign
         </button>
       </div>
 

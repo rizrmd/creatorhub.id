@@ -3,16 +3,16 @@ import { Star, TrendingUp, MessageSquare, DollarSign, Award, Zap } from "lucide-
 import { toast } from "sonner";
 
 const KPIs = [
-  { label: "Undangan Baru",    value: "3",       sub: "Menunggu respons",    hue: 220, icon: MessageSquare },
-  { label: "Pekerjaan Aktif",  value: "2",       sub: "Dalam pengerjaan",    hue: 142, icon: Zap },
-  { label: "Penghasilan Bulan Ini", value: "Rp 12.4jt", sub: "+18% vs bulan lalu", hue: 28, icon: DollarSign },
-  { label: "Rating Rata-rata", value: "4.9",     sub: "Dari 24 ulasan",      hue: 42,  icon: Star },
+  { label: "New Invitations",    value: "3",       sub: "Awaiting response",    hue: 220, icon: MessageSquare },
+  { label: "Active Jobs",        value: "2",       sub: "In progress",          hue: 142, icon: Zap },
+  { label: "Earnings This Month", value: "Rp 12.4jt", sub: "+18% vs last month", hue: 28, icon: DollarSign },
+  { label: "Average Rating",     value: "4.9",     sub: "From 24 reviews",       hue: 42,  icon: Star },
 ];
 
 const invitations = [
-  { id: "1", brand: "Wardah",   campaign: "Ramadan Glow Campaign", budget: "Rp 5.000.000", deadline: "2 hari lagi", category: "Beauty", accepted: false },
-  { id: "2", brand: "Tokopedia", campaign: "Flash Sale Juli 2026",  budget: "Rp 3.500.000", deadline: "5 hari lagi", category: "E-Commerce", accepted: false },
-  { id: "3", brand: "Grab",      campaign: "GrabFood Summer Promo", budget: "Rp 4.200.000", deadline: "7 hari lagi", category: "Food & Beverage", accepted: false },
+  { id: "1", brand: "Wardah",   campaign: "Ramadan Glow Campaign", budget: "Rp 5.000.000", deadline: "2 days left", category: "Beauty", accepted: false },
+  { id: "2", brand: "Tokopedia", campaign: "Flash Sale July 2026",  budget: "Rp 3.500.000", deadline: "5 days left", category: "E-Commerce", accepted: false },
+  { id: "3", brand: "Grab",      campaign: "GrabFood Summer Promo", budget: "Rp 4.200.000", deadline: "7 days left", category: "Food & Beverage", accepted: false },
 ];
 
 const topPosts = [
@@ -23,9 +23,9 @@ const topPosts = [
 
 const achievements = [
   { icon: "⭐", label: "Top Rated",    desc: "Rating 4.9+" },
-  { icon: "⚡", label: "Fast Response", desc: "Reply <2 jam" },
-  { icon: "✅", label: "Verified",      desc: "ID terverifikasi" },
-  { icon: "🔥", label: "Trending",      desc: "Top 5% bulan ini" },
+  { icon: "⚡", label: "Fast Response", desc: "Reply <2 hours" },
+  { icon: "✅", label: "Verified",     desc: "ID verified" },
+  { icon: "🔥", label: "Trending",      desc: "Top 5% this month" },
 ];
 
 export default function CreatorHome() {
@@ -33,7 +33,7 @@ export default function CreatorHome() {
 
   const respond = (id: string, accepted: boolean) => {
     setInvs((list) => list.filter((i) => i.id !== id));
-    toast.success(accepted ? "Undangan diterima! 🎉" : "Undangan ditolak");
+    toast.success(accepted ? "Invitation accepted! 🎉" : "Invitation declined");
   };
 
   return (
@@ -46,10 +46,10 @@ export default function CreatorHome() {
           <p className="text-green-200 text-[13px] mb-1">Creator Portal</p>
           <h1 className="text-[24px] font-extrabold text-white tracking-[-0.5px]"
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            Selamat datang, Tasya! 👋
+            Welcome, Tasya! 👋
           </h1>
           <p className="text-green-200 text-[13px] mt-1">
-            Kamu punya <strong className="text-white">{invs.length} undangan baru</strong> yang menunggu
+            You have <strong className="text-white">{invs.length} new invitations</strong> waiting
           </p>
         </div>
       </div>
@@ -80,7 +80,7 @@ export default function CreatorHome() {
         style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
         <p className="text-[13px] font-bold mb-3" style={{ color: "var(--ch-text)" }}>
           <Award style={{ display: "inline", width: 14, height: 14, marginRight: 6, color: "#F59E0B" }} />
-          Pencapaian Kamu
+          Your Achievements
         </p>
         <div className="flex gap-3">
           {achievements.map((a) => (
@@ -97,8 +97,8 @@ export default function CreatorHome() {
       {/* Invitations */}
       {invs.length > 0 && (
         <div>
-          <p className="text-[14px] font-bold mb-3" style={{ color: "var(--ch-text)" }}>
-            Undangan Terbaru
+          <p className="text-[14px] font-bold mb-3" style={{ color: "var(--ch-text)" }}">
+            Latest Invitations
           </p>
           <div className="space-y-3">
             {invs.map((inv) => (
@@ -119,12 +119,12 @@ export default function CreatorHome() {
                   <button onClick={() => respond(inv.id, false)}
                     className="px-3 py-1.5 rounded-lg border text-[12px] font-semibold transition-colors"
                     style={{ borderColor: "#FCA5A5", color: "#DC2626" }}>
-                    Tolak
+                    Decline
                   </button>
                   <button onClick={() => respond(inv.id, true)}
                     className="px-3 py-1.5 rounded-lg text-white text-[12px] font-semibold"
                     style={{ background: "#16A34A" }}>
-                    Terima
+                    Accept
                   </button>
                 </div>
               </div>
@@ -138,7 +138,7 @@ export default function CreatorHome() {
         <div className="flex items-center justify-between mb-3">
           <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>
             <TrendingUp style={{ display: "inline", width: 14, height: 14, marginRight: 6, color: "var(--ch-primary)" }} />
-            Konten Terbaik Bulan Ini
+            Best Content This Month
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

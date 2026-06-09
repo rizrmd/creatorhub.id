@@ -8,9 +8,9 @@ import { toast } from "sonner";
 type TabKey = "profile" | "notifications" | "security";
 
 const TABS: { key: TabKey; label: string; icon: React.ElementType }[] = [
-  { key: "profile",       label: "Akun",       icon: User },
-  { key: "notifications", label: "Notifikasi", icon: Bell },
-  { key: "security",      label: "Security",   icon: Shield },
+  { key: "profile",       label: "Account",       icon: User },
+  { key: "notifications", label: "Notifications", icon: Bell },
+  { key: "security",      label: "Security",      icon: Shield },
 ];
 
 export default function CreatorSettings() {
@@ -19,11 +19,11 @@ export default function CreatorSettings() {
   const [notifications, setNotifications] = useState({ brandInvites: true, payments: true, messages: true, weeklyReport: false });
   const [newPw, setNewPw] = useState(""); const [confirmPw, setConfirmPw] = useState(""); const [showPw, setShowPw] = useState(false);
 
-  const handleSave = () => toast.success("Perubahan disimpan!");
+  const handleSave = () => toast.success("Changes saved!");
   const handlePw = () => {
-    if (!newPw || newPw !== confirmPw) { toast.error("Password tidak cocok atau kosong"); return; }
-    if (newPw.length < 8) { toast.error("Password minimal 8 karakter"); return; }
-    toast.success("Password berhasil diubah!"); setNewPw(""); setConfirmPw("");
+    if (!newPw || newPw !== confirmPw) { toast.error("Password does not match or is empty"); return; }
+    if (newPw.length < 8) { toast.error("Password must be at least 8 characters"); return; }
+    toast.success("Password successfully changed!"); setNewPw(""); setConfirmPw("");
   };
 
   const card = (children: React.ReactNode) => (
@@ -38,10 +38,10 @@ export default function CreatorSettings() {
       <div className="mb-6">
         <h1 className="text-[28px] font-extrabold tracking-[-0.5px]"
           style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-          Pengaturan
+          Settings
         </h1>
         <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
-          Kelola akun dan preferensi kreator kamu
+          Manage your account and creator preferences
         </p>
       </div>
       <div className="flex gap-6 max-w-2xl">
@@ -63,11 +63,11 @@ export default function CreatorSettings() {
         <div className="flex-1">
           {tab === "profile" && card(
             <div className="space-y-4">
-              <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>Informasi Akun</p>
+              <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>Account Information</p>
               {[
-                { label: "Nama Lengkap", field: "name" as const },
+                { label: "Full Name", field: "name" as const },
                 { label: "Email", field: "email" as const, type: "email" },
-                { label: "No. WhatsApp", field: "phone" as const },
+                { label: "WhatsApp Number", field: "phone" as const },
               ].map((f) => (
                 <div key={f.field} className="space-y-1.5">
                   <label className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>{f.label}</label>
@@ -76,19 +76,19 @@ export default function CreatorSettings() {
               ))}
               <div className="pt-2">
                 <Button onClick={handleSave} style={{ background: "#16A34A" }} className="text-white gap-2">
-                  <Save style={{ width: 14, height: 14 }} /> Simpan
+                  <Save style={{ width: 14, height: 14 }} /> Save
                 </Button>
               </div>
             </div>
           )}
           {tab === "notifications" && card(
             <div className="space-y-4">
-              <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>Preferensi Notifikasi</p>
+              <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>Notification Preferences</p>
               {[
-                { key: "brandInvites" as const, label: "Undangan Brand", desc: "Notifikasi undangan kolaborasi baru" },
-                { key: "payments" as const, label: "Pembayaran",     desc: "Update status pembayaran dan invoice" },
-                { key: "messages" as const, label: "Pesan Masuk",    desc: "Notifikasi pesan dari brand" },
-                { key: "weeklyReport" as const, label: "Laporan Mingguan", desc: "Ringkasan performa konten" },
+                { key: "brandInvites" as const, label: "Brand Invitations", desc: "Notifications for new collaboration invitations" },
+                { key: "payments" as const, label: "Payments",         desc: "Payment status and invoice updates" },
+                { key: "messages" as const, label: "Inbox Messages",    desc: "Message notifications from brands" },
+                { key: "weeklyReport" as const, label: "Weekly Report",    desc: "Content performance summary" },
               ].map((item) => (
                 <div key={item.key}>
                   <div className="flex items-center justify-between">
@@ -97,7 +97,7 @@ export default function CreatorSettings() {
                       <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>{item.desc}</p>
                     </div>
                     <button
-                      onClick={() => { setNotifications(n => ({ ...n, [item.key]: !n[item.key] })); toast.success(`${item.label} ${!notifications[item.key] ? "aktif" : "nonaktif"}`); }}
+                      onClick={() => { setNotifications(n => ({ ...n, [item.key]: !n[item.key] })); toast.success(`${item.label} ${!notifications[item.key] ? "enabled" : "disabled"}`); }}
                       className="w-10 h-5 rounded-full relative shrink-0 transition-colors"
                       style={{ background: notifications[item.key] ? "#16A34A" : "var(--ch-border)" }}>
                       <span className="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform"
@@ -111,10 +111,10 @@ export default function CreatorSettings() {
           )}
           {tab === "security" && card(
             <div className="space-y-4">
-              <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>Ubah Password</p>
+              <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>Change Password</p>
               {[
-                { label: "Password Baru", value: newPw, setValue: setNewPw },
-                { label: "Konfirmasi Password", value: confirmPw, setValue: setConfirmPw },
+                { label: "New Password", value: newPw, setValue: setNewPw },
+                { label: "Confirm Password", value: confirmPw, setValue: setConfirmPw },
               ].map((f) => (
                 <div key={f.label} className="space-y-1.5">
                   <label className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>{f.label}</label>
@@ -128,8 +128,8 @@ export default function CreatorSettings() {
                   </div>
                 </div>
               ))}
-              {confirmPw && confirmPw !== newPw && <p className="text-[12px]" style={{ color: "#DC2626" }}>Password tidak cocok</p>}
-              <Button onClick={handlePw} style={{ background: "#16A34A" }} className="text-white">Ubah Password</Button>
+              {confirmPw && confirmPw !== newPw && <p className="text-[12px]" style={{ color: "#DC2626" }}>Password does not match</p>}
+              <Button onClick={handlePw} style={{ background: "#16A34A" }} className="text-white">Change Password</Button>
             </div>
           )}
         </div>

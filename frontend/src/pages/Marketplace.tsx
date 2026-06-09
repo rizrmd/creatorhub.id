@@ -149,7 +149,7 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
                 border: "1.5px solid var(--ch-primary-100)",
               }}
             >
-              {selected ? "✓ Diundang" : "Undang"}
+              {selected ? "✓ Invited" : "Invite"}
             </button>
           </div>
         </div>
@@ -262,7 +262,7 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
         {/* Price + invite button */}
         <div className="flex items-center justify-between mt-3">
           <div>
-            <p className="text-[10px]" style={{ color: "var(--ch-text-soft)" }}>Mulai dari</p>
+            <p className="text-[10px]" style={{ color: "var(--ch-text-soft)" }}>Starts at</p>
             <p className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>{creator.priceText}</p>
           </div>
           <button

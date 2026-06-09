@@ -204,7 +204,7 @@ export default function Analytics() {
         <div className="flex items-center justify-between mb-4">
           <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>
             <MapPin className="inline w-4 h-4 mr-1 mb-0.5" style={{ color: "var(--ch-primary)" }} />
-            Kreator Distribution by City
+            Creator Distribution by City
           </p>
           <span className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
             {cities.reduce((a, c) => a + c.count, 0).toLocaleString("id-ID")} total kreator
@@ -351,13 +351,13 @@ export default function Analytics() {
       <div className="rounded-xl border overflow-hidden"
         style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
         <div className="px-5 py-4 border-b" style={{ borderColor: "var(--ch-border)" }}>
-          <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>Top Performing Kreator</p>
+          <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>Top Performing Creator</p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
-                <th className="text-left px-5 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Kreator</th>
+                <th className="text-left px-5 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Creator</th>
                 <th className="text-left px-4 py-3 text-[11px] font-semibold hidden sm:table-cell" style={{ color: "var(--ch-text-muted)" }}>Kategori</th>
                 <th className="text-right px-4 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Impressi</th>
                 <th className="text-right px-4 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Engagement</th>

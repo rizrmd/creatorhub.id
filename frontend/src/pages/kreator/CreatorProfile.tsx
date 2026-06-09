@@ -11,7 +11,7 @@ export default function CreatorProfile() {
   const [profile, setProfile] = useState({
     name: "Tasya Farasya",
     handle: "@tasyafarasya",
-    bio: "Beauty & skincare enthusiast dari Jakarta ✨ Sharing honest reviews & tutorials setiap hari. Business: tasya@creatorhub.id",
+    bio: "Beauty & skincare enthusiast from Jakarta ✨ Sharing honest reviews & tutorials daily. Business: tasya@creatorhub.id",
     city: "Jakarta",
     rate: "4500000",
   });
@@ -19,7 +19,7 @@ export default function CreatorProfile() {
 
   const handleSave = () => {
     setEditing(false);
-    toast.success("Profil berhasil disimpan!");
+    toast.success("Profile saved successfully!");
   };
 
   return (
@@ -27,13 +27,13 @@ export default function CreatorProfile() {
       <div className="flex items-center justify-between">
         <h1 className="text-[28px] font-extrabold tracking-[-0.5px]"
           style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-          Profil Kreator
+          Creator Profile
         </h1>
         <button
           onClick={() => editing ? handleSave() : setEditing(true)}
           className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-[13px] font-bold"
           style={{ background: editing ? "#16A34A" : "var(--ch-primary)" }}>
-          {editing ? <><Save style={{ width: 14, height: 14 }} /> Simpan</> : <><Edit2 style={{ width: 14, height: 14 }} /> Edit Profil</>}
+          {editing ? <><Save style={{ width: 14, height: 14 }} /> Save</> : <><Edit2 style={{ width: 14, height: 14 }} /> Edit Profile</>}
         </button>
       </div>
 
@@ -83,7 +83,7 @@ export default function CreatorProfile() {
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Nama</label>
+                  <label className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Name</label>
                   <Input value={profile.name} onChange={(e) => setProfile(p => ({ ...p, name: e.target.value }))} />
                 </div>
                 <div className="space-y-1">
@@ -103,11 +103,11 @@ export default function CreatorProfile() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Kota</label>
+                  <label className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>City</label>
                   <Input value={profile.city} onChange={(e) => setProfile(p => ({ ...p, city: e.target.value }))} />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Rate Dasar (Rp)</label>
+                  <label className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}">Base Rate (Rp)</label>
                   <Input type="number" value={profile.rate} onChange={(e) => setProfile(p => ({ ...p, rate: e.target.value }))} />
                 </div>
               </div>
@@ -142,7 +142,7 @@ export default function CreatorProfile() {
       {/* Platform links */}
       <div className="rounded-xl border p-5"
         style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-        <p className="text-[13px] font-bold mb-3" style={{ color: "var(--ch-text)" }}>Platform Terhubung</p>
+        <p className="text-[13px] font-bold mb-3" style={{ color: "var(--ch-text)" }}>Connected Platforms</p>
         <div className="space-y-2">
           {[
             { icon: <Instagram style={{ width: 16, height: 16 }} />, name: "Instagram", handle: "@tasyafarasya", followers: "284K", color: "#E1306C" },
@@ -168,9 +168,9 @@ export default function CreatorProfile() {
       {editing && (
         <div className="flex gap-3">
           <Button onClick={handleSave} style={{ background: "#16A34A" }} className="text-white">
-            <Save style={{ width: 14, height: 14 }} /> Simpan Perubahan
+            <Save style={{ width: 14, height: 14 }} /> Save Changes
           </Button>
-          <Button variant="outline" onClick={() => setEditing(false)}>Batal</Button>
+          <Button variant="outline" onClick={() => setEditing(false)}>Cancel</Button>
         </div>
       )}
     </div>
