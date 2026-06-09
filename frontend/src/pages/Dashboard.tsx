@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { DollarSign, Rocket, FileText, Wallet, Eye, Clock, Plus, User, TrendingUp, BarChart3, ChevronRight, Info, Check, MessageSquare, Zap, CheckCircle } from "lucide-react";
+import { DollarSign, Rocket, FileText, Wallet, Eye, Plus, User, TrendingUp, BarChart3, Info, Check, MessageSquare, Zap, CheckCircle } from "lucide-react";
 
 const STATS = [
   { label: "Pending Reviews", value: "2",        barColor: "#16A34A", icon: FileText },
@@ -9,10 +9,46 @@ const STATS = [
 ];
 
 const NEEDS_ATTENTION = [
-  { title: "3 collaborations awaiting your approval", desc: "Review now", time: "2 hours ago", icon: Check, iconBg: "#FEF3C7", iconColor: "#1F2937", href: "/campaigns" },
-  { title: "2 creators waiting for your reply", desc: "Open Messages", time: "1 day ago", icon: MessageSquare, iconBg: "#FEE2E2", iconColor: "#1F2937", href: "/messages" },
-  { title: "Lebaran Travel Series ends in 4 days", desc: "Open Campaign", time: "2 days ago", icon: Zap, iconBg: "#DBEAFE", iconColor: "#1F2937", href: "/campaigns" },
-  { title: "Ramadan Give at 50% of budget", desc: "Adjust Budget", time: "3 days ago", icon: BarChart3, iconBg: "#FED7AA", iconColor: "#1F2937", href: "/campaigns" },
+  {
+    title: "3 deliverables awaiting your approval",
+    description: "Tasya, Fadil & Sisca submitted content for Ramadan Glow 2026",
+    buttonText: "Review Now",
+    icon: Check,
+    iconBg: "#FEF3C7",
+    iconColor: "#1F2937",
+    borderColor: "#F59E0B",
+    href: "/campaigns"
+  },
+  {
+    title: "2 creators waiting for your reply",
+    description: "Messages from Tasya Farasya and Fadli Jodi require response",
+    buttonText: "Reply Now",
+    icon: MessageSquare,
+    iconBg: "#FEE2E2",
+    iconColor: "#1F2937",
+    borderColor: "#F87171",
+    href: "/messages"
+  },
+  {
+    title: "Lebaran Travel Series ends in 4 days",
+    description: "16 of 21 deliverables submitted, campaign deadline approaching",
+    buttonText: "View Campaign",
+    icon: Zap,
+    iconBg: "#DBEAFE",
+    iconColor: "#1F2937",
+    borderColor: "#3B82F6",
+    href: "/campaigns"
+  },
+  {
+    title: "Ramadan Give 2024 at 50% of budget",
+    description: "Rp 18.7k spent of Rp 37.5k total budget, on pace to overspend",
+    buttonText: "Adjust Budget",
+    icon: BarChart3,
+    iconBg: "#FED7AA",
+    iconColor: "#1F2937",
+    borderColor: "#EF4444",
+    href: "/campaigns"
+  },
 ];
 
 const ACTIVE_CAMPAIGNS = [
@@ -120,31 +156,34 @@ export default function Dashboard() {
         <div className="lg:col-span-2 space-y-6">
           {/* Needs Your Attention */}
           <div className="rounded-xl border p-5" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-            <div className="flex items-center gap-2 mb-4">
-              <h2 className="text-[15px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Inter', sans-serif" }}>
-                Needs your attention
-              </h2>
-              <Info style={{ width: 16, height: 16, color: "#9CA3AF" }} />
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <h2 className="text-[15px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Inter', sans-serif" }}>
+                  Needs your attention
+                </h2>
+                <span className="text-[12px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "#FEE2E2", color: "#DC2626" }}>
+                  4
+                </span>
+              </div>
+              <p className="text-[12px]" style={{ color: "#6B7280" }}>Top items as of today</p>
             </div>
             <div className="space-y-3">
               {NEEDS_ATTENTION.map((item, index) => (
-                <div key={index} className="flex items-start gap-3 p-3 rounded-lg border" style={{ background: "#F9FAFB", borderColor: "#E5E7EB" }}>
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: item.iconBg }}>
-                    <item.icon style={{ width: 16, height: 16, color: item.iconColor }} />
+                <div key={index} className="flex items-center gap-4 p-4 rounded-lg border-l-4" style={{ background: "#F9FAFB", borderColor: item.borderColor, borderLeftWidth: 4 }}>
+                  <div className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0" style={{ background: item.iconBg }}>
+                    <item.icon style={{ width: 24, height: 24, color: item.iconColor }} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-[13px] font-semibold mb-1" style={{ color: "var(--ch-text)" }}>{item.title}</p>
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => navigate(item.href)} className="text-[12px] font-medium hover:underline" style={{ color: "#3B82F6" }}>
-                        {item.desc}
-                      </button>
-                      <ChevronRight style={{ width: 14, height: 14, color: "#9CA3AF" }} />
-                    </div>
+                    <p className="text-[14px] font-bold mb-1 leading-tight" style={{ color: "var(--ch-text)" }}>{item.title}</p>
+                    <p className="text-[12px] leading-snug" style={{ color: "#6B7280" }}>{item.description}</p>
                   </div>
-                  <div className="flex items-center gap-1 text-[11px]" style={{ color: "#9CA3AF" }}>
-                    <Clock style={{ width: 12, height: 12 }} />
-                    {item.time}
-                  </div>
+                  <button
+                    onClick={() => navigate(item.href)}
+                    className="text-[12px] font-semibold px-4 py-2 rounded-lg shrink-0 transition-colors hover:opacity-90"
+                    style={{ background: "#3B82F6", color: "white" }}
+                  >
+                    {item.buttonText}
+                  </button>
                 </div>
               ))}
             </div>
