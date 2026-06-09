@@ -3,7 +3,7 @@ import {
   Search, SlidersHorizontal, Star, CheckCircle, Zap, Award,
   Instagram, Youtube, Users, Megaphone, TrendingUp, Wallet,
   LayoutGrid, List, RotateCcw, X, Flame, MessageSquare, MapPin,
-  Heart, ArrowUpRight,
+  Heart, ArrowUpRight, User,
 } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -303,180 +303,218 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="sr-only">Creator Profile</DialogTitle>
-        </DialogHeader>
-
-        {/* Header */}
-        <div className="flex items-start gap-4">
-          <div className="w-16 h-16 rounded-full bg-slate-200 overflow-hidden shrink-0">
-            {creator.imageUrl ? (
-              <img src={creator.imageUrl} alt={creator.name} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-xl font-bold text-slate-500">{creator.name[0]}</div>
-            )}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex flex-wrap items-center gap-1.5">
-              <h2 className="font-bold text-slate-800 text-lg">{creator.name}</h2>
-              {creator.verified && <CheckCircle className="w-4 h-4 text-blue-500 shrink-0" />}
-              {creator.topRated && (
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full"
-                  style={{ background: "#FEF3C7", color: "#B45309" }}>
-                  <Award style={{ width: 10, height: 10 }} /> Top Rated
-                </span>
-              )}
-              {creator.fastResponse && (
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full"
-                  style={{ background: "#FFEDD5", color: "#C2410C" }}>
-                  <Zap style={{ width: 10, height: 10 }} /> Fast Response
-                </span>
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden flex flex-col p-0">
+        {/* Header Section */}
+        <div className="p-6 border-b" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
+          <div className="flex items-start gap-4">
+            {/* Avatar */}
+            <div className="w-20 h-20 rounded-full overflow-hidden shrink-0 border-2" style={{ borderColor: "var(--ch-border)", background: "var(--ch-primary-50)" }}>
+              {creator.imageUrl ? (
+                <img src={creator.imageUrl} alt={creator.name} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-2xl font-bold" style={{ color: "var(--ch-primary)" }}>
+                  {creator.name[0]}
+                </div>
               )}
             </div>
-            <p className="text-sm text-slate-500 mt-0.5 flex items-center gap-1">
-              <MapPin className="w-3 h-3 shrink-0" />
-              {creator.city}, Indonesia · <span className="capitalize">{creator.category}</span>
-            </p>
-            <div className="flex items-center gap-3 mt-1.5 text-xs text-slate-500">
-              <span className="flex items-center gap-1">
-                <MessageSquare className="w-3 h-3" /> Respons {responseTimeLabel}
-              </span>
-              <span className="flex items-center gap-1">
-                <Megaphone className="w-3 h-3" /> {collaborationCount}+ kolaborasi
-              </span>
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium capitalize ${catColor}`}>
-                {creator.category}
-              </span>
-            </div>
-          </div>
-          <button
-            onClick={onFavorite}
-            className="shrink-0 p-1.5 rounded-full hover:bg-slate-100 transition-colors"
-          >
-            <Heart className={`w-4 h-4 ${favorited ? "fill-red-500 text-red-500" : "text-slate-400"}`} />
-          </button>
-        </div>
 
-        {/* Two-column body */}
-        <div className="flex gap-5 mt-2">
-          {/* Left column */}
-          <div className="flex-1 space-y-4 min-w-0">
-            {/* Bio */}
-            {creator.bio && (
-              <div>
-                <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Tentang</h3>
-                <p className="text-sm text-slate-600 leading-relaxed">{creator.bio}</p>
+            {/* Creator Info */}
+            <div className="flex-1 min-w-0">
+              {/* Name + Badges */}
+              <div className="flex items-start gap-2 mb-2">
+                <h2 className="text-xl font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                  {creator.name}
+                </h2>
+                {creator.verified && (
+                  <CheckCircle style={{ width: 20, height: 20, color: "#2563EB", flexShrink: 0, marginTop: 2 }} />
+                )}
+                {creator.topRated && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold shrink-0"
+                    style={{ background: "var(--ch-orange-50)", color: "var(--ch-orange)" }}>
+                    <Award style={{ width: 12, height: 12 }} /> Top Rated
+                  </span>
+                )}
+                {creator.fastResponse && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold shrink-0"
+                    style={{ background: "#DCFCE7", color: "#16A34A" }}>
+                    <Zap style={{ width: 12, height: 12 }} /> Fast Response
+                  </span>
+                )}
               </div>
-            )}
 
-            {/* Per-platform breakdown */}
-            <div>
-              <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Platform & Audiens</h3>
-              <div className="space-y-2">
-                {platformSplit.map(({ platform, count }) => (
-                  <div
-                    key={platform}
-                    className={`flex items-center justify-between px-3 py-2 rounded-lg border
-                      ${platform === "instagram" ? "border-pink-200 bg-pink-50" :
-                        platform === "tiktok" ? "border-slate-700 bg-slate-800" :
-                        "border-red-200 bg-red-50"}`}
-                  >
-                    <span className={`flex items-center gap-2 text-sm font-medium
-                      ${platform === "tiktok" ? "text-white" :
-                        platform === "instagram" ? "text-pink-700" : "text-red-700"}`}>
-                      {platformIcon(platform)}
-                      <span className="capitalize">{platform}</span>
-                    </span>
-                    <span className={`text-sm font-bold ${platform === "tiktok" ? "text-white" : "text-slate-800"}`}>
-                      {formatFollowers(count)} followers
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+              {/* Location + Category */}
+              <p className="text-sm mb-3" style={{ color: "var(--ch-text-muted)" }}>
+                <span className="flex items-center gap-1">
+                  <MapPin style={{ width: 14, height: 14 }} />
+                  {creator.city}, Indonesia
+                </span>
+                <span className="mx-2">·</span>
+                <span className={`px-2 py-0.5 rounded-md text-xs font-medium capitalize ${catColor}`}>
+                  {creator.category}
+                </span>
+              </p>
 
-            {/* Audience demographics */}
-            <div>
-              <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Demografi Audiens</h3>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="bg-slate-50 rounded-lg p-2.5">
-                  <p className="text-[10px] text-slate-500 mb-1">Rentang Usia</p>
-                  <p className="text-sm font-semibold text-slate-700">18–34 tahun</p>
-                  <p className="text-[10px] text-slate-400 mt-0.5">74% dari total audiens</p>
-                </div>
-                <div className="bg-slate-50 rounded-lg p-2.5">
-                  <p className="text-[10px] text-slate-500 mb-1">Gender</p>
-                  <p className="text-sm font-semibold text-slate-700">62% Wanita</p>
-                  <div className="flex h-1.5 rounded-full overflow-hidden mt-1.5">
-                    <div className="bg-pink-400" style={{ width: "62%" }} />
-                    <div className="bg-blue-400 flex-1" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right column */}
-          <div className="w-48 shrink-0 space-y-4">
-            {/* Aggregate stats */}
-            <div className="bg-slate-50 rounded-xl p-3 space-y-2.5">
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-slate-500">Total Followers</span>
-                <span className="text-sm font-bold text-slate-800">{creator.followersText}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-slate-500">Engagement Rate</span>
-                <span className="text-sm font-bold text-slate-800">{creator.engagementRate}%</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-slate-500">Rating</span>
-                <span className="text-sm font-bold text-slate-800 flex items-center gap-0.5">
-                  <Star className="w-3 h-3 fill-amber-400 text-amber-400" />{creator.rating}
+              {/* Quick Stats */}
+              <div className="flex items-center gap-4 text-xs" style={{ color: "var(--ch-text-muted)" }}>
+                <span className="flex items-center gap-1">
+                  <MessageSquare style={{ width: 14, height: 14 }} />
+                  <span>Respons {responseTimeLabel}</span>
+                </span>
+                <span className="flex items-center gap-1">
+                  <Megaphone style={{ width: 14, height: 14 }} />
+                  <span>{collaborationCount}+ kolaborasi</span>
                 </span>
               </div>
             </div>
 
-            {/* Performance metrics */}
-            <div>
-              <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Performa Konten</h3>
-              <div className="space-y-1.5">
-                <div className="flex justify-between">
-                  <span className="text-xs text-slate-500">Avg. Likes</span>
-                  <span className="text-xs font-semibold text-slate-700">{avgLikes}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-xs text-slate-500">Avg. Comments</span>
-                  <span className="text-xs font-semibold text-slate-700">{avgComments}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-xs text-slate-500">Avg. Views</span>
-                  <span className="text-xs font-semibold text-slate-700">{avgViews}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Price */}
-            <div className="bg-blue-50 rounded-xl p-3 border border-blue-100">
-              <p className="text-xs text-slate-500">Starting Price</p>
-              <p className="text-lg font-bold text-slate-800 mt-0.5">{creator.priceText}</p>
-            </div>
+            {/* Favorite Button */}
+            <button
+              onClick={onFavorite}
+              className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110"
+              style={{ background: "var(--ch-bg)" }}
+            >
+              <Heart style={{ width: 20, height: 20, color: favorited ? "#EF4444" : "#94A3B8", fill: favorited ? "#EF4444" : "none" }} />
+            </button>
           </div>
         </div>
 
-        {/* Footer actions */}
-        <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 mt-1">
-          <Button variant="outline" size="sm" className="gap-1.5" onClick={onChat}>
-            <MessageSquare className="w-3.5 h-3.5" /> Chat
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto p-6" style={{ background: "var(--ch-bg)" }}>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left Column - Main Content */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Bio Section */}
+              {creator.bio && (
+                <div className="rounded-xl p-4" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
+                  <h3 className="text-sm font-bold mb-2" style={{ color: "var(--ch-text)" }}>Tentang Kreator</h3>
+                  <p className="text-sm leading-relaxed" style={{ color: "var(--ch-text-muted)" }}>{creator.bio}</p>
+                </div>
+              )}
+
+              {/* Platform Breakdown */}
+              <div className="rounded-xl p-4" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
+                <h3 className="text-sm font-bold mb-3" style={{ color: "var(--ch-text)" }}>Platform & Audiens</h3>
+                <div className="space-y-2">
+                  {platformSplit.map(({ platform, count }) => (
+                    <div
+                      key={platform}
+                      className={`flex items-center justify-between px-4 py-3 rounded-lg border
+                        ${platform === "instagram" ? "border-pink-200 bg-pink-50" :
+                          platform === "tiktok" ? "border-slate-700 bg-slate-800" :
+                          "border-red-200 bg-red-50"}`}
+                    >
+                      <span className={`flex items-center gap-2 text-sm font-semibold
+                        ${platform === "tiktok" ? "text-white" :
+                          platform === "instagram" ? "text-pink-700" : "text-red-700"}`}>
+                        {platformIcon(platform)}
+                        <span className="capitalize">{platform}</span>
+                      </span>
+                      <span className={`text-sm font-bold ${platform === "tiktok" ? "text-white" : "text-slate-800"}`}>
+                        {formatFollowers(count)} followers
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Audience Demographics */}
+              <div className="rounded-xl p-4" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
+                <h3 className="text-sm font-bold mb-3" style={{ color: "var(--ch-text)" }}>Demografi Audiens</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-3 rounded-lg" style={{ background: "var(--ch-bg)" }}>
+                    <p className="text-xs mb-1" style={{ color: "var(--ch-text-muted)" }}>Rentang Usia</p>
+                    <p className="text-base font-bold" style={{ color: "var(--ch-text)" }}>18–34 tahun</p>
+                    <p className="text-xs mt-1" style={{ color: "var(--ch-text-soft)" }}>74% dari total audiens</p>
+                  </div>
+                  <div className="p-3 rounded-lg" style={{ background: "var(--ch-bg)" }}>
+                    <p className="text-xs mb-1" style={{ color: "var(--ch-text-muted)" }}>Gender</p>
+                    <p className="text-base font-bold" style={{ color: "var(--ch-text)" }}>62% Wanita</p>
+                    <div className="flex h-2 rounded-full overflow-hidden mt-2">
+                      <div className="bg-pink-400" style={{ width: "62%" }} />
+                      <div className="bg-blue-400 flex-1" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column - Stats & Pricing */}
+            <div className="space-y-4">
+              {/* Key Metrics */}
+              <div className="rounded-xl p-4 space-y-3" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
+                <h3 className="text-sm font-bold" style={{ color: "var(--ch-text)" }}>Metrik Utama</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs" style={{ color: "var(--ch-text-muted)" }}>Total Followers</span>
+                    <span className="text-sm font-bold" style={{ color: "var(--ch-text)" }}>{creator.followersText}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs" style={{ color: "var(--ch-text-muted)" }}>Engagement Rate</span>
+                    <span className="text-sm font-bold" style={{ color: "var(--ch-text)" }}>{creator.engagementRate}%</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs" style={{ color: "var(--ch-text-muted)" }}>Rating</span>
+                    <span className="text-sm font-bold flex items-center gap-1" style={{ color: "var(--ch-text)" }}>
+                      <Star style={{ width: 14, height: 14, fill: "#F59E0B", color: "#F59E0B" }} />
+                      {creator.rating}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Performance Metrics */}
+              <div className="rounded-xl p-4 space-y-3" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
+                <h3 className="text-sm font-bold" style={{ color: "var(--ch-text)" }}>Performa Konten</h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center py-1">
+                    <span className="text-xs" style={{ color: "var(--ch-text-muted)" }}>Avg. Likes</span>
+                    <span className="text-sm font-semibold" style={{ color: "var(--ch-text)" }}>{avgLikes}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1">
+                    <span className="text-xs" style={{ color: "var(--ch-text-muted)" }}>Avg. Comments</span>
+                    <span className="text-sm font-semibold" style={{ color: "var(--ch-text)" }}>{avgComments}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1">
+                    <span className="text-xs" style={{ color: "var(--ch-text-muted)" }}>Avg. Views</span>
+                    <span className="text-sm font-semibold" style={{ color: "var(--ch-text)" }}>{avgViews}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Pricing Card */}
+              <div className="rounded-xl p-4 space-y-2" style={{ background: "var(--ch-primary-50)", border: "2px solid var(--ch-primary-100)" }}>
+                <p className="text-xs font-semibold" style={{ color: "var(--ch-primary)" }}>Starting Price</p>
+                <p className="text-2xl font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                  {creator.priceText}
+                </p>
+                <p className="text-xs" style={{ color: "var(--ch-text-muted)" }}>Estimasi harga per konten</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Actions */}
+        <div className="p-4 border-t flex items-center justify-between gap-3" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
+          <Button variant="outline" size="sm" className="gap-2" onClick={onClose}>
+            Tutup
           </Button>
-          <Button variant="outline" size="sm" onClick={onClose}>Tutup</Button>
-          <Button
-            size="sm"
-            variant={selected ? "destructive" : "default"}
-            onClick={onToggle}
-          >
-            {selected ? "Hapus dari Brief" : "Undang ke Kampanye"}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="default" className="gap-2" onClick={onChat}>
+              <MessageSquare style={{ width: 16, height: 16 }} /> Chat
+            </Button>
+            <Button
+              size="default"
+              variant={selected ? "destructive" : "default"}
+              onClick={onToggle}
+              className="gap-2"
+            >
+              {selected ? (
+                <>Hapus dari Brief</>
+              ) : (
+                <><User style={{ width: 16, height: 16 }} /> Undang ke Kampanye</>
+              )}
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
