@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { DollarSign, Rocket, FileText, Wallet, Eye, Plus, User, TrendingUp, BarChart3, Info, Check, MessageSquare, Zap, CheckCircle } from "lucide-react";
+import { DollarSign, Rocket, FileText, Wallet, Eye, Plus, User, TrendingUp, BarChart3, Check, MessageSquare, Zap, CheckCircle } from "lucide-react";
 
 const STATS = [
   { label: "Pending Reviews", value: "2",        barColor: "#16A34A", icon: FileText },
@@ -52,8 +52,26 @@ const NEEDS_ATTENTION = [
 ];
 
 const ACTIVE_CAMPAIGNS = [
-  { name: "Ramadan Give 2024", status: "Active", progress: "16 / 50", pct: 32, revenue: "Rp 12.3k", views: "4.2k" },
-  { name: "Lebaran Travel Series", status: "Active", progress: "21 / 50", pct: 42, revenue: "Rp 18.7k", views: "6.1k" },
+  {
+    name: "Ramadan Give 2024",
+    status: "Active",
+    deliverables: "16 of 21",
+    deliverablesPct: 76,
+    budget: "Rp 18.7k of Rp 37.5k",
+    budgetPct: 50,
+    views: "6.1k",
+    borderColor: "#EF4444"
+  },
+  {
+    name: "Lebaran Travel Series",
+    status: "Active",
+    deliverables: "16 of 21",
+    deliverablesPct: 76,
+    budget: "Rp 18.7k of Rp 37.5k",
+    budgetPct: 50,
+    views: "6.1k",
+    borderColor: "#3B82F6"
+  },
 ];
 
 const TOP_CREATORS = [
@@ -191,33 +209,46 @@ export default function Dashboard() {
 
           {/* Active Campaigns */}
           <div className="rounded-xl border p-5" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center justify-between mb-4">
               <h2 className="text-[15px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Inter', sans-serif" }}>
                 Active campaigns
               </h2>
-              <Info style={{ width: 16, height: 16, color: "#9CA3AF" }} />
+              <button className="flex items-center gap-1 text-[12px] font-medium px-3 py-1.5 rounded-lg border" style={{ background: "#F9FAFB", borderColor: "#E5E7EB", color: "#6B7280" }}>
+                Ongoing
+                <span style={{ fontSize: 10 }}>▼</span>
+              </button>
             </div>
             <div className="space-y-3">
               {ACTIVE_CAMPAIGNS.map((campaign) => (
                 <button key={campaign.name} onClick={() => navigate("/campaigns")}
-                  className="w-full text-left p-4 rounded-lg border transition-all hover:border-blue-300"
-                  style={{ background: "#F9FAFB", borderColor: "#E5E7EB" }}
+                  className="w-full text-left p-4 rounded-lg border-l-4 transition-all hover:border-blue-300"
+                  style={{ background: "#F9FAFB", borderColor: "#E5E7EB", borderLeftColor: campaign.borderColor, borderLeftWidth: 4 }}
                 >
-                  <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center justify-between mb-3">
                     <p className="text-[14px] font-semibold" style={{ color: "var(--ch-text)" }}>{campaign.name}</p>
                     <span className="text-[11px] font-semibold px-2 py-1 rounded-full" style={{ background: "#DCFCE7", color: "#15803D" }}>
                       {campaign.status}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[12px]" style={{ color: "#6B7280" }}>{campaign.progress}</span>
-                    <div className="flex items-center gap-3">
-                      <span className="text-[12px] font-medium" style={{ color: "var(--ch-text)" }}>{campaign.revenue}</span>
-                      <span className="text-[12px]" style={{ color: "#6B7280" }}>{campaign.views}</span>
+
+                  <div className="grid grid-cols-2 gap-4 mb-3">
+                    <div>
+                      <p className="text-[12px] mb-1" style={{ color: "#6B7280" }}>{campaign.deliverables}</p>
+                      <div className="w-full rounded-full h-2" style={{ background: "#E5E7EB" }}>
+                        <div className="h-2 rounded-full" style={{ width: `${campaign.deliverablesPct}%`, background: "#3B82F6" }} />
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-[12px] mb-1" style={{ color: "#6B7280" }}>{campaign.budget}</p>
+                      <div className="w-full rounded-full h-2" style={{ background: "#E5E7EB" }}>
+                        <div className="h-2 rounded-full" style={{ width: `${campaign.budgetPct}%`, background: "#F59E0B" }} />
+                      </div>
                     </div>
                   </div>
-                  <div className="w-full rounded-full h-2" style={{ background: "#E5E7EB" }}>
-                    <div className="h-2 rounded-full" style={{ width: `${campaign.pct}%`, background: "#3B82F6" }} />
+
+                  <div className="flex items-center gap-3">
+                    <span className="text-[12px]" style={{ color: "#6B7280" }}>{campaign.views}</span>
                   </div>
                 </button>
               ))}
@@ -315,7 +346,7 @@ export default function Dashboard() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-[12px]" style={{ color: "var(--ch-text)" }}>
-                      <span className="font-semibold">{activity.user}</span> {activity.action}
+                      <span className="font-semibold">{activity.user}</span> <span className="font-bold" style={{ color: "#3B82F6" }}>{activity.action}</span>
                     </p>
                     <p className="text-[11px] mt-0.5" style={{ color: "#9CA3AF" }}>{activity.time}</p>
                   </div>

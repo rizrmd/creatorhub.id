@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard, Store, Megaphone, BarChart3, Radio,
+  Store, Megaphone, BarChart3, Radio,
   MessageSquare, CreditCard, Settings, HelpCircle, Users,
   Rocket, ChevronLeft, ChevronRight, Briefcase, DollarSign,
   Lightbulb, User, Home, Mail,
@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { useRole } from "@/context/RoleContext";
 
 const brandNavItems = [
-  { to: "/dashboard",        icon: LayoutDashboard, label: "Dashboard" },
+  { to: "/dashboard",        icon: Home,            label: "Dashboard" },
   { to: "/marketplace",      icon: Store,           label: "Marketplace" },
   { to: "/campaigns",        icon: Megaphone,       label: "Campaigns" },
   { to: "/boost-ads",        icon: Rocket,          label: "Boost Ads" },
