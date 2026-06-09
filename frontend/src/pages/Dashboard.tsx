@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { DollarSign, Rocket, FileText, Wallet, Eye, Clock, Plus, User, TrendingUp, BarChart3, ChevronRight, Info, Check, MessageSquare, Zap } from "lucide-react";
+import { DollarSign, Rocket, FileText, Wallet, Eye, Clock, Plus, User, TrendingUp, BarChart3, ChevronRight, Info, Check, MessageSquare, Zap, CheckCircle } from "lucide-react";
 
 const STATS = [
   { label: "Pending Reviews", value: "2",        barColor: "#16A34A", icon: FileText },
@@ -21,9 +21,36 @@ const ACTIVE_CAMPAIGNS = [
 ];
 
 const TOP_CREATORS = [
-  { name: "Tasya Farasya", earnings: "Rp 18.2k", avatarColor: "#3B82F6" },
-  { name: "Jasmin Putri", earnings: "Rp 15.3k", avatarColor: "#22C55E" },
-  { name: "Fadli Jodi", earnings: "Rp 12.1k", avatarColor: "#A855F7" },
+  {
+    rank: 1,
+    name: "Tasya Farasya",
+    verified: true,
+    metrics: "8.4M reach",
+    rating: 4.9,
+    earnings: "Rp 18.2k",
+    avgFee: "avg fee",
+    avatarColor: "#3B82F6"
+  },
+  {
+    rank: 2,
+    name: "Jasmin Putri",
+    verified: true,
+    metrics: "5.2M reach",
+    rating: 4.8,
+    earnings: "Rp 15.3k",
+    avgFee: "avg fee",
+    avatarColor: "#22C55E"
+  },
+  {
+    rank: 3,
+    name: "Fadli Jodi",
+    verified: true,
+    metrics: "3.1M reach",
+    rating: 4.7,
+    earnings: "Rp 12.1k",
+    avgFee: "avg fee",
+    avatarColor: "#A855F7"
+  },
 ];
 
 const RECENT_ACTIVITY = [
@@ -200,13 +227,31 @@ export default function Dashboard() {
             <div className="space-y-3">
               {TOP_CREATORS.map((creator, index) => (
                 <div key={index} className="flex items-center gap-3 p-3 rounded-lg" style={{ background: "#F9FAFB" }}>
+                  {/* Ranking Number - consistent color */}
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[11px] font-bold shrink-0" style={{ background: "#6B7280" }}>
+                    {creator.rank}
+                  </div>
+                  {/* Creator Avatar */}
                   <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-[12px] font-bold shrink-0" style={{ background: creator.avatarColor }}>
                     {creator.name.split(' ').map(n => n[0]).join('')}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-[13px] font-semibold" style={{ color: "var(--ch-text)" }}>{creator.name}</p>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-[13px] font-semibold" style={{ color: "var(--ch-text)" }}>{creator.name}</p>
+                      {creator.verified && (
+                        <CheckCircle style={{ width: 14, height: 14, color: "#3B82F6" }} />
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className="text-[11px]" style={{ color: "#6B7280" }}>{creator.metrics}</span>
+                      <span style={{ color: "#F59E0B" }}>⭐</span>
+                      <span className="text-[11px]" style={{ color: "#6B7280" }}>{creator.rating}</span>
+                    </div>
                   </div>
-                  <span className="text-[12px] font-medium" style={{ color: "#6B7280" }}>{creator.earnings}</span>
+                  <div className="text-right">
+                    <p className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>{creator.earnings}</p>
+                    <p className="text-[10px]" style={{ color: "#9CA3AF" }}>{creator.avgFee}</p>
+                  </div>
                 </div>
               ))}
             </div>
