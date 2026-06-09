@@ -1,18 +1,18 @@
 import { useNavigate } from "react-router-dom";
-import { DollarSign, Rocket, AlertCircle, FileCheck, Wallet, Eye, Clock, Plus, Search, BarChart3, ChevronRight, Info } from "lucide-react";
+import { DollarSign, Rocket, FileText, Wallet, Eye, Clock, Plus, User, TrendingUp, BarChart3, ChevronRight, Info, Check, MessageSquare, Zap } from "lucide-react";
 
 const STATS = [
-  { label: "Pending Reviews", value: "2",        barColor: "#16A34A", icon: FileCheck },
-  { label: "Revenue This Week", value: "Rp 247k", barColor: "#2563EB", icon: Wallet },
+  { label: "Pending Reviews", value: "2",        barColor: "#16A34A", icon: FileText },
+  { label: "Revenue This Week", value: "Rp 247k", barColor: "#2563EB", icon: DollarSign },
   { label: "Total Views",      value: "27M",     barColor: "#A855F7", icon: Eye },
-  { label: "Total Earnings",   value: "Rp 18.4rb", barColor: "#F97316", icon: DollarSign },
+  { label: "Total Earnings",   value: "Rp 18.4rb", barColor: "#F97316", icon: Wallet },
 ];
 
 const NEEDS_ATTENTION = [
-  { title: "3 collaborations awaiting your approval", desc: "Review now", time: "2 hours ago", type: "warning", href: "/campaigns" },
-  { title: "2 creators waiting for your reply", desc: "Open Messages", time: "1 day ago", type: "warning", href: "/messages" },
-  { title: "Lebaran Travel Series ends in 4 days", desc: "Open Campaign", time: "2 days ago", type: "urgent", href: "/campaigns" },
-  { title: "Ramadan Give at 50% of budget", desc: "Adjust Budget", time: "3 days ago", type: "urgent", href: "/campaigns" },
+  { title: "3 collaborations awaiting your approval", desc: "Review now", time: "2 hours ago", icon: Check, iconBg: "#FEF3C7", iconColor: "#1F2937", href: "/campaigns" },
+  { title: "2 creators waiting for your reply", desc: "Open Messages", time: "1 day ago", icon: MessageSquare, iconBg: "#FEE2E2", iconColor: "#1F2937", href: "/messages" },
+  { title: "Lebaran Travel Series ends in 4 days", desc: "Open Campaign", time: "2 days ago", icon: Zap, iconBg: "#DBEAFE", iconColor: "#1F2937", href: "/campaigns" },
+  { title: "Ramadan Give at 50% of budget", desc: "Adjust Budget", time: "3 days ago", icon: BarChart3, iconBg: "#FED7AA", iconColor: "#1F2937", href: "/campaigns" },
 ];
 
 const ACTIVE_CAMPAIGNS = [
@@ -35,9 +35,9 @@ const RECENT_ACTIVITY = [
 
 const QUICK_ACTIONS = [
   { label: "New Campaign", icon: Plus, href: "/campaigns", color: "#3B82F6" },
-  { label: "Find Creators", icon: Search, href: "/marketplace", color: "#22C55E" },
+  { label: "Find Creators", icon: User, href: "/marketplace", color: "#22C55E" },
   { label: "Launch Ads", icon: Rocket, href: "/campaigns", color: "#A855F7" },
-  { label: "View Reports", icon: BarChart3, href: "/analytics", color: "#A855F7" },
+  { label: "View Reports", icon: TrendingUp, href: "/analytics", color: "#A855F7" },
 ];
 
 export default function Dashboard() {
@@ -99,7 +99,9 @@ export default function Dashboard() {
             <div className="space-y-3">
               {NEEDS_ATTENTION.map((item, index) => (
                 <div key={index} className="flex items-start gap-3 p-3 rounded-lg border" style={{ background: "#F9FAFB", borderColor: "#E5E7EB" }}>
-                  <AlertCircle style={{ width: 18, height: 18, color: item.type === "urgent" ? "#F97316" : "#F59E0B", flexShrink: 0, marginTop: 2 }} />
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: item.iconBg }}>
+                    <item.icon style={{ width: 16, height: 16, color: item.iconColor }} />
+                  </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-[13px] font-semibold mb-1" style={{ color: "var(--ch-text)" }}>{item.title}</p>
                     <div className="flex items-center gap-2">
