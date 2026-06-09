@@ -3,20 +3,19 @@ import {
   Search, SlidersHorizontal, Star, CheckCircle, Zap, Award,
   Instagram, Youtube, Users, Megaphone, TrendingUp, Wallet,
   LayoutGrid, List, RotateCcw, X, Flame, MessageSquare, MapPin,
+  Heart, ArrowUpRight,
 } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useCreators, useMarketplaceStats } from "@/hooks/useCreators";
 import { useCreateCampaign } from "@/hooks/useCampaigns";
 import type { Creator, CreatorListParams } from "@/types";
-import { formatRupiah } from "@/lib/utils";
+import { formatRupiah, formatFollowers } from "@/lib/utils";
 
 const CATEGORIES = ["lifestyle", "travel", "beauty", "tech", "food", "sports"];
 const CITIES = ["Jakarta", "Bandung", "Surabaya", "Bali", "Yogyakarta", "Medan", "Makassar"];
@@ -61,257 +60,423 @@ const platformIcon = (p: string) => {
   return <span className="text-[10px] font-bold">TT</span>;
 };
 
-function StatCard({ label, value, icon: Icon, color, loading }: {
-  label: string; value: string; icon: React.ElementType; color: string; loading: boolean;
+function StatCard({ label, value, icon: Icon, color, loading, trend }: {
+  label: string; value: string; icon: React.ElementType; color: string; loading: boolean; trend?: string;
 }) {
   return (
-    <Card>
-      <CardContent className="p-5">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-sm text-slate-500">{label}</p>
-            {loading ? <Skeleton className="h-7 w-24 mt-1" /> : <p className="text-2xl font-bold text-slate-800 mt-1">{value}</p>}
-          </div>
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}>
-            <Icon className="w-5 h-5" />
-          </div>
+    <div className="rounded-xl border p-5"
+      style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-[13px]" style={{ color: "var(--ch-text-muted)" }}>{label}</p>
+          {loading ? <Skeleton className="h-7 w-24 mt-1" /> : (
+            <p className="text-[22px] font-extrabold mt-0.5 tracking-[-0.3px]"
+              style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{value}</p>
+          )}
+          {trend && !loading && (
+            <div className="flex items-center gap-1 mt-1 text-[12px] font-semibold" style={{ color: "#16A34A" }}>
+              <ArrowUpRight className="w-3 h-3" />
+              {trend} vs bulan lalu
+            </div>
+          )}
         </div>
-      </CardContent>
-    </Card>
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}>
+          <Icon className="w-5 h-5" />
+        </div>
+      </div>
+    </div>
   );
 }
 
-function CreatorCard({ creator, selected, onToggle, onCardClick, listView }: {
-  creator: Creator; selected: boolean; onToggle: () => void; onCardClick: () => void; listView: boolean;
+function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFavorite, listView }: {
+  creator: Creator; selected: boolean; favorited: boolean;
+  onToggle: () => void; onCardClick: () => void; onFavorite: () => void; listView: boolean;
 }) {
   const catColor = CATEGORY_COLORS[creator.category] ?? "bg-slate-100 text-slate-700";
 
   if (listView) {
     return (
-      <Card
-        className={`cursor-pointer transition-all hover:shadow-md ${selected ? "ring-2 ring-blue-500" : ""}`}
+      <div
+        className="cursor-pointer transition-all rounded-xl border"
+        style={{
+          background: "var(--ch-surface)",
+          borderColor: selected ? "var(--ch-primary)" : "var(--ch-border)",
+          boxShadow: selected ? "0 0 0 2px var(--ch-primary)" : "var(--ch-shadow-sm)",
+        }}
         onClick={onCardClick}
       >
-        <CardContent className="p-3">
+        <div className="p-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden shrink-0 relative">
+            <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 relative flex items-center justify-center font-semibold text-[14px]"
+              style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>
               {creator.imageUrl && (
-                <img src={creator.imageUrl} alt={creator.name} className="w-full h-full object-cover"
-                  onError={(e) => { e.currentTarget.style.display = "none"; e.currentTarget.nextElementSibling?.removeAttribute("style"); }} />
+                <img src={creator.imageUrl} alt={creator.name} className="w-full h-full object-cover absolute inset-0"
+                  onError={(e) => { e.currentTarget.style.display = "none"; }} />
               )}
-              <div className="absolute inset-0 flex items-center justify-center text-sm font-bold text-slate-500"
-                style={creator.imageUrl ? { display: "none" } : undefined}>
-                {creator.name[0]}
-              </div>
+              {creator.name[0]}
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <p className="font-semibold text-slate-800 text-sm truncate">{creator.name}</p>
-                {creator.verified && <CheckCircle className="w-3.5 h-3.5 text-blue-500 shrink-0" />}
+                <p className="text-[13px] font-semibold truncate" style={{ color: "var(--ch-text)" }}>{creator.name}</p>
+                {creator.verified && <CheckCircle style={{ width: 13, height: 13, color: "#2563EB", flexShrink: 0 }} />}
               </div>
-              <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                <MapPin className="w-3 h-3" />{creator.city}
+              <div className="flex items-center gap-1.5 text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
+                <MapPin style={{ width: 11, height: 11 }} />{creator.city}
                 <span className={`px-1.5 py-0 rounded-full text-[10px] font-medium capitalize ${catColor}`}>{creator.category}</span>
               </div>
             </div>
-            <div className="hidden sm:flex items-center gap-4 text-xs text-slate-600">
-              <span className="font-medium">{creator.followersText}</span>
-              <span className="font-medium">{creator.engagementRate}% ER</span>
-              <span className="flex items-center gap-0.5"><Star className="w-3 h-3 fill-amber-400 text-amber-400" />{creator.rating}</span>
-              <span className="font-semibold text-slate-700">{creator.priceText}</span>
+            <div className="hidden sm:flex items-center gap-4 text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
+              <span className="font-semibold">{creator.followersText}</span>
+              <span className="font-semibold">{creator.engagementRate}% ER</span>
+              <span className="flex items-center gap-0.5">
+                <Star style={{ width: 12, height: 12, fill: "#FBBF24", color: "#FBBF24" }} />{creator.rating}
+              </span>
+              <span className="font-bold" style={{ color: "var(--ch-text)" }}>{creator.priceText}</span>
             </div>
-            <Button size="sm" variant={selected ? "outline" : "default"} className="h-7 text-xs shrink-0"
-              onClick={(e) => { e.stopPropagation(); onToggle(); }}>
-              {selected ? "Hapus" : "+ Brief"}
-            </Button>
+            <button
+              onClick={(e) => { e.stopPropagation(); onFavorite(); }}
+              className="p-1.5 rounded-full hover:bg-slate-100 transition-colors shrink-0"
+            >
+              <Heart style={{ width: 14, height: 14, color: favorited ? "#EF4444" : "#94A3B8", fill: favorited ? "#EF4444" : "none" }} />
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); onToggle(); }}
+              className="px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all shrink-0"
+              style={selected ? {
+                background: "var(--ch-primary)", color: "white",
+              } : {
+                background: "var(--ch-primary-50)", color: "var(--ch-primary)",
+                border: "1.5px solid var(--ch-primary-100)",
+              }}
+            >
+              {selected ? "✓ Diundang" : "Undang"}
+            </button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
+  const photoSrc = creator.img ? `/creators/${creator.img.split("/").pop()}` : creator.imageUrl;
+  const gradientBg = `hsl(${creator.hue ?? 220}, 60%, 85%)`;
+
   return (
-    <Card
-      className={`cursor-pointer transition-all hover:shadow-md ${selected ? "ring-2 ring-blue-500" : ""}`}
+    <div
+      className={`rounded-[14px] overflow-hidden border transition-all cursor-pointer`}
+      style={{
+        background: "var(--ch-surface)",
+        borderColor: selected ? "var(--ch-primary)" : "var(--ch-border)",
+        boxShadow: selected ? "0 0 0 2px var(--ch-primary)" : "var(--ch-shadow-sm)",
+        transform: "translateY(0)",
+        transition: "transform .15s, box-shadow .15s",
+      }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; (e.currentTarget as HTMLElement).style.boxShadow = "var(--ch-shadow-md)"; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLElement).style.boxShadow = selected ? "0 0 0 2px var(--ch-primary)" : "var(--ch-shadow-sm)"; }}
       onClick={onCardClick}
     >
-      <CardContent className="p-4">
-        <div className="flex items-start gap-3">
-          <div className="w-14 h-14 rounded-xl bg-slate-200 overflow-hidden shrink-0 relative">
-            {creator.imageUrl && (
-              <img src={creator.imageUrl} alt={creator.name} className="w-full h-full object-cover"
-                onError={(e) => { e.currentTarget.style.display = "none"; e.currentTarget.nextElementSibling?.removeAttribute("style"); }} />
-            )}
-            <div className="absolute inset-0 flex items-center justify-center text-lg font-bold text-slate-500"
-              style={creator.imageUrl ? { display: "none" } : undefined}>
-              {creator.name[0]}
-            </div>
-            {selected && (
-              <div className="absolute inset-0 bg-blue-600/20 flex items-center justify-center">
-                <CheckCircle className="w-6 h-6 text-blue-600" />
-              </div>
-            )}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5">
-              <p className="font-semibold text-slate-800 text-sm truncate">{creator.name}</p>
-              {creator.verified && <CheckCircle className="w-3.5 h-3.5 text-blue-500 shrink-0" />}
-            </div>
-            <div className="flex items-center gap-1 text-xs text-slate-500 mt-0.5">
-              <MapPin className="w-3 h-3 shrink-0" />{creator.city}
-            </div>
-            <div className="flex flex-wrap gap-1 mt-1.5">
-              <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-medium capitalize ${catColor}`}>
-                {creator.category}
-              </span>
-              {creator.fastResponse && (
-                <Badge variant="warning" className="text-[10px] px-1.5 py-0">
-                  <Zap className="w-2.5 h-2.5 mr-0.5" /> Cepat
-                </Badge>
-              )}
-              {creator.topRated && (
-                <Badge variant="success" className="text-[10px] px-1.5 py-0">
-                  <Award className="w-2.5 h-2.5 mr-0.5" /> Top
-                </Badge>
-              )}
-            </div>
-          </div>
+      {/* Photo header — 220px */}
+      <div className="relative w-full overflow-hidden" style={{ height: 220, background: gradientBg }}>
+        {photoSrc && (
+          <img
+            src={photoSrc}
+            alt={creator.name}
+            className="w-full h-full object-cover"
+            style={{ objectPosition: creator.focus ?? "50% 25%" }}
+            onError={(e) => { e.currentTarget.style.display = "none"; }}
+          />
+        )}
+        <div className="absolute inset-0 flex items-center justify-center text-5xl font-bold text-white/40 pointer-events-none select-none">
+          {!photoSrc && creator.name[0]}
         </div>
 
-        <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-slate-100">
-          <div className="text-center">
-            <p className="text-sm font-bold text-slate-800">{creator.followersText}</p>
-            <p className="text-[10px] text-slate-500">Followers</p>
+        {/* Verified chip — top-left */}
+        {creator.verified && (
+          <div className="absolute top-2.5 left-2.5 flex items-center gap-1 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow"
+            style={{ background: "var(--ch-primary)" }}>
+            <CheckCircle style={{ width: 10, height: 10 }} /> Verified
           </div>
-          <div className="text-center">
-            <p className="text-sm font-bold text-slate-800">{creator.engagementRate}%</p>
-            <p className="text-[10px] text-slate-500">Engagement</p>
+        )}
+
+        {/* Star creator badge */}
+        {creator.starCreator && (
+          <div className="absolute top-2.5 left-2.5 mt-5 flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full shadow"
+            style={{ background: "#FCD34D", color: "#92400E", marginTop: creator.verified ? "24px" : "0" }}>
+            ⭐ Star Creator
           </div>
-          <div className="text-center">
-            <p className="text-sm font-bold text-slate-800 flex items-center justify-center gap-0.5">
-              <Star className="w-3 h-3 fill-amber-400 text-amber-400" />{creator.rating}
+        )}
+
+        {/* Heart — top-right */}
+        <button
+          onClick={(e) => { e.stopPropagation(); onFavorite(); }}
+          className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white flex items-center justify-center transition-colors hover:scale-110 shadow"
+          style={{ boxShadow: "var(--ch-shadow-sm)" }}
+        >
+          <Heart style={{ width: 14, height: 14, color: favorited ? "#EF4444" : "#94A3B8", fill: favorited ? "#EF4444" : "none" }} />
+        </button>
+
+        {/* Selected overlay */}
+        {selected && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ background: "rgba(37,99,235,.2)" }}>
+            <CheckCircle style={{ width: 32, height: 32, color: "var(--ch-primary)", filter: "drop-shadow(0 0 4px white)" }} />
+          </div>
+        )}
+      </div>
+
+      {/* Card body */}
+      <div className="p-3.5">
+        {/* Name + city */}
+        <div className="flex items-start justify-between gap-2 mb-1">
+          <div className="min-w-0">
+            <p className="font-bold text-[14px] truncate leading-tight" style={{ color: "var(--ch-text)" }}>{creator.name}</p>
+            <p className="text-[12px] flex items-center gap-1 mt-0.5" style={{ color: "var(--ch-text-muted)" }}>
+              <MapPin style={{ width: 11, height: 11 }} />
+              {creator.city}
             </p>
-            <p className="text-[10px] text-slate-500">Rating</p>
+          </div>
+          <span className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize ${catColor}`}>
+            {creator.category}
+          </span>
+        </div>
+
+        {/* Platform icons */}
+        <div className="flex gap-1 mt-2">
+          {creator.platforms.map((p) => (
+            <span key={p} className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
+              {platformIcon(p)}
+            </span>
+          ))}
+        </div>
+
+        {/* Two-cell metric strip */}
+        <div className="grid grid-cols-2 mt-3 rounded-lg overflow-hidden border" style={{ borderColor: "var(--ch-border)" }}>
+          <div className="text-center py-2 border-r" style={{ borderColor: "var(--ch-border)" }}>
+            <p className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>{creator.followersText}</p>
+            <p className="text-[10px]" style={{ color: "var(--ch-text-soft)" }}>Followers</p>
+          </div>
+          <div className="text-center py-2">
+            <p className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>{creator.engagementRate}%</p>
+            <p className="text-[10px]" style={{ color: "var(--ch-text-soft)" }}>Engagement</p>
           </div>
         </div>
 
+        {/* Price + invite button */}
         <div className="flex items-center justify-between mt-3">
-          <div className="flex gap-1">
-            {creator.platforms.map((p) => (
-              <span key={p} className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
-                {platformIcon(p)}
-              </span>
-            ))}
+          <div>
+            <p className="text-[10px]" style={{ color: "var(--ch-text-soft)" }}>Mulai dari</p>
+            <p className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>{creator.priceText}</p>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-700">{creator.priceText}</span>
-            <Button size="sm" variant={selected ? "outline" : "default"} className="h-7 text-xs"
-              onClick={(e) => { e.stopPropagation(); onToggle(); }}>
-              {selected ? "Hapus" : "+ Brief"}
-            </Button>
-          </div>
+          <button
+            onClick={(e) => { e.stopPropagation(); onToggle(); }}
+            className="px-3.5 py-1.5 rounded-lg text-[12px] font-bold transition-all"
+            style={selected ? {
+              background: "var(--ch-primary)", color: "white", border: "none",
+            } : {
+              background: "var(--ch-primary-50)", color: "var(--ch-primary)",
+              border: "1.5px solid var(--ch-primary-100)",
+            }}
+          >
+            {selected ? "✓ Diundang" : "Undang"}
+          </button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
-function CreatorProfileModal({ creator, selected, onToggle, onClose, onChat }: {
-  creator: Creator; selected: boolean; onToggle: () => void; onClose: () => void; onChat: () => void;
+function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, onChat, onFavorite }: {
+  creator: Creator; selected: boolean; favorited: boolean;
+  onToggle: () => void; onClose: () => void; onChat: () => void; onFavorite: () => void;
 }) {
   const catColor = CATEGORY_COLORS[creator.category] ?? "bg-slate-100 text-slate-700";
+
+  const platformWeights = [0.55, 0.30, 0.15];
+  const platformSplit = creator.platforms.map((p, i) => ({
+    platform: p,
+    count: Math.round(creator.followers * (platformWeights[i] ?? 0.1)),
+  }));
+
+  const collaborationCount = Math.max(1, Math.round(creator.rating * 8) - 12);
+  const responseTimeLabel = creator.fastResponse ? "< 2 jam" : "< 24 jam";
+  const avgLikes = formatFollowers(Math.round(creator.followers * creator.engagementRate / 100 * 0.8));
+  const avgComments = formatFollowers(Math.round(creator.followers * creator.engagementRate / 100 * 0.15));
+  const avgViews = formatFollowers(Math.round(creator.followers * 2.3));
+
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="sr-only">Creator Profile</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
-          {/* Header */}
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-slate-200 overflow-hidden shrink-0">
-              {creator.imageUrl ? (
-                <img src={creator.imageUrl} alt={creator.name} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-xl font-bold text-slate-500">{creator.name[0]}</div>
+
+        {/* Header */}
+        <div className="flex items-start gap-4">
+          <div className="w-16 h-16 rounded-full bg-slate-200 overflow-hidden shrink-0">
+            {creator.imageUrl ? (
+              <img src={creator.imageUrl} alt={creator.name} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-xl font-bold text-slate-500">{creator.name[0]}</div>
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <h2 className="font-bold text-slate-800 text-lg">{creator.name}</h2>
+              {creator.verified && <CheckCircle className="w-4 h-4 text-blue-500 shrink-0" />}
+              {creator.topRated && (
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full"
+                  style={{ background: "#FEF3C7", color: "#B45309" }}>
+                  <Award style={{ width: 10, height: 10 }} /> Top Rated
+                </span>
+              )}
+              {creator.fastResponse && (
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full"
+                  style={{ background: "#FFEDD5", color: "#C2410C" }}>
+                  <Zap style={{ width: 10, height: 10 }} /> Fast Response
+                </span>
               )}
             </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <h2 className="font-bold text-slate-800 text-lg">{creator.name}</h2>
-                {creator.verified && <CheckCircle className="w-4 h-4 text-blue-500" />}
-              </div>
-              <p className="text-sm text-slate-500">
-                {creator.city}, Indonesia · <span className="capitalize">{creator.category}</span>
-              </p>
-              <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-medium capitalize ${catColor}`}>
+            <p className="text-sm text-slate-500 mt-0.5 flex items-center gap-1">
+              <MapPin className="w-3 h-3 shrink-0" />
+              {creator.city}, Indonesia · <span className="capitalize">{creator.category}</span>
+            </p>
+            <div className="flex items-center gap-3 mt-1.5 text-xs text-slate-500">
+              <span className="flex items-center gap-1">
+                <MessageSquare className="w-3 h-3" /> Respons {responseTimeLabel}
+              </span>
+              <span className="flex items-center gap-1">
+                <Megaphone className="w-3 h-3" /> {collaborationCount}+ kolaborasi
+              </span>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium capitalize ${catColor}`}>
                 {creator.category}
               </span>
             </div>
           </div>
+          <button
+            onClick={onFavorite}
+            className="shrink-0 p-1.5 rounded-full hover:bg-slate-100 transition-colors"
+          >
+            <Heart className={`w-4 h-4 ${favorited ? "fill-red-500 text-red-500" : "text-slate-400"}`} />
+          </button>
+        </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-3 bg-slate-50 rounded-xl p-4">
-            <div className="text-center">
-              <p className="text-base font-bold text-slate-800">{creator.followersText}</p>
-              <p className="text-xs text-slate-500 mt-0.5">Followers</p>
+        {/* Two-column body */}
+        <div className="flex gap-5 mt-2">
+          {/* Left column */}
+          <div className="flex-1 space-y-4 min-w-0">
+            {/* Bio */}
+            {creator.bio && (
+              <div>
+                <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">Tentang</h3>
+                <p className="text-sm text-slate-600 leading-relaxed">{creator.bio}</p>
+              </div>
+            )}
+
+            {/* Per-platform breakdown */}
+            <div>
+              <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Platform & Audiens</h3>
+              <div className="space-y-2">
+                {platformSplit.map(({ platform, count }) => (
+                  <div
+                    key={platform}
+                    className={`flex items-center justify-between px-3 py-2 rounded-lg border
+                      ${platform === "instagram" ? "border-pink-200 bg-pink-50" :
+                        platform === "tiktok" ? "border-slate-700 bg-slate-800" :
+                        "border-red-200 bg-red-50"}`}
+                  >
+                    <span className={`flex items-center gap-2 text-sm font-medium
+                      ${platform === "tiktok" ? "text-white" :
+                        platform === "instagram" ? "text-pink-700" : "text-red-700"}`}>
+                      {platformIcon(platform)}
+                      <span className="capitalize">{platform}</span>
+                    </span>
+                    <span className={`text-sm font-bold ${platform === "tiktok" ? "text-white" : "text-slate-800"}`}>
+                      {formatFollowers(count)} followers
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="text-center border-x border-slate-200">
-              <p className="text-base font-bold text-slate-800">{creator.engagementRate}%</p>
-              <p className="text-xs text-slate-500 mt-0.5">Engagement</p>
-            </div>
-            <div className="text-center">
-              <p className="text-base font-bold text-slate-800 flex items-center justify-center gap-0.5">
-                <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />{creator.rating}
-              </p>
-              <p className="text-xs text-slate-500 mt-0.5">Rating</p>
+
+            {/* Audience demographics */}
+            <div>
+              <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Demografi Audiens</h3>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="bg-slate-50 rounded-lg p-2.5">
+                  <p className="text-[10px] text-slate-500 mb-1">Rentang Usia</p>
+                  <p className="text-sm font-semibold text-slate-700">18–34 tahun</p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">74% dari total audiens</p>
+                </div>
+                <div className="bg-slate-50 rounded-lg p-2.5">
+                  <p className="text-[10px] text-slate-500 mb-1">Gender</p>
+                  <p className="text-sm font-semibold text-slate-700">62% Wanita</p>
+                  <div className="flex h-1.5 rounded-full overflow-hidden mt-1.5">
+                    <div className="bg-pink-400" style={{ width: "62%" }} />
+                    <div className="bg-blue-400 flex-1" />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Bio */}
-          {creator.bio && (
-            <div>
-              <h3 className="text-sm font-semibold text-slate-700 mb-1">About Creator</h3>
-              <p className="text-sm text-slate-600 leading-relaxed">{creator.bio}</p>
-            </div>
-          )}
-
-          {/* Platforms */}
-          <div>
-            <h3 className="text-sm font-semibold text-slate-700 mb-2">Active Platforms</h3>
-            <div className="flex gap-2">
-              {creator.platforms.map((p) => (
-                <span key={p} className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border
-                  ${p === "instagram" ? "border-pink-200 bg-pink-50 text-pink-700" :
-                    p === "tiktok" ? "border-slate-300 bg-slate-800 text-white" :
-                    "border-red-200 bg-red-50 text-red-700"}`}>
-                  {platformIcon(p)}
-                  <span className="capitalize">{p}</span>
+          {/* Right column */}
+          <div className="w-48 shrink-0 space-y-4">
+            {/* Aggregate stats */}
+            <div className="bg-slate-50 rounded-xl p-3 space-y-2.5">
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-slate-500">Total Followers</span>
+                <span className="text-sm font-bold text-slate-800">{creator.followersText}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-slate-500">Engagement Rate</span>
+                <span className="text-sm font-bold text-slate-800">{creator.engagementRate}%</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-slate-500">Rating</span>
+                <span className="text-sm font-bold text-slate-800 flex items-center gap-0.5">
+                  <Star className="w-3 h-3 fill-amber-400 text-amber-400" />{creator.rating}
                 </span>
-              ))}
+              </div>
             </div>
-          </div>
 
-          {/* Footer */}
-          <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+            {/* Performance metrics */}
             <div>
-              <p className="text-xs text-slate-500">Starting Price</p>
-              <p className="text-base font-bold text-slate-800">{creator.priceText}</p>
+              <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Performa Konten</h3>
+              <div className="space-y-1.5">
+                <div className="flex justify-between">
+                  <span className="text-xs text-slate-500">Avg. Likes</span>
+                  <span className="text-xs font-semibold text-slate-700">{avgLikes}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-xs text-slate-500">Avg. Comments</span>
+                  <span className="text-xs font-semibold text-slate-700">{avgComments}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-xs text-slate-500">Avg. Views</span>
+                  <span className="text-xs font-semibold text-slate-700">{avgViews}</span>
+                </div>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="gap-1.5" onClick={onChat}>
-                <MessageSquare className="w-3.5 h-3.5" /> Chat
-              </Button>
-              <Button variant="outline" size="sm" onClick={onClose}>Close</Button>
-              <Button
-                size="sm"
-                variant={selected ? "destructive" : "default"}
-                onClick={() => { onToggle(); onClose(); }}
-              >
-                {selected ? "Remove from Brief" : "Invite to Campaign"}
-              </Button>
+
+            {/* Price */}
+            <div className="bg-blue-50 rounded-xl p-3 border border-blue-100">
+              <p className="text-xs text-slate-500">Starting Price</p>
+              <p className="text-lg font-bold text-slate-800 mt-0.5">{creator.priceText}</p>
             </div>
           </div>
+        </div>
+
+        {/* Footer actions */}
+        <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 mt-1">
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={onChat}>
+            <MessageSquare className="w-3.5 h-3.5" /> Chat
+          </Button>
+          <Button variant="outline" size="sm" onClick={onClose}>Tutup</Button>
+          <Button
+            size="sm"
+            variant={selected ? "destructive" : "default"}
+            onClick={onToggle}
+          >
+            {selected ? "Hapus dari Brief" : "Undang ke Kampanye"}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -327,6 +492,7 @@ function parseRange(val: string): { min?: number; max?: number } {
 export default function Marketplace() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const searchRef = useRef<HTMLInputElement>(null);
 
   const [filters, setFilters] = useState<CreatorListParams>(() => ({
     page: 1,
@@ -336,6 +502,7 @@ export default function Marketplace() {
   }));
   const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [listView, setListView] = useState(false);
 
   useEffect(() => {
@@ -344,6 +511,17 @@ export default function Marketplace() {
     if (city) setFilters((f) => ({ ...f, city, page: 1 }));
     if (q) setSearch(q);
     if (city || q) setSearchParams({}, { replace: true });
+  }, []);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "/" && document.activeElement?.tagName !== "INPUT" && document.activeElement?.tagName !== "TEXTAREA") {
+        e.preventDefault();
+        searchRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
   }, []);
 
   const [followersVal, setFollowersVal] = useState("all");
@@ -365,9 +543,18 @@ export default function Marketplace() {
   const { data: stats, isLoading: statsLoading } = useMarketplaceStats();
 
   const toggleSelect = (id: string) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : prev.length < 5 ? [...prev, id] : prev
-    );
+    setSelectedIds((prev) => {
+      if (prev.includes(id)) return prev.filter((x) => x !== id);
+      if (prev.length >= 5) {
+        toast.error("Maksimal 5 kreator dalam satu brief.");
+        return prev;
+      }
+      return [...prev, id];
+    });
+  };
+
+  const toggleFavorite = (id: string) => {
+    setFavoriteIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
   };
 
   const resetFilters = () => {
@@ -416,11 +603,16 @@ export default function Marketplace() {
   const selectedCreators = data?.data.filter((c) => selectedIds.includes(c.id)) ?? [];
 
   const statCards = [
-    { label: "Total Kreator", value: stats ? stats.totalCreators.toLocaleString("id-ID") : "–", icon: Users, color: "text-blue-600 bg-blue-50" },
-    { label: "Kampanye Aktif", value: stats ? stats.activeCampaigns.toLocaleString("id-ID") : "–", icon: Megaphone, color: "text-orange-600 bg-orange-50" },
-    { label: "Avg. Engagement", value: stats ? `${stats.avgEngagementRate.toFixed(2)}%` : "–", icon: TrendingUp, color: "text-cyan-600 bg-cyan-50" },
-    { label: "Budget Dikelola", value: stats ? formatRupiah(stats.totalBudget) : "–", icon: Wallet, color: "text-amber-600 bg-amber-50" },
+    { label: "Total Kreator", value: stats ? stats.totalCreators.toLocaleString("id-ID") : "–", icon: Users, color: "text-blue-600 bg-blue-50", trend: "+18.6%" },
+    { label: "Kampanye Aktif", value: stats ? stats.activeCampaigns.toLocaleString("id-ID") : "–", icon: Megaphone, color: "text-orange-600 bg-orange-50", trend: "+12.4%" },
+    { label: "Avg. Engagement", value: stats ? `${stats.avgEngagementRate.toFixed(2)}%` : "–", icon: TrendingUp, color: "text-cyan-600 bg-cyan-50", trend: "+0.6%" },
+    { label: "Budget Dikelola", value: stats ? formatRupiah(stats.totalBudget) : "–", icon: Wallet, color: "text-amber-600 bg-amber-50", trend: "+24.7%" },
   ];
+
+  const totalReach = selectedCreators.reduce((a, c) => a + c.followers, 0);
+  const avgEngagement = selectedCreators.length > 0
+    ? (selectedCreators.reduce((a, c) => a + c.engagementRate, 0) / selectedCreators.length).toFixed(2)
+    : "0";
 
   return (
     <div className="flex h-full">
@@ -436,7 +628,13 @@ export default function Marketplace() {
         <div className="px-4 pt-3 pb-0 bg-white flex flex-wrap items-center gap-2">
           <div className="relative flex-1 min-w-48">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <Input placeholder="Cari nama kreator..." className="pl-9" value={search} onChange={(e) => setSearch(e.target.value)} />
+            <Input
+              ref={searchRef}
+              placeholder="Cari nama kreator... (tekan / untuk fokus)"
+              className="pl-9"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </div>
 
           <Select value={filters.category ?? "all"} onValueChange={(v) => setFilters((f) => ({ ...f, category: v === "all" ? undefined : v, page: 1 }))}>
@@ -547,10 +745,20 @@ export default function Marketplace() {
           {isLoading ? (
             <div className={listView ? "space-y-2" : "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"}>
               {Array.from({ length: 9 }).map((_, i) => (
-                <Card key={i}><CardContent className="p-4 space-y-3">
-                  <div className="flex gap-3"><Skeleton className="w-14 h-14 rounded-xl" /><div className="flex-1 space-y-2"><Skeleton className="h-4 w-3/4" /><Skeleton className="h-3 w-1/2" /></div></div>
-                  <Skeleton className="h-10" />
-                </CardContent></Card>
+                <div key={i} className="rounded-xl border overflow-hidden"
+                  style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
+                  {!listView && <Skeleton className="w-full h-52" />}
+                  <div className="p-3 space-y-2">
+                    <div className="flex gap-3">
+                      {listView && <Skeleton className="w-10 h-10 rounded-full shrink-0" />}
+                      <div className="flex-1 space-y-2">
+                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-3 w-1/2" />
+                      </div>
+                    </div>
+                    {!listView && <Skeleton className="h-10" />}
+                  </div>
+                </div>
               ))}
             </div>
           ) : data?.data.length === 0 ? (
@@ -567,8 +775,10 @@ export default function Marketplace() {
                   key={creator.id}
                   creator={creator}
                   selected={selectedIds.includes(creator.id)}
+                  favorited={favoriteIds.includes(creator.id)}
                   onToggle={() => toggleSelect(creator.id)}
                   onCardClick={() => setProfileCreator(creator)}
+                  onFavorite={() => toggleFavorite(creator.id)}
                   listView={listView}
                 />
               ))}
@@ -582,7 +792,8 @@ export default function Marketplace() {
                 Sebelumnya
               </Button>
               <span className="text-xs text-slate-500 self-center">
-                Halaman {filters.page} dari {data.totalPages}
+                Menampilkan {((filters.page ?? 1) - 1) * (filters.pageSize ?? 20) + 1}–{Math.min((filters.page ?? 1) * (filters.pageSize ?? 20), data.total)} dari {data.total} kreator
+                {" · "}Halaman {filters.page} dari {data.totalPages}
               </span>
               <Button variant="outline" size="sm" disabled={filters.page === data.totalPages}
                 onClick={() => setFilters((f) => ({ ...f, page: (f.page ?? 1) + 1 }))}>
@@ -594,17 +805,17 @@ export default function Marketplace() {
       </div>
 
       {/* Campaign Brief Panel */}
-      <aside className="w-[320px] shrink-0 bg-white border-l border-slate-200 flex flex-col">
-        <div className="p-4 border-b border-slate-200">
-          <h2 className="font-semibold text-slate-800">Campaign Brief</h2>
-          <p className="text-xs text-slate-500 mt-1">{selectedIds.length}/5 kreator dipilih</p>
+      <aside className="w-[312px] shrink-0 flex flex-col" style={{ background: "var(--ch-surface)", borderLeft: "1px solid var(--ch-border)" }}>
+        <div className="p-4 border-b" style={{ borderColor: "var(--ch-border)" }}>
+          <h2 className="font-bold text-[15px]" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Campaign Brief</h2>
+          <p className="text-[12px] mt-0.5" style={{ color: "var(--ch-text-muted)" }}>{selectedIds.length}/5 kreator dipilih</p>
         </div>
 
         <div className="flex-1 overflow-auto p-4 space-y-3">
           {selectedCreators.length === 0 ? (
             <div className="text-center py-12 text-slate-400">
               <p className="text-sm">Belum ada kreator dipilih</p>
-              <p className="text-xs mt-1">Klik "+ Brief" atau klik kartu kreator</p>
+              <p className="text-xs mt-1">Klik "Undang" atau buka profil kreator</p>
             </div>
           ) : (
             selectedCreators.map((c) => (
@@ -614,7 +825,8 @@ export default function Marketplace() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-slate-800 truncate">{c.name}</p>
-                  <p className="text-xs text-slate-500">{c.followersText} · {c.priceText}</p>
+                  <p className="text-xs text-slate-500">{c.followersText} followers</p>
+                  <p className="text-xs text-slate-400">{c.engagementRate}% ER · {c.priceText}</p>
                 </div>
                 <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-red-500"
                   onClick={() => toggleSelect(c.id)}>
@@ -626,10 +838,20 @@ export default function Marketplace() {
         </div>
 
         {selectedIds.length > 0 && (
-          <div className="p-4 border-t border-slate-200 space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-slate-500">Est. Total Budget</span>
-              <span className="font-bold text-slate-800">{formatRupiah(selectedCreators.reduce((a, c) => a + c.price, 0))}</span>
+          <div className="p-4 border-t border-slate-200 space-y-3">
+            <div className="space-y-1.5 text-sm">
+              <div className="flex justify-between">
+                <span className="text-slate-500">Est. Total Reach</span>
+                <span className="font-semibold text-slate-700">{formatFollowers(totalReach)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Avg. Engagement</span>
+                <span className="font-semibold text-slate-700">{avgEngagement}%</span>
+              </div>
+              <div className="flex justify-between pt-1.5 border-t border-slate-100">
+                <span className="text-slate-500">Est. Total Budget</span>
+                <span className="font-bold text-slate-800">{formatRupiah(selectedCreators.reduce((a, c) => a + c.price, 0))}</span>
+              </div>
             </div>
             <Button className="w-full" onClick={() => setShowCreateCampaign(true)}>Buat Kampanye</Button>
           </div>
@@ -641,9 +863,11 @@ export default function Marketplace() {
         <CreatorProfileModal
           creator={profileCreator}
           selected={selectedIds.includes(profileCreator.id)}
+          favorited={favoriteIds.includes(profileCreator.id)}
           onToggle={() => toggleSelect(profileCreator.id)}
           onClose={() => setProfileCreator(null)}
           onChat={() => { setProfileCreator(null); navigate("/messages"); }}
+          onFavorite={() => toggleFavorite(profileCreator.id)}
         />
       )}
 

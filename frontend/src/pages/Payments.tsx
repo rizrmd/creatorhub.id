@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { Download, CheckCircle, Clock, XCircle, Shield, Lock, Plus } from "lucide-react";
+import { Download, CheckCircle, Clock, XCircle, Shield, Lock, Plus, TrendingUp, Wallet } from "lucide-react";
 import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -16,15 +14,26 @@ const payments = [
   { id: "INV-9105", creator: "Fajar Nugroho", campaign: "Brand Awareness Q1", amount: 9500000, status: "failed", date: "2025-06-01" },
 ];
 
-const statusConfig = {
-  paid: { label: "Lunas", variant: "success" as const, icon: CheckCircle },
-  pending: { label: "Menunggu", variant: "warning" as const, icon: Clock },
-  failed: { label: "Gagal", variant: "destructive" as const, icon: XCircle },
+const statusChip = {
+  paid:    { label: "Lunas",    bg: "#DCFCE7", fg: "#15803D", dot: "#16A34A", icon: CheckCircle },
+  pending: { label: "Menunggu", bg: "#FEF3C7", fg: "#B45309", dot: "#F59E0B", icon: Clock },
+  failed:  { label: "Gagal",    bg: "#FEE2E2", fg: "#B91C1C", dot: "#DC2626", icon: XCircle },
 };
 
-const totalPaid = payments.filter((p) => p.status === "paid").reduce((a, p) => a + p.amount, 0);
+const monthlySpend = [
+  { month: "Jan", amount: 12000000 },
+  { month: "Feb", amount: 18000000 },
+  { month: "Mar", amount: 15000000 },
+  { month: "Apr", amount: 22000000 },
+  { month: "Mei", amount: 28000000 },
+  { month: "Jun", amount: 20500000 },
+];
+const maxSpend = Math.max(...monthlySpend.map((m) => m.amount));
+
+const totalPaid    = payments.filter((p) => p.status === "paid").reduce((a, p) => a + p.amount, 0);
 const totalPending = payments.filter((p) => p.status === "pending").reduce((a, p) => a + p.amount, 0);
-const escrow = 120000000;
+const escrow       = 120000000;
+const lifetimeTotal = 485000000;
 
 function downloadBlob(content: string, filename: string, type = "text/plain") {
   const blob = new Blob([content], { type });
@@ -45,7 +54,8 @@ function exportCSV() {
   toast.success("CSV berhasil diunduh");
 }
 
-function downloadInvoice(p: typeof payments[0]) {
+function downloadInvoice(p: (typeof payments)[0]) {
+  const cfg = statusChip[p.status as keyof typeof statusChip];
   const content = [
     "========================================",
     "         INVOICE CREATORHUB.ID         ",
@@ -55,7 +65,7 @@ function downloadInvoice(p: typeof payments[0]) {
     `Kreator    : ${p.creator}`,
     `Kampanye   : ${p.campaign}`,
     `Jumlah     : ${formatRupiah(p.amount)}`,
-    `Status     : ${statusConfig[p.status as keyof typeof statusConfig].label}`,
+    `Status     : ${cfg.label}`,
     "========================================",
     "Terima kasih telah menggunakan CreatorHub.id",
   ].join("\n");
@@ -78,157 +88,194 @@ export default function Payments() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Payments & Escrow</h1>
-          <p className="text-sm text-slate-500 mt-1">Setujui pembayaran, pantau budget, dan unduh invoice</p>
+          <h1 className="text-[28px] font-extrabold tracking-[-0.5px]"
+            style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            Payments & Escrow
+          </h1>
+          <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
+            Setujui pembayaran, pantau budget, dan unduh invoice
+          </p>
         </div>
-        <Button variant="outline" onClick={exportCSV}>
-          <Download className="w-4 h-4" />
+        <button
+          onClick={exportCSV}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg border text-[13px] font-semibold transition-colors"
+          style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)", background: "var(--ch-surface)" }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--ch-primary)"; (e.currentTarget as HTMLElement).style.color = "var(--ch-primary)"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--ch-border)"; (e.currentTarget as HTMLElement).style.color = "var(--ch-text-muted)"; }}
+        >
+          <Download style={{ width: 15, height: 15 }} />
           Export CSV
-        </Button>
+        </button>
       </div>
 
-      {/* Stats */}
+      {/* Wallet hero */}
+      <div className="rounded-2xl p-6 text-white relative overflow-hidden"
+        style={{ background: "linear-gradient(135deg, #1e3a5f 0%, #2563EB 55%, #0369a1 100%)" }}>
+        <div className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-10 bg-white -translate-y-16 translate-x-16" />
+        <div className="absolute bottom-0 left-0 w-40 h-40 rounded-full opacity-10 bg-white translate-y-12 -translate-x-12" />
+        <div className="relative">
+          <div className="flex items-center gap-2 text-blue-200 text-[13px] mb-2">
+            <Wallet style={{ width: 15, height: 15 }} />
+            <span>CreatorHub Wallet</span>
+          </div>
+          <p className="text-[32px] font-extrabold tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            {formatRupiah(lifetimeTotal)}
+          </p>
+          <p className="text-blue-200 text-[13px] mt-0.5">Lifetime total spent</p>
+          <div className="flex gap-8 mt-5">
+            <div>
+              <p className="text-blue-200 text-[11px]">Tersedia</p>
+              <p className="text-white font-bold text-[15px]">{formatRupiah(escrow)}</p>
+            </div>
+            <div>
+              <p className="text-blue-200 text-[11px]">Menunggu</p>
+              <p className="text-white font-bold text-[15px]">{formatRupiah(totalPending)}</p>
+            </div>
+            <div>
+              <p className="text-blue-200 text-[11px]">Dibayarkan</p>
+              <p className="text-white font-bold text-[15px]">{formatRupiah(totalPaid)}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-5 flex items-center gap-4">
-            <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
-              <CheckCircle className="w-5 h-5 text-green-600" />
+        {[
+          { label: "Total Dibayar", value: formatRupiah(totalPaid), sub: "Semua payout disetujui", icon: CheckCircle, hue: 142 },
+          { label: "Dalam Escrow", value: formatRupiah(escrow), sub: "Dilindungi Escrow", icon: Shield, hue: 220, lock: true },
+          { label: "Invoice Belum Lunas", value: formatRupiah(totalPending), sub: "Jatuh tempo 14 hari", icon: Clock, hue: 42 },
+        ].map((stat) => (
+          <div key={stat.label} className="rounded-xl border p-5 flex items-center gap-4"
+            style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 relative"
+              style={{ background: `hsl(${stat.hue}, 80%, 95%)`, color: `hsl(${stat.hue}, 60%, 40%)` }}>
+              <stat.icon style={{ width: 18, height: 18 }} />
+              {stat.lock && <Lock style={{ width: 9, height: 9, position: "absolute", bottom: -1, right: -1, color: "#1D4ED8" }} />}
             </div>
             <div>
-              <p className="text-xs text-slate-500">Total Dibayar</p>
-              <p className="text-xl font-bold text-slate-800">{formatRupiah(totalPaid)}</p>
-              <p className="text-xs text-green-600 mt-0.5">Semua payout disetujui</p>
+              <p className="text-[11px] font-medium" style={{ color: "var(--ch-text-muted)" }}>{stat.label}</p>
+              <p className="text-[17px] font-bold" style={{ color: "var(--ch-text)" }}>{stat.value}</p>
+              <p className="text-[11px] mt-0.5" style={{ color: `hsl(${stat.hue}, 60%, 40%)` }}>{stat.sub}</p>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-5 flex items-center gap-4">
-            <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center relative">
-              <Shield className="w-5 h-5 text-blue-600" />
-              <Lock className="w-2.5 h-2.5 text-blue-800 absolute -bottom-0.5 -right-0.5" />
-            </div>
-            <div>
-              <p className="text-xs text-slate-500">Dalam Escrow</p>
-              <p className="text-xl font-bold text-slate-800">{formatRupiah(escrow)}</p>
-              <p className="text-xs text-blue-600 mt-0.5">Dilindungi Escrow</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-5 flex items-center gap-4">
-            <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center">
-              <Clock className="w-5 h-5 text-amber-600" />
-            </div>
-            <div>
-              <p className="text-xs text-slate-500">Invoice Belum Lunas</p>
-              <p className="text-xl font-bold text-slate-800">{formatRupiah(totalPending)}</p>
-              <p className="text-xs text-amber-600 mt-0.5">Jatuh tempo 14 hari</p>
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        ))}
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Transaction table */}
-        <Card className="xl:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-base">Riwayat Transaksi</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-slate-100">
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500">Invoice</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500">Kreator</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 hidden sm:table-cell">Kampanye</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 hidden md:table-cell">Tanggal</th>
-                    <th className="text-right px-4 py-3 text-xs font-semibold text-slate-500">Jumlah</th>
-                    <th className="text-center px-4 py-3 text-xs font-semibold text-slate-500">Status</th>
-                    <th className="px-4 py-3" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {payments.map((p) => {
-                    const cfg = statusConfig[p.status as keyof typeof statusConfig];
-                    const Icon = cfg.icon;
-                    return (
-                      <tr key={p.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                        <td className="px-4 py-3 text-sm font-mono text-slate-600">#{p.id}</td>
-                        <td className="px-4 py-3 text-sm font-medium text-slate-800">{p.creator}</td>
-                        <td className="px-4 py-3 text-sm text-slate-500 hidden sm:table-cell">{p.campaign}</td>
-                        <td className="px-4 py-3 text-sm text-slate-500 hidden md:table-cell">
-                          {new Date(p.date).toLocaleDateString("id-ID")}
-                        </td>
-                        <td className="px-4 py-3 text-sm font-semibold text-slate-800 text-right">
-                          {formatRupiah(p.amount)}
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          <Badge variant={cfg.variant} className="gap-1">
-                            <Icon className="w-3 h-3" />
-                            {cfg.label}
-                          </Badge>
-                        </td>
-                        <td className="px-4 py-3">
-                          <Button
-                            variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-slate-700"
-                            onClick={() => downloadInvoice(p)}
-                          >
-                            <Download className="w-3.5 h-3.5" />
-                          </Button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="xl:col-span-2 rounded-xl border overflow-hidden"
+          style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+          <div className="px-5 py-4 border-b" style={{ borderColor: "var(--ch-border)" }}>
+            <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>Riwayat Transaksi</p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
+                  {["Invoice", "Kreator", "Kampanye", "Tanggal", "Jumlah", "Status", ""].map((h, i) => (
+                    <th key={i} className={`px-4 py-3 text-[11px] font-semibold ${i >= 5 ? "text-center" : i >= 3 ? "text-right" : "text-left"} ${i === 2 ? "hidden sm:table-cell" : ""} ${i === 3 ? "hidden md:table-cell" : ""}`}
+                      style={{ color: "var(--ch-text-muted)" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {payments.map((p) => {
+                  const cfg = statusChip[p.status as keyof typeof statusChip];
+                  const Icon = cfg.icon;
+                  return (
+                    <tr key={p.id} className="border-b transition-colors hover:bg-slate-50"
+                      style={{ borderColor: "var(--ch-border)" }}>
+                      <td className="px-4 py-3 text-[12px] font-mono" style={{ color: "var(--ch-text-muted)" }}>#{p.id}</td>
+                      <td className="px-4 py-3 text-[13px] font-semibold" style={{ color: "var(--ch-text)" }}>{p.creator}</td>
+                      <td className="px-4 py-3 text-[12px] hidden sm:table-cell" style={{ color: "var(--ch-text-muted)" }}>{p.campaign}</td>
+                      <td className="px-4 py-3 text-[12px] hidden md:table-cell text-right" style={{ color: "var(--ch-text-muted)" }}>
+                        {new Date(p.date).toLocaleDateString("id-ID")}
+                      </td>
+                      <td className="px-4 py-3 text-[13px] font-semibold text-right" style={{ color: "var(--ch-text)" }}>
+                        {formatRupiah(p.amount)}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold"
+                          style={{ background: cfg.bg, color: cfg.fg }}>
+                          <Icon style={{ width: 10, height: 10 }} />
+                          {cfg.label}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <button className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:bg-slate-100"
+                          style={{ color: "var(--ch-text-soft)" }}
+                          onClick={() => downloadInvoice(p)}>
+                          <Download style={{ width: 13, height: 13 }} />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-        {/* Credit card panel */}
+        {/* Right panel */}
         <div className="space-y-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Metode Pembayaran</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {/* Card mockup */}
-              <div className="rounded-2xl p-5 text-white relative overflow-hidden"
-                style={{ background: "linear-gradient(135deg, #1e3a5f 0%, #0052cc 60%, #0369a1 100%)" }}>
-                <div className="absolute top-0 right-0 w-48 h-48 rounded-full opacity-10 bg-white -translate-y-12 translate-x-12" />
-                <div className="absolute bottom-0 left-0 w-32 h-32 rounded-full opacity-10 bg-white translate-y-8 -translate-x-8" />
-                <div className="relative space-y-4">
-                  <div className="flex justify-between items-start">
-                    <p className="text-xs text-blue-200 font-medium uppercase tracking-wide">Corporate Spend Card</p>
-                    <p className="text-xl font-black italic tracking-widest">VISA</p>
+          {/* Monthly spend chart */}
+          <div className="rounded-xl border p-5"
+            style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+            <div className="flex items-center gap-2 mb-4">
+              <TrendingUp style={{ width: 15, height: 15, color: "var(--ch-primary)" }} />
+              <p className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>Monthly Spend</p>
+            </div>
+            <div className="flex items-end gap-1.5 h-[88px]">
+              {monthlySpend.map((m) => (
+                <div key={m.month} className="flex-1 flex flex-col items-center gap-1">
+                  <div className="w-full rounded-sm transition-all"
+                    style={{ height: `${(m.amount / maxSpend) * 72}px`, background: "var(--ch-primary)", opacity: 0.8 }} />
+                  <span className="text-[10px]" style={{ color: "var(--ch-text-soft)" }}>{m.month}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Credit card */}
+          <div className="rounded-xl border p-5 space-y-4"
+            style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+            <p className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>Metode Pembayaran</p>
+            <div className="rounded-2xl p-4 text-white relative overflow-hidden"
+              style={{ background: "linear-gradient(135deg, #1e3a5f 0%, #2563EB 60%, #0369a1 100%)" }}>
+              <div className="absolute top-0 right-0 w-24 h-24 rounded-full opacity-10 bg-white -translate-y-6 translate-x-6" />
+              <div className="relative space-y-3">
+                <div className="flex justify-between items-start">
+                  <p className="text-[10px] text-blue-200 uppercase tracking-wide">Corporate Spend Card</p>
+                  <p className="text-base font-black italic tracking-widest">VISA</p>
+                </div>
+                <p className="font-mono text-[13px] tracking-widest">•••• •••• •••• 5683</p>
+                <div className="flex justify-between text-[11px]">
+                  <div>
+                    <p className="text-blue-200">Card Holder</p>
+                    <p className="font-semibold">Arif Budiman</p>
                   </div>
-                  <div className="flex gap-3">
-                    <div className="w-8 h-6 rounded-sm bg-amber-300 opacity-80" />
-                  </div>
-                  <p className="font-mono text-base tracking-widest">•••• •••• •••• 5683</p>
-                  <div className="flex justify-between text-xs">
-                    <div>
-                      <p className="text-blue-200">Card Holder</p>
-                      <p className="font-semibold">Arif Budiman</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-blue-200">Expires</p>
-                      <p className="font-semibold">12/28</p>
-                    </div>
+                  <div className="text-right">
+                    <p className="text-blue-200">Expires</p>
+                    <p className="font-semibold">12/28</p>
                   </div>
                 </div>
               </div>
-
-              <Button variant="outline" className="w-full mt-4 gap-2" onClick={() => setShowCardModal(true)}>
-                <Plus className="w-4 h-4" />
-                Link New Corporate Card
-              </Button>
-            </CardContent>
-          </Card>
+            </div>
+            <button
+              onClick={() => setShowCardModal(true)}
+              className="w-full flex items-center justify-center gap-2 py-2 rounded-lg border text-[13px] font-semibold transition-colors"
+              style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--ch-primary)"; (e.currentTarget as HTMLElement).style.color = "var(--ch-primary)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--ch-border)"; (e.currentTarget as HTMLElement).style.color = "var(--ch-text-muted)"; }}
+            >
+              <Plus style={{ width: 14, height: 14 }} />
+              Link New Corporate Card
+            </button>
+          </div>
         </div>
       </div>
 

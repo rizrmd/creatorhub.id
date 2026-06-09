@@ -1,0 +1,198 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
+
+const PERKS = [
+  { emoji: "🚀", text: "Akses 10.000+ kreator terverifikasi" },
+  { emoji: "📊", text: "Analytics real-time & laporan otomatis" },
+  { emoji: "💰", text: "Escrow payment yang aman & terlindungi" },
+  { emoji: "🤖", text: "AI matching kreator-brand terbaik" },
+];
+
+export default function Login() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await login({ email, password });
+      navigate("/marketplace", { replace: true });
+    } catch (err: unknown) {
+      const msg =
+        (err as { response?: { data?: { error?: string } } })?.response?.data?.error ??
+        "Login gagal, coba lagi";
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex" style={{ background: "var(--ch-bg)" }}>
+      {/* Left: branding panel */}
+      <div className="hidden lg:flex w-[480px] shrink-0 flex-col justify-between p-12 relative overflow-hidden"
+        style={{ background: "linear-gradient(145deg, #1e3a5f 0%, #2563EB 55%, #3b82f6 100%)" }}>
+        {/* Decorative circles */}
+        <div className="absolute top-0 right-0 w-72 h-72 rounded-full opacity-10 bg-white -translate-y-24 translate-x-24" />
+        <div className="absolute bottom-0 left-0 w-56 h-56 rounded-full opacity-10 bg-white translate-y-16 -translate-x-16" />
+
+        {/* Logo */}
+        <div className="relative flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center bg-white/20">
+            <img src="/logo.jpeg" alt="CreatorHub" className="w-full h-full object-contain"
+              style={{ mixBlendMode: "multiply" }}
+              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
+            <span className="text-white font-black text-lg">C</span>
+          </div>
+          <span className="text-white font-extrabold text-xl tracking-tight"
+            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            CreatorHub.id
+          </span>
+        </div>
+
+        {/* Main copy */}
+        <div className="relative">
+          <h1 className="text-[36px] font-extrabold text-white leading-tight tracking-[-0.5px] mb-4"
+            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            Platform Manajemen<br />
+            Kampanye Influencer<br />
+            <span style={{ color: "#93C5FD" }}>#1 di Indonesia</span>
+          </h1>
+          <p className="text-blue-200 text-[15px] mb-8">
+            Hubungkan brand Anda dengan 10.000+ kreator konten terbaik secara efisien.
+          </p>
+          <div className="space-y-3">
+            {PERKS.map((p) => (
+              <div key={p.text} className="flex items-center gap-3">
+                <span className="text-xl">{p.emoji}</span>
+                <span className="text-blue-100 text-[14px]">{p.text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom social proof */}
+        <div className="relative">
+          <div className="flex items-center gap-3 p-4 rounded-2xl" style={{ background: "rgba(255,255,255,0.1)" }}>
+            <div className="flex -space-x-2">
+              {["A","B","C","D"].map((l, i) => (
+                <div key={l} className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-[11px] font-bold text-white"
+                  style={{ background: `hsl(${i * 60 + 200}, 65%, 50%)`, zIndex: 4 - i }}>
+                  {l}
+                </div>
+              ))}
+            </div>
+            <div>
+              <p className="text-white text-[13px] font-bold">500+ brand aktif</p>
+              <p className="text-blue-200 text-[11px]">bergabung bulan ini</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right: login form */}
+      <div className="flex-1 flex items-center justify-center p-8">
+        <div className="w-full max-w-[380px]">
+          {/* Mobile logo */}
+          <div className="flex items-center gap-2.5 mb-8 lg:hidden">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+              style={{ background: "var(--ch-primary)" }}>
+              <span className="text-white font-black">C</span>
+            </div>
+            <span className="font-extrabold text-xl" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+              CreatorHub.id
+            </span>
+          </div>
+
+          <h2 className="text-[26px] font-extrabold mb-1 tracking-[-0.5px]"
+            style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            Masuk ke akun Anda
+          </h2>
+          <p className="text-[14px] mb-7" style={{ color: "var(--ch-text-muted)" }}>
+            Platform manajemen kampanye influencer terpadu
+          </p>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Email</label>
+              <Input
+                type="email"
+                placeholder="admin@creatorhub.id"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoFocus
+                disabled={loading}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Password</label>
+              <div className="relative">
+                <Input
+                  type={showPw ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={loading}
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPw(s => !s)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                  style={{ color: "var(--ch-text-soft)" }}>
+                  {showPw ? <EyeOff style={{ width: 15, height: 15 }} /> : <Eye style={{ width: 15, height: 15 }} />}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between text-[12px]">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" className="rounded" />
+                <span style={{ color: "var(--ch-text-muted)" }}>Ingat saya</span>
+              </label>
+              <button type="button" className="transition-colors"
+                style={{ color: "var(--ch-primary)" }}
+                onClick={() => toast.info("Fitur lupa password belum tersedia")}>
+                Lupa password?
+              </button>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full mt-2 font-bold text-[14px]"
+              disabled={loading}
+              style={{ background: loading ? "var(--ch-border)" : "var(--ch-primary)", boxShadow: loading ? "none" : "var(--ch-nav-shadow)" }}>
+              {loading ? "Masuk..." : "Masuk ke CreatorHub"}
+            </Button>
+          </form>
+
+          <div className="mt-6 pt-5 border-t text-center" style={{ borderColor: "var(--ch-border)" }}>
+            <p className="text-[13px]" style={{ color: "var(--ch-text-muted)" }}>
+              Belum punya akun?{" "}
+              <a href="/apply" style={{ color: "var(--ch-primary)", fontWeight: 600 }}>
+                Daftar sebagai kreator →
+              </a>
+            </p>
+          </div>
+
+          <p className="text-center text-[11px] mt-6" style={{ color: "var(--ch-text-soft)" }}>
+            CreatorHub.id © 2026 · Platform Kampanye Influencer Indonesia
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}

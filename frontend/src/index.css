@@ -1,16 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
 @layer base {
   :root {
+    /* shadcn/ui HSL vars — updated to match #2563EB */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
+    --primary: 219 91% 51%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -22,9 +23,32 @@
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --ring: 219 91% 51%;
     --radius: 0.625rem;
-    --sidebar-width: 260px;
+
+    /* Handoff design tokens */
+    --ch-primary: #2563EB;
+    --ch-primary-600: #1D4ED8;
+    --ch-primary-50: #EFF6FF;
+    --ch-primary-100: #DBEAFE;
+    --ch-orange: #F97316;
+    --ch-orange-50: #FFF7ED;
+    --ch-orange-100: #FFEDD5;
+    --ch-green: #16A34A;
+    --ch-green-50: #DCFCE7;
+    --ch-text: #0F172A;
+    --ch-text-muted: #64748B;
+    --ch-text-soft: #94A3B8;
+    --ch-bg: #F8FAFC;
+    --ch-surface: #FFFFFF;
+    --ch-border: #E2E8F0;
+    --ch-border-strong: #CBD5E1;
+    --ch-shadow-sm: 0 1px 2px rgba(15,23,42,.04);
+    --ch-shadow-md: 0 4px 12px rgba(15,23,42,.06);
+    --ch-shadow-lg: 0 10px 30px rgba(15,23,42,.08);
+    --ch-nav-shadow: 0 4px 10px -3px rgba(37,99,235,.45);
+    --sidebar-width: 220px;
+    --sidebar-width-collapsed: 68px;
     --header-height: 70px;
   }
 }
@@ -34,8 +58,60 @@
     border-color: hsl(var(--border));
   }
   body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
-    font-family: Inter, system-ui, sans-serif;
+    background-color: var(--ch-bg);
+    color: var(--ch-text);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2, h3 {
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
   }
 }
+
+/* Keyframe animations */
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-15deg); }
+  40% { transform: rotate(12deg); }
+  60% { transform: rotate(-10deg); }
+  80% { transform: rotate(8deg); }
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-8px) rotate(3deg); }
+  66% { transform: translateY(-4px) rotate(-2deg); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(-8px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: .6; transform: scale(1.3); }
+}
+
+@keyframes confetti-fall {
+  0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+.animate-wave { animation: wave 1.2s ease-in-out; }
+.animate-bob  { animation: bob 2s ease-in-out infinite; }
+.animate-float{ animation: float 3s ease-in-out infinite; }
+.animate-fade-in  { animation: fade-in .2s ease-out; }
+.animate-slide-in { animation: slide-in .18s ease-out; }

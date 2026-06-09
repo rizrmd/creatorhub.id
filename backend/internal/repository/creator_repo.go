@@ -130,10 +130,10 @@ func (r *CreatorRepository) List(ctx context.Context, params models.CreatorListP
 
 	dataQuery := fmt.Sprintf(`
 		SELECT
-			c.id, c.name, c.city, c.country, c.category,
+			c.id, c.name, c.handle, c.city, c.country, c.category,
 			c.followers, c.followers_text, c.engagement_rate,
-			c.price, c.price_text, c.verified, c.rating,
-			c.fast_response, c.top_rated, c.image_url, c.bio,
+			c.price, c.price_text, c.verified, c.star_creator, c.rating,
+			c.fast_response, c.top_rated, c.last_seen, c.image_url, c.img_path, c.focus, c.hue, c.bio,
 			COALESCE(
 				(SELECT array_agg(cp.platform ORDER BY cp.platform)
 				 FROM creator_platforms cp WHERE cp.creator_id = c.id),
@@ -155,10 +155,10 @@ func (r *CreatorRepository) List(ctx context.Context, params models.CreatorListP
 	for rows.Next() {
 		var c models.Creator
 		if err := rows.Scan(
-			&c.ID, &c.Name, &c.City, &c.Country, &c.Category,
+			&c.ID, &c.Name, &c.Handle, &c.City, &c.Country, &c.Category,
 			&c.Followers, &c.FollowersText, &c.EngagementRate,
-			&c.Price, &c.PriceText, &c.Verified, &c.Rating,
-			&c.FastResponse, &c.TopRated, &c.ImageURL, &c.Bio,
+			&c.Price, &c.PriceText, &c.Verified, &c.StarCreator, &c.Rating,
+			&c.FastResponse, &c.TopRated, &c.LastSeen, &c.ImageURL, &c.ImgPath, &c.Focus, &c.Hue, &c.Bio,
 			&c.Platforms,
 		); err != nil {
 			return nil, err
@@ -196,10 +196,10 @@ func (r *CreatorRepository) GetByID(ctx context.Context, id string) (*models.Cre
 	var c models.Creator
 	err := r.db.QueryRow(ctx, `
 		SELECT
-			c.id, c.name, c.city, c.country, c.category,
+			c.id, c.name, c.handle, c.city, c.country, c.category,
 			c.followers, c.followers_text, c.engagement_rate,
-			c.price, c.price_text, c.verified, c.rating,
-			c.fast_response, c.top_rated, c.image_url, c.bio,
+			c.price, c.price_text, c.verified, c.star_creator, c.rating,
+			c.fast_response, c.top_rated, c.last_seen, c.image_url, c.img_path, c.focus, c.hue, c.bio,
 			COALESCE(
 				(SELECT array_agg(cp.platform ORDER BY cp.platform)
 				 FROM creator_platforms cp WHERE cp.creator_id = c.id),
@@ -208,10 +208,10 @@ func (r *CreatorRepository) GetByID(ctx context.Context, id string) (*models.Cre
 		FROM creators c
 		WHERE c.id = $1`, id,
 	).Scan(
-		&c.ID, &c.Name, &c.City, &c.Country, &c.Category,
+		&c.ID, &c.Name, &c.Handle, &c.City, &c.Country, &c.Category,
 		&c.Followers, &c.FollowersText, &c.EngagementRate,
-		&c.Price, &c.PriceText, &c.Verified, &c.Rating,
-		&c.FastResponse, &c.TopRated, &c.ImageURL, &c.Bio,
+		&c.Price, &c.PriceText, &c.Verified, &c.StarCreator, &c.Rating,
+		&c.FastResponse, &c.TopRated, &c.LastSeen, &c.ImageURL, &c.ImgPath, &c.Focus, &c.Hue, &c.Bio,
 		&c.Platforms,
 	)
 	if err != nil {

@@ -8,11 +8,27 @@ import type {
   CreateCampaignRequest,
   ChatChannel,
   Message,
+  LoginRequest,
+  LoginResponse,
 } from "@/types";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? "/api/v1",
 });
+
+// Attach JWT token to every request
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("auth_token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+export const authApi = {
+  login: (data: LoginRequest) =>
+    api.post<LoginResponse>("/auth/login", data).then((r) => r.data),
+};
 
 export const creatorsApi = {
   list: (params: CreatorListParams) =>

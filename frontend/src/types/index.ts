@@ -1,6 +1,7 @@
 export interface Creator {
   id: string;
   name: string;
+  handle: string;
   city: string;
   country: string;
   category: string;
@@ -11,10 +12,16 @@ export interface Creator {
   price: number;
   priceText: string;
   verified: boolean;
+  starCreator: boolean;
   rating: number;
   fastResponse: boolean;
   topRated: boolean;
+  responseTime?: string;
+  lastSeen?: string;
   imageUrl: string;
+  img?: string;
+  focus?: string;
+  hue?: number;
   bio: string;
 }
 
@@ -54,15 +61,39 @@ export interface MarketplaceStats {
   totalBudget: number;
 }
 
+export type CampaignStatus = "draft" | "in-review" | "active" | "completed" | "archived" | "paused";
+export type CampaignObjective = "Awareness" | "Engagement" | "Traffic" | "Conversions";
+
+export const CAMPAIGN_STATUS: Record<CampaignStatus, { label: string; bg: string; fg: string; dot: string }> = {
+  draft:      { label: "Draft",     bg: "#F1F5F9", fg: "#475569", dot: "#94A3B8" },
+  "in-review":{ label: "In Review", bg: "#FEF3C7", fg: "#B45309", dot: "#F59E0B" },
+  active:     { label: "Active",    bg: "#DCFCE7", fg: "#15803D", dot: "#16A34A" },
+  completed:  { label: "Completed", bg: "#DBEAFE", fg: "#1D4ED8", dot: "#2563EB" },
+  archived:   { label: "Archived",  bg: "#FEE2E2", fg: "#B91C1C", dot: "#DC2626" },
+  paused:     { label: "Paused",    bg: "#FEF3C7", fg: "#92400E", dot: "#F59E0B" },
+};
+
+export interface CampaignDeliverables {
+  total: number;
+  completed: number;
+  inReview: number;
+}
+
 export interface Campaign {
   id: string;
   title: string;
   description: string;
-  status: "draft" | "active" | "completed" | "paused";
+  brand?: string;
+  status: CampaignStatus;
+  objective?: CampaignObjective;
   budget: number;
+  budgetSpent?: number;
   startDate?: string;
   endDate?: string;
+  daysLeft?: number | null;
   creators?: Creator[];
+  deliverables?: CampaignDeliverables;
+  hue?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -90,4 +121,21 @@ export interface Message {
   senderType: "user" | "creator";
   content: string;
   createdAt: string;
+}
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  token: string;
+  user: AuthUser;
 }

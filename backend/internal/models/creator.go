@@ -3,6 +3,7 @@ package models
 type Creator struct {
 	ID             string   `json:"id"`
 	Name           string   `json:"name"`
+	Handle         string   `json:"handle"`
 	City           string   `json:"city"`
 	Country        string   `json:"country"`
 	Category       string   `json:"category"`
@@ -13,10 +14,15 @@ type Creator struct {
 	Price          int64    `json:"price"`
 	PriceText      string   `json:"priceText"`
 	Verified       bool     `json:"verified"`
+	StarCreator    bool     `json:"starCreator"`
 	Rating         float64  `json:"rating"`
 	FastResponse   bool     `json:"fastResponse"`
 	TopRated       bool     `json:"topRated"`
+	LastSeen       string   `json:"lastSeen"`
 	ImageURL       string   `json:"imageUrl"`
+	ImgPath        string   `json:"img"`
+	Focus          string   `json:"focus"`
+	Hue            int      `json:"hue"`
 	Bio            string   `json:"bio"`
 }
 
@@ -42,10 +48,10 @@ type CreatorListParams struct {
 }
 
 type MarketplaceStats struct {
-	TotalCreators      int64   `json:"totalCreators"`
-	ActiveCampaigns    int64   `json:"activeCampaigns"`
-	AvgEngagementRate  float64 `json:"avgEngagementRate"`
-	TotalBudget        int64   `json:"totalBudget"`
+	TotalCreators     int64   `json:"totalCreators"`
+	ActiveCampaigns   int64   `json:"activeCampaigns"`
+	AvgEngagementRate float64 `json:"avgEngagementRate"`
+	TotalBudget       int64   `json:"totalBudget"`
 }
 
 type CreatorListResponse struct {

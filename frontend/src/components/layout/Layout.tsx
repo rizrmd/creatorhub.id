@@ -13,6 +13,7 @@ const PATH_LABELS: Record<string, string> = {
   messages: "Messages",
   payments: "Payments",
   settings: "Settings",
+  kreator: "Kreator",
 };
 
 function Breadcrumb() {

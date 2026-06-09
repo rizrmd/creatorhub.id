@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
@@ -9,10 +10,12 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
+	"golang.org/x/crypto/bcrypt"
 
 	"creatorhub/backend/internal/config"
 	"creatorhub/backend/internal/database"
 	"creatorhub/backend/internal/handlers"
+	authmw "creatorhub/backend/internal/middleware"
 	"creatorhub/backend/internal/repository"
 	"creatorhub/backend/migrations"
 )
@@ -36,10 +39,16 @@ func main() {
 	creatorRepo := repository.NewCreatorRepository(db)
 	campaignRepo := repository.NewCampaignRepository(db)
 	messageRepo := repository.NewMessageRepository(db)
+	userRepo := repository.NewUserRepository(db)
+
+	if err := ensureAdminUser(context.Background(), userRepo); err != nil {
+		log.Printf("warning: could not ensure admin user: %v", err)
+	}
 
 	creatorHandler := handlers.NewCreatorHandler(creatorRepo)
 	campaignHandler := handlers.NewCampaignHandler(campaignRepo)
 	messageHandler := handlers.NewMessageHandler(messageRepo)
+	authHandler := handlers.NewAuthHandler(userRepo)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -52,25 +61,33 @@ func main() {
 	})
 
 	r.Route("/api/v1", func(r chi.Router) {
-		r.Route("/creators", func(r chi.Router) {
-			r.Get("/", creatorHandler.List)
-			r.Get("/stats", creatorHandler.Stats)
-			r.Get("/{id}", creatorHandler.GetByID)
-		})
-		r.Route("/campaigns", func(r chi.Router) {
-			r.Get("/", campaignHandler.List)
-			r.Post("/", campaignHandler.Create)
-			r.Get("/{id}", campaignHandler.GetByID)
-			r.Put("/{id}", campaignHandler.Update)
-			r.Delete("/{id}", campaignHandler.Delete)
-			r.Post("/{id}/creators", campaignHandler.AddCreator)
-			r.Delete("/{id}/creators/{creatorId}", campaignHandler.RemoveCreator)
-		})
-		r.Route("/messages", func(r chi.Router) {
-			r.Get("/channels", messageHandler.ListChannels)
-			r.Post("/channels", messageHandler.CreateChannel)
-			r.Get("/channels/{channelId}/messages", messageHandler.ListMessages)
-			r.Post("/channels/{channelId}/messages", messageHandler.SendMessage)
+		// Public: auth endpoints
+		r.Post("/auth/login", authHandler.Login)
+
+		// Protected: all other API routes require a valid JWT
+		r.Group(func(r chi.Router) {
+			r.Use(authmw.RequireAuth)
+
+			r.Route("/creators", func(r chi.Router) {
+				r.Get("/", creatorHandler.List)
+				r.Get("/stats", creatorHandler.Stats)
+				r.Get("/{id}", creatorHandler.GetByID)
+			})
+			r.Route("/campaigns", func(r chi.Router) {
+				r.Get("/", campaignHandler.List)
+				r.Post("/", campaignHandler.Create)
+				r.Get("/{id}", campaignHandler.GetByID)
+				r.Put("/{id}", campaignHandler.Update)
+				r.Delete("/{id}", campaignHandler.Delete)
+				r.Post("/{id}/creators", campaignHandler.AddCreator)
+				r.Delete("/{id}/creators/{creatorId}", campaignHandler.RemoveCreator)
+			})
+			r.Route("/messages", func(r chi.Router) {
+				r.Get("/channels", messageHandler.ListChannels)
+				r.Post("/channels", messageHandler.CreateChannel)
+				r.Get("/channels/{channelId}/messages", messageHandler.ListMessages)
+				r.Post("/channels/{channelId}/messages", messageHandler.SendMessage)
+			})
 		})
 	})
 
@@ -83,8 +100,26 @@ func main() {
 	}
 }
 
-// spaHandler serves static files dari dir, semua path yang tidak ditemukan
-// dikembalikan ke index.html agar React Router bisa handle client-side routing.
+// ensureAdminUser creates the default admin account if no users exist.
+func ensureAdminUser(ctx context.Context, repo *repository.UserRepository) error {
+	exists, err := repo.Exists(ctx)
+	if err != nil {
+		return err
+	}
+	if exists {
+		return nil
+	}
+	hash, err := bcrypt.GenerateFromPassword([]byte("Admin123!"), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	if err := repo.Create(ctx, "admin@creatorhub.id", "Administrator", "admin", string(hash)); err != nil {
+		return err
+	}
+	log.Println("Admin user created: admin@creatorhub.id / Admin123!")
+	return nil
+}
+
 func spaHandler(dir string) http.Handler {
 	fs := http.Dir(dir)
 	fileServer := http.FileServer(fs)
@@ -105,11 +140,4 @@ func spaHandler(dir string) http.Handler {
 
 		fileServer.ServeHTTP(w, r)
 	})
-}
-
-func getEnv(key, fallback string) string {
-	if v := os.Getenv(key); v != "" {
-		return v
-	}
-	return fallback
 }

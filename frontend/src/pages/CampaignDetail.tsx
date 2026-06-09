@@ -1,25 +1,23 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, DollarSign, Calendar, Users, CheckCircle, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCampaign, useDeleteCampaign } from "@/hooks/useCampaigns";
 import { formatRupiah } from "@/lib/utils";
+import { CAMPAIGN_STATUS, type CampaignStatus } from "@/types";
 
-const statusVariant: Record<string, "default" | "success" | "secondary" | "warning"> = {
-  active: "success",
-  draft: "secondary",
-  completed: "default",
-  paused: "warning",
-};
-
-const statusLabel: Record<string, string> = {
-  active: "Aktif",
-  draft: "Draft",
-  completed: "Selesai",
-  paused: "Dijeda",
-};
+function StatusBadge({ status }: { status: CampaignStatus }) {
+  const s = CAMPAIGN_STATUS[status] ?? CAMPAIGN_STATUS.draft;
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold"
+      style={{ background: s.bg, color: s.fg }}
+    >
+      <span className="w-1.5 h-1.5 rounded-full" style={{ background: s.dot }} />
+      {s.label}
+    </span>
+  );
+}
 
 export default function CampaignDetail() {
   const { id } = useParams<{ id: string }>();
@@ -39,7 +37,10 @@ export default function CampaignDetail() {
         <Skeleton className="h-8 w-64" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Card key={i}><CardContent className="p-5"><Skeleton className="h-16" /></CardContent></Card>
+            <div key={i} className="rounded-xl border p-5"
+              style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
+              <Skeleton className="h-16" />
+            </div>
           ))}
         </div>
         <Skeleton className="h-48" />
@@ -50,7 +51,7 @@ export default function CampaignDetail() {
   if (!campaign) {
     return (
       <div className="p-6 text-center">
-        <p className="text-slate-500">Kampanye tidak ditemukan.</p>
+        <p style={{ color: "var(--ch-text-muted)" }}>Kampanye tidak ditemukan.</p>
         <Button className="mt-4" onClick={() => navigate("/campaigns")}>Kembali</Button>
       </div>
     );
@@ -59,124 +60,162 @@ export default function CampaignDetail() {
   const creators = campaign.creators ?? [];
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
       {/* Header */}
       <div className="flex items-start gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate("/campaigns")} className="mt-1">
+        <button
+          onClick={() => navigate("/campaigns")}
+          className="mt-1 w-9 h-9 rounded-lg border flex items-center justify-center transition-colors hover:bg-slate-50"
+          style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}
+        >
           <ArrowLeft className="w-4 h-4" />
-        </Button>
+        </button>
         <div className="flex-1">
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-2xl font-bold text-slate-800">{campaign.title}</h1>
-            <Badge variant={statusVariant[campaign.status]}>{statusLabel[campaign.status]}</Badge>
+            <h1
+              className="text-[24px] font-extrabold tracking-[-0.5px]"
+              style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+            >
+              {campaign.title}
+            </h1>
+            <StatusBadge status={campaign.status as CampaignStatus} />
           </div>
           {campaign.description && (
-            <p className="text-sm text-slate-500 mt-1">{campaign.description}</p>
+            <p className="text-[13px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
+              {campaign.description}
+            </p>
           )}
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-slate-400 hover:text-red-500"
+        <button
           onClick={handleDelete}
           disabled={deleteMutation.isPending}
+          className="w-9 h-9 rounded-lg border flex items-center justify-center transition-colors hover:bg-red-50 hover:border-red-200 disabled:opacity-50"
+          style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-soft)" }}
         >
           <Trash2 className="w-4 h-4" />
-        </Button>
+        </button>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-5 flex items-center gap-4">
-            <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-amber-600" />
+        {[
+          { label: "Budget", value: formatRupiah(campaign.budget), icon: DollarSign, hue: 42 },
+          { label: "Kreator", value: `${creators.length} bergabung`, icon: Users, hue: 220 },
+          { label: "Dibuat", value: new Date(campaign.createdAt).toLocaleDateString("id-ID"), icon: Calendar, hue: 142 },
+        ].map((stat) => (
+          <div
+            key={stat.label}
+            className="rounded-xl border p-5 flex items-center gap-4"
+            style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}
+          >
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+              style={{ background: `hsl(${stat.hue}, 80%, 95%)`, color: `hsl(${stat.hue}, 60%, 40%)` }}
+            >
+              <stat.icon style={{ width: 18, height: 18 }} />
             </div>
             <div>
-              <p className="text-xs text-slate-500">Budget</p>
-              <p className="text-lg font-bold text-slate-800">{formatRupiah(campaign.budget)}</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-5 flex items-center gap-4">
-            <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
-              <Users className="w-5 h-5 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-xs text-slate-500">Kreator</p>
-              <p className="text-lg font-bold text-slate-800">{creators.length} bergabung</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-5 flex items-center gap-4">
-            <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
-              <Calendar className="w-5 h-5 text-green-600" />
-            </div>
-            <div>
-              <p className="text-xs text-slate-500">Dibuat</p>
-              <p className="text-lg font-bold text-slate-800">
-                {new Date(campaign.createdAt).toLocaleDateString("id-ID")}
+              <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>{stat.label}</p>
+              <p
+                className="text-[18px] font-extrabold"
+                style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+              >
+                {stat.value}
               </p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        ))}
       </div>
 
       {/* Creators list */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Kreator dalam Kampanye</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div
+        className="rounded-xl border overflow-hidden"
+        style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}
+      >
+        <div className="px-5 py-4 border-b flex items-center justify-between"
+          style={{ borderColor: "var(--ch-border)" }}>
+          <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>
+            Kreator dalam Kampanye
+          </p>
+          <span className="text-[12px] font-semibold px-2 py-0.5 rounded-full"
+            style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>
+            {creators.length} kreator
+          </span>
+        </div>
+        <div className="p-5">
           {creators.length === 0 ? (
-            <div className="text-center py-8 text-slate-400">
-              <Users className="w-10 h-10 mx-auto mb-2 opacity-40" />
-              <p className="text-sm">Belum ada kreator yang ditambahkan</p>
-              <Button variant="outline" size="sm" className="mt-3" onClick={() => navigate("/marketplace")}>
+            <div className="text-center py-8">
+              <Users style={{ width: 40, height: 40, margin: "0 auto 8px", opacity: 0.3, color: "var(--ch-text-soft)" }} />
+              <p className="text-[13px] mb-3" style={{ color: "var(--ch-text-muted)" }}>
+                Belum ada kreator yang ditambahkan
+              </p>
+              <button
+                onClick={() => navigate("/marketplace")}
+                className="px-4 py-2 rounded-lg border text-[13px] font-semibold transition-colors hover:bg-blue-50"
+                style={{ borderColor: "var(--ch-primary)", color: "var(--ch-primary)" }}
+              >
                 Cari Kreator di Marketplace
-              </Button>
+              </button>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {creators.map((c) => (
-                <div key={c.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                  <div className="w-10 h-10 rounded-full bg-slate-200 overflow-hidden shrink-0">
+                <div
+                  key={c.id}
+                  className="flex items-center gap-3 p-3 rounded-xl"
+                  style={{ background: "var(--ch-bg)" }}
+                >
+                  <div
+                    className="w-10 h-10 rounded-full overflow-hidden shrink-0 flex items-center justify-center font-semibold text-[14px]"
+                    style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}
+                  >
                     {c.imageUrl ? (
                       <img src={c.imageUrl} alt={c.name} className="w-full h-full object-cover" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center font-semibold text-slate-600">
-                        {c.name[0]}
-                      </div>
+                      c.name[0]
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
-                      <p className="text-sm font-medium text-slate-800 truncate">{c.name}</p>
-                      {c.verified && <CheckCircle className="w-3.5 h-3.5 text-blue-500 shrink-0" />}
+                      <p className="text-[13px] font-semibold truncate" style={{ color: "var(--ch-text)" }}>
+                        {c.name}
+                      </p>
+                      {c.verified && (
+                        <CheckCircle style={{ width: 13, height: 13, color: "#2563EB", flexShrink: 0 }} />
+                      )}
                     </div>
-                    <p className="text-xs text-slate-500">{c.city} · {c.followersText} followers</p>
+                    <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>
+                      {c.city} · {c.followersText} followers
+                    </p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-semibold text-slate-700">{c.priceText}</p>
-                    <p className="text-xs text-slate-400 capitalize">{c.category}</p>
+                  <div className="text-right shrink-0">
+                    <p className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>{c.priceText}</p>
+                    <p className="text-[11px] capitalize" style={{ color: "var(--ch-text-soft)" }}>{c.category}</p>
                   </div>
                 </div>
               ))}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
+      {/* Actions */}
       <div className="flex gap-3">
-        <Button variant="outline" onClick={() => navigate("/campaigns")}>
-          <ArrowLeft className="w-4 h-4" />
+        <button
+          onClick={() => navigate("/campaigns")}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg border text-[13px] font-semibold transition-colors hover:bg-slate-50"
+          style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}
+        >
+          <ArrowLeft style={{ width: 14, height: 14 }} />
           Kembali ke Kampanye
-        </Button>
-        <Button onClick={() => navigate("/marketplace")}>
+        </button>
+        <button
+          onClick={() => navigate("/marketplace")}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-[13px] font-semibold transition-opacity hover:opacity-90"
+          style={{ background: "var(--ch-primary)", boxShadow: "var(--ch-nav-shadow)" }}
+        >
           + Tambah Kreator
-        </Button>
+        </button>
       </div>
     </div>
   );
