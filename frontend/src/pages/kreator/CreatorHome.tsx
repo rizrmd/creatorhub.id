@@ -9,6 +9,7 @@ import {
   formatRp,
   formatRpShort,
   formatDeadlineLeft,
+  formatReceivedAgo,
   CREATOR_RATING,
 } from "@/data/kreatorData";
 import { cn } from "@/lib/utils";
@@ -186,8 +187,8 @@ export default function CreatorHome() {
             {pendingInvitations.map((inv) => (
               <div
                 key={inv.id}
-                className="rounded-xl border p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 transition-all hover:shadow-md hover:border-green-200"
-                style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}
+                className="rounded-xl border p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 transition-all hover:shadow-md hover:border-green-200 ring-1 ring-green-100"
+                style={{ background: "#F0FDF4", borderColor: "#86EFAC", boxShadow: "var(--ch-shadow-sm)" }}
               >
                 <button
                   type="button"
@@ -201,12 +202,17 @@ export default function CreatorHome() {
                     {inv.brand[0]}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-[13px] font-bold group-hover:underline" style={{ color: "var(--ch-text)" }}>
-                      {inv.campaign}
-                    </p>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <p className="text-[13px] font-bold group-hover:underline" style={{ color: "var(--ch-text)" }}>
+                        {inv.campaign}
+                      </p>
+                      <span className="px-1.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase"
+                        style={{ background: "#16A34A", color: "white" }}>Baru</span>
+                    </div>
                     <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
                       {inv.brand} · {inv.category} ·{" "}
                       <span style={{ color: "#F97316" }}>{formatDeadlineLeft(inv.deadline)}</span>
+                      {" · "}Diterima {formatReceivedAgo(inv.receivedAt)}
                     </p>
                     <p className="text-[12px] font-bold mt-0.5 sm:hidden" style={{ color: "#16A34A" }}>
                       {formatRp(inv.budget)}

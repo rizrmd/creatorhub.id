@@ -11,6 +11,8 @@ export interface KreatorInvitation {
   category: string;
   status: InvitationStatus;
   brief: string;
+  /** When the brand sent the invitation */
+  receivedAt: string;
 }
 
 export interface KreatorTask {
@@ -57,12 +59,32 @@ export const CREATOR_REVIEW_COUNT = 24;
 export const KREATOR_UNREAD_MESSAGES = 2;
 
 export const KREATOR_INVITATIONS: KreatorInvitation[] = [
-  { id: "1", brand: "Wardah", campaign: "Ramadan Glow Campaign", budget: 5_000_000, deadline: "2026-07-02", category: "Beauty", status: "pending", brief: "Buat 2 konten IG Reel + 1 Story unboxing produk Wardah terbaru." },
-  { id: "2", brand: "Tokopedia", campaign: "Flash Sale Juli 2026", budget: 3_500_000, deadline: "2026-07-07", category: "E-Commerce", status: "pending", brief: "Review & unboxing haul produk dari Tokopedia Flash Sale." },
-  { id: "3", brand: "Grab", campaign: "GrabFood Summer Promo", budget: 4_200_000, deadline: "2026-07-10", category: "Food", status: "pending", brief: "Konten kuliner & vlog pengiriman GrabFood musim panas." },
-  { id: "4", brand: "ASUS", campaign: "ROG Phone Launch", budget: 8_000_000, deadline: "2026-06-28", category: "Tech", status: "accepted", brief: "Unboxing + first look ROG Phone 9 series." },
-  { id: "5", brand: "Eiger", campaign: "Outdoor Ready", budget: 2_500_000, deadline: "2026-06-20", category: "Lifestyle", status: "declined", brief: "Konten outdoor & hiking menampilkan gear Eiger." },
+  { id: "1", brand: "Wardah", campaign: "Ramadan Glow Campaign", budget: 5_000_000, deadline: "2026-07-02", category: "Beauty", status: "pending", brief: "Buat 2 konten IG Reel + 1 Story unboxing produk Wardah terbaru.", receivedAt: "2026-06-09" },
+  { id: "2", brand: "Tokopedia", campaign: "Flash Sale Juli 2026", budget: 3_500_000, deadline: "2026-07-07", category: "E-Commerce", status: "pending", brief: "Review & unboxing haul produk dari Tokopedia Flash Sale.", receivedAt: "2026-06-08" },
+  { id: "3", brand: "Grab", campaign: "GrabFood Summer Promo", budget: 4_200_000, deadline: "2026-07-10", category: "Food", status: "pending", brief: "Konten kuliner & vlog pengiriman GrabFood musim panas.", receivedAt: "2026-06-07" },
+  { id: "4", brand: "ASUS", campaign: "ROG Phone Launch", budget: 8_000_000, deadline: "2026-06-28", category: "Tech", status: "accepted", brief: "Unboxing + first look ROG Phone 9 series.", receivedAt: "2026-05-28" },
+  { id: "5", brand: "Eiger", campaign: "Outdoor Ready", budget: 2_500_000, deadline: "2026-06-20", category: "Lifestyle", status: "declined", brief: "Konten outdoor & hiking menampilkan gear Eiger.", receivedAt: "2026-05-20" },
 ];
+
+export function isNewInvitation(inv: KreatorInvitation): boolean {
+  return inv.status === "pending";
+}
+
+export function formatReceivedAgo(receivedAt: string): string {
+  const days = Math.floor((Date.now() - new Date(receivedAt).getTime()) / (1000 * 60 * 60 * 24));
+  if (days <= 0) return "Hari ini";
+  if (days === 1) return "Kemarin";
+  return `${days} hari lalu`;
+}
+
+export function sortInvitations(list: KreatorInvitation[]): KreatorInvitation[] {
+  const order: Record<InvitationStatus, number> = { pending: 0, accepted: 1, declined: 2 };
+  return [...list].sort((a, b) => {
+    const byStatus = order[a.status] - order[b.status];
+    if (byStatus !== 0) return byStatus;
+    return new Date(b.receivedAt).getTime() - new Date(a.receivedAt).getTime();
+  });
+}
 
 export const KREATOR_TASKS: KreatorTask[] = [
   { id: "1", brand: "ASUS", campaign: "ROG Phone Launch", deliverable: "Unboxing Reel 60s", due: "2026-06-28", status: "in-progress" },
