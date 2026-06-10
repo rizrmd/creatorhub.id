@@ -180,7 +180,7 @@ export default function Sidebar() {
               title={effectiveCollapsed ? label : undefined}
               className={({ isActive }) =>
                 cn(
-                  "flex items-center rounded-lg transition-all duration-150 relative",
+                  "flex items-center rounded-lg transition-all duration-150 relative cursor-pointer",
                   effectiveCollapsed ? "justify-center w-11 h-11 mx-auto" : "gap-2.5 px-[11px] py-2",
                   isActive
                     ? "text-white"

@@ -132,7 +132,7 @@ export default function CreatorSearch() {
       title={inv.campaign}
       subtitle={`${inv.brand} · ${inv.category}`}
       meta={formatRp(inv.budget)}
-      to="/kreator/invitations"
+      to={`/kreator/invitations/${inv.id}`}
     />
   );
 

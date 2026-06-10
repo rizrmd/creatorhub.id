@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { Inbox, CheckCircle, XCircle, Clock, Sparkles, Search } from "lucide-react";
-import { toast } from "sonner";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Inbox, CheckCircle, XCircle, Clock, Sparkles, Search, ChevronRight } from "lucide-react";
 import { useKreatorData } from "@/context/KreatorDataContext";
 import {
   formatRp,
@@ -33,23 +32,16 @@ const statusChip = (status: InvitationStatus) => {
   );
 };
 
-function InvitationCard({
-  inv,
-  expanded,
-  onToggle,
-  onRespond,
-}: {
-  inv: KreatorInvitation;
-  expanded: boolean;
-  onToggle: () => void;
-  onRespond: (accepted: boolean) => void;
-}) {
+function InvitationCard({ inv, onOpen }: { inv: KreatorInvitation; onOpen: () => void }) {
   const isNew = isNewInvitation(inv);
 
   return (
-    <div
+    <button
+      type="button"
+      onClick={onOpen}
       className={cn(
-        "rounded-xl border overflow-hidden transition-shadow",
+        "w-full rounded-xl border overflow-hidden transition-all text-left cursor-pointer",
+        "hover:shadow-md hover:border-green-200 active:scale-[0.995]",
         isNew && "ring-2 ring-green-200 shadow-md",
       )}
       style={{
@@ -58,11 +50,7 @@ function InvitationCard({
         boxShadow: isNew ? undefined : "var(--ch-shadow-sm)",
       }}
     >
-      <div
-        className="p-4 flex items-center gap-4 relative"
-        style={{ cursor: "pointer" }}
-        onClick={onToggle}
-      >
+      <div className="p-4 flex items-center gap-4 relative">
         {isNew && (
           <span
             className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full"
@@ -111,36 +99,14 @@ function InvitationCard({
           </p>
         </div>
 
-        <p className="text-[14px] font-bold shrink-0" style={{ color: "#16A34A" }}>
-          {formatRp(inv.budget)}
-        </p>
-      </div>
-
-      {expanded && (
-        <div className="px-4 pb-4 pt-0 border-t" style={{ borderColor: isNew ? "#BBF7D0" : "var(--ch-border)" }}>
-          <p className="text-[12px] mt-3" style={{ color: "var(--ch-text-muted)" }}>Brief:</p>
-          <p className="text-[13px] mt-1 mb-4" style={{ color: "var(--ch-text)" }}>{inv.brief}</p>
-          {inv.status === "pending" && (
-            <div className="flex gap-2">
-              <button
-                onClick={(e) => { e.stopPropagation(); onRespond(false); }}
-                className="flex-1 py-2 rounded-lg border text-[13px] font-semibold"
-                style={{ borderColor: "#FCA5A5", color: "#DC2626" }}
-              >
-                Tolak
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); onRespond(true); }}
-                className="flex-1 py-2 rounded-lg text-white text-[13px] font-semibold"
-                style={{ background: "#16A34A" }}
-              >
-                Terima Undangan
-              </button>
-            </div>
-          )}
+        <div className="flex items-center gap-2 shrink-0">
+          <p className="text-[14px] font-bold" style={{ color: "#16A34A" }}>
+            {formatRp(inv.budget)}
+          </p>
+          <ChevronRight className="w-4 h-4" style={{ color: "var(--ch-text-soft)" }} />
         </div>
-      )}
-    </div>
+      </div>
+    </button>
   );
 }
 
@@ -176,11 +142,11 @@ function matchesInvitationSearch(inv: KreatorInvitation, query: string): boolean
 }
 
 export default function CreatorInvitations() {
-  const { invitations, respondToInvitation } = useKreatorData();
+  const navigate = useNavigate();
+  const { invitations } = useKreatorData();
   const [searchParams, setSearchParams] = useSearchParams();
   const [filter, setFilter] = useState<"all" | InvitationStatus>("all");
   const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
-  const [expanded, setExpanded] = useState<string | null>(null);
 
   useEffect(() => {
     if (!searchParams.has("search")) return;
@@ -188,11 +154,7 @@ export default function CreatorInvitations() {
     setSearchParams({}, { replace: true });
   }, [searchParams, setSearchParams]);
 
-  const respond = (id: string, accepted: boolean) => {
-    respondToInvitation(id, accepted);
-    setExpanded(null);
-    toast.success(accepted ? "Undangan diterima! 🎉" : "Undangan ditolak");
-  };
+  const openDetail = (id: string) => navigate(`/kreator/invitations/${id}`);
 
   const sorted = useMemo(() => sortInvitations(invitations), [invitations]);
   const searched = useMemo(
@@ -250,7 +212,7 @@ export default function CreatorInvitations() {
           const active = filter === t.key;
           return (
             <button key={t.key} onClick={() => setFilter(t.key)}
-              className="flex items-center gap-1.5 px-4 py-2.5 text-[13px] font-semibold border-b-2 transition-colors shrink-0"
+              className="flex items-center gap-1.5 px-4 py-2.5 text-[13px] font-semibold border-b-2 transition-colors shrink-0 cursor-pointer"
               style={active
                 ? { borderColor: "#16A34A", color: "#16A34A" }
                 : { borderColor: "transparent", color: "var(--ch-text-muted)" }}>
@@ -287,13 +249,7 @@ export default function CreatorInvitations() {
               <div className="space-y-3">
                 <SectionHeader title="Undangan Menunggu" count={newInvitations.length} highlight />
                 {newInvitations.map((inv) => (
-                  <InvitationCard
-                    key={inv.id}
-                    inv={inv}
-                    expanded={expanded === inv.id}
-                    onToggle={() => setExpanded(expanded === inv.id ? null : inv.id)}
-                    onRespond={(accepted) => respond(inv.id, accepted)}
-                  />
+                  <InvitationCard key={inv.id} inv={inv} onOpen={() => openDetail(inv.id)} />
                 ))}
               </div>
             )}
@@ -301,26 +257,14 @@ export default function CreatorInvitations() {
               <div className="space-y-3">
                 <SectionHeader title="Riwayat" count={historyInvitations.length} />
                 {historyInvitations.map((inv) => (
-                  <InvitationCard
-                    key={inv.id}
-                    inv={inv}
-                    expanded={expanded === inv.id}
-                    onToggle={() => setExpanded(expanded === inv.id ? null : inv.id)}
-                    onRespond={(accepted) => respond(inv.id, accepted)}
-                  />
+                  <InvitationCard key={inv.id} inv={inv} onOpen={() => openDetail(inv.id)} />
                 ))}
               </div>
             )}
           </>
         ) : (
           filtered.map((inv) => (
-            <InvitationCard
-              key={inv.id}
-              inv={inv}
-              expanded={expanded === inv.id}
-              onToggle={() => setExpanded(expanded === inv.id ? null : inv.id)}
-              onRespond={(accepted) => respond(inv.id, accepted)}
-            />
+            <InvitationCard key={inv.id} inv={inv} onOpen={() => openDetail(inv.id)} />
           ))
         )}
 

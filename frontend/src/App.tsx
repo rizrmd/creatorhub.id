@@ -16,6 +16,7 @@ import BoostAds from "@/pages/BoostAds";
 import ApplyWizard from "@/pages/ApplyWizard";
 import CreatorHome from "@/pages/kreator/CreatorHome";
 import CreatorInvitations from "@/pages/kreator/CreatorInvitations";
+import CreatorInvitationDetail from "@/pages/kreator/CreatorInvitationDetail";
 import CreatorWork from "@/pages/kreator/CreatorWork";
 import CreatorEarnings from "@/pages/kreator/CreatorEarnings";
 import CreatorInsights from "@/pages/kreator/CreatorInsights";
@@ -59,6 +60,7 @@ export default function App() {
             <Route path="home" element={<KreatorRoute><CreatorHome /></KreatorRoute>} />
             <Route path="search" element={<KreatorRoute><CreatorSearch /></KreatorRoute>} />
             <Route path="invitations" element={<KreatorRoute><CreatorInvitations /></KreatorRoute>} />
+            <Route path="invitations/:id" element={<KreatorRoute><CreatorInvitationDetail /></KreatorRoute>} />
             <Route path="work" element={<KreatorRoute><CreatorWork /></KreatorRoute>} />
             <Route path="earnings" element={<KreatorRoute><CreatorEarnings /></KreatorRoute>} />
             <Route path="insights" element={<KreatorRoute><CreatorInsights /></KreatorRoute>} />

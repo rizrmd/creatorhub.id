@@ -192,7 +192,7 @@ export default function CreatorHome() {
               >
                 <button
                   type="button"
-                  onClick={() => navigate("/kreator/invitations")}
+                  onClick={() => navigate(`/kreator/invitations/${inv.id}`)}
                   className="flex flex-1 items-center gap-3 sm:gap-4 min-w-0 text-left cursor-pointer group"
                 >
                   <div
@@ -227,7 +227,7 @@ export default function CreatorHome() {
                   <button
                     type="button"
                     onClick={() => respond(inv.id, false)}
-                    className="flex-1 sm:flex-none px-3 py-1.5 rounded-lg border text-[12px] font-semibold transition-colors hover:bg-red-50"
+                    className="flex-1 sm:flex-none px-3 py-1.5 rounded-lg border text-[12px] font-semibold cursor-pointer transition-colors hover:bg-red-50"
                     style={{ borderColor: "#FCA5A5", color: "#DC2626" }}
                   >
                     Decline
@@ -235,7 +235,7 @@ export default function CreatorHome() {
                   <button
                     type="button"
                     onClick={() => respond(inv.id, true)}
-                    className="flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-white text-[12px] font-semibold transition-opacity hover:opacity-90"
+                    className="flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-white text-[12px] font-semibold cursor-pointer transition-opacity hover:opacity-90"
                     style={{ background: "#16A34A" }}
                   >
                     Accept
