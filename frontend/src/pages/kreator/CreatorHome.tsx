@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Star, TrendingUp, MessageSquare, DollarSign, Award, Zap } from "lucide-react";
 import { toast } from "sonner";
-import { useAuth } from "@/contexts/AuthContext";
+import { useDisplayUser } from "@/hooks/useDisplayUser";
 
 const KPIs = [
   { label: "New Invitations",    value: "3",       sub: "Awaiting response",    hue: 220, icon: MessageSquare },
@@ -30,9 +30,8 @@ const achievements = [
 ];
 
 export default function CreatorHome() {
-  const { user } = useAuth();
+  const { firstName } = useDisplayUser();
   const [invs, setInvs] = useState(invitations);
-  const firstName = user?.name?.split(" ")[0] ?? "Creator";
 
   const respond = (id: string, accepted: boolean) => {
     setInvs((list) => list.filter((i) => i.id !== id));

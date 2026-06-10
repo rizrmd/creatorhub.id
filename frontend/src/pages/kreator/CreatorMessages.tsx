@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Send, Search, MessageSquare } from "lucide-react";
+import { useDisplayUser } from "@/hooks/useDisplayUser";
 
 const CHANNELS = [
   { id: "1", brand: "ASUS", campaign: "ROG Phone Launch", lastMsg: "We're waiting for your first content!", time: "10:42", unread: 2, online: true, avatar: "A", color: "#0078D4" },
@@ -7,20 +8,22 @@ const CHANNELS = [
   { id: "3", brand: "Tokopedia", campaign: "Flash Sale", lastMsg: "Thank you for your collaboration!", time: "2 days ago", unread: 0, online: true, avatar: "T", color: "#42B549" },
 ];
 
-const INITIAL_MESSAGES: Record<string, { id: string; text: string; from: "me" | "them"; time: string }[]> = {
-  "1": [
-    { id: "m1", text: "Hi Tasya! We're excited to collaborate on the ROG Phone Launch campaign 🎮", from: "them", time: "10:30" },
-    { id: "m2", text: "Hey! Ready! I've received the product, it's awesome 🔥", from: "me", time: "10:35" },
-    { id: "m3", text: "We're waiting for your first content! Deadline is next week.", from: "them", time: "10:42" },
-  ],
-  "2": [
-    { id: "m1", text: "Welcome to the Ramadan Glow campaign, Tasya!", from: "them", time: "Yesterday 09:00" },
-    { id: "m2", text: "Brief has been sent, please check.", from: "them", time: "Yesterday 09:05" },
-  ],
-  "3": [
-    { id: "m1", text: "Thank you for your collaboration, your content is great!", from: "them", time: "2 days ago" },
-  ],
-};
+function buildInitialMessages(firstName: string): Record<string, { id: string; text: string; from: "me" | "them"; time: string }[]> {
+  return {
+    "1": [
+      { id: "m1", text: `Hi ${firstName}! We're excited to collaborate on the ROG Phone Launch campaign 🎮`, from: "them", time: "10:30" },
+      { id: "m2", text: "Hey! Ready! I've received the product, it's awesome 🔥", from: "me", time: "10:35" },
+      { id: "m3", text: "We're waiting for your first content! Deadline is next week.", from: "them", time: "10:42" },
+    ],
+    "2": [
+      { id: "m1", text: `Welcome to the Ramadan Glow campaign, ${firstName}!`, from: "them", time: "Yesterday 09:00" },
+      { id: "m2", text: "Brief has been sent, please check.", from: "them", time: "Yesterday 09:05" },
+    ],
+    "3": [
+      { id: "m1", text: "Thank you for your collaboration, your content is great!", from: "them", time: "2 days ago" },
+    ],
+  };
+}
 
 const AUTO_REPLIES = [
   "Thank you, we'll respond shortly!",
@@ -30,8 +33,9 @@ const AUTO_REPLIES = [
 ];
 
 export default function CreatorMessages() {
+  const { firstName } = useDisplayUser();
   const [activeId, setActiveId] = useState<string>("1");
-  const [messages, setMessages] = useState(INITIAL_MESSAGES);
+  const [messages, setMessages] = useState(() => buildInitialMessages(firstName));
   const [draft, setDraft] = useState("");
   const [search, setSearch] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);

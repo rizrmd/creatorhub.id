@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import { useDisplayUser } from "@/hooks/useDisplayUser";
 
 type TabKey = "profile" | "notifications" | "security";
 
@@ -14,8 +15,9 @@ const TABS: { key: TabKey; label: string; icon: React.ElementType }[] = [
 ];
 
 export default function CreatorSettings() {
+  const { fullName, email } = useDisplayUser();
   const [tab, setTab] = useState<TabKey>("profile");
-  const [profile, setProfile] = useState({ name: "Tasya Farasya", email: "tasya@creatorhub.id", phone: "+62 812 xxxx xxxx" });
+  const [profile, setProfile] = useState({ name: fullName, email, phone: "+62 812 xxxx xxxx" });
   const [notifications, setNotifications] = useState({ brandInvites: true, payments: true, messages: true, weeklyReport: false });
   const [newPw, setNewPw] = useState(""); const [confirmPw, setConfirmPw] = useState(""); const [showPw, setShowPw] = useState(false);
 

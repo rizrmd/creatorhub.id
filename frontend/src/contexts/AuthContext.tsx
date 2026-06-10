@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
 import { AuthUser, LoginRequest } from "@/types";
 import { authApi } from "@/lib/api";
 import { roleFromAuth } from "@/context/RoleContext";
@@ -22,23 +22,21 @@ function decodeToken(token: string): AuthUser | null {
   }
 }
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+function readStoredUser(): AuthUser | null {
+  const token = localStorage.getItem("auth_token");
+  if (!token) return null;
+  const decoded = decodeToken(token);
+  if (!decoded) {
+    localStorage.removeItem("auth_token");
+    return null;
+  }
+  localStorage.setItem("ch_role", roleFromAuth(decoded.role));
+  return decoded;
+}
 
-  useEffect(() => {
-    const token = localStorage.getItem("auth_token");
-    if (token) {
-      const decoded = decodeToken(token);
-      if (decoded) {
-        setUser(decoded);
-        localStorage.setItem("ch_role", roleFromAuth(decoded.role));
-      } else {
-        localStorage.removeItem("auth_token");
-      }
-    }
-    setIsLoading(false);
-  }, []);
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<AuthUser | null>(readStoredUser);
+  const [isLoading] = useState(false);
 
   const login = async (data: LoginRequest) => {
     const res = await authApi.login(data);

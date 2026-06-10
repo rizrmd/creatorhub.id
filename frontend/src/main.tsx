@@ -7,7 +7,7 @@ import "./index.css";
 import App from "./App.tsx";
 
 // Bumped to invalidate stale browser/CDN caches of the previous JS bundle.
-document.documentElement.dataset.build = "2026-06-10c";
+document.documentElement.dataset.build = "2026-06-10d";
 
 const queryClient = new QueryClient({
   defaultOptions: {

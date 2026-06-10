@@ -3,15 +3,17 @@ import { Camera, Star, CheckCircle, MapPin, Instagram, Youtube, Edit2, Save } fr
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { useDisplayUser } from "@/hooks/useDisplayUser";
 
 const NICHES = ["Beauty", "Skincare", "Lifestyle", "Fashion", "Travel"];
 
 export default function CreatorProfile() {
+  const { fullName, initials, email, handle } = useDisplayUser();
   const [editing, setEditing] = useState(false);
   const [profile, setProfile] = useState({
-    name: "Tasya Farasya",
-    handle: "@tasyafarasya",
-    bio: "Beauty & skincare enthusiast from Jakarta ✨ Sharing honest reviews & tutorials daily. Business: tasya@creatorhub.id",
+    name: fullName,
+    handle,
+    bio: `Content creator di CreatorHub. Hubungi saya via ${email || "email bisnis"}.`,
     city: "Jakarta",
     rate: "4500000",
   });
@@ -50,9 +52,7 @@ export default function CreatorProfile() {
             <div className="relative">
               <div className="w-20 h-20 rounded-full border-4 border-white shadow-md overflow-hidden"
                 style={{ background: "var(--ch-primary)" }}>
-                <img src="/creators/tasya-farasya.png" alt="Tasya" className="w-full h-full object-cover"
-                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
-                <div className="w-full h-full flex items-center justify-center text-white text-2xl font-bold">T</div>
+                <div className="w-full h-full flex items-center justify-center text-white text-2xl font-bold">{initials}</div>
               </div>
               {editing && (
                 <button onClick={() => fileRef.current?.click()}
@@ -145,9 +145,9 @@ export default function CreatorProfile() {
         <p className="text-[13px] font-bold mb-3" style={{ color: "var(--ch-text)" }}>Connected Platforms</p>
         <div className="space-y-2">
           {[
-            { icon: <Instagram style={{ width: 16, height: 16 }} />, name: "Instagram", handle: "@tasyafarasya", followers: "284K", color: "#E1306C" },
-            { icon: <span className="text-sm">📱</span>, name: "TikTok", handle: "@tasyafarasya", followers: "152K", color: "#010101" },
-            { icon: <Youtube style={{ width: 16, height: 16 }} />, name: "YouTube", handle: "Tasya Farasya", followers: "50K", color: "#FF0000" },
+            { icon: <Instagram style={{ width: 16, height: 16 }} />, name: "Instagram", handle, followers: "284K", color: "#E1306C" },
+            { icon: <span className="text-sm">📱</span>, name: "TikTok", handle, followers: "152K", color: "#010101" },
+            { icon: <Youtube style={{ width: 16, height: 16 }} />, name: "YouTube", handle: fullName, followers: "50K", color: "#FF0000" },
           ].map((p) => (
             <div key={p.name} className="flex items-center gap-3 p-3 rounded-lg"
               style={{ background: "var(--ch-bg)" }}>
