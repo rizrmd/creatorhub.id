@@ -49,7 +49,7 @@ export default function Login() {
         {/* Logo */}
         <div className="relative flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center bg-white/20">
-            <img src="/logo.jpeg" alt="CreatorHub" className="w-full h-full object-contain"
+            <img src="/logo.webp" alt="CreatorHub" className="w-full h-full object-contain"
               style={{ mixBlendMode: "multiply" }}
               onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
             <span className="text-white font-black text-lg">C</span>
@@ -105,9 +105,9 @@ export default function Login() {
         <div className="w-full max-w-[380px]">
           {/* Mobile logo */}
           <div className="flex items-center gap-2.5 mb-8 lg:hidden">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+            <div className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center"
               style={{ background: "var(--ch-primary)" }}>
-              <span className="text-white font-black">C</span>
+              <img src="/logo.webp" alt="CreatorHub" className="w-full h-full object-contain" />
             </div>
             <span className="font-extrabold text-xl" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
               CreatorHub.id

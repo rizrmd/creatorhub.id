@@ -146,6 +146,7 @@ Environment variables (copy `.env.example` → `.env`):
 | `PORT` | `8080` | HTTP listen port |
 | `DATABASE_URL` | `postgres://postgres:postgres@localhost:5432/creatorhub?sslmode=disable` | PostgreSQL DSN |
 | `STATIC_DIR` | `../frontend/dist` | Path to Vite build output |
+| `JWT_SECRET` | `creatorhub-secret-change-in-production` | JWT signing secret (required in production) |
 
 ### Database migrations
 
@@ -190,3 +191,187 @@ go run ./cmd/migrate version    # print current version
 4. Run `./creatorhub.exe` or `go run ./cmd/migrate up` — the new migration applies automatically.
 
 > Never modify or delete an already-applied migration file. Modify schema by adding a new migration instead.
+
+## Deployment
+
+Production runs on **Coolify** at `cf.avolut.com` (this machine). A single Docker container builds the React frontend and Go backend, runs DB migrations on startup, and serves the SPA + API.
+
+| Item | Value |
+|---|---|
+| **Production URL** | https://creatorhub.id |
+| **Coolify UI** | https://cf.avolut.com/project/sws0ckk/environment/wgcsog0wcog040cgssoow00c/application/emzin0vth67dgrpfoulsz996 |
+| **App UUID** | `emzin0vth67dgrpfoulsz996` |
+| **App DB ID** | `154` |
+| **Git repo** | `rizrmd/creatorhub.id` → branch `main` |
+| **Build pack** | Dockerfile at repo root (`/Dockerfile`) |
+| **Exposed port** | `3000` |
+
+### Dockerfile
+
+Multi-stage build at repo root:
+
+1. **frontend-builder** — `npm ci` + `npm run build` → `frontend/dist`
+2. **backend-builder** — `go build` → `/creatorhub` binary (migrations embedded)
+3. **runner** — Alpine image with binary + static files at `/app/static`
+
+Test the image locally before pushing:
+
+```bash
+docker build -t creatorhub-test .
+```
+
+### Production environment variables
+
+Set in Coolify (runtime only — no build-time vars needed; frontend is built inside the Dockerfile).
+
+| Variable | Production value | Notes |
+|---|---|---|
+| `DATABASE_URL` | `postgres://postgres:<password>@107.155.75.50:5389/chub?sslmode=disable` | External PostgreSQL |
+| `JWT_SECRET` | random secret (`openssl rand -base64 32`) | Never use the dev default |
+| `PORT` | `3000` | Must match Coolify `ports_exposes` |
+| `STATIC_DIR` | `/app/static` | Path inside the container |
+
+`VITE_API_URL` is **not** needed — the SPA defaults to `/api/v1` (same origin).
+
+> **Important:** Never insert env vars directly into the Coolify database with plain SQL. Coolify encrypts values via Laravel — raw inserts cause `DecryptException` and deployment failure. Always use the Coolify UI or the artisan snippet below.
+
+#### Add / update env vars via artisan
+
+```bash
+docker exec coolify php artisan tinker --execute='
+$app = \App\Models\Application::where("uuid", "emzin0vth67dgrpfoulsz996")->first();
+$app->environment_variables()->updateOrCreate(
+  ["key" => "DATABASE_URL"],
+  ["value" => "postgres://postgres:<password>@107.155.75.50:5389/chub?sslmode=disable", "is_runtime" => true, "is_buildtime" => false, "is_preview" => false, "is_required" => true]
+);
+echo "done";
+'
+```
+
+Audit current values (passwords masked):
+
+```bash
+docker exec coolify php artisan tinker --execute='
+$app = \App\Models\Application::where("uuid", "emzin0vth67dgrpfoulsz996")->first();
+foreach ($app->environment_variables()->where("is_preview", false)->orderBy("key")->get() as $e) {
+  echo $e->key . " = " . ($e->key === "JWT_SECRET" ? "<secret>" : $e->value) . PHP_EOL;
+}
+'
+```
+
+### Deploy (after pushing to `main`)
+
+```bash
+# 1. Commit and push
+git add .
+git commit -m "your changes"
+git push origin main
+
+# 2. Trigger deploy from repo root (must use FULL commit SHA)
+FULL_SHA=$(git rev-parse HEAD)
+
+docker exec -i coolify-db psql -U coolify -d coolify -c \
+  "UPDATE applications SET git_commit_sha = '${FULL_SHA}' WHERE uuid = 'emzin0vth67dgrpfoulsz996';"
+
+QUEUE_ID=$(docker exec -i coolify-db psql -U coolify -d coolify -t -c \
+  "INSERT INTO application_deployment_queues
+   (application_id, deployment_uuid, commit, status, force_rebuild, is_webhook, created_at, updated_at, application_name, server_id)
+   SELECT '154', gen_random_uuid()::text, '${FULL_SHA}', 'queued', true, true, NOW(), NOW(), 'creatorhub.id', 0
+   RETURNING id;" | grep -oE '[0-9]+' | head -1)
+
+docker exec coolify php artisan tinker --execute="\App\Jobs\ApplicationDeploymentJob::dispatch(${QUEUE_ID});"
+```
+
+> Always use the **full 40-character SHA** from `git rev-parse HEAD`. Short SHAs cause `fatal: couldn't find remote ref` during clone.
+
+### Database migrations (production)
+
+Migrations run **automatically on every container start** (`goose.Up` in `main.go`). SQL files are embedded in the Go binary at build time — no manual step needed after deploy.
+
+Production database: `chub` on `107.155.75.50:5389` (via `DATABASE_URL`).
+
+Expected state after a fresh deploy:
+
+| Migration | Purpose |
+|---|---|
+| `001_initial.sql` | Core tables (creators, campaigns, messages, cities) |
+| `002_seed.sql` | Seed creators, cities, campaigns |
+| `003_update_image_urls.sql` | Fix creator image paths |
+| `004_users.sql` | Users table + auth |
+| `005_creator_fields.sql` | Extra creator columns (handle, hue, star_creator, …) |
+| `006_campaign_fields.sql` | Extra campaign columns (brand, objective, budget_spent, …) |
+
+#### Verify migrations
+
+```bash
+# 1. Check goose status against production DB
+cd backend
+DATABASE_URL='postgres://postgres:<password>@107.155.75.50:5389/chub?sslmode=disable' \
+  go run ./cmd/migrate status
+# All 6 migrations should show an "Applied At" timestamp — no "Pending"
+
+# 2. Confirm version table
+psql "$DATABASE_URL" -c "SELECT version_id, is_applied FROM goose_db_version ORDER BY version_id;"
+# Expect versions 0–6, all is_applied = true
+
+# 3. Confirm tables and seed data
+psql "$DATABASE_URL" -c "\dt"
+# Expect: campaigns, campaign_creators, chat_channels, cities, creator_platforms,
+#         creators, goose_db_version, messages, users
+
+psql "$DATABASE_URL" -c "
+  SELECT 'creators' AS tbl, COUNT(*) FROM creators
+  UNION ALL SELECT 'cities', COUNT(*) FROM cities
+  UNION ALL SELECT 'campaigns', COUNT(*) FROM campaigns
+  UNION ALL SELECT 'users', COUNT(*) FROM users;"
+# Expect: creators=8, cities=11, campaigns=2, users=1
+
+# 4. Check container startup logs
+docker logs $(docker ps --filter "name=emzin0v" --format "{{.Names}}") 2>&1 | grep goose
+# Expect: "goose: successfully migrated database to version: 6"
+```
+
+#### Manual migration (if needed)
+
+```bash
+cd backend
+DATABASE_URL='postgres://postgres:<password>@107.155.75.50:5389/chub?sslmode=disable' \
+  go run ./cmd/migrate up
+```
+
+Or redeploy — the container re-runs `goose.Up` on every start (idempotent; already-applied migrations are skipped).
+
+### Verify deployment
+
+```bash
+# Deployment status
+docker exec -i coolify-db psql -U coolify -d coolify -c \
+  "SELECT deployment_uuid, status, commit, created_at FROM application_deployment_queues
+   WHERE application_id = '154' ORDER BY created_at DESC LIMIT 3;"
+
+# Container health
+docker ps --filter "name=emzin0v" --format 'table {{.Names}}\t{{.Status}}'
+
+# HTTP checks
+curl -fsS https://creatorhub.id/health          # {"status":"ok"}
+curl -fsS -X POST https://creatorhub.id/api/v1/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"admin@creatorhub.id","password":"Admin123!"}'
+
+# App logs (container name changes each deploy — use filter)
+docker logs $(docker ps --filter "name=emzin0v" --format "{{.Names}}") --tail 50
+```
+
+Default admin account (created on first boot if no users exist): `admin@creatorhub.id` / `Admin123!`
+
+### Troubleshooting
+
+| Issue | Cause | Fix |
+|---|---|---|
+| `The payload is invalid` / `DecryptException` | Env var inserted as plain SQL | Delete bad rows; recreate via Coolify UI or artisan |
+| `fatal: couldn't find remote ref` | Short commit SHA used | Use `git rev-parse HEAD` (full SHA) |
+| Deployment stuck in `queued` | Horizon not processing | Manually dispatch: `ApplicationDeploymentJob::dispatch(QUEUE_ID)` |
+| Frontend build fails in Docker | TypeScript errors | Run `cd frontend && npm run build` locally first |
+| DB connection refused | Wrong `DATABASE_URL` or missing `?sslmode=disable` | Fix env var in Coolify; redeploy |
+| Migrations not applied | Container failed before `goose.Up` | Check logs; run `go run ./cmd/migrate status` then `up` manually |
+| Pending migrations after deploy | Old binary without new migration file | Rebuild + redeploy so new SQL is embedded in binary |

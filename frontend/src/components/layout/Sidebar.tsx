@@ -94,12 +94,12 @@ export default function Sidebar() {
         >
           {collapsed ? (
             <div className="w-9 h-9 rounded-lg overflow-hidden shrink-0">
-              <img src="/logo.jpeg" alt="CreatorHub" className="w-full h-full object-cover" style={{ mixBlendMode: "multiply" }} />
+              <img src="/logo.webp" alt="CreatorHub" className="w-full h-full object-cover" style={{ mixBlendMode: "multiply" }} />
             </div>
           ) : (
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="w-9 h-9 rounded-lg overflow-hidden shrink-0">
-                <img src="/logo.jpeg" alt="CreatorHub" className="w-full h-full object-cover" style={{ mixBlendMode: "multiply" }} />
+                <img src="/logo.webp" alt="CreatorHub" className="w-full h-full object-cover" style={{ mixBlendMode: "multiply" }} />
               </div>
               <div className="min-w-0">
                 <p className="font-bold text-sm leading-tight truncate" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
