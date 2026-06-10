@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { DollarSign, TrendingUp, Clock, CheckCircle, Download, Search } from "lucide-react";
+import { Coins, TrendingUp, Clock, CheckCircle, Download, Search } from "lucide-react";
 import { toast } from "sonner";
 import { useKreatorData } from "@/context/KreatorDataContext";
 import {
@@ -52,7 +52,7 @@ export default function CreatorEarnings() {
         <div className="absolute top-0 right-0 w-48 h-48 rounded-full opacity-10 bg-white -translate-y-12 translate-x-12" />
         <div className="relative">
           <p className="text-green-200 text-[13px] mb-1 flex items-center gap-1.5">
-            <DollarSign style={{ width: 13, height: 13 }} /> Total Earnings
+            <Coins style={{ width: 13, height: 13 }} /> Total Earnings
           </p>
           <p className="text-[32px] font-extrabold text-white tracking-tight"
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>

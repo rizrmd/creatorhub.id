@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   Search,
   Users,
@@ -21,18 +21,17 @@ function ResultCard({
   title,
   subtitle,
   meta,
-  onClick,
+  to,
 }: {
   title: string;
   subtitle: string;
   meta?: string;
-  onClick: () => void;
+  to: string;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="w-full rounded-xl border p-4 flex items-center gap-3 text-left transition-all hover:shadow-md hover:border-blue-200"
+    <Link
+      to={to}
+      className="w-full rounded-xl border p-4 flex items-center gap-3 text-left cursor-pointer transition-all hover:shadow-md hover:border-blue-200"
       style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}
     >
       <div className="flex-1 min-w-0">
@@ -41,7 +40,7 @@ function ResultCard({
         {meta && <p className="text-[11px] mt-0.5" style={{ color: "var(--ch-text-soft)" }}>{meta}</p>}
       </div>
       <ChevronRight className="w-4 h-4 shrink-0" style={{ color: "var(--ch-text-soft)" }} />
-    </button>
+    </Link>
   );
 }
 
@@ -62,8 +61,8 @@ function SearchSection({
   loading?: boolean;
   children: React.ReactNode;
 }) {
-  const navigate = useNavigate();
   if (!loading && count === 0) return null;
+  const viewAllTo = query ? `${href}?search=${encodeURIComponent(query)}` : href;
 
   return (
     <section className="space-y-3">
@@ -80,14 +79,13 @@ function SearchSection({
             </span>
           )}
         </div>
-        <button
-          type="button"
-          onClick={() => navigate(query ? `${href}?search=${encodeURIComponent(query)}` : href)}
-          className="text-[12px] font-semibold hover:underline"
+        <Link
+          to={viewAllTo}
+          className="text-[12px] font-semibold cursor-pointer hover:underline"
           style={{ color: "var(--ch-primary)" }}
         >
           Lihat semua
-        </button>
+        </Link>
       </div>
       <div className="space-y-2">
         {loading ? (
@@ -104,7 +102,6 @@ function SearchSection({
 }
 
 export default function BrandSearch() {
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
   const debouncedSearch = useDebouncedValue(search, 300);
@@ -145,7 +142,7 @@ export default function BrandSearch() {
       title={creator.name}
       subtitle={`${creator.city} · ${creator.category}`}
       meta={`${creator.followersText} · ${creator.priceText} · ⭐ ${creator.rating}`}
-      onClick={() => navigate("/marketplace")}
+      to="/marketplace"
     />
   );
 
@@ -157,7 +154,7 @@ export default function BrandSearch() {
         title={campaign.title}
         subtitle={campaign.brand ?? campaign.description.slice(0, 60)}
         meta={`${formatRupiah(campaign.budget)} · ${status?.label ?? campaign.status}`}
-        onClick={() => navigate(`/campaigns/${campaign.id}`)}
+        to={`/campaigns/${campaign.id}`}
       />
     );
   };
@@ -168,7 +165,7 @@ export default function BrandSearch() {
       title={channel.creatorName}
       subtitle={channel.lastMessage}
       meta={channel.unreadCount > 0 ? `${channel.unreadCount} belum dibaca` : undefined}
-      onClick={() => navigate("/messages")}
+      to="/messages"
     />
   );
 

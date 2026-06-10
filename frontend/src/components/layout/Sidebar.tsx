@@ -3,7 +3,7 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
   Store, Megaphone, BarChart3, Radio,
   MessageSquare, CreditCard, Settings, HelpCircle, Users,
-  Rocket, ChevronLeft, ChevronRight, Briefcase, DollarSign,
+  Rocket, ChevronLeft, ChevronRight, Briefcase, Coins,
   Lightbulb, User, Home, Mail,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -32,7 +32,7 @@ const kreatorNavItems = [
   { to: "/kreator/home",        icon: Home,          label: "Home" },
   { to: "/kreator/invitations", icon: Mail,          label: "Undangan",   badgeKey: "invitations" as const },
   { to: "/kreator/work",        icon: Briefcase,     label: "Pekerjaan" },
-  { to: "/kreator/earnings",    icon: DollarSign,    label: "Penghasilan" },
+  { to: "/kreator/earnings",    icon: Coins,    label: "Penghasilan" },
   { to: "/kreator/insights",    icon: Lightbulb,     label: "Insights" },
   { to: "/kreator/profile",     icon: User,          label: "Profil" },
   { to: "/kreator/messages",    icon: MessageSquare, label: "Pesan",      badgeKey: "messages" as const },

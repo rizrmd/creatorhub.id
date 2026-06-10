@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TrendingUp, Eye, MousePointer, DollarSign, MapPin } from "lucide-react";
+import { TrendingUp, Eye, MousePointer, Coins, MapPin } from "lucide-react";
 import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, Legend, PieChart, Pie, Cell,
@@ -9,7 +9,7 @@ const metrics = [
   { label: "Total Reach", value: "8.4M", change: "+15.2% vs last month", icon: Eye, hue: 220, positive: true },
   { label: "Avg. Engagement", value: "4.62%", change: "+0.75% vs last month", icon: MousePointer, hue: 188, positive: true },
   { label: "Impressions", value: "12.8M", change: "+22.1% vs last month", icon: TrendingUp, hue: 28, positive: true },
-  { label: "ROAS", value: "3.8x", change: "+0.4x vs last month", icon: DollarSign, hue: 42, positive: true },
+  { label: "ROAS", value: "3.8x", change: "+0.4x vs last month", icon: Coins, hue: 42, positive: true },
 ];
 
 const growthData = [

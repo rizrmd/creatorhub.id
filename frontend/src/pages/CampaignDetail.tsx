@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, DollarSign, Calendar, Users, CheckCircle, Trash2 } from "lucide-react";
+import { ArrowLeft, Coins, Calendar, Users, CheckCircle, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCampaign, useDeleteCampaign } from "@/hooks/useCampaigns";
@@ -99,7 +99,7 @@ export default function CampaignDetail() {
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { label: "Budget", value: formatRupiah(campaign.budget), icon: DollarSign, hue: 42 },
+          { label: "Budget", value: formatRupiah(campaign.budget), icon: Coins, hue: 42 },
           { label: "Kreator", value: `${creators.length} bergabung`, icon: Users, hue: 220 },
           { label: "Dibuat", value: new Date(campaign.createdAt).toLocaleDateString("id-ID"), icon: Calendar, hue: 142 },
         ].map((stat) => (

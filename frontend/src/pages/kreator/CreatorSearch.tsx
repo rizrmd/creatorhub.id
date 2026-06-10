@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   Search,
   Mail,
   Briefcase,
-  DollarSign,
+  Coins,
   MessageSquare,
   TrendingUp,
   Share2,
@@ -32,7 +32,7 @@ const SECTIONS: {
 }[] = [
   { key: "invitations", label: "Undangan", href: "/kreator/invitations", icon: Mail },
   { key: "tasks", label: "Pekerjaan", href: "/kreator/work", icon: Briefcase },
-  { key: "payments", label: "Pembayaran", href: "/kreator/earnings", icon: DollarSign },
+  { key: "payments", label: "Pembayaran", href: "/kreator/earnings", icon: Coins },
   { key: "messages", label: "Pesan", href: "/kreator/messages", icon: MessageSquare },
   { key: "posts", label: "Konten Teratas", href: "/kreator/insights", icon: TrendingUp },
   { key: "platforms", label: "Platform", href: "/kreator/insights", icon: Share2 },
@@ -42,18 +42,17 @@ function ResultCard({
   title,
   subtitle,
   meta,
-  onClick,
+  to,
 }: {
   title: string;
   subtitle: string;
   meta?: string;
-  onClick: () => void;
+  to: string;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="w-full rounded-xl border p-4 flex items-center gap-3 text-left transition-all hover:shadow-md hover:border-green-200"
+    <Link
+      to={to}
+      className="w-full rounded-xl border p-4 flex items-center gap-3 text-left cursor-pointer transition-all hover:shadow-md hover:border-green-200"
       style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}
     >
       <div className="flex-1 min-w-0">
@@ -62,7 +61,7 @@ function ResultCard({
         {meta && <p className="text-[11px] mt-0.5" style={{ color: "var(--ch-text-soft)" }}>{meta}</p>}
       </div>
       <ChevronRight className="w-4 h-4 shrink-0" style={{ color: "var(--ch-text-soft)" }} />
-    </button>
+    </Link>
   );
 }
 
@@ -81,8 +80,8 @@ function SearchSection({
   query: string;
   children: React.ReactNode;
 }) {
-  const navigate = useNavigate();
   if (count === 0) return null;
+  const viewAllTo = query ? `${href}?search=${encodeURIComponent(query)}` : href;
 
   return (
     <section className="space-y-3">
@@ -97,14 +96,13 @@ function SearchSection({
             {count}
           </span>
         </div>
-        <button
-          type="button"
-          onClick={() => navigate(query ? `${href}?search=${encodeURIComponent(query)}` : href)}
-          className="text-[12px] font-semibold hover:underline"
+        <Link
+          to={viewAllTo}
+          className="text-[12px] font-semibold cursor-pointer hover:underline"
           style={{ color: "#16A34A" }}
         >
           Lihat semua
-        </button>
+        </Link>
       </div>
       <div className="space-y-2">{children}</div>
     </section>
@@ -112,7 +110,6 @@ function SearchSection({
 }
 
 export default function CreatorSearch() {
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { invitations } = useKreatorData();
   const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
@@ -135,7 +132,7 @@ export default function CreatorSearch() {
       title={inv.campaign}
       subtitle={`${inv.brand} · ${inv.category}`}
       meta={formatRp(inv.budget)}
-      onClick={() => navigate("/kreator/invitations")}
+      to="/kreator/invitations"
     />
   );
 
@@ -145,7 +142,7 @@ export default function CreatorSearch() {
       title={task.deliverable}
       subtitle={`${task.brand} · ${task.campaign}`}
       meta={`Due ${new Date(task.due).toLocaleDateString("id-ID")}`}
-      onClick={() => navigate("/kreator/work")}
+      to="/kreator/work"
     />
   );
 
@@ -155,7 +152,7 @@ export default function CreatorSearch() {
       title={payment.campaign}
       subtitle={`${payment.brand} · ${payment.id}`}
       meta={`${formatRp(payment.amount)} · ${payment.status === "paid" ? "Lunas" : "Menunggu"}`}
-      onClick={() => navigate("/kreator/earnings")}
+      to="/kreator/earnings"
     />
   );
 
@@ -165,7 +162,7 @@ export default function CreatorSearch() {
       title={channel.brand}
       subtitle={channel.campaign}
       meta={channel.lastMsg}
-      onClick={() => navigate("/kreator/messages")}
+      to="/kreator/messages"
     />
   );
 
@@ -175,7 +172,7 @@ export default function CreatorSearch() {
       title={post.content}
       subtitle={post.platform}
       meta={`${post.reach} reach · ${post.engagement} engagement`}
-      onClick={() => navigate("/kreator/insights")}
+      to="/kreator/insights"
     />
   );
 
@@ -185,7 +182,7 @@ export default function CreatorSearch() {
       title={platform.name}
       subtitle={`${platform.followers} followers · ${platform.eng} engagement`}
       meta={`${platform.posts} posts`}
-      onClick={() => navigate("/kreator/insights")}
+      to="/kreator/insights"
     />
   );
 

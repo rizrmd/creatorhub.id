@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Star, TrendingUp, MessageSquare, DollarSign, Award, Zap, ChevronRight } from "lucide-react";
+import { Star, TrendingUp, MessageSquare, Coins, Award, Zap, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { useDisplayUser } from "@/hooks/useDisplayUser";
 import { useKreatorData } from "@/context/KreatorDataContext";
@@ -46,7 +46,7 @@ export default function CreatorHome() {
       value: formatRpShort(stats.currentMonthEarnings),
       sub: `${stats.earningsGrowthPct >= 0 ? "+" : ""}${stats.earningsGrowthPct}% vs last month`,
       hue: 28,
-      icon: DollarSign,
+      icon: Coins,
       href: "/kreator/earnings",
     },
     {

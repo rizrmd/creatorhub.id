@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Plus, Megaphone, Calendar, DollarSign, Trash2, Users, CheckCircle2, Circle, Search } from "lucide-react";
+import { Plus, Megaphone, Calendar, Coins, Trash2, Users, CheckCircle2, Circle, Search } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -217,7 +217,7 @@ export default function Campaigns() {
 
                   <div className="flex flex-wrap gap-3 text-[12px] mb-3" style={{ color: "var(--ch-text-muted)" }}>
                     <span className="flex items-center gap-1">
-                      <DollarSign style={{ width: 13, height: 13 }} />
+                      <Coins style={{ width: 13, height: 13 }} />
                       {formatRupiah(c.budget)}
                     </span>
                     <span className="flex items-center gap-1">

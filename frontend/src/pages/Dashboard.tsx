@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { DollarSign, Rocket, FileText, Wallet, Eye, Plus, User, TrendingUp, BarChart3, Check, MessageSquare, Zap, CheckCircle } from "lucide-react";
+import { Coins, Rocket, FileText, Wallet, Eye, Plus, User, TrendingUp, BarChart3, Check, MessageSquare, Zap, CheckCircle } from "lucide-react";
 
 const STATS = [
   { label: "Pending Reviews", value: "2",        barColor: "#16A34A", icon: FileText },
-  { label: "Revenue This Week", value: "Rp 247k", barColor: "#2563EB", icon: DollarSign },
+  { label: "Revenue This Week", value: "Rp 247k", barColor: "#2563EB", icon: Coins },
   { label: "Total Views",      value: "27M",     barColor: "#A855F7", icon: Eye },
   { label: "Total Earnings",   value: "Rp 18.4rb", barColor: "#F97316", icon: Wallet },
 ];

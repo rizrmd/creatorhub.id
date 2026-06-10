@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Search, Bell, ChevronDown, Settings, LogOut, User, Megaphone, Users, DollarSign, Menu } from "lucide-react";
+import { Search, Bell, ChevronDown, Settings, LogOut, User, Megaphone, Users, Coins, Menu } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,7 +8,7 @@ import { useSidebar } from "@/contexts/SidebarContext";
 
 const NOTIFICATIONS = [
   { id: 1, who: "Tasya Farasya", action: "menerima brief", target: "Ramadan Glow 2026", time: "2 mnt lalu", unread: true, iconBg: "#DBEAFE", iconFg: "#2563EB", icon: "check" },
-  { id: 2, who: "Sistem",        action: "memproses pembayaran", target: "INV-9281",        time: "1 jam lalu", unread: true, iconBg: "#DCFCE7", iconFg: "#16A34A", icon: "dollar" },
+  { id: 2, who: "Sistem",        action: "memproses pembayaran", target: "INV-9281",        time: "1 jam lalu", unread: true, iconBg: "#DCFCE7", iconFg: "#16A34A", icon: "coins" },
   { id: 3, who: "Analytics",     action: "laporan mingguan tersedia", target: "",           time: "5 jam lalu", unread: false, iconBg: "#FEF3C7", iconFg: "#B45309", icon: "chart" },
 ];
 
@@ -35,7 +35,7 @@ function NotifIcon({ icon, bg, fg }: { icon: string; bg: string; fg: string }) {
   return (
     <div className="w-[34px] h-[34px] rounded-full flex items-center justify-center shrink-0 text-sm font-bold" style={{ background: bg, color: fg }}>
       {icon === "check"  && "✓"}
-      {icon === "dollar" && "💰"}
+      {icon === "coins" && <Coins style={{ width: 16, height: 16 }} />}
       {icon === "chart"  && "📊"}
     </div>
   );
@@ -370,7 +370,7 @@ export default function Header() {
                   <span className="text-[9px]" style={{ color: "var(--ch-text-soft)" }}>Kreator</span>
                 </div>
                 <div className="flex flex-col items-center py-2.5">
-                  <DollarSign style={{ width: 14, height: 14, marginBottom: 2, color: "var(--ch-text-muted)" }} />
+                  <Coins style={{ width: 14, height: 14, marginBottom: 2, color: "var(--ch-text-muted)" }} />
                   <span className="text-[10px] font-bold leading-tight text-center" style={{ color: "var(--ch-text)" }}>{displayUser.stats.spent}</span>
                   <span className="text-[9px]" style={{ color: "var(--ch-text-soft)" }}>Spent</span>
                 </div>
