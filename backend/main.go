@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -125,6 +126,13 @@ func spaHandler(dir string) http.Handler {
 	fileServer := http.FileServer(fs)
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Missing static assets must 404 — never fall back to index.html.
+		// Otherwise browsers/CDN cache HTML with text/html as a .js module script.
+		if isStaticAsset(r.URL.Path) {
+			fileServer.ServeHTTP(w, r)
+			return
+		}
+
 		f, err := fs.Open(r.URL.Path)
 		if err != nil {
 			http.ServeFile(w, r, filepath.Join(dir, "index.html"))
@@ -140,4 +148,15 @@ func spaHandler(dir string) http.Handler {
 
 		fileServer.ServeHTTP(w, r)
 	})
+}
+
+func isStaticAsset(path string) bool {
+	if strings.HasPrefix(path, "/assets/") {
+		return true
+	}
+	switch strings.ToLower(filepath.Ext(path)) {
+	case ".js", ".css", ".map", ".webp", ".png", ".jpg", ".jpeg", ".svg", ".ico", ".woff", ".woff2", ".ttf":
+		return true
+	}
+	return false
 }
