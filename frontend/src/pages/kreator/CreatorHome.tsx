@@ -1,35 +1,17 @@
-import { useState } from "react";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Star, TrendingUp, MessageSquare, DollarSign, Award, Zap, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { useDisplayUser } from "@/hooks/useDisplayUser";
+import { useKreatorData } from "@/context/KreatorDataContext";
+import {
+  KREATOR_TOP_POSTS,
+  formatRp,
+  formatRpShort,
+  formatDeadlineLeft,
+  CREATOR_RATING,
+} from "@/data/kreatorData";
 import { cn } from "@/lib/utils";
-
-const KPIs = [
-  { label: "New Invitations", value: "3", sub: "Awaiting response", hue: 220, icon: MessageSquare, href: "/kreator/invitations" },
-  { label: "Active Jobs", value: "2", sub: "In progress", hue: 142, icon: Zap, href: "/kreator/work" },
-  { label: "Earnings This Month", value: "Rp 12.4jt", sub: "+18% vs last month", hue: 28, icon: DollarSign, href: "/kreator/earnings" },
-  { label: "Average Rating", value: "4.9", sub: "From 24 reviews", hue: 42, icon: Star, href: "/kreator/profile" },
-];
-
-const invitations = [
-  { id: "1", brand: "Wardah", campaign: "Ramadan Glow Campaign", budget: "Rp 5.000.000", deadline: "2 days left", category: "Beauty", accepted: false },
-  { id: "2", brand: "Tokopedia", campaign: "Flash Sale July 2026", budget: "Rp 3.500.000", deadline: "5 days left", category: "E-Commerce", accepted: false },
-  { id: "3", brand: "Grab", campaign: "GrabFood Summer Promo", budget: "Rp 4.200.000", deadline: "7 days left", category: "Food & Beverage", accepted: false },
-];
-
-const topPosts = [
-  { platform: "Instagram", content: "Skincare routine pagi hari ☀️", reach: "84K", engagement: "6.2%", emoji: "📸" },
-  { platform: "TikTok", content: "GRWM ke kondangan bestie!", reach: "210K", engagement: "8.4%", emoji: "🎬" },
-  { platform: "YouTube", content: "Review Skincare Budget Rp50rb", reach: "42K", engagement: "4.8%", emoji: "▶️" },
-];
-
-const achievements = [
-  { icon: "⭐", label: "Top Rated", desc: "Rating 4.9+", href: "/kreator/profile" },
-  { icon: "⚡", label: "Fast Response", desc: "Reply <2 hours", href: "/kreator/profile" },
-  { icon: "✅", label: "Verified", desc: "ID verified", href: "/kreator/profile" },
-  { icon: "🔥", label: "Trending", desc: "Top 5% this month", href: "/kreator/insights" },
-];
 
 const cardHover =
   "transition-all hover:shadow-md hover:border-green-200 hover:-translate-y-0.5 active:scale-[0.99] cursor-pointer text-left w-full";
@@ -37,10 +19,54 @@ const cardHover =
 export default function CreatorHome() {
   const navigate = useNavigate();
   const { firstName } = useDisplayUser();
-  const [invs, setInvs] = useState(invitations);
+  const { invitations, stats, respondToInvitation } = useKreatorData();
+
+  const pendingInvitations = stats.pendingInvitations;
+
+  const kpis = useMemo(() => [
+    {
+      label: "New Invitations",
+      value: String(stats.pendingInvitationCount),
+      sub: "Awaiting response",
+      hue: 220,
+      icon: MessageSquare,
+      href: "/kreator/invitations",
+    },
+    {
+      label: "Active Jobs",
+      value: String(stats.activeJobCount),
+      sub: stats.inProgressJobCount === 1 ? "1 in progress" : `${stats.inProgressJobCount} in progress`,
+      hue: 142,
+      icon: Zap,
+      href: "/kreator/work",
+    },
+    {
+      label: "Earnings This Month",
+      value: formatRpShort(stats.currentMonthEarnings),
+      sub: `${stats.earningsGrowthPct >= 0 ? "+" : ""}${stats.earningsGrowthPct}% vs last month`,
+      hue: 28,
+      icon: DollarSign,
+      href: "/kreator/earnings",
+    },
+    {
+      label: "Average Rating",
+      value: String(stats.rating),
+      sub: `From ${stats.reviewCount} reviews`,
+      hue: 42,
+      icon: Star,
+      href: "/kreator/profile",
+    },
+  ], [stats]);
+
+  const achievements = useMemo(() => [
+    { icon: "⭐", label: "Top Rated", desc: `Rating ${CREATOR_RATING}+`, href: "/kreator/profile" },
+    { icon: "⚡", label: "Fast Response", desc: "Reply <2 hours", href: "/kreator/profile" },
+    { icon: "✅", label: "Verified", desc: "ID verified", href: "/kreator/profile" },
+    { icon: "🔥", label: "Trending", desc: "Top 5% this month", href: "/kreator/insights" },
+  ], []);
 
   const respond = (id: string, accepted: boolean) => {
-    setInvs((list) => list.filter((i) => i.id !== id));
+    respondToInvitation(id, accepted);
     toast.success(accepted ? "Invitation accepted! 🎉" : "Invitation declined");
   };
 
@@ -64,7 +90,11 @@ export default function CreatorHome() {
               Welcome, {firstName}! 👋
             </h1>
             <p className="text-green-200 text-[13px] mt-1">
-              You have <strong className="text-white">{invs.length} new invitations</strong> waiting
+              You have{" "}
+              <strong className="text-white">
+                {stats.pendingInvitationCount} new invitation{stats.pendingInvitationCount !== 1 ? "s" : ""}
+              </strong>{" "}
+              waiting
             </p>
           </div>
           <ChevronRight className="w-5 h-5 text-white/70 shrink-0 mt-1" />
@@ -73,7 +103,7 @@ export default function CreatorHome() {
 
       {/* KPI tiles */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        {KPIs.map((k) => (
+        {kpis.map((k) => (
           <button
             key={k.label}
             type="button"
@@ -138,7 +168,7 @@ export default function CreatorHome() {
       </div>
 
       {/* Invitations */}
-      {invs.length > 0 && (
+      {pendingInvitations.length > 0 && (
         <div>
           <button
             type="button"
@@ -149,11 +179,11 @@ export default function CreatorHome() {
               Latest Invitations
             </p>
             <span className="text-[12px] font-semibold flex items-center gap-0.5 group-hover:underline" style={{ color: "#16A34A" }}>
-              Lihat semua <ChevronRight className="w-3.5 h-3.5" />
+              Lihat semua ({invitations.length}) <ChevronRight className="w-3.5 h-3.5" />
             </span>
           </button>
           <div className="space-y-3">
-            {invs.map((inv) => (
+            {pendingInvitations.map((inv) => (
               <div
                 key={inv.id}
                 className="rounded-xl border p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 transition-all hover:shadow-md hover:border-green-200"
@@ -175,12 +205,15 @@ export default function CreatorHome() {
                       {inv.campaign}
                     </p>
                     <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
-                      {inv.brand} · {inv.category} · <span style={{ color: "#F97316" }}>{inv.deadline}</span>
+                      {inv.brand} · {inv.category} ·{" "}
+                      <span style={{ color: "#F97316" }}>{formatDeadlineLeft(inv.deadline)}</span>
                     </p>
-                    <p className="text-[12px] font-bold mt-0.5 sm:hidden" style={{ color: "#16A34A" }}>{inv.budget}</p>
+                    <p className="text-[12px] font-bold mt-0.5 sm:hidden" style={{ color: "#16A34A" }}>
+                      {formatRp(inv.budget)}
+                    </p>
                   </div>
                   <p className="text-[13px] font-bold shrink-0 hidden sm:block" style={{ color: "#16A34A" }}>
-                    {inv.budget}
+                    {formatRp(inv.budget)}
                   </p>
                   <ChevronRight className="w-4 h-4 shrink-0" style={{ color: "var(--ch-text-soft)" }} />
                 </button>
@@ -224,7 +257,7 @@ export default function CreatorHome() {
           </span>
         </button>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {topPosts.map((p) => (
+          {KREATOR_TOP_POSTS.map((p) => (
             <button
               key={p.content}
               type="button"

@@ -4,6 +4,7 @@ import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { ChevronRight, Home } from "lucide-react";
 import { SidebarProvider } from "@/contexts/SidebarContext";
+import { KreatorDataProvider } from "@/context/KreatorDataContext";
 
 const PATH_LABELS: Record<string, string> = {
   dashboard: "Dashboard",
@@ -58,6 +59,7 @@ export default function Layout() {
 
   return (
     <SidebarProvider>
+      <KreatorDataProvider>
       <div className="flex h-[100dvh] bg-slate-50 overflow-hidden">
         <Toaster position="top-right" richColors />
         <Sidebar />
@@ -69,6 +71,7 @@ export default function Layout() {
           </main>
         </div>
       </div>
+      </KreatorDataProvider>
     </SidebarProvider>
   );
 }

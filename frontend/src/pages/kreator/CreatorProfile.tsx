@@ -4,11 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useDisplayUser } from "@/hooks/useDisplayUser";
+import { KREATOR_PLATFORMS, KREATOR_INSIGHT_KPIS } from "@/data/kreatorData";
+import { useKreatorData } from "@/context/KreatorDataContext";
 
 const NICHES = ["Beauty", "Skincare", "Lifestyle", "Fashion", "Travel"];
 
 export default function CreatorProfile() {
   const { fullName, initials, email, handle } = useDisplayUser();
+  const { stats } = useKreatorData();
+  const totalFollowers = KREATOR_INSIGHT_KPIS.find((k) => k.label === "Total Followers")?.value ?? "486K";
+  const avgEngagement = KREATOR_INSIGHT_KPIS.find((k) => k.label === "Avg Engagement")?.value ?? "5.8%";
   const [editing, setEditing] = useState(false);
   const [profile, setProfile] = useState({
     name: fullName,
@@ -69,7 +74,7 @@ export default function CreatorProfile() {
                 <CheckCircle style={{ width: 16, height: 16, color: "var(--ch-primary)" }} />
                 <span className="flex items-center gap-0.5 text-[11px] font-bold px-2 py-0.5 rounded-full"
                   style={{ background: "#FEF3C7", color: "#B45309" }}>
-                  <Star style={{ width: 9, height: 9 }} /> 4.9
+                  <Star style={{ width: 9, height: 9 }} /> {stats.rating}
                 </span>
               </div>
               <p className="text-[13px]" style={{ color: "var(--ch-text-muted)" }}>{profile.handle}</p>
@@ -121,11 +126,12 @@ export default function CreatorProfile() {
                     style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>{n}</span>
                 ))}
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {[
-                  { label: "Total Followers", value: "486K" },
-                  { label: "Avg Engagement", value: "5.8%" },
+                  { label: "Total Followers", value: totalFollowers },
+                  { label: "Avg Engagement", value: avgEngagement },
                   { label: "Rate per Post", value: "Rp " + (parseInt(profile.rate) / 1000000).toFixed(1) + "jt" },
+                  { label: "Reviews", value: String(stats.reviewCount) },
                 ].map((s) => (
                   <div key={s.label} className="text-center p-3 rounded-xl"
                     style={{ background: "var(--ch-bg)" }}>
@@ -144,11 +150,15 @@ export default function CreatorProfile() {
         style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
         <p className="text-[13px] font-bold mb-3" style={{ color: "var(--ch-text)" }}>Connected Platforms</p>
         <div className="space-y-2">
-          {[
-            { icon: <Instagram style={{ width: 16, height: 16 }} />, name: "Instagram", handle, followers: "284K", color: "#E1306C" },
-            { icon: <span className="text-sm">📱</span>, name: "TikTok", handle, followers: "152K", color: "#010101" },
-            { icon: <Youtube style={{ width: 16, height: 16 }} />, name: "YouTube", handle: fullName, followers: "50K", color: "#FF0000" },
-          ].map((p) => (
+          {KREATOR_PLATFORMS.map((plat) => ({
+            icon: plat.name === "Instagram" ? <Instagram style={{ width: 16, height: 16 }} />
+              : plat.name === "YouTube" ? <Youtube style={{ width: 16, height: 16 }} />
+              : <span className="text-sm">📱</span>,
+            name: plat.name,
+            handle: plat.name === "YouTube" ? fullName : handle,
+            followers: plat.followers,
+            color: plat.color,
+          })).map((p) => (
             <div key={p.name} className="flex items-center gap-3 p-3 rounded-lg"
               style={{ background: "var(--ch-bg)" }}>
               <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white"

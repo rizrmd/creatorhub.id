@@ -1,19 +1,23 @@
 import { Briefcase, CheckSquare, Clock, AlertCircle } from "lucide-react";
+import { KREATOR_TASKS, type TaskStatus } from "@/data/kreatorData";
+import { useKreatorData } from "@/context/KreatorDataContext";
 
-const tasks = [
-  { id: "1", brand: "ASUS", campaign: "ROG Phone Launch", deliverable: "Unboxing Reel 60s", due: "2026-06-28", status: "in-progress" as const },
-  { id: "2", brand: "ASUS", campaign: "ROG Phone Launch", deliverable: "IG Story Announcement", due: "2026-06-27", status: "submitted" as const },
-  { id: "3", brand: "Wardah", campaign: "Ramadan Glow",   deliverable: "Tutorial Reel", due: "2026-07-02", status: "pending" as const },
-];
-
-const statusConfig = {
-  pending:     { label: "Belum Mulai",  bg: "#F1F5F9", fg: "#475569", icon: Clock },
-  "in-progress": { label: "Dalam Proses",  bg: "#DBEAFE", fg: "#1D4ED8", icon: Briefcase },
-  submitted:   { label: "Sudah Dikirim", bg: "#DCFCE7", fg: "#15803D", icon: CheckSquare },
-  revision:    { label: "Perlu Revisi",   bg: "#FEE2E2", fg: "#B91C1C", icon: AlertCircle },
+const statusConfig: Record<TaskStatus, { label: string; bg: string; fg: string; icon: React.ElementType }> = {
+  pending: { label: "Belum Mulai", bg: "#F1F5F9", fg: "#475569", icon: Clock },
+  "in-progress": { label: "Dalam Proses", bg: "#DBEAFE", fg: "#1D4ED8", icon: Briefcase },
+  submitted: { label: "Sudah Dikirim", bg: "#DCFCE7", fg: "#15803D", icon: CheckSquare },
+  revision: { label: "Perlu Revisi", bg: "#FEE2E2", fg: "#B91C1C", icon: AlertCircle },
 };
 
 export default function CreatorWork() {
+  const { stats } = useKreatorData();
+
+  const summary = [
+    { label: "Total Deliverables", value: KREATOR_TASKS.length, hue: 220 },
+    { label: "Dalam Proses", value: stats.inProgressJobCount, hue: 142 },
+    { label: "Sudah Dikirim", value: KREATOR_TASKS.filter((t) => t.status === "submitted").length, hue: 28 },
+  ];
+
   return (
     <div className="p-4 md:p-6 space-y-5" style={{ background: "var(--ch-bg)" }}>
       <div>
@@ -26,12 +30,8 @@ export default function CreatorWork() {
         </p>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        {[
-          { label: "Total Deliverables", value: tasks.length, hue: 220 },
-          { label: "Dalam Proses", value: tasks.filter(t => t.status === "in-progress").length, hue: 142 },
-          { label: "Sudah Dikirim", value: tasks.filter(t => t.status === "submitted").length, hue: 28 },
-        ].map((s) => (
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {summary.map((s) => (
           <div key={s.label} className="rounded-xl border p-4 text-center"
             style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
             <p className="text-[26px] font-extrabold"
@@ -44,7 +44,7 @@ export default function CreatorWork() {
       </div>
 
       <div className="space-y-3">
-        {tasks.map((t) => {
+        {KREATOR_TASKS.map((t) => {
           const cfg = statusConfig[t.status];
           const Icon = cfg.icon;
           return (

@@ -1,29 +1,21 @@
 import { useState } from "react";
 import { Inbox, CheckCircle, XCircle, Clock, Filter } from "lucide-react";
 import { toast } from "sonner";
+import { useKreatorData } from "@/context/KreatorDataContext";
+import { formatRp, type InvitationStatus } from "@/data/kreatorData";
 
-type Status = "pending" | "accepted" | "declined";
-
-const INITIAL = [
-  { id: "1", brand: "Wardah",    campaign: "Ramadan Glow Campaign", budget: 5000000,  deadline: "2026-07-02", category: "Beauty",        status: "pending"  as Status, brief: "Buat 2 konten IG Reel + 1 Story unboxing produk Wardah terbaru." },
-  { id: "2", brand: "Tokopedia", campaign: "Flash Sale Juli 2026",  budget: 3500000,  deadline: "2026-07-07", category: "E-Commerce",     status: "pending"  as Status, brief: "Review & unboxing haul produk dari Tokopedia Flash Sale." },
-  { id: "3", brand: "Grab",      campaign: "GrabFood Summer Promo", budget: 4200000,  deadline: "2026-07-10", category: "Food",           status: "pending"  as Status, brief: "Konten kuliner & vlog pengiriman GrabFood musim panas." },
-  { id: "4", brand: "ASUS",      campaign: "ROG Phone Launch",      budget: 8000000,  deadline: "2026-06-28", category: "Tech",           status: "accepted" as Status, brief: "Unboxing + first look ROG Phone 9 series." },
-  { id: "5", brand: "Eiger",     campaign: "Outdoor Ready",         budget: 2500000,  deadline: "2026-06-20", category: "Lifestyle",      status: "declined" as Status, brief: "Konten outdoor & hiking menampilkan gear Eiger." },
-];
-
-const TAB_FILTERS: { key: "all" | Status; label: string; icon: React.ElementType }[] = [
-  { key: "all",      label: "Semua",    icon: Inbox },
-  { key: "pending",  label: "Menunggu", icon: Clock },
+const TAB_FILTERS: { key: "all" | InvitationStatus; label: string; icon: React.ElementType }[] = [
+  { key: "all", label: "Semua", icon: Inbox },
+  { key: "pending", label: "Menunggu", icon: Clock },
   { key: "accepted", label: "Diterima", icon: CheckCircle },
-  { key: "declined", label: "Ditolak",  icon: XCircle },
+  { key: "declined", label: "Ditolak", icon: XCircle },
 ];
 
-const statusChip = (status: Status) => {
-  const map: Record<Status, { label: string; bg: string; fg: string }> = {
-    pending:  { label: "Menunggu", bg: "#FEF3C7", fg: "#B45309" },
+const statusChip = (status: InvitationStatus) => {
+  const map: Record<InvitationStatus, { label: string; bg: string; fg: string }> = {
+    pending: { label: "Menunggu", bg: "#FEF3C7", fg: "#B45309" },
     accepted: { label: "Diterima", bg: "#DCFCE7", fg: "#15803D" },
-    declined: { label: "Ditolak",  bg: "#FEE2E2", fg: "#B91C1C" },
+    declined: { label: "Ditolak", bg: "#FEE2E2", fg: "#B91C1C" },
   };
   const s = map[status];
   return (
@@ -32,23 +24,17 @@ const statusChip = (status: Status) => {
   );
 };
 
-function formatRp(n: number) {
-  return "Rp " + n.toLocaleString("id-ID");
-}
-
 export default function CreatorInvitations() {
-  const [invs, setInvs] = useState(INITIAL);
-  const [filter, setFilter] = useState<"all" | Status>("all");
+  const { invitations, respondToInvitation } = useKreatorData();
+  const [filter, setFilter] = useState<"all" | InvitationStatus>("all");
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const respond = (id: string, accepted: boolean) => {
-    setInvs((list) =>
-      list.map((i) => i.id === id ? { ...i, status: accepted ? "accepted" : "declined" } : i)
-    );
+    respondToInvitation(id, accepted);
     toast.success(accepted ? "Undangan diterima! 🎉" : "Undangan ditolak");
   };
 
-  const filtered = filter === "all" ? invs : invs.filter((i) => i.status === filter);
+  const filtered = filter === "all" ? invitations : invitations.filter((i) => i.status === filter);
 
   return (
     <div className="p-4 md:p-6 space-y-5" style={{ background: "var(--ch-bg)" }}>
@@ -62,11 +48,10 @@ export default function CreatorInvitations() {
         </p>
       </div>
 
-      {/* Tabs */}
       <div className="flex gap-0 border-b" style={{ borderColor: "var(--ch-border)" }}>
         {TAB_FILTERS.map((t) => {
           const Icon = t.icon;
-          const count = t.key === "all" ? invs.length : invs.filter((i) => i.status === t.key).length;
+          const count = t.key === "all" ? invitations.length : invitations.filter((i) => i.status === t.key).length;
           const active = filter === t.key;
           return (
             <button key={t.key} onClick={() => setFilter(t.key)}
@@ -88,7 +73,6 @@ export default function CreatorInvitations() {
         </div>
       </div>
 
-      {/* Pro tip */}
       <div className="rounded-xl p-4 flex items-start gap-3"
         style={{ background: "#ECFDF5", border: "1px solid #A7F3D0" }}>
         <span className="text-lg">💡</span>
@@ -100,7 +84,6 @@ export default function CreatorInvitations() {
         </div>
       </div>
 
-      {/* Cards */}
       <div className="space-y-3">
         {filtered.map((inv) => (
           <div key={inv.id} className="rounded-xl border overflow-hidden"

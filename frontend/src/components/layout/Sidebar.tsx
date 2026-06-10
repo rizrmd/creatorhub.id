@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { useRole } from "@/context/RoleContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSidebar } from "@/contexts/SidebarContext";
+import { useKreatorStatsOptional } from "@/context/KreatorDataContext";
 
 const brandNavItems = [
   { to: "/dashboard",        icon: Home,            label: "Dashboard" },
@@ -29,12 +30,12 @@ const brandNavItems = [
 
 const kreatorNavItems = [
   { to: "/kreator/home",        icon: Home,          label: "Home" },
-  { to: "/kreator/invitations", icon: Mail,          label: "Undangan",   badge: 3 },
+  { to: "/kreator/invitations", icon: Mail,          label: "Undangan",   badgeKey: "invitations" as const },
   { to: "/kreator/work",        icon: Briefcase,     label: "Pekerjaan" },
   { to: "/kreator/earnings",    icon: DollarSign,    label: "Penghasilan" },
   { to: "/kreator/insights",    icon: Lightbulb,     label: "Insights" },
   { to: "/kreator/profile",     icon: User,          label: "Profil" },
-  { to: "/kreator/messages",    icon: MessageSquare, label: "Pesan",      badge: 12 },
+  { to: "/kreator/messages",    icon: MessageSquare, label: "Pesan",      badgeKey: "messages" as const },
   { to: "/kreator/settings",    icon: Settings,      label: "Pengaturan" },
 ];
 
@@ -42,6 +43,7 @@ export default function Sidebar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { mobileOpen, closeMobile } = useSidebar();
+  const kreatorStats = useKreatorStatsOptional();
   const { user } = useAuth();
   const { effectiveRole, canSwitchRole, setRole } = useRole();
   const isKreatorView = effectiveRole === "kreator";
@@ -72,6 +74,14 @@ export default function Sidebar() {
   }, [pathname, closeMobile]);
 
   const navItems = effectiveRole === "kreator" ? kreatorNavItems : brandNavItems;
+
+  const resolveBadge = (item: { badge?: number; badgeKey?: "invitations" | "messages" }) => {
+    if (item.badgeKey && kreatorStats) {
+      if (item.badgeKey === "invitations") return kreatorStats.pendingInvitationCount;
+      if (item.badgeKey === "messages") return kreatorStats.unreadMessages;
+    }
+    return item.badge;
+  };
 
   const handleSwitchRole = () => {
     if (!canSwitchRole) return;
@@ -152,7 +162,11 @@ export default function Sidebar() {
           className="flex-1 overflow-y-auto min-h-0 flex flex-col gap-0.5"
           style={{ padding: effectiveCollapsed ? "12px 8px" : "12px 10px" }}
         >
-          {navItems.map(({ to, icon: Icon, label, badge }) => (
+          {navItems.map((item) => {
+            const { to, icon: Icon, label } = item;
+            const rawBadge = resolveBadge(item);
+            const badge = rawBadge !== undefined && rawBadge > 0 ? rawBadge : undefined;
+            return (
             <NavLink
               key={to}
               to={to}
@@ -202,7 +216,8 @@ export default function Sidebar() {
                 </>
               )}
             </NavLink>
-          ))}
+            );
+          })}
         </nav>
 
         {/* Bottom section */}
