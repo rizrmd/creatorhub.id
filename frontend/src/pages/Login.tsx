@@ -47,17 +47,12 @@ export default function Login() {
         <div className="absolute bottom-0 left-0 w-56 h-56 rounded-full opacity-10 bg-white translate-y-16 -translate-x-16" />
 
         {/* Logo */}
-        <div className="relative flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center bg-white/20">
-            <img src="/logo.webp" alt="CreatorHub" className="w-full h-full object-contain"
-              style={{ mixBlendMode: "multiply" }}
-              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
-            <span className="text-white font-black text-lg">C</span>
-          </div>
-          <span className="text-white font-extrabold text-xl tracking-tight"
-            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            CreatorHub.id
-          </span>
+        <div className="relative">
+          <img
+            src="/logo.webp"
+            alt="CreatorHub"
+            className="h-12 w-auto max-w-[200px] object-contain"
+          />
         </div>
 
         {/* Main copy */}
@@ -104,14 +99,12 @@ export default function Login() {
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-[380px]">
           {/* Mobile logo */}
-          <div className="flex items-center gap-2.5 mb-8 lg:hidden">
-            <div className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center"
-              style={{ background: "var(--ch-primary)" }}>
-              <img src="/logo.webp" alt="CreatorHub" className="w-full h-full object-contain" />
-            </div>
-            <span className="font-extrabold text-xl" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-              CreatorHub.id
-            </span>
+          <div className="flex justify-center mb-8 lg:hidden">
+            <img
+              src="/logo.webp"
+              alt="CreatorHub"
+              className="h-10 w-auto max-w-[180px] object-contain"
+            />
           </div>
 
           <h2 className="text-[26px] font-extrabold mb-1 tracking-[-0.5px]"
