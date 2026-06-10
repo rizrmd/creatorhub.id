@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Inbox, CheckCircle, XCircle, Clock, Filter, Sparkles, Search } from "lucide-react";
+import { Inbox, CheckCircle, XCircle, Clock, Sparkles, Search } from "lucide-react";
 import { toast } from "sonner";
 import { useKreatorData } from "@/context/KreatorDataContext";
 import {
@@ -242,26 +242,6 @@ export default function CreatorInvitations() {
         />
       </div>
 
-      {/* Summary pills */}
-      <div className="flex flex-wrap gap-2">
-        <div className="rounded-xl border px-3 py-2 text-[12px] font-semibold"
-          style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-          Total <span className="font-bold" style={{ color: "var(--ch-text)" }}>{counts.all}</span>
-        </div>
-        <div className="rounded-xl border px-3 py-2 text-[12px] font-semibold"
-          style={{ background: "#F0FDF4", borderColor: "#86EFAC", color: "#15803D" }}>
-          Menunggu <span className="font-bold">{counts.pending}</span>
-        </div>
-        <div className="rounded-xl border px-3 py-2 text-[12px] font-semibold"
-          style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-          Diterima <span className="font-bold" style={{ color: "#15803D" }}>{counts.accepted}</span>
-        </div>
-        <div className="rounded-xl border px-3 py-2 text-[12px] font-semibold"
-          style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-          Ditolak <span className="font-bold" style={{ color: "#DC2626" }}>{counts.declined}</span>
-        </div>
-      </div>
-
       <div className="flex gap-0 border-b overflow-x-auto" style={{ borderColor: "var(--ch-border)" }}>
         {TAB_FILTERS.map((t) => {
           const Icon = t.icon;
@@ -282,9 +262,6 @@ export default function CreatorInvitations() {
             </button>
           );
         })}
-        <div className="ml-auto flex items-center px-2 shrink-0">
-          <Filter style={{ width: 14, height: 14, color: "var(--ch-text-soft)" }} />
-        </div>
       </div>
 
       {counts.pending > 0 && filter === "all" && (
