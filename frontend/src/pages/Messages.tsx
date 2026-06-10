@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Send, Paperclip, ExternalLink, Search, MessageSquare, Star, MapPin, CheckCircle, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -25,13 +26,20 @@ function getHue(name: string): number {
 
 export default function Messages() {
   const qc = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeChannelId, setActiveChannelId] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
   const [attachment, setAttachment] = useState<string | null>(null);
   const [showProfile, setShowProfile] = useState(false);
   const [profileCreator, setProfileCreator] = useState<Creator | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(() => searchParams.get("search") ?? "");
+
+  useEffect(() => {
+    if (!searchParams.has("search")) return;
+    setSearchTerm(searchParams.get("search") ?? "");
+    setSearchParams({}, { replace: true });
+  }, [searchParams, setSearchParams]);
   const [readChannelIds, setReadChannelIds] = useState<Set<string>>(new Set());
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -42,9 +50,14 @@ export default function Messages() {
 
   const activeChannel = channels?.find((c) => c.id === activeChannelId);
 
-  const filteredChannels = channels?.filter((c) =>
-    c.creatorName.toLowerCase().includes(searchTerm.toLowerCase())
-  ) ?? [];
+  const filteredChannels = channels?.filter((c) => {
+    const q = searchTerm.trim().toLowerCase();
+    if (!q) return true;
+    return (
+      c.creatorName.toLowerCase().includes(q) ||
+      c.lastMessage.toLowerCase().includes(q)
+    );
+  }) ?? [];
 
   const getUnread = (channelId: string, original: number) =>
     readChannelIds.has(channelId) ? 0 : original;

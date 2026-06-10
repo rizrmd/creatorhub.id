@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { Plus, Megaphone, Calendar, DollarSign, Trash2, Users, CheckCircle2, Circle } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Plus, Megaphone, Calendar, DollarSign, Trash2, Users, CheckCircle2, Circle, Search } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { useCampaigns, useCreateCampaign, useDeleteCampaign, useUpdateCampaign }
 import { formatRupiah } from "@/lib/utils";
 import { CAMPAIGN_STATUS } from "@/types";
 import type { Campaign, CampaignStatus } from "@/types";
+import { filterCampaigns } from "@/lib/brandSearch";
 
 const STATUS_TABS = [
   { value: "all",       label: "Semua" },
@@ -47,12 +48,20 @@ function StatusBadge({ status }: { status: CampaignStatus }) {
 
 export default function Campaigns() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { data: campaigns, isLoading } = useCampaigns();
   const createMutation = useCreateCampaign();
   const deleteMutation = useDeleteCampaign();
   const updateMutation = useUpdateCampaign();
 
   const [tab, setTab] = useState<string>("all");
+  const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
+
+  useEffect(() => {
+    if (!searchParams.has("search")) return;
+    setSearch(searchParams.get("search") ?? "");
+    setSearchParams({}, { replace: true });
+  }, [searchParams, setSearchParams]);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ title: "", description: "", budget: "" });
 
@@ -99,7 +108,11 @@ export default function Campaigns() {
     paused: "View Details",
   };
 
-  const filtered = tab === "all" ? (campaigns ?? []) : (campaigns ?? []).filter((c) => c.status === tab);
+  const searched = useMemo(
+    () => (search.trim() ? filterCampaigns(campaigns ?? [], search) : (campaigns ?? [])),
+    [campaigns, search],
+  );
+  const filtered = tab === "all" ? searched : searched.filter((c) => c.status === tab);
 
   return (
     <div className="p-4 md:p-6 space-y-5" style={{ background: "var(--ch-bg)" }}>
@@ -120,6 +133,17 @@ export default function Campaigns() {
           <Plus style={{ width: 16, height: 16 }} />
           Create Campaign
         </button>
+      </div>
+
+      <div className="relative max-w-xl">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--ch-text-soft)" }} />
+        <input
+          className="w-full rounded-xl border pl-9 pr-3 py-2.5 text-[13px] outline-none"
+          style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+          placeholder="Cari kampanye, brand, deskripsi…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </div>
 
       {/* Tabs */}

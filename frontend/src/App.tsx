@@ -23,6 +23,7 @@ import CreatorProfile from "@/pages/kreator/CreatorProfile";
 import CreatorMessages from "@/pages/kreator/CreatorMessages";
 import CreatorSettings from "@/pages/kreator/CreatorSettings";
 import CreatorSearch from "@/pages/kreator/CreatorSearch";
+import BrandSearch from "@/pages/BrandSearch";
 
 export default function App() {
   return (
@@ -42,6 +43,7 @@ export default function App() {
           }
         >
           <Route index element={<HomeRedirect />} />
+          <Route path="search" element={<BrandRoute><BrandSearch /></BrandRoute>} />
           <Route path="dashboard" element={<BrandRoute><Dashboard /></BrandRoute>} />
           <Route path="marketplace" element={<BrandRoute><Marketplace /></BrandRoute>} />
           <Route path="campaigns" element={<BrandRoute><Campaigns /></BrandRoute>} />
