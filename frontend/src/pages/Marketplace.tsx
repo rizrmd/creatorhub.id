@@ -303,9 +303,9 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden flex flex-col p-0">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden flex flex-col p-0 bg-white">
         {/* Header Section */}
-        <div className="p-6 border-b" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
+        <div className="p-6 border-b bg-white" style={{ borderColor: "var(--ch-border)" }}>
           <div className="flex items-start gap-4">
             {/* Avatar */}
             <div className="w-20 h-20 rounded-full overflow-hidden shrink-0 border-2" style={{ borderColor: "var(--ch-border)", background: "var(--ch-primary-50)" }}>
@@ -370,8 +370,7 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
             {/* Favorite Button */}
             <button
               onClick={onFavorite}
-              className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110"
-              style={{ background: "var(--ch-bg)" }}
+              className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 bg-slate-100"
             >
               <Heart style={{ width: 20, height: 20, color: favorited ? "#EF4444" : "#94A3B8", fill: favorited ? "#EF4444" : "none" }} />
             </button>
@@ -379,7 +378,7 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-6" style={{ background: "var(--ch-bg)" }}>
+        <div className="flex-1 overflow-y-auto p-6 bg-slate-50">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column - Main Content */}
             <div className="lg:col-span-2 space-y-6">
@@ -494,7 +493,7 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 border-t flex items-center justify-between gap-3" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
+        <div className="p-4 border-t flex items-center justify-between gap-3 bg-white" style={{ borderColor: "var(--ch-border)" }}>
           <Button variant="outline" size="sm" className="gap-2" onClick={onClose}>
             Tutup
           </Button>
