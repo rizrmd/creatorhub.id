@@ -96,7 +96,7 @@ export default function Sidebar() {
             className={cn("rounded-lg overflow-hidden shrink-0", collapsed ? "w-9 h-9" : "w-full h-10")}
           >
             <img
-              src="/logo.webp"
+              src={collapsed ? "/favicon.png" : "/logo.webp"}
               alt="CreatorHub"
               className="w-full h-full object-contain"
             />
