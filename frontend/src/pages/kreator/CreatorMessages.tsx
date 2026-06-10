@@ -39,9 +39,12 @@ export default function CreatorMessages() {
   const [draft, setDraft] = useState("");
   const [search, setSearch] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
+  const messagesPaneRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    const pane = messagesPaneRef.current;
+    if (!pane) return;
+    pane.scrollTo({ top: pane.scrollHeight, behavior: "smooth" });
   }, [messages, activeId]);
 
   const send = () => {
@@ -62,9 +65,9 @@ export default function CreatorMessages() {
   const activeMessages = messages[activeId] ?? [];
 
   return (
-    <div className="flex h-[calc(100vh-64px)]" style={{ background: "var(--ch-bg)" }}>
+    <div className="flex h-full min-h-0 overflow-hidden" style={{ background: "var(--ch-bg)" }}>
       {/* Thread list */}
-      <div className="w-[300px] shrink-0 border-r flex flex-col"
+      <div className="w-[300px] shrink-0 border-r flex flex-col min-h-0"
         style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
         <div className="p-4 border-b" style={{ borderColor: "var(--ch-border)" }}>
           <p className="text-[15px] font-bold mb-3" style={{ color: "var(--ch-text)" }}>Messages</p>
@@ -81,7 +84,7 @@ export default function CreatorMessages() {
             />
           </div>
         </div>
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 min-h-0 overflow-y-auto">
           {filtered.map((c) => (
             <button key={c.id}
               onClick={() => setActiveId(c.id)}
@@ -117,7 +120,7 @@ export default function CreatorMessages() {
 
       {/* Chat area */}
       {active ? (
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 flex flex-col min-w-0 min-h-0 overflow-hidden">
           {/* Header */}
           <div className="px-5 py-3.5 border-b flex items-center gap-3"
             style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
@@ -129,7 +132,7 @@ export default function CreatorMessages() {
             </div>
           </div>
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-5 space-y-3">
+          <div ref={messagesPaneRef} className="flex-1 min-h-0 overflow-y-auto p-5 space-y-3">
             {activeMessages.map((m) => (
               <div key={m.id} className={`flex ${m.from === "me" ? "justify-end" : "justify-start"}`}>
                 <div className="max-w-[65%] rounded-2xl px-4 py-2.5 text-[13px]"

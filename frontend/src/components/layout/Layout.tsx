@@ -47,15 +47,22 @@ function Breadcrumb() {
   );
 }
 
+function isFullHeightPage(pathname: string) {
+  return pathname === "/messages" || pathname === "/kreator/messages";
+}
+
 export default function Layout() {
+  const { pathname } = useLocation();
+  const fullHeight = isFullHeightPage(pathname);
+
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">
       <Toaster position="top-right" richColors />
       <Sidebar />
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 min-h-0">
         <Header />
-        <Breadcrumb />
-        <main className="flex-1 overflow-auto">
+        {!fullHeight && <Breadcrumb />}
+        <main className={fullHeight ? "flex-1 min-h-0 overflow-hidden" : "flex-1 min-h-0 overflow-auto"}>
           <Outlet />
         </main>
       </div>

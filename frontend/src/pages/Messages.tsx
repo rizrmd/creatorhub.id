@@ -108,9 +108,9 @@ export default function Messages() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-70px)]">
+    <div className="flex h-full min-h-0 overflow-hidden">
       {/* ─── Left: Thread list ─────────────────────────────── */}
-      <aside className="w-[300px] shrink-0 border-r flex flex-col"
+      <aside className="w-[300px] shrink-0 border-r flex flex-col min-h-0"
         style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
         <div className="px-4 py-3.5 border-b flex items-center justify-between"
           style={{ borderColor: "var(--ch-border)" }}>
@@ -139,7 +139,7 @@ export default function Messages() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 min-h-0 overflow-y-auto">
           {loadingChannels ? (
             <div className="p-3 space-y-3">
               {Array.from({ length: 4 }).map((_, i) => (
@@ -208,7 +208,7 @@ export default function Messages() {
       </aside>
 
       {/* ─── Center: Chat area ─────────────────────────────── */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 min-h-0 overflow-hidden">
         {activeChannel ? (
           <>
             {/* Chat header */}
@@ -240,7 +240,7 @@ export default function Messages() {
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-auto p-4 space-y-3" style={{ background: "var(--ch-bg)" }}>
+            <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3" style={{ background: "var(--ch-bg)" }}>
               {loadingMessages ? (
                 <div className="space-y-3">
                   {Array.from({ length: 4 }).map((_, i) => (
