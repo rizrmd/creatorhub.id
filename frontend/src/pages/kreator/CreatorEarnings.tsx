@@ -1,4 +1,6 @@
-import { DollarSign, TrendingUp, Clock, CheckCircle, Download } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { DollarSign, TrendingUp, Clock, CheckCircle, Download, Search } from "lucide-react";
 import { toast } from "sonner";
 import { useKreatorData } from "@/context/KreatorDataContext";
 import {
@@ -6,12 +8,32 @@ import {
   KREATOR_MONTHLY_EARNINGS,
   KREATOR_EARNINGS_BREAKDOWN,
   formatRp,
+  type KreatorPayment,
 } from "@/data/kreatorData";
+
+function matchesPaymentSearch(payment: KreatorPayment, query: string): boolean {
+  const q = query.trim().toLowerCase();
+  if (!q) return true;
+  return [payment.brand, payment.campaign, payment.id].some((field) => field.toLowerCase().includes(q));
+}
 
 const maxMonthly = Math.max(...KREATOR_MONTHLY_EARNINGS.map((m) => m.amount));
 
 export default function CreatorEarnings() {
   const { stats } = useKreatorData();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
+
+  useEffect(() => {
+    if (!searchParams.has("search")) return;
+    setSearch(searchParams.get("search") ?? "");
+    setSearchParams({}, { replace: true });
+  }, [searchParams, setSearchParams]);
+
+  const payments = useMemo(
+    () => KREATOR_PAYMENTS.filter((payment) => matchesPaymentSearch(payment, search)),
+    [search],
+  );
 
   return (
     <div className="p-4 md:p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
@@ -95,9 +117,19 @@ export default function CreatorEarnings() {
 
       <div className="rounded-xl border overflow-hidden"
         style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-        <div className="px-5 py-4 border-b flex items-center justify-between"
+        <div className="px-5 py-4 border-b flex flex-col sm:flex-row sm:items-center gap-3 justify-between"
           style={{ borderColor: "var(--ch-border)" }}>
           <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>Payment History</p>
+          <div className="relative w-full sm:max-w-xs">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: "var(--ch-text-soft)" }} />
+            <input
+              className="w-full rounded-lg border pl-8 pr-3 py-2 text-[12px] outline-none"
+              style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+              placeholder="Cari pembayaran…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px]">
@@ -110,7 +142,7 @@ export default function CreatorEarnings() {
               </tr>
             </thead>
             <tbody>
-              {KREATOR_PAYMENTS.map((p) => {
+              {payments.map((p) => {
                 const isPaid = p.status === "paid";
                 return (
                   <tr key={p.id} className="border-b hover:bg-slate-50 transition-colors"

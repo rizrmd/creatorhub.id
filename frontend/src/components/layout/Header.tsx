@@ -118,7 +118,7 @@ export default function Header() {
       const q = encodeURIComponent(search.trim());
       navigate(
         effectiveRole === "kreator"
-          ? `/kreator/invitations?search=${q}`
+          ? `/kreator/search?search=${q}`
           : `/marketplace?search=${q}`,
       );
       setSearch("");
@@ -174,7 +174,7 @@ export default function Header() {
             ref={searchRef}
             className="flex-1 bg-transparent border-0 outline-none text-[13px] min-w-0"
             style={{ color: "var(--ch-text)", fontFamily: "inherit" }}
-            placeholder={effectiveRole === "kreator" ? "Cari undangan, pekerjaan…" : "Cari kreator, kampanye…"}
+            placeholder={effectiveRole === "kreator" ? "Cari undangan, pekerjaan, pembayaran…" : "Cari kreator, kampanye…"}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={handleSearch}

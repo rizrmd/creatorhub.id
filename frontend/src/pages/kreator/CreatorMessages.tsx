@@ -1,13 +1,9 @@
 import { useState, useRef, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Send, Search, MessageSquare, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useDisplayUser } from "@/hooks/useDisplayUser";
-
-const CHANNELS = [
-  { id: "1", brand: "ASUS", campaign: "ROG Phone Launch", lastMsg: "We're waiting for your first content!", time: "10:42", unread: 2, online: true, avatar: "A", color: "#0078D4" },
-  { id: "2", brand: "Wardah", campaign: "Ramadan Glow", lastMsg: "Brief has been sent, please check.", time: "Yesterday", unread: 0, online: false, avatar: "W", color: "#E91E8C" },
-  { id: "3", brand: "Tokopedia", campaign: "Flash Sale", lastMsg: "Thank you for your collaboration!", time: "2 days ago", unread: 0, online: true, avatar: "T", color: "#42B549" },
-];
+import { KREATOR_MESSAGE_CHANNELS } from "@/data/kreatorData";
 
 function buildInitialMessages(firstName: string): Record<string, { id: string; text: string; from: "me" | "them"; time: string }[]> {
   return {
@@ -35,12 +31,19 @@ const AUTO_REPLIES = [
 
 export default function CreatorMessages() {
   const { firstName } = useDisplayUser();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeId, setActiveId] = useState<string>(() =>
     typeof window !== "undefined" && window.innerWidth >= 1024 ? "1" : "",
   );
   const [messages, setMessages] = useState(() => buildInitialMessages(firstName));
   const [draft, setDraft] = useState("");
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
+
+  useEffect(() => {
+    if (!searchParams.has("search")) return;
+    setSearch(searchParams.get("search") ?? "");
+    setSearchParams({}, { replace: true });
+  }, [searchParams, setSearchParams]);
   const bottomRef = useRef<HTMLDivElement>(null);
   const messagesPaneRef = useRef<HTMLDivElement>(null);
 
@@ -61,10 +64,14 @@ export default function CreatorMessages() {
     }, 1400);
   };
 
-  const filtered = CHANNELS.filter(
-    (c) => c.brand.toLowerCase().includes(search.toLowerCase()) || c.campaign.toLowerCase().includes(search.toLowerCase())
+  const filtered = KREATOR_MESSAGE_CHANNELS.filter(
+    (c) =>
+      !search.trim() ||
+      c.brand.toLowerCase().includes(search.toLowerCase()) ||
+      c.campaign.toLowerCase().includes(search.toLowerCase()) ||
+      c.lastMsg.toLowerCase().includes(search.toLowerCase()),
   );
-  const active = CHANNELS.find((c) => c.id === activeId);
+  const active = KREATOR_MESSAGE_CHANNELS.find((c) => c.id === activeId);
   const activeMessages = messages[activeId] ?? [];
 
   return (

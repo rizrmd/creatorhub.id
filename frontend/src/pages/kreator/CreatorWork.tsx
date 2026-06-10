@@ -1,6 +1,14 @@
-import { Briefcase, CheckSquare, Clock, AlertCircle } from "lucide-react";
-import { KREATOR_TASKS, type TaskStatus } from "@/data/kreatorData";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { Briefcase, CheckSquare, Clock, AlertCircle, Search } from "lucide-react";
+import { KREATOR_TASKS, type KreatorTask, type TaskStatus } from "@/data/kreatorData";
 import { useKreatorData } from "@/context/KreatorDataContext";
+
+function matchesTaskSearch(task: KreatorTask, query: string): boolean {
+  const q = query.trim().toLowerCase();
+  if (!q) return true;
+  return [task.brand, task.campaign, task.deliverable].some((field) => field.toLowerCase().includes(q));
+}
 
 const statusConfig: Record<TaskStatus, { label: string; bg: string; fg: string; icon: React.ElementType }> = {
   pending: { label: "Belum Mulai", bg: "#F1F5F9", fg: "#475569", icon: Clock },
@@ -11,6 +19,19 @@ const statusConfig: Record<TaskStatus, { label: string; bg: string; fg: string; 
 
 export default function CreatorWork() {
   const { stats } = useKreatorData();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
+
+  useEffect(() => {
+    if (!searchParams.has("search")) return;
+    setSearch(searchParams.get("search") ?? "");
+    setSearchParams({}, { replace: true });
+  }, [searchParams, setSearchParams]);
+
+  const tasks = useMemo(
+    () => KREATOR_TASKS.filter((task) => matchesTaskSearch(task, search)),
+    [search],
+  );
 
   const summary = [
     { label: "Total Deliverables", value: KREATOR_TASKS.length, hue: 220 },
@@ -43,8 +64,19 @@ export default function CreatorWork() {
         ))}
       </div>
 
+      <div className="relative max-w-xl">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--ch-text-soft)" }} />
+        <input
+          className="w-full rounded-xl border pl-9 pr-3 py-2.5 text-[13px] outline-none"
+          style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+          placeholder="Cari brand, kampanye, deliverable…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+
       <div className="space-y-3">
-        {KREATOR_TASKS.map((t) => {
+        {tasks.map((t) => {
           const cfg = statusConfig[t.status];
           const Icon = cfg.icon;
           return (
@@ -73,6 +105,13 @@ export default function CreatorWork() {
             </div>
           );
         })}
+        {tasks.length === 0 && (
+          <div className="py-12 text-center" style={{ color: "var(--ch-text-soft)" }}>
+            <p className="text-[14px] font-medium">
+              {search.trim() ? `Tidak ada pekerjaan untuk "${search.trim()}"` : "Tidak ada pekerjaan"}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -22,6 +22,7 @@ import CreatorInsights from "@/pages/kreator/CreatorInsights";
 import CreatorProfile from "@/pages/kreator/CreatorProfile";
 import CreatorMessages from "@/pages/kreator/CreatorMessages";
 import CreatorSettings from "@/pages/kreator/CreatorSettings";
+import CreatorSearch from "@/pages/kreator/CreatorSearch";
 
 export default function App() {
   return (
@@ -54,6 +55,7 @@ export default function App() {
           <Route path="kreator">
             <Route index element={<Navigate to="/kreator/home" replace />} />
             <Route path="home" element={<KreatorRoute><CreatorHome /></KreatorRoute>} />
+            <Route path="search" element={<KreatorRoute><CreatorSearch /></KreatorRoute>} />
             <Route path="invitations" element={<KreatorRoute><CreatorInvitations /></KreatorRoute>} />
             <Route path="work" element={<KreatorRoute><CreatorWork /></KreatorRoute>} />
             <Route path="earnings" element={<KreatorRoute><CreatorEarnings /></KreatorRoute>} />

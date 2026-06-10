@@ -58,6 +58,72 @@ export const CREATOR_RATING = 4.9;
 export const CREATOR_REVIEW_COUNT = 24;
 export const KREATOR_UNREAD_MESSAGES = 2;
 
+export interface KreatorMessageChannel {
+  id: string;
+  brand: string;
+  campaign: string;
+  lastMsg: string;
+  time: string;
+  unread: number;
+  online: boolean;
+  avatar: string;
+  color: string;
+}
+
+export const KREATOR_MESSAGE_CHANNELS: KreatorMessageChannel[] = [
+  { id: "1", brand: "ASUS", campaign: "ROG Phone Launch", lastMsg: "We're waiting for your first content!", time: "10:42", unread: 2, online: true, avatar: "A", color: "#0078D4" },
+  { id: "2", brand: "Wardah", campaign: "Ramadan Glow", lastMsg: "Brief has been sent, please check.", time: "Yesterday", unread: 0, online: false, avatar: "W", color: "#E91E8C" },
+  { id: "3", brand: "Tokopedia", campaign: "Flash Sale", lastMsg: "Thank you for your collaboration!", time: "2 days ago", unread: 0, online: true, avatar: "T", color: "#42B549" },
+];
+
+function matchesKreatorQuery(query: string, fields: (string | undefined)[]): boolean {
+  const q = query.trim().toLowerCase();
+  if (!q) return false;
+  return fields.some((field) => field?.toLowerCase().includes(q));
+}
+
+export interface KreatorSearchResults {
+  invitations: KreatorInvitation[];
+  tasks: KreatorTask[];
+  payments: KreatorPayment[];
+  messages: KreatorMessageChannel[];
+  posts: TopPost[];
+  platforms: PlatformInsight[];
+  total: number;
+}
+
+export function searchKreatorContent(query: string, invitations: KreatorInvitation[]): KreatorSearchResults {
+  const q = query.trim();
+  const empty: KreatorSearchResults = {
+    invitations: [],
+    tasks: [],
+    payments: [],
+    messages: [],
+    posts: [],
+    platforms: [],
+    total: 0,
+  };
+  if (!q) return empty;
+
+  const results: KreatorSearchResults = {
+    invitations: invitations.filter((i) => matchesKreatorQuery(q, [i.brand, i.campaign, i.category, i.brief])),
+    tasks: KREATOR_TASKS.filter((t) => matchesKreatorQuery(q, [t.brand, t.campaign, t.deliverable])),
+    payments: KREATOR_PAYMENTS.filter((p) => matchesKreatorQuery(q, [p.brand, p.campaign, p.id])),
+    messages: KREATOR_MESSAGE_CHANNELS.filter((m) => matchesKreatorQuery(q, [m.brand, m.campaign, m.lastMsg])),
+    posts: KREATOR_TOP_POSTS.filter((p) => matchesKreatorQuery(q, [p.platform, p.content])),
+    platforms: KREATOR_PLATFORMS.filter((p) => matchesKreatorQuery(q, [p.name])),
+    total: 0,
+  };
+  results.total =
+    results.invitations.length +
+    results.tasks.length +
+    results.payments.length +
+    results.messages.length +
+    results.posts.length +
+    results.platforms.length;
+  return results;
+}
+
 export const KREATOR_INVITATIONS: KreatorInvitation[] = [
   { id: "1", brand: "Wardah", campaign: "Ramadan Glow Campaign", budget: 5_000_000, deadline: "2026-07-02", category: "Beauty", status: "pending", brief: "Buat 2 konten IG Reel + 1 Story unboxing produk Wardah terbaru.", receivedAt: "2026-06-09" },
   { id: "2", brand: "Tokopedia", campaign: "Flash Sale Juli 2026", budget: 3_500_000, deadline: "2026-07-07", category: "E-Commerce", status: "pending", brief: "Review & unboxing haul produk dari Tokopedia Flash Sale.", receivedAt: "2026-06-08" },
