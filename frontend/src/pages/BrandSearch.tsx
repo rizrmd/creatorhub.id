@@ -171,28 +171,29 @@ export default function BrandSearch() {
 
   return (
     <div className="p-4 md:p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
-      <div>
-        <h1
-          className="text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]"
-          style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-        >
-          Pencarian
-        </h1>
-        <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
-          Cari kreator, kampanye, dan percakapan di seluruh platform
-        </p>
-      </div>
-
-      <div className="relative max-w-2xl">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--ch-text-soft)" }} />
-        <input
-          autoFocus
-          className="w-full rounded-xl border pl-9 pr-3 py-3 text-[14px] outline-none"
-          style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
-          placeholder="Cari kreator, kampanye, pesan…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <h1
+            className="text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]"
+            style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+          >
+            Pencarian
+          </h1>
+          <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
+            Cari kreator, kampanye, dan percakapan di seluruh platform
+          </p>
+        </div>
+        <div className="relative w-full sm:w-72 lg:w-80 shrink-0">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--ch-text-soft)" }} />
+          <input
+            autoFocus
+            className="w-full rounded-xl border pl-9 pr-3 py-2.5 text-[13px] outline-none"
+            style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+            placeholder="Cari kreator, kampanye, pesan…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
       </div>
 
       {!hasQuery ? (

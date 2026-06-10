@@ -55,25 +55,26 @@ export default function CreatorWork() {
 
   return (
     <div className="p-4 md:p-6 space-y-5" style={{ background: "var(--ch-bg)" }}>
-      <div>
-        <h1 className="text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]"
-          style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-          Pekerjaan Aktif
-        </h1>
-        <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
-          Pantau dan kelola semua deliverables kampanye
-        </p>
-      </div>
-
-      <div className="relative max-w-xl">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--ch-text-soft)" }} />
-        <input
-          className="w-full rounded-xl border pl-9 pr-3 py-2.5 text-[13px] outline-none"
-          style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
-          placeholder="Cari brand, kampanye, deliverable…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]"
+            style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            Pekerjaan Aktif
+          </h1>
+          <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
+            Pantau dan kelola semua deliverables kampanye
+          </p>
+        </div>
+        <div className="relative w-full sm:w-72 lg:w-80 shrink-0">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--ch-text-soft)" }} />
+          <input
+            className="w-full rounded-xl border pl-9 pr-3 py-2.5 text-[13px] outline-none"
+            style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+            placeholder="Cari brand, kampanye, deliverable…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
       </div>
 
       <div className="flex gap-0 border-b overflow-x-auto" style={{ borderColor: "var(--ch-border)" }}>
