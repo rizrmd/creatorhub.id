@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Search, MessageSquare } from "lucide-react";
+import { Send, Search, MessageSquare, ArrowLeft } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useDisplayUser } from "@/hooks/useDisplayUser";
 
 const CHANNELS = [
@@ -34,7 +35,9 @@ const AUTO_REPLIES = [
 
 export default function CreatorMessages() {
   const { firstName } = useDisplayUser();
-  const [activeId, setActiveId] = useState<string>("1");
+  const [activeId, setActiveId] = useState<string>(() =>
+    typeof window !== "undefined" && window.innerWidth >= 1024 ? "1" : "",
+  );
   const [messages, setMessages] = useState(() => buildInitialMessages(firstName));
   const [draft, setDraft] = useState("");
   const [search, setSearch] = useState("");
@@ -67,8 +70,13 @@ export default function CreatorMessages() {
   return (
     <div className="flex h-full min-h-0 overflow-hidden" style={{ background: "var(--ch-bg)" }}>
       {/* Thread list */}
-      <div className="w-[300px] shrink-0 border-r flex flex-col min-h-0"
-        style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
+      <div
+        className={cn(
+          "w-full lg:w-[300px] shrink-0 border-r flex flex-col min-h-0",
+          activeId ? "hidden lg:flex" : "flex",
+        )}
+        style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}
+      >
         <div className="p-4 border-b" style={{ borderColor: "var(--ch-border)" }}>
           <p className="text-[15px] font-bold mb-3" style={{ color: "var(--ch-text)" }}>Messages</p>
           <div className="relative">
@@ -122,8 +130,17 @@ export default function CreatorMessages() {
       {active ? (
         <div className="flex-1 flex flex-col min-w-0 min-h-0 overflow-hidden">
           {/* Header */}
-          <div className="px-5 py-3.5 border-b flex items-center gap-3"
+          <div className="px-3 sm:px-5 py-3.5 border-b flex items-center gap-2 sm:gap-3"
             style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
+            <button
+              type="button"
+              onClick={() => setActiveId("")}
+              className="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors hover:bg-slate-100"
+              style={{ color: "var(--ch-text-muted)" }}
+              aria-label="Kembali ke daftar pesan"
+            >
+              <ArrowLeft style={{ width: 18, height: 18 }} />
+            </button>
             <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-[13px] font-bold"
               style={{ background: active.color }}>{active.avatar}</div>
             <div>
@@ -135,7 +152,7 @@ export default function CreatorMessages() {
           <div ref={messagesPaneRef} className="flex-1 min-h-0 overflow-y-auto p-5 space-y-3">
             {activeMessages.map((m) => (
               <div key={m.id} className={`flex ${m.from === "me" ? "justify-end" : "justify-start"}`}>
-                <div className="max-w-[65%] rounded-2xl px-4 py-2.5 text-[13px]"
+                <div className="max-w-[85%] sm:max-w-[65%] rounded-2xl px-4 py-2.5 text-[13px]"
                   style={m.from === "me"
                     ? { background: "#16A34A", color: "white", borderBottomRightRadius: 4 }
                     : { background: "var(--ch-surface)", color: "var(--ch-text)", border: "1px solid var(--ch-border)", borderBottomLeftRadius: 4 }}>
@@ -170,7 +187,7 @@ export default function CreatorMessages() {
           </div>
         </div>
       ) : (
-        <div className="flex-1 flex items-center justify-center flex-col gap-3"
+        <div className="hidden lg:flex flex-1 items-center justify-center flex-col gap-3"
           style={{ color: "var(--ch-text-soft)" }}>
           <MessageSquare style={{ width: 40, height: 40, opacity: 0.3 }} />
           <p className="text-[14px]">Select a conversation</p>

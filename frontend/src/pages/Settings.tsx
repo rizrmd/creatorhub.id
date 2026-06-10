@@ -139,9 +139,9 @@ export default function Settings() {
   );
 
   return (
-    <div className="p-6" style={{ background: "var(--ch-bg)" }}>
+    <div className="p-4 md:p-6" style={{ background: "var(--ch-bg)" }}>
       <div className="mb-6">
-        <h1 className="text-[28px] font-extrabold tracking-[-0.5px]"
+        <h1 className="text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]"
           style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
           Settings
         </h1>
@@ -150,9 +150,9 @@ export default function Settings() {
         </p>
       </div>
 
-      <div className="flex gap-6">
+      <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
         {/* Sidebar tabs */}
-        <div className="w-52 shrink-0 bg-white border border-[var(--ch-border)] rounded-xl p-2 space-y-0.5"
+        <div className="lg:w-52 shrink-0 bg-white border border-[var(--ch-border)] rounded-xl p-2 flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible"
           style={{ borderColor: "var(--ch-border)" }}>
           {TABS.map((t) => {
             const Icon = t.icon;
@@ -161,7 +161,7 @@ export default function Settings() {
               <button
                 key={t.key}
                 onClick={() => setActiveTab(t.key)}
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-semibold transition-colors text-left"
+                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-semibold transition-colors text-left whitespace-nowrap shrink-0 lg:shrink"
                 style={active
                   ? { background: "var(--ch-primary-50)", color: "var(--ch-primary)" }
                   : { color: "var(--ch-text-muted)" }}
@@ -198,7 +198,7 @@ export default function Settings() {
                   <p className="text-[11px] mt-1" style={{ color: "var(--ch-text-soft)" }}>JPG, PNG. Max 2MB</p>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
                   { label: "Full Name", field: "name" as const },
                   { label: "Professional Role", field: "role" as const },
@@ -212,7 +212,7 @@ export default function Settings() {
                   </div>
                 ))}
               </div>
-              <div className="grid grid-cols-2 gap-4 mt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                 <div className="space-y-1.5">
                   <label className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Currency</label>
                   <Select value={profile.currency} onValueChange={(v) => setProfile((p) => ({ ...p, currency: v }))}>

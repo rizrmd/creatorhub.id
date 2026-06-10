@@ -64,11 +64,11 @@ export default function Analytics() {
   ];
 
   return (
-    <div className="p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
+    <div className="p-4 md:p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
       {/* Header with date selector */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-[28px] font-extrabold tracking-[-0.5px]"
+          <h1 className="text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]"
             style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             Analytics
           </h1>
@@ -78,7 +78,7 @@ export default function Analytics() {
         </div>
 
         {/* Date range selector */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
           {DATE_RANGES.map((range) => (
             <button
               key={range.value}

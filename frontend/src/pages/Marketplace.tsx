@@ -303,9 +303,9 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden flex flex-col p-0 bg-white">
+      <DialogContent className="max-w-3xl max-h-[90dvh] overflow-hidden flex flex-col p-0 bg-white">
         {/* Header Section */}
-        <div className="p-6 border-b bg-white" style={{ borderColor: "var(--ch-border)" }}>
+        <div className="p-4 sm:p-6 border-b bg-white" style={{ borderColor: "var(--ch-border)" }}>
           <div className="flex items-start gap-4">
             {/* Avatar */}
             <div className="w-20 h-20 rounded-full overflow-hidden shrink-0 border-2" style={{ borderColor: "var(--ch-border)", background: "var(--ch-primary-50)" }}>
@@ -378,7 +378,7 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-6 bg-slate-50">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-50">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column - Main Content */}
             <div className="lg:col-span-2 space-y-6">
@@ -566,6 +566,7 @@ export default function Marketplace() {
   const [priceVal, setPriceVal] = useState("all");
 
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showMobileBrief, setShowMobileBrief] = useState(false);
   const [showCreateCampaign, setShowCreateCampaign] = useState(false);
   const [campaignForm, setCampaignForm] = useState({ title: "", description: "", budget: "" });
 
@@ -651,19 +652,39 @@ export default function Marketplace() {
     ? (selectedCreators.reduce((a, c) => a + c.engagementRate, 0) / selectedCreators.length).toFixed(2)
     : "0";
 
+  const briefFooter = selectedIds.length > 0 ? (
+    <div className="p-4 border-t border-slate-200 space-y-3">
+      <div className="space-y-1.5 text-sm">
+        <div className="flex justify-between">
+          <span className="text-slate-500">Est. Total Reach</span>
+          <span className="font-semibold text-slate-700">{formatFollowers(totalReach)}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-slate-500">Avg. Engagement</span>
+          <span className="font-semibold text-slate-700">{avgEngagement}%</span>
+        </div>
+        <div className="flex justify-between pt-1.5 border-t border-slate-100">
+          <span className="text-slate-500">Est. Total Budget</span>
+          <span className="font-bold text-slate-800">{formatRupiah(selectedCreators.reduce((a, c) => a + c.price, 0))}</span>
+        </div>
+      </div>
+      <Button className="w-full" onClick={() => { setShowMobileBrief(false); setShowCreateCampaign(true); }}>Buat Kampanye</Button>
+    </div>
+  ) : null;
+
   return (
-    <div className="flex h-full">
-      <div className="flex-1 flex flex-col">
+    <div className="flex flex-col xl:flex-row h-full">
+      <div className={`flex-1 flex flex-col min-w-0 ${selectedIds.length > 0 ? "pb-20 xl:pb-0" : ""}`}>
         {/* Stats */}
-        <div className="p-4 border-b border-slate-200 bg-white">
-          <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
+        <div className="p-3 sm:p-4 border-b border-slate-200 bg-white">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
             {statCards.map((s) => <StatCard key={s.label} {...s} loading={statsLoading} />)}
           </div>
         </div>
 
         {/* Filters row 1 */}
-        <div className="px-4 pt-3 pb-0 bg-white flex flex-wrap items-center gap-2">
-          <div className="relative flex-1 min-w-48">
+        <div className="px-3 sm:px-4 pt-3 pb-0 bg-white flex flex-wrap items-center gap-2">
+          <div className="relative w-full sm:flex-1 sm:min-w-48">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <Input
               ref={searchRef}
@@ -675,7 +696,7 @@ export default function Marketplace() {
           </div>
 
           <Select value={filters.category ?? "all"} onValueChange={(v) => setFilters((f) => ({ ...f, category: v === "all" ? undefined : v, page: 1 }))}>
-            <SelectTrigger className="w-36"><SelectValue placeholder="Kategori" /></SelectTrigger>
+            <SelectTrigger className="w-full sm:w-36"><SelectValue placeholder="Kategori" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Semua Kategori</SelectItem>
               {CATEGORIES.map((c) => <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>)}
@@ -683,7 +704,7 @@ export default function Marketplace() {
           </Select>
 
           <Select value={filters.platform ?? "all"} onValueChange={(v) => setFilters((f) => ({ ...f, platform: v === "all" ? undefined : v, page: 1 }))}>
-            <SelectTrigger className="w-36"><SelectValue placeholder="Platform" /></SelectTrigger>
+            <SelectTrigger className="w-full sm:w-36"><SelectValue placeholder="Platform" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Semua Platform</SelectItem>
               {PLATFORMS.map((p) => <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>)}
@@ -691,7 +712,7 @@ export default function Marketplace() {
           </Select>
 
           <Select value={filters.city ?? "all"} onValueChange={(v) => setFilters((f) => ({ ...f, city: v === "all" ? undefined : v, page: 1 }))}>
-            <SelectTrigger className="w-32"><SelectValue placeholder="Kota" /></SelectTrigger>
+            <SelectTrigger className="w-full sm:w-32"><SelectValue placeholder="Kota" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Semua Kota</SelectItem>
               {CITIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
@@ -700,24 +721,24 @@ export default function Marketplace() {
         </div>
 
         {/* Filters row 2 */}
-        <div className="px-4 py-2 bg-white flex flex-wrap items-center gap-2">
+        <div className="px-3 sm:px-4 py-2 bg-white flex flex-wrap items-center gap-2">
           <Select value={followersVal} onValueChange={applyFollowers}>
-            <SelectTrigger className="w-40"><SelectValue placeholder="Followers" /></SelectTrigger>
+            <SelectTrigger className="w-full sm:w-40"><SelectValue placeholder="Followers" /></SelectTrigger>
             <SelectContent>{FOLLOWERS_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
           </Select>
 
           <Select value={engagementVal} onValueChange={applyEngagement}>
-            <SelectTrigger className="w-36"><SelectValue placeholder="Engagement" /></SelectTrigger>
+            <SelectTrigger className="w-full sm:w-36"><SelectValue placeholder="Engagement" /></SelectTrigger>
             <SelectContent>{ENGAGEMENT_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
           </Select>
 
           <Select value={priceVal} onValueChange={applyPrice}>
-            <SelectTrigger className="w-40"><SelectValue placeholder="Harga" /></SelectTrigger>
+            <SelectTrigger className="w-full sm:w-40"><SelectValue placeholder="Harga" /></SelectTrigger>
             <SelectContent>{PRICE_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
           </Select>
 
           <Select value={filters.sortBy ?? "all"} onValueChange={(v) => setFilters((f) => ({ ...f, sortBy: v === "all" ? undefined : v }))}>
-            <SelectTrigger className="w-36"><SelectValue placeholder="Urutkan" /></SelectTrigger>
+            <SelectTrigger className="w-full sm:w-36"><SelectValue placeholder="Urutkan" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Relevansi</SelectItem>
               <SelectItem value="followers">Followers</SelectItem>
@@ -757,7 +778,7 @@ export default function Marketplace() {
         </div>
 
         {/* Row 3: results info + actions */}
-        <div className="px-4 py-1.5 bg-white border-b border-slate-200 flex items-center gap-2">
+        <div className="px-3 sm:px-4 py-1.5 bg-white border-b border-slate-200 flex flex-wrap items-center gap-2">
           <p className="text-xs text-slate-500 flex-1">
             {isLoading ? "Memuat..." : `${data?.total ?? 0} kreator ditemukan`}
           </p>
@@ -778,7 +799,7 @@ export default function Marketplace() {
         </div>
 
         {/* Grid / List */}
-        <div className="p-4">
+        <div className="p-3 sm:p-4">
           {isLoading ? (
             <div className={listView ? "space-y-2" : "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"}>
               {Array.from({ length: 9 }).map((_, i) => (
@@ -823,7 +844,7 @@ export default function Marketplace() {
           )}
 
           {data && data.totalPages > 1 && (
-            <div className="flex justify-center gap-2 mt-6">
+            <div className="flex flex-wrap justify-center gap-2 mt-6">
               <Button variant="outline" size="sm" disabled={filters.page === 1}
                 onClick={() => setFilters((f) => ({ ...f, page: (f.page ?? 1) - 1 }))}>
                 Sebelumnya
@@ -841,8 +862,20 @@ export default function Marketplace() {
         </div>
       </div>
 
-      {/* Campaign Brief Panel */}
-      <aside className="w-[312px] shrink-0 flex flex-col" style={{ background: "var(--ch-surface)", borderLeft: "1px solid var(--ch-border)" }}>
+      {/* Mobile campaign brief bar */}
+      {selectedIds.length > 0 && (
+        <div className="xl:hidden fixed bottom-0 left-0 right-0 z-30 p-3 bg-white border-t shadow-lg flex items-center gap-3"
+          style={{ borderColor: "var(--ch-border)" }}>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold truncate" style={{ color: "var(--ch-text)" }}>Campaign Brief</p>
+            <p className="text-xs" style={{ color: "var(--ch-text-muted)" }}>{selectedIds.length}/5 kreator dipilih</p>
+          </div>
+          <Button size="sm" onClick={() => setShowMobileBrief(true)}>Lihat Brief</Button>
+        </div>
+      )}
+
+      {/* Campaign Brief Panel — desktop */}
+      <aside className="hidden xl:flex w-[312px] shrink-0 flex-col" style={{ background: "var(--ch-surface)", borderLeft: "1px solid var(--ch-border)" }}>
         <div className="p-4 border-b" style={{ borderColor: "var(--ch-border)" }}>
           <h2 className="font-bold text-[15px]" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Campaign Brief</h2>
           <p className="text-[12px] mt-0.5" style={{ color: "var(--ch-text-muted)" }}>{selectedIds.length}/5 kreator dipilih</p>
@@ -874,26 +907,43 @@ export default function Marketplace() {
           )}
         </div>
 
-        {selectedIds.length > 0 && (
-          <div className="p-4 border-t border-slate-200 space-y-3">
-            <div className="space-y-1.5 text-sm">
-              <div className="flex justify-between">
-                <span className="text-slate-500">Est. Total Reach</span>
-                <span className="font-semibold text-slate-700">{formatFollowers(totalReach)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500">Avg. Engagement</span>
-                <span className="font-semibold text-slate-700">{avgEngagement}%</span>
-              </div>
-              <div className="flex justify-between pt-1.5 border-t border-slate-100">
-                <span className="text-slate-500">Est. Total Budget</span>
-                <span className="font-bold text-slate-800">{formatRupiah(selectedCreators.reduce((a, c) => a + c.price, 0))}</span>
-              </div>
-            </div>
-            <Button className="w-full" onClick={() => setShowCreateCampaign(true)}>Buat Kampanye</Button>
-          </div>
-        )}
+        {briefFooter}
       </aside>
+
+      {/* Campaign Brief — mobile sheet */}
+      <Dialog open={showMobileBrief} onOpenChange={setShowMobileBrief}>
+        <DialogContent className="max-w-lg p-0 gap-0 flex flex-col max-h-[85dvh]">
+          <DialogHeader className="p-4 border-b shrink-0" style={{ borderColor: "var(--ch-border)" }}>
+            <DialogTitle>Campaign Brief</DialogTitle>
+            <p className="text-[12px] mt-0.5" style={{ color: "var(--ch-text-muted)" }}>{selectedIds.length}/5 kreator dipilih</p>
+          </DialogHeader>
+          <div className="flex-1 overflow-auto p-4 space-y-3">
+            {selectedCreators.length === 0 ? (
+              <div className="text-center py-8 text-slate-400">
+                <p className="text-sm">Belum ada kreator dipilih</p>
+              </div>
+            ) : (
+              selectedCreators.map((c) => (
+                <div key={c.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                  <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-semibold text-slate-600 overflow-hidden shrink-0">
+                    {c.imageUrl ? <img src={c.imageUrl} alt={c.name} className="w-full h-full object-cover" /> : c.name[0]}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-slate-800 truncate">{c.name}</p>
+                    <p className="text-xs text-slate-500">{c.followersText} followers</p>
+                    <p className="text-xs text-slate-400">{c.engagementRate}% ER · {c.priceText}</p>
+                  </div>
+                  <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-red-500"
+                    onClick={() => toggleSelect(c.id)}>
+                    <X className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+              ))
+            )}
+          </div>
+          {briefFooter}
+        </DialogContent>
+      </Dialog>
 
       {/* Creator Profile Modal */}
       {profileCreator && (

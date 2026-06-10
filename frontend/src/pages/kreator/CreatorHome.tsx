@@ -39,7 +39,7 @@ export default function CreatorHome() {
   };
 
   return (
-    <div className="p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
+    <div className="p-4 md:p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
       {/* Hero */}
       <div className="rounded-2xl p-6 relative overflow-hidden"
         style={{ background: "linear-gradient(135deg, #064e3b 0%, #16A34A 60%, #4ade80 100%)" }}>
@@ -57,7 +57,7 @@ export default function CreatorHome() {
       </div>
 
       {/* KPI tiles */}
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {KPIs.map((k) => (
           <div key={k.label} className="rounded-xl border p-4"
             style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
@@ -84,9 +84,9 @@ export default function CreatorHome() {
           <Award style={{ display: "inline", width: 14, height: 14, marginRight: 6, color: "#F59E0B" }} />
           Your Achievements
         </p>
-        <div className="flex gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {achievements.map((a) => (
-            <div key={a.label} className="flex-1 rounded-xl p-3 text-center"
+            <div key={a.label} className="rounded-xl p-3 text-center"
               style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
               <div className="text-xl mb-1">{a.icon}</div>
               <p className="text-[12px] font-bold" style={{ color: "var(--ch-text)" }}>{a.label}</p>
@@ -104,7 +104,7 @@ export default function CreatorHome() {
           </p>
           <div className="space-y-3">
             {invs.map((inv) => (
-              <div key={inv.id} className="rounded-xl border p-4 flex items-center gap-4"
+              <div key={inv.id} className="rounded-xl border p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4"
                 style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-[14px] shrink-0"
                   style={{ background: "var(--ch-primary)" }}>

@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from "react";
-import { Search, Bell, ChevronDown, Settings, LogOut, User, Megaphone, Users, DollarSign } from "lucide-react";
+import { Search, Bell, ChevronDown, Settings, LogOut, User, Megaphone, Users, DollarSign, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRole } from "@/context/RoleContext";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 const NOTIFICATIONS = [
   { id: 1, who: "Tasya Farasya", action: "menerima brief", target: "Ramadan Glow 2026", time: "2 mnt lalu", unread: true, iconBg: "#DBEAFE", iconFg: "#2563EB", icon: "check" },
@@ -44,6 +45,7 @@ export default function Header() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { effectiveRole } = useRole();
+  const { toggleMobile } = useSidebar();
   const [search, setSearch]             = useState("");
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [showNotif, setShowNotif]       = useState(false);
@@ -126,14 +128,24 @@ export default function Header() {
 
   return (
     <header
-      className="h-[70px] bg-white border-b flex items-center gap-4 shrink-0 relative z-30"
-      style={{ padding: "0 24px", borderColor: "var(--ch-border)" }}
+      className="h-14 lg:h-[70px] bg-white border-b flex items-center gap-2 md:gap-4 shrink-0 relative z-30 px-4 md:px-6"
+      style={{ borderColor: "var(--ch-border)" }}
     >
+      <button
+        type="button"
+        onClick={toggleMobile}
+        className="lg:hidden w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors hover:bg-slate-50"
+        style={{ color: "var(--ch-text-muted)" }}
+        aria-label="Buka menu"
+      >
+        <Menu style={{ width: 20, height: 20 }} />
+      </button>
+
       {/* Search + filter pills */}
-      <div className="flex items-center gap-3 flex-1 min-w-0">
+      <div className="hidden md:flex items-center gap-3 flex-1 min-w-0">
         <div
-          className="flex items-center gap-2.5 rounded-xl transition-all"
-          style={{ background: effectiveRole === "kreator" ? "#F0FDF4" : "#F1F5F9", border: "1px solid transparent", padding: "9px 14px", width: 460, maxWidth: "100%" }}
+          className="flex items-center gap-2.5 rounded-xl transition-all flex-1 max-w-[460px]"
+          style={{ background: effectiveRole === "kreator" ? "#F0FDF4" : "#F1F5F9", border: "1px solid transparent", padding: "9px 14px" }}
         >
           <Search className="w-4 h-4 shrink-0" style={{ color: "var(--ch-text-soft)" }} />
           <input
@@ -171,8 +183,10 @@ export default function Header() {
         )}
       </div>
 
+      <div className="flex-1 min-w-0 md:hidden" />
+
       {/* Right actions */}
-      <div className="flex items-center gap-1 ml-auto shrink-0">
+      <div className="flex items-center gap-0.5 sm:gap-1 ml-auto shrink-0">
 
         {/* Messages */}
         <div ref={msgRef} className="relative">
@@ -193,7 +207,7 @@ export default function Header() {
           </button>
 
           {showMessages && (
-            <div className="absolute right-0 top-full mt-2 w-[380px] bg-white rounded-xl border overflow-hidden animate-slide-in"
+            <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] max-w-[380px] bg-white rounded-xl border overflow-hidden animate-slide-in"
               style={{ borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-lg)" }}>
               <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: "var(--ch-border)" }}>
                 <p className="text-sm font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Pesan</p>
@@ -262,7 +276,7 @@ export default function Header() {
           </button>
 
           {showNotif && (
-            <div className="absolute right-0 top-full mt-2 w-[400px] bg-white rounded-xl border overflow-hidden animate-slide-in"
+            <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] max-w-[400px] bg-white rounded-xl border overflow-hidden animate-slide-in"
               style={{ borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-lg)" }}>
               <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: "var(--ch-border)" }}>
                 <p className="text-sm font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Notifikasi</p>
@@ -299,7 +313,7 @@ export default function Header() {
         {/* Profile */}
         <div ref={profileRef} className="relative">
           <button
-            className="flex items-center gap-2 pl-3 ml-1 cursor-pointer border-l"
+            className="flex items-center gap-2 pl-2 sm:pl-3 ml-0.5 sm:ml-1 cursor-pointer sm:border-l"
             style={{ borderColor: "var(--ch-border)" }}
             onClick={() => open("profile")}
           >
@@ -313,7 +327,7 @@ export default function Header() {
               <p className="text-[13px] font-semibold leading-none" style={{ color: "var(--ch-text)" }}>{displayUser.name}</p>
               <p className="text-[11px] mt-0.5" style={{ color: "var(--ch-text-muted)" }}>{displayUser.subtitle}</p>
             </div>
-            <ChevronDown style={{ width: 14, height: 14, color: "var(--ch-text-soft)" }} />
+            <ChevronDown className="hidden sm:block" style={{ width: 14, height: 14, color: "var(--ch-text-soft)" }} />
           </button>
 
           {showProfile && (

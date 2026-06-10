@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Paperclip, ExternalLink, Search, MessageSquare, Star, MapPin, CheckCircle } from "lucide-react";
+import { Send, Paperclip, ExternalLink, Search, MessageSquare, Star, MapPin, CheckCircle, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useChatChannels, useMessages, useSendMessage } from "@/hooks/useMessages";
 import { creatorsApi } from "@/lib/api";
 import type { Creator, Message } from "@/types";
+import { cn } from "@/lib/utils";
 
 const AUTO_REPLIES = [
   "Thanks for the brief, Arif! I'll review and send a custom proposal draft.",
@@ -59,6 +60,8 @@ export default function Messages() {
     setReadChannelIds((prev) => new Set([...prev, channelId]));
   };
 
+  const closeMobileChat = () => setActiveChannelId(null);
+
   const handleSend = async () => {
     if (!activeChannelId) return;
     let content = draft.trim();
@@ -110,8 +113,13 @@ export default function Messages() {
   return (
     <div className="flex h-full min-h-0 overflow-hidden">
       {/* ─── Left: Thread list ─────────────────────────────── */}
-      <aside className="w-[300px] shrink-0 border-r flex flex-col min-h-0"
-        style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
+      <aside
+        className={cn(
+          "w-full lg:w-[300px] shrink-0 border-r flex flex-col min-h-0",
+          activeChannelId ? "hidden lg:flex" : "flex",
+        )}
+        style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}
+      >
         <div className="px-4 py-3.5 border-b flex items-center justify-between"
           style={{ borderColor: "var(--ch-border)" }}>
           <p className="text-[15px] font-bold" style={{ color: "var(--ch-text)" }}>Conversations</p>
@@ -208,12 +216,26 @@ export default function Messages() {
       </aside>
 
       {/* ─── Center: Chat area ─────────────────────────────── */}
-      <div className="flex-1 flex flex-col min-w-0 min-h-0 overflow-hidden">
+      <div
+        className={cn(
+          "flex-1 flex flex-col min-w-0 min-h-0 overflow-hidden",
+          activeChannelId ? "flex" : "hidden lg:flex",
+        )}
+      >
         {activeChannel ? (
           <>
             {/* Chat header */}
-            <div className="h-14 border-b flex items-center px-4 gap-3 shrink-0"
+            <div className="h-14 border-b flex items-center px-3 sm:px-4 gap-2 sm:gap-3 shrink-0"
               style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
+              <button
+                type="button"
+                onClick={closeMobileChat}
+                className="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors hover:bg-slate-100"
+                style={{ color: "var(--ch-text-muted)" }}
+                aria-label="Kembali ke daftar percakapan"
+              >
+                <ArrowLeft style={{ width: 18, height: 18 }} />
+              </button>
               <div className="relative">
                 <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[12px] font-bold"
                   style={{ background: `hsl(${getHue(activeChannel.creatorName)}, 65%, 50%)` }}>
@@ -229,13 +251,13 @@ export default function Messages() {
                 <p className="text-[11px]" style={{ color: "#16A34A" }}>Online · Responds within minutes</p>
               </div>
               <button
-                className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[12px] font-semibold transition-colors"
+                className="ml-auto flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg border text-[12px] font-semibold transition-colors shrink-0"
                 style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--ch-primary)"; (e.currentTarget as HTMLElement).style.color = "var(--ch-primary)"; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--ch-border)"; (e.currentTarget as HTMLElement).style.color = "var(--ch-text-muted)"; }}
                 onClick={handleViewProfile}>
                 <ExternalLink style={{ width: 13, height: 13 }} />
-                View Profile
+                <span className="hidden sm:inline">View Profile</span>
               </button>
             </div>
 
@@ -252,7 +274,7 @@ export default function Messages() {
               ) : messages && messages.length > 0 ? (
                 messages.map((msg) => (
                   <div key={msg.id} className={`flex ${msg.senderType === "user" ? "justify-end" : "justify-start"}`}>
-                    <div className="max-w-[65%] px-[14px] py-2.5 text-[13.5px]"
+                    <div className="max-w-[85%] sm:max-w-[65%] px-[14px] py-2.5 text-[13.5px]"
                       style={msg.senderType === "user"
                         ? { background: "linear-gradient(135deg, #2563EB, #1D4ED8)", color: "white", borderRadius: "14px 14px 4px 14px" }
                         : { background: "var(--ch-surface)", color: "var(--ch-text)", border: "1px solid var(--ch-border)", borderRadius: "14px 14px 14px 4px", boxShadow: "var(--ch-shadow-sm)" }}>
@@ -320,7 +342,7 @@ export default function Messages() {
 
       {/* ─── Right: Context panel ──────────────────────────── */}
       {activeChannel && (
-        <aside className="w-[280px] shrink-0 border-l flex flex-col"
+        <aside className="hidden xl:flex w-[280px] shrink-0 border-l flex-col"
           style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
           {/* Creator info */}
           <div className="p-5 border-b" style={{ borderColor: "var(--ch-border)" }}>

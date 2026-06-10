@@ -88,10 +88,10 @@ export default function Payments() {
   };
 
   return (
-    <div className="p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
+    <div className="p-4 md:p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[28px] font-extrabold tracking-[-0.5px]"
+          <h1 className="text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]"
             style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             Payments & Escrow
           </h1>
@@ -125,7 +125,7 @@ export default function Payments() {
             {formatRupiah(lifetimeTotal)}
           </p>
           <p className="text-blue-200 text-[13px] mt-0.5">Lifetime total spent</p>
-          <div className="flex gap-8 mt-5">
+          <div className="flex flex-wrap gap-4 sm:gap-8 mt-5">
             <div>
               <p className="text-blue-200 text-[11px]">Available</p>
               <p className="text-white font-bold text-[15px]">{formatRupiah(escrow)}</p>

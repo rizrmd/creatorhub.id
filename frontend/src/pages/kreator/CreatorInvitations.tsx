@@ -51,7 +51,7 @@ export default function CreatorInvitations() {
   const filtered = filter === "all" ? invs : invs.filter((i) => i.status === filter);
 
   return (
-    <div className="p-6 space-y-5" style={{ background: "var(--ch-bg)" }}>
+    <div className="p-4 md:p-6 space-y-5" style={{ background: "var(--ch-bg)" }}>
       <div>
         <h1 className="text-[28px] font-extrabold tracking-[-0.5px]"
           style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>

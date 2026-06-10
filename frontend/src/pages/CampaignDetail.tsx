@@ -60,7 +60,7 @@ export default function CampaignDetail() {
   const creators = campaign.creators ?? [];
 
   return (
-    <div className="p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
+    <div className="p-4 md:p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
       {/* Header */}
       <div className="flex items-start gap-4">
         <button

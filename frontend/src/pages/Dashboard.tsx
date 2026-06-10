@@ -128,10 +128,10 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   return (
-    <div className="p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
+    <div className="p-4 md:p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
       {/* User Greeting */}
       <div className="mb-6">
-        <h1 className="text-[32px] font-extrabold leading-tight mb-2" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+        <h1 className="text-2xl md:text-[32px] font-extrabold leading-tight mb-2" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
           Ari!!
         </h1>
         <p className="text-[14px]" style={{ color: "var(--ch-text-muted)" }}>
@@ -187,17 +187,19 @@ export default function Dashboard() {
             </div>
             <div className="space-y-3">
               {NEEDS_ATTENTION.map((item, index) => (
-                <div key={index} className="flex items-center gap-4 p-4 rounded-lg border-l-4" style={{ background: "#F9FAFB", borderColor: item.borderColor, borderLeftWidth: 4 }}>
-                  <div className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0" style={{ background: item.iconBg }}>
-                    <item.icon style={{ width: 24, height: 24, color: item.iconColor }} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[14px] font-bold mb-1 leading-tight" style={{ color: "var(--ch-text)" }}>{item.title}</p>
-                    <p className="text-[12px] leading-snug" style={{ color: "#6B7280" }}>{item.description}</p>
+                <div key={index} className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 p-4 rounded-lg border-l-4" style={{ background: "#F9FAFB", borderColor: item.borderColor, borderLeftWidth: 4 }}>
+                  <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0" style={{ background: item.iconBg }}>
+                      <item.icon style={{ width: 24, height: 24, color: item.iconColor }} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[14px] font-bold mb-1 leading-tight" style={{ color: "var(--ch-text)" }}>{item.title}</p>
+                      <p className="text-[12px] leading-snug" style={{ color: "#6B7280" }}>{item.description}</p>
+                    </div>
                   </div>
                   <button
                     onClick={() => navigate(item.href)}
-                    className="text-[12px] font-semibold px-4 py-2 rounded-lg shrink-0 transition-colors hover:opacity-90"
+                    className="text-[12px] font-semibold px-4 py-2 rounded-lg shrink-0 transition-colors hover:opacity-90 w-full sm:w-auto"
                     style={{ background: "#3B82F6", color: "white" }}
                   >
                     {item.buttonText}

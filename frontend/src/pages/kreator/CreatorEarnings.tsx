@@ -34,9 +34,9 @@ const lifetimeTotal = 124600000;
 
 export default function CreatorEarnings() {
   return (
-    <div className="p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
+    <div className="p-4 md:p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
       <div>
-        <h1 className="text-[28px] font-extrabold tracking-[-0.5px]"
+        <h1 className="text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]"
           style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
           Earnings
         </h1>
@@ -61,7 +61,7 @@ export default function CreatorEarnings() {
             <TrendingUp style={{ width: 13, height: 13 }} />
             <strong className="text-white">+28%</strong> vs last month
           </p>
-          <div className="flex gap-8 mt-4">
+          <div className="flex flex-wrap gap-4 sm:gap-8 mt-4">
             <div>
               <p className="text-green-200 text-[11px]">Already Paid</p>
               <p className="text-white font-bold text-[15px]">{formatRp(totalPaid)}</p>

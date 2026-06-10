@@ -81,9 +81,9 @@ const platformChip = (platform: string) => {
 
 export default function MediaMonitoring() {
   return (
-    <div className="p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
+    <div className="p-4 md:p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
       <div>
-        <h1 className="text-[28px] font-extrabold tracking-[-0.5px]"
+        <h1 className="text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]"
           style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
           Media Monitoring
         </h1>
@@ -93,7 +93,7 @@ export default function MediaMonitoring() {
       </div>
 
       {/* KPI tiles */}
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {[
           { label: "Total Mention", value: "4.218", sub: "+14.2% minggu ini", icon: MessageCircle, hue: 220 },
           { label: "Sentimen Positif", value: "84%", sub: "+2.1% vs minggu lalu", icon: Smile, hue: 142 },

@@ -25,9 +25,9 @@ export default function CreatorProfile() {
   };
 
   return (
-    <div className="p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
-      <div className="flex items-center justify-between">
-        <h1 className="text-[28px] font-extrabold tracking-[-0.5px]"
+    <div className="p-4 md:p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]"
           style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
           Creator Profile
         </h1>
@@ -81,7 +81,7 @@ export default function CreatorProfile() {
 
           {editing ? (
             <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Name</label>
                   <Input value={profile.name} onChange={(e) => setProfile(p => ({ ...p, name: e.target.value }))} />
@@ -101,7 +101,7 @@ export default function CreatorProfile() {
                   style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>City</label>
                   <Input value={profile.city} onChange={(e) => setProfile(p => ({ ...p, city: e.target.value }))} />
@@ -121,7 +121,7 @@ export default function CreatorProfile() {
                     style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>{n}</span>
                 ))}
               </div>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
                   { label: "Total Followers", value: "486K" },
                   { label: "Avg Engagement", value: "5.8%" },

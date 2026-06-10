@@ -36,9 +36,9 @@ export default function CreatorSettings() {
   );
 
   return (
-    <div className="p-6" style={{ background: "var(--ch-bg)" }}>
+    <div className="p-4 md:p-6" style={{ background: "var(--ch-bg)" }}>
       <div className="mb-6">
-        <h1 className="text-[28px] font-extrabold tracking-[-0.5px]"
+        <h1 className="text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]"
           style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
           Settings
         </h1>
@@ -46,8 +46,8 @@ export default function CreatorSettings() {
           Manage your account and creator preferences
         </p>
       </div>
-      <div className="flex gap-6 max-w-2xl">
-        <div className="w-44 shrink-0 space-y-0.5">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 max-w-2xl">
+        <div className="sm:w-44 shrink-0 flex sm:flex-col gap-1 overflow-x-auto sm:overflow-visible">
           {TABS.map((t) => {
             const Icon = t.icon;
             const active = tab === t.key;

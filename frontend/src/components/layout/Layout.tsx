@@ -3,6 +3,7 @@ import { Toaster } from "sonner";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { ChevronRight, Home } from "lucide-react";
+import { SidebarProvider } from "@/contexts/SidebarContext";
 
 const PATH_LABELS: Record<string, string> = {
   dashboard: "Dashboard",
@@ -29,7 +30,7 @@ function Breadcrumb() {
   });
 
   return (
-    <nav className="flex items-center gap-1.5 px-6 py-2 text-xs text-slate-500 border-b border-slate-100 bg-white">
+    <nav className="flex items-center gap-1.5 px-4 md:px-6 py-2 text-xs text-slate-500 border-b border-slate-100 bg-white overflow-x-auto shrink-0">
       <Link to="/" className="flex items-center gap-1 hover:text-slate-700 transition-colors">
         <Home className="w-3 h-3" />
       </Link>
@@ -56,16 +57,18 @@ export default function Layout() {
   const fullHeight = isFullHeightPage(pathname);
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
-      <Toaster position="top-right" richColors />
-      <Sidebar />
-      <div className="flex-1 flex flex-col min-w-0 min-h-0">
-        <Header />
-        {!fullHeight && <Breadcrumb />}
-        <main className={fullHeight ? "flex-1 min-h-0 overflow-hidden" : "flex-1 min-h-0 overflow-auto"}>
-          <Outlet />
-        </main>
+    <SidebarProvider>
+      <div className="flex h-[100dvh] bg-slate-50 overflow-hidden">
+        <Toaster position="top-right" richColors />
+        <Sidebar />
+        <div className="flex-1 flex flex-col min-w-0 min-h-0 w-full">
+          <Header />
+          {!fullHeight && <Breadcrumb />}
+          <main className={fullHeight ? "flex-1 min-h-0 overflow-hidden" : "flex-1 min-h-0 overflow-auto"}>
+            <Outlet />
+          </main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }

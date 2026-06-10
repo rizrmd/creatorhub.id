@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
   Store, Megaphone, BarChart3, Radio,
   MessageSquare, CreditCard, Settings, HelpCircle, Users,
@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRole } from "@/context/RoleContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 const brandNavItems = [
   { to: "/dashboard",        icon: Home,            label: "Dashboard" },
@@ -39,6 +40,8 @@ const kreatorNavItems = [
 
 export default function Sidebar() {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const { mobileOpen, closeMobile } = useSidebar();
   const { user } = useAuth();
   const { effectiveRole, canSwitchRole, setRole } = useRole();
   const isKreatorView = effectiveRole === "kreator";
@@ -47,12 +50,26 @@ export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(() => {
     return localStorage.getItem("ch_sidebar_collapsed") === "true";
   });
+  const [isDesktop, setIsDesktop] = useState(
+    () => typeof window !== "undefined" && window.innerWidth >= 1024,
+  );
+  const effectiveCollapsed = isDesktop && collapsed;
   const [showSupport, setShowSupport] = useState(false);
   const [supportForm, setSupportForm] = useState({ email: "", message: "" });
 
   useEffect(() => {
     localStorage.setItem("ch_sidebar_collapsed", String(collapsed));
   }, [collapsed]);
+
+  useEffect(() => {
+    const onResize = () => setIsDesktop(window.innerWidth >= 1024);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  useEffect(() => {
+    closeMobile();
+  }, [pathname, closeMobile]);
 
   const navItems = effectiveRole === "kreator" ? kreatorNavItems : brandNavItems;
 
@@ -76,33 +93,44 @@ export default function Sidebar() {
 
   return (
     <>
+      {mobileOpen && (
+        <button
+          type="button"
+          aria-label="Tutup menu"
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          onClick={closeMobile}
+        />
+      )}
+
       <aside
-        className="shrink-0 bg-white border-r flex flex-col h-screen relative overflow-hidden"
-        style={{
-          width: collapsed ? "68px" : "220px",
-          borderColor: "var(--ch-border)",
-          transition: "width .2s ease",
-        }}
+        className={cn(
+          "bg-white border-r flex flex-col h-full relative overflow-hidden z-50",
+          "fixed inset-y-0 left-0 w-[min(280px,85vw)] transition-[transform,width] duration-200 ease-out",
+          effectiveCollapsed ? "lg:w-[68px]" : "lg:w-[220px]",
+          "lg:static lg:shrink-0 lg:translate-x-0",
+          mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
+        )}
+        style={{ borderColor: "var(--ch-border)" }}
       >
-        {/* Collapse toggle */}
+        {/* Collapse toggle — desktop only */}
         <button
           onClick={() => setCollapsed((v) => !v)}
-          className="absolute top-[22px] -right-[13px] z-10 w-[26px] h-[26px] rounded-full bg-white border flex items-center justify-center transition-colors hover:border-blue-300 hover:text-blue-600"
+          className="hidden lg:flex absolute top-[22px] -right-[13px] z-10 w-[26px] h-[26px] rounded-full bg-white border items-center justify-center transition-colors hover:border-blue-300 hover:text-blue-600"
           style={{ borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)", color: "var(--ch-text-muted)" }}
         >
-          {collapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
+          {effectiveCollapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
         </button>
 
         {/* Logo */}
         <div
           className="h-[70px] flex items-center justify-center border-b shrink-0 overflow-hidden"
-          style={{ borderColor: "var(--ch-border)", padding: collapsed ? "0 12px" : "0 16px" }}
+          style={{ borderColor: "var(--ch-border)", padding: effectiveCollapsed ? "0 12px" : "0 16px" }}
         >
           <div
-            className={cn("rounded-lg overflow-hidden shrink-0", collapsed ? "w-9 h-9" : "w-full h-10")}
+            className={cn("rounded-lg overflow-hidden shrink-0", effectiveCollapsed ? "w-9 h-9" : "w-full h-10")}
           >
             <img
-              src={collapsed ? "/favicon.png" : "/logo.webp"}
+              src={effectiveCollapsed ? "/favicon.png" : "/logo.webp"}
               alt="CreatorHub"
               className="w-full h-full object-contain"
             />
@@ -110,7 +138,7 @@ export default function Sidebar() {
         </div>
 
         {/* Creator workspace pill */}
-        {effectiveRole === "kreator" && !collapsed && (
+        {effectiveRole === "kreator" && !effectiveCollapsed && (
           <div className="px-3 pt-3">
             <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold" style={{ background: "#DCFCE7", color: "#15803D" }}>
               <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
@@ -122,17 +150,17 @@ export default function Sidebar() {
         {/* Nav */}
         <nav
           className="flex-1 overflow-y-auto min-h-0 flex flex-col gap-0.5"
-          style={{ padding: collapsed ? "12px 8px" : "12px 10px" }}
+          style={{ padding: effectiveCollapsed ? "12px 8px" : "12px 10px" }}
         >
           {navItems.map(({ to, icon: Icon, label, badge }) => (
             <NavLink
               key={to}
               to={to}
-              title={collapsed ? label : undefined}
+              title={effectiveCollapsed ? label : undefined}
               className={({ isActive }) =>
                 cn(
                   "flex items-center rounded-lg transition-all duration-150 relative",
-                  collapsed ? "justify-center w-11 h-11 mx-auto" : "gap-2.5 px-[11px] py-2",
+                  effectiveCollapsed ? "justify-center w-11 h-11 mx-auto" : "gap-2.5 px-[11px] py-2",
                   isActive
                     ? "text-white"
                     : "hover:text-[#2563EB]"
@@ -149,7 +177,7 @@ export default function Sidebar() {
               {({ isActive }) => (
                 <>
                   <Icon className="w-4 h-4 shrink-0" />
-                  {!collapsed && (
+                  {!effectiveCollapsed && (
                     <>
                       <span className="flex-1 text-[13px] font-semibold leading-none">{label}</span>
                       {badge !== undefined && !isActive && (
@@ -167,7 +195,7 @@ export default function Sidebar() {
                     </>
                   )}
                   {/* Orange dot in collapsed mode */}
-                  {collapsed && badge !== undefined && !isActive && (
+                  {effectiveCollapsed && badge !== undefined && !isActive && (
                     <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full border-2 border-white"
                       style={{ background: "var(--ch-orange)" }} />
                   )}
@@ -178,8 +206,8 @@ export default function Sidebar() {
         </nav>
 
         {/* Bottom section */}
-        <div className="border-t shrink-0" style={{ borderColor: "var(--ch-border)", padding: collapsed ? "10px 8px" : "10px" }}>
-          {collapsed ? (
+        <div className="border-t shrink-0" style={{ borderColor: "var(--ch-border)", padding: effectiveCollapsed ? "10px 8px" : "10px" }}>
+          {effectiveCollapsed ? (
             <div className="flex flex-col items-center gap-2">
               {canSwitchRole && (
               <button
