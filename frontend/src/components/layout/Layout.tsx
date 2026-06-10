@@ -4,6 +4,7 @@ import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { ChevronRight, Home } from "lucide-react";
 import { SidebarProvider } from "@/contexts/SidebarContext";
+import { BreadcrumbProvider, useBreadcrumb } from "@/contexts/BreadcrumbContext";
 import { KreatorDataProvider } from "@/context/KreatorDataContext";
 
 const PATH_LABELS: Record<string, string> = {
@@ -15,24 +16,45 @@ const PATH_LABELS: Record<string, string> = {
   messages: "Messages",
   payments: "Payments",
   settings: "Settings",
+  search: "Pencarian",
+  "boost-ads": "Boost Ads",
   kreator: "Kreator",
+  home: "Home",
+  invitations: "Undangan",
+  work: "Pekerjaan",
+  earnings: "Penghasilan",
+  insights: "Insights",
+  profile: "Profil",
 };
+
+const DYNAMIC_PARENT_SEGMENTS = new Set(["campaigns", "invitations"]);
+
+function isDynamicIdSegment(parentSeg?: string) {
+  return !!parentSeg && DYNAMIC_PARENT_SEGMENTS.has(parentSeg);
+}
 
 function Breadcrumb() {
   const { pathname } = useLocation();
+  const { titles } = useBreadcrumb();
   const segments = pathname.split("/").filter(Boolean);
   if (segments.length === 0) return null;
 
+  const pageTitle = titles[pathname];
+
   const crumbs = segments.map((seg, i) => {
     const path = "/" + segments.slice(0, i + 1).join("/");
-    const label = PATH_LABELS[seg] ?? seg;
+    const parentSeg = i > 0 ? segments[i - 1] : undefined;
     const isLast = i === segments.length - 1;
+    const isDynamic = isDynamicIdSegment(parentSeg);
+    const label = isLast && pageTitle
+      ? pageTitle
+      : PATH_LABELS[seg] ?? (isDynamic ? "…" : seg);
     return { path, label, isLast };
   });
 
   return (
     <nav className="flex items-center gap-1.5 px-4 md:px-6 py-2 text-xs text-slate-500 border-b border-slate-100 bg-white overflow-x-auto shrink-0">
-      <Link to="/" className="flex items-center gap-1 hover:text-slate-700 transition-colors">
+      <Link to="/" className="flex items-center gap-1 cursor-pointer hover:text-slate-700 transition-colors">
         <Home className="w-3 h-3" />
       </Link>
       {crumbs.map((c) => (
@@ -41,7 +63,7 @@ function Breadcrumb() {
           {c.isLast ? (
             <span className="font-medium text-slate-700">{c.label}</span>
           ) : (
-            <Link to={c.path} className="hover:text-slate-700 transition-colors">{c.label}</Link>
+            <Link to={c.path} className="cursor-pointer hover:text-slate-700 transition-colors">{c.label}</Link>
           )}
         </span>
       ))}
@@ -59,6 +81,7 @@ export default function Layout() {
 
   return (
     <SidebarProvider>
+      <BreadcrumbProvider>
       <KreatorDataProvider>
       <div className="flex h-[100dvh] bg-slate-50 overflow-hidden">
         <Toaster position="top-right" richColors />
@@ -72,6 +95,7 @@ export default function Layout() {
         </div>
       </div>
       </KreatorDataProvider>
+      </BreadcrumbProvider>
     </SidebarProvider>
   );
 }

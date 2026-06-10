@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useSetBreadcrumbTitle } from "@/contexts/BreadcrumbContext";
 import { ArrowLeft, Coins, Calendar, Users, CheckCircle, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -24,6 +25,8 @@ export default function CampaignDetail() {
   const navigate = useNavigate();
   const { data: campaign, isLoading } = useCampaign(id ?? "");
   const deleteMutation = useDeleteCampaign();
+
+  useSetBreadcrumbTitle(campaign?.title);
 
   const handleDelete = async () => {
     if (!id) return;
