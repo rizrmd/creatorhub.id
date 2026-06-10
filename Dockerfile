@@ -6,10 +6,17 @@
 FROM node:22-alpine AS frontend-builder
 WORKDIR /app/frontend
 
+# Dependency layer — only rebuilds when package-lock changes
 COPY frontend/package.json frontend/package-lock.json ./
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --prefer-offline --no-audit --no-fund
 
-COPY frontend/ ./
+# Config layer — rebuilds when build tooling changes
+COPY frontend/index.html frontend/vite.config.ts frontend/tsconfig.json frontend/tsconfig.app.json frontend/tsconfig.node.json frontend/components.json ./
+COPY frontend/public/ ./public/
+
+# Source layer — rebuilds when app code changes
+COPY frontend/src/ ./src/
 RUN npm run build
 
 # =============================================
@@ -20,11 +27,22 @@ WORKDIR /app/backend
 
 RUN apk add --no-cache git ca-certificates
 
+# Module layer — only rebuilds when go.sum changes
 COPY backend/go.mod backend/go.sum ./
-RUN go mod download
+RUN --mount=type=cache,target=/go/pkg/mod \
+    go mod download
 
-COPY backend/ ./
-RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o /creatorhub .
+# Schema layer — rebuilds when migrations change
+COPY backend/migrations/ ./migrations/
+
+# Source layer — rebuilds when application code changes
+COPY backend/internal/ ./internal/
+COPY backend/cmd/ ./cmd/
+COPY backend/main.go ./
+
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags="-s -w" -o /creatorhub .
 
 # =============================================
 # Stage 3: Production runtime

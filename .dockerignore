@@ -16,12 +16,20 @@ backend/creatorhub.exe
 
 # Docs & reference (not needed in image)
 docs/
+*.md
+CLAUDE.md
 
 # Editor / OS
 .vscode
 .idea
 .DS_Store
+Thumbs.db
 *.log
+*.swp
+*.swo
 
 # Claude / agent files
 .claude
+
+# Misc repo assets not used in Docker build
+backend/mise.toml
