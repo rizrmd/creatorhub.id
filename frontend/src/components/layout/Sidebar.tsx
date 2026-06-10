@@ -89,28 +89,18 @@ export default function Sidebar() {
 
         {/* Logo */}
         <div
-          className="h-[70px] flex items-center border-b shrink-0 overflow-hidden"
-          style={{ borderColor: "var(--ch-border)", padding: collapsed ? "0 16px" : "0 14px" }}
+          className="h-[70px] flex items-center justify-center border-b shrink-0 overflow-hidden"
+          style={{ borderColor: "var(--ch-border)", padding: collapsed ? "0 12px" : "0 16px" }}
         >
-          {collapsed ? (
-            <div className="w-9 h-9 rounded-lg overflow-hidden shrink-0">
-              <img src="/logo.webp" alt="CreatorHub" className="w-full h-full object-cover" style={{ mixBlendMode: "multiply" }} />
-            </div>
-          ) : (
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-9 h-9 rounded-lg overflow-hidden shrink-0">
-                <img src="/logo.webp" alt="CreatorHub" className="w-full h-full object-cover" style={{ mixBlendMode: "multiply" }} />
-              </div>
-              <div className="min-w-0">
-                <p className="font-bold text-sm leading-tight truncate" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                  CreatorHub.id
-                </p>
-                <p className="text-[9px] tracking-wide uppercase leading-tight" style={{ color: "var(--ch-text-soft)" }}>
-                  KOL · Digital · PR · Ads
-                </p>
-              </div>
-            </div>
-          )}
+          <div
+            className={cn("rounded-lg overflow-hidden shrink-0", collapsed ? "w-9 h-9" : "w-full h-10")}
+          >
+            <img
+              src="/logo.webp"
+              alt="CreatorHub"
+              className="w-full h-full object-contain"
+            />
+          </div>
         </div>
 
         {/* Creator workspace pill */}
