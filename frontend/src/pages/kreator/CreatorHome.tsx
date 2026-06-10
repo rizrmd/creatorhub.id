@@ -26,9 +26,9 @@ export default function CreatorHome() {
 
   const kpis = useMemo(() => [
     {
-      label: "New Invitations",
+      label: "Undangan Menunggu",
       value: String(stats.pendingInvitationCount),
-      sub: "Awaiting response",
+      sub: "Menunggu respons",
       hue: 220,
       icon: MessageSquare,
       href: "/kreator/invitations",
@@ -91,11 +91,11 @@ export default function CreatorHome() {
               Welcome, {firstName}! 👋
             </h1>
             <p className="text-green-200 text-[13px] mt-1">
-              You have{" "}
+              Anda punya{" "}
               <strong className="text-white">
-                {stats.pendingInvitationCount} new invitation{stats.pendingInvitationCount !== 1 ? "s" : ""}
+                {stats.pendingInvitationCount} undangan menunggu
               </strong>{" "}
-              waiting
+              respons
             </p>
           </div>
           <ChevronRight className="w-5 h-5 text-white/70 shrink-0 mt-1" />
@@ -207,7 +207,7 @@ export default function CreatorHome() {
                         {inv.campaign}
                       </p>
                       <span className="px-1.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase"
-                        style={{ background: "#16A34A", color: "white" }}>Baru</span>
+                        style={{ background: "#16A34A", color: "white" }}>Menunggu</span>
                     </div>
                     <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
                       {inv.brand} · {inv.category} ·{" "}

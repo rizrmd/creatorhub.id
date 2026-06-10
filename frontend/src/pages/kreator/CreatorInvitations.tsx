@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 
 const TAB_FILTERS: { key: "all" | InvitationStatus; label: string; icon: React.ElementType }[] = [
   { key: "all", label: "Semua", icon: Inbox },
-  { key: "pending", label: "Baru", icon: Sparkles },
+  { key: "pending", label: "Menunggu", icon: Clock },
   { key: "accepted", label: "Diterima", icon: CheckCircle },
   { key: "declined", label: "Ditolak", icon: XCircle },
 ];
@@ -92,7 +92,7 @@ function InvitationCard({
                 className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide"
                 style={{ background: "#16A34A", color: "white" }}
               >
-                Baru
+                Menunggu
               </span>
             )}
             {statusChip(inv.status)}
@@ -205,7 +205,7 @@ export default function CreatorInvitations() {
         <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
           <strong style={{ color: "var(--ch-text)" }}>{counts.all} undangan total</strong>
           {" · "}
-          <strong style={{ color: "#16A34A" }}>{counts.pending} baru</strong> menunggu respons Anda
+          <strong style={{ color: "#16A34A" }}>{counts.pending} menunggu</strong> respons Anda
         </p>
       </div>
 
@@ -217,7 +217,7 @@ export default function CreatorInvitations() {
         </div>
         <div className="rounded-xl border px-3 py-2 text-[12px] font-semibold"
           style={{ background: "#F0FDF4", borderColor: "#86EFAC", color: "#15803D" }}>
-          Baru <span className="font-bold">{counts.pending}</span>
+          Menunggu <span className="font-bold">{counts.pending}</span>
         </div>
         <div className="rounded-xl border px-3 py-2 text-[12px] font-semibold"
           style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
@@ -260,10 +260,10 @@ export default function CreatorInvitations() {
           <Sparkles style={{ width: 18, height: 18, color: "#16A34A", flexShrink: 0, marginTop: 1 }} />
           <div>
             <p className="text-[13px] font-bold" style={{ color: "#064E3B" }}>
-              {counts.pending} undangan baru belum direspons
+              {counts.pending} undangan menunggu respons
             </p>
             <p className="text-[12px] mt-0.5" style={{ color: "#065F46" }}>
-              Kartu berwarna hijau dengan label &quot;Baru&quot; adalah undangan yang perlu tindakan Anda.
+              Kartu berwarna hijau dengan label &quot;Menunggu&quot; adalah undangan yang perlu tindakan Anda.
             </p>
           </div>
         </div>
@@ -274,7 +274,7 @@ export default function CreatorInvitations() {
           <>
             {newInvitations.length > 0 && (
               <div className="space-y-3">
-                <SectionHeader title="Undangan Baru" count={newInvitations.length} highlight />
+                <SectionHeader title="Undangan Menunggu" count={newInvitations.length} highlight />
                 {newInvitations.map((inv) => (
                   <InvitationCard
                     key={inv.id}
