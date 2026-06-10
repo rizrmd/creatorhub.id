@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
-import { Inbox, CheckCircle, XCircle, Clock, Filter, Sparkles } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { Inbox, CheckCircle, XCircle, Clock, Filter, Sparkles, Search } from "lucide-react";
 import { toast } from "sonner";
 import { useKreatorData } from "@/context/KreatorDataContext";
 import {
@@ -167,10 +168,25 @@ function SectionHeader({ title, count, highlight }: { title: string; count: numb
   );
 }
 
+function matchesInvitationSearch(inv: KreatorInvitation, query: string): boolean {
+  const q = query.trim().toLowerCase();
+  if (!q) return true;
+  return [inv.brand, inv.campaign, inv.category, inv.brief]
+    .some((field) => field.toLowerCase().includes(q));
+}
+
 export default function CreatorInvitations() {
   const { invitations, respondToInvitation } = useKreatorData();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [filter, setFilter] = useState<"all" | InvitationStatus>("all");
+  const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
   const [expanded, setExpanded] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!searchParams.has("search")) return;
+    setSearch(searchParams.get("search") ?? "");
+    setSearchParams({}, { replace: true });
+  }, [searchParams, setSearchParams]);
 
   const respond = (id: string, accepted: boolean) => {
     respondToInvitation(id, accepted);
@@ -179,20 +195,24 @@ export default function CreatorInvitations() {
   };
 
   const sorted = useMemo(() => sortInvitations(invitations), [invitations]);
-  const newInvitations = sorted.filter(isNewInvitation);
-  const historyInvitations = sorted.filter((i) => !isNewInvitation(i));
+  const searched = useMemo(
+    () => sorted.filter((inv) => matchesInvitationSearch(inv, search)),
+    [sorted, search],
+  );
+  const newInvitations = searched.filter(isNewInvitation);
+  const historyInvitations = searched.filter((i) => !isNewInvitation(i));
 
   const filtered = filter === "all"
-    ? sorted
+    ? searched
     : filter === "pending"
       ? newInvitations
-      : sorted.filter((i) => i.status === filter);
+      : searched.filter((i) => i.status === filter);
 
   const counts = {
-    all: invitations.length,
+    all: searched.length,
     pending: newInvitations.length,
-    accepted: invitations.filter((i) => i.status === "accepted").length,
-    declined: invitations.filter((i) => i.status === "declined").length,
+    accepted: searched.filter((i) => i.status === "accepted").length,
+    declined: searched.filter((i) => i.status === "declined").length,
   };
 
   return (
@@ -203,10 +223,23 @@ export default function CreatorInvitations() {
           Undangan Brand
         </h1>
         <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
-          <strong style={{ color: "var(--ch-text)" }}>{counts.all} undangan total</strong>
+          <strong style={{ color: "var(--ch-text)" }}>
+            {search.trim() ? `${counts.all} hasil` : `${invitations.length} undangan total`}
+          </strong>
           {" · "}
           <strong style={{ color: "#16A34A" }}>{counts.pending} menunggu</strong> respons Anda
         </p>
+      </div>
+
+      <div className="relative max-w-xl">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--ch-text-soft)" }} />
+        <input
+          className="w-full rounded-xl border pl-9 pr-3 py-2.5 text-[13px] outline-none"
+          style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+          placeholder="Cari brand, kampanye, kategori…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </div>
 
       {/* Summary pills */}
@@ -316,7 +349,9 @@ export default function CreatorInvitations() {
         {filtered.length === 0 && (
           <div className="py-16 text-center" style={{ color: "var(--ch-text-soft)" }}>
             <Inbox style={{ width: 32, height: 32, margin: "0 auto 12px", opacity: 0.4 }} />
-            <p className="text-[14px] font-medium">Tidak ada undangan di kategori ini</p>
+            <p className="text-[14px] font-medium">
+              {search.trim() ? `Tidak ada undangan untuk "${search.trim()}"` : "Tidak ada undangan di kategori ini"}
+            </p>
           </div>
         )}
       </div>

@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useCreators, useMarketplaceStats } from "@/hooks/useCreators";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useCreateCampaign } from "@/hooks/useCampaigns";
 import type { Creator, CreatorListParams } from "@/types";
 import { formatRupiah, formatFollowers } from "@/lib/utils";
@@ -538,17 +539,42 @@ export default function Marketplace() {
     city: searchParams.get("city") ?? undefined,
   }));
   const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
+  const debouncedSearch = useDebouncedValue(search, 300);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [listView, setListView] = useState(false);
 
   useEffect(() => {
-    const city = searchParams.get("city");
-    const q = searchParams.get("search");
-    if (city) setFilters((f) => ({ ...f, city, page: 1 }));
-    if (q) setSearch(q);
-    if (city || q) setSearchParams({}, { replace: true });
-  }, []);
+    const hasUpdates =
+      searchParams.has("search") ||
+      searchParams.has("city") ||
+      searchParams.has("topRated") ||
+      searchParams.has("fastResponse") ||
+      searchParams.has("verified");
+
+    if (!hasUpdates) return;
+
+    if (searchParams.has("search")) {
+      setSearch(searchParams.get("search") ?? "");
+    }
+
+    setFilters((f) => {
+      const next = { ...f, page: 1 };
+      if (searchParams.has("city")) {
+        next.city = searchParams.get("city") ?? undefined;
+      }
+      if (searchParams.get("topRated") === "true") next.topRated = true;
+      if (searchParams.get("fastResponse") === "true") next.fastResponse = true;
+      if (searchParams.get("verified") === "true") next.verified = true;
+      return next;
+    });
+
+    setSearchParams({}, { replace: true });
+  }, [searchParams, setSearchParams]);
+
+  useEffect(() => {
+    setFilters((f) => (f.page === 1 ? f : { ...f, page: 1 }));
+  }, [debouncedSearch]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -577,7 +603,7 @@ export default function Marketplace() {
 
   const createMutation = useCreateCampaign();
 
-  const { data, isLoading } = useCreators({ ...filters, search: search || undefined });
+  const { data, isLoading } = useCreators({ ...filters, search: debouncedSearch || undefined });
   const { data: stats, isLoading: statsLoading } = useMarketplaceStats();
 
   const toggleSelect = (id: string) => {

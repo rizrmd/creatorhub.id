@@ -41,7 +41,10 @@ func (r *CreatorRepository) List(ctx context.Context, params models.CreatorListP
 		argIdx++
 	}
 	if params.Search != "" {
-		where = append(where, fmt.Sprintf("(c.name ILIKE $%d OR c.bio ILIKE $%d)", argIdx, argIdx))
+		where = append(where, fmt.Sprintf(
+			"(c.name ILIKE $%d OR c.handle ILIKE $%d OR c.bio ILIKE $%d OR c.city ILIKE $%d OR c.category ILIKE $%d)",
+			argIdx, argIdx, argIdx, argIdx, argIdx,
+		))
 		args = append(args, "%"+params.Search+"%")
 		argIdx++
 	}

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Search, Bell, ChevronDown, Settings, LogOut, User, Megaphone, Users, DollarSign, Menu } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRole } from "@/context/RoleContext";
@@ -43,6 +43,7 @@ function NotifIcon({ icon, bg, fg }: { icon: string; bg: string; fg: string }) {
 
 export default function Header() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, logout } = useAuth();
   const { effectiveRole } = useRole();
   const { toggleMobile } = useSidebar();
@@ -56,6 +57,7 @@ export default function Header() {
   const notifRef   = useRef<HTMLDivElement>(null);
   const msgRef     = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
+  const searchRef  = useRef<HTMLInputElement>(null);
 
   const displayUser = effectiveRole === "kreator" ? {
     ...USER_BY_ROLE.kreator,
@@ -79,6 +81,26 @@ export default function Header() {
     }
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const active: string[] = [];
+    if (params.get("topRated") === "true") active.push("topRated");
+    if (params.get("fastResponse") === "true") active.push("fastResponse");
+    if (params.get("verified") === "true") active.push("verified");
+    setActiveFilters(active);
+  }, [location.search]);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "/" && document.activeElement?.tagName !== "INPUT" && document.activeElement?.tagName !== "TEXTAREA") {
+        e.preventDefault();
+        searchRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
   }, []);
 
   const open = (which: "notif" | "msg" | "profile") => {
@@ -142,13 +164,14 @@ export default function Header() {
       </button>
 
       {/* Search + filter pills */}
-      <div className="hidden md:flex items-center gap-3 flex-1 min-w-0">
+      <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
         <div
-          className="flex items-center gap-2.5 rounded-xl transition-all flex-1 max-w-[460px]"
-          style={{ background: effectiveRole === "kreator" ? "#F0FDF4" : "#F1F5F9", border: "1px solid transparent", padding: "9px 14px" }}
+          className="flex items-center gap-2 rounded-xl transition-all flex-1 min-w-0 max-w-[460px]"
+          style={{ background: effectiveRole === "kreator" ? "#F0FDF4" : "#F1F5F9", border: "1px solid transparent", padding: "8px 12px" }}
         >
           <Search className="w-4 h-4 shrink-0" style={{ color: "var(--ch-text-soft)" }} />
           <input
+            ref={searchRef}
             className="flex-1 bg-transparent border-0 outline-none text-[13px] min-w-0"
             style={{ color: "var(--ch-text)", fontFamily: "inherit" }}
             placeholder={effectiveRole === "kreator" ? "Cari undangan, pekerjaan…" : "Cari kreator, kampanye…"}
@@ -164,7 +187,7 @@ export default function Header() {
         </div>
 
         {effectiveRole === "brand" && (
-        <div className="hidden lg:flex items-center gap-1.5">
+        <div className="hidden xl:flex items-center gap-1.5 shrink-0">
           {FILTER_PILLS.map((p) => (
             <button
               key={p.param}
@@ -182,8 +205,6 @@ export default function Header() {
         </div>
         )}
       </div>
-
-      <div className="flex-1 min-w-0 md:hidden" />
 
       {/* Right actions */}
       <div className="flex items-center gap-0.5 sm:gap-1 ml-auto shrink-0">
