@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRole } from "@/context/RoleContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 const brandNavItems = [
   { to: "/dashboard",        icon: Home,            label: "Dashboard" },
@@ -38,7 +39,11 @@ const kreatorNavItems = [
 
 export default function Sidebar() {
   const navigate = useNavigate();
-  const { role, setRole } = useRole();
+  const { user } = useAuth();
+  const { effectiveRole, canSwitchRole, setRole } = useRole();
+  const isKreatorView = effectiveRole === "kreator";
+  const navActiveBg = isKreatorView ? "#16A34A" : "var(--ch-primary)";
+  const navActiveShadow = isKreatorView ? "0 4px 14px rgba(22,163,74,.35)" : "var(--ch-nav-shadow)";
   const [collapsed, setCollapsed] = useState(() => {
     return localStorage.getItem("ch_sidebar_collapsed") === "true";
   });
@@ -49,10 +54,11 @@ export default function Sidebar() {
     localStorage.setItem("ch_sidebar_collapsed", String(collapsed));
   }, [collapsed]);
 
-  const navItems = role === "kreator" ? kreatorNavItems : brandNavItems;
+  const navItems = effectiveRole === "kreator" ? kreatorNavItems : brandNavItems;
 
   const handleSwitchRole = () => {
-    if (role === "brand") {
+    if (!canSwitchRole) return;
+    if (effectiveRole === "brand") {
       setRole("kreator");
       navigate("/kreator/home");
     } else {
@@ -104,7 +110,7 @@ export default function Sidebar() {
         </div>
 
         {/* Creator workspace pill */}
-        {role === "kreator" && !collapsed && (
+        {effectiveRole === "kreator" && !collapsed && (
           <div className="px-3 pt-3">
             <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold" style={{ background: "#DCFCE7", color: "#15803D" }}>
               <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
@@ -133,8 +139,8 @@ export default function Sidebar() {
                 )
               }
               style={({ isActive }) => isActive ? {
-                background: "var(--ch-primary)",
-                boxShadow: "var(--ch-nav-shadow)",
+                background: navActiveBg,
+                boxShadow: navActiveShadow,
                 color: "white",
               } : {
                 color: "var(--ch-text-muted)",
@@ -175,14 +181,16 @@ export default function Sidebar() {
         <div className="border-t shrink-0" style={{ borderColor: "var(--ch-border)", padding: collapsed ? "10px 8px" : "10px" }}>
           {collapsed ? (
             <div className="flex flex-col items-center gap-2">
+              {canSwitchRole && (
               <button
                 onClick={handleSwitchRole}
-                title={role === "brand" ? "Jadi Kreator" : "Kembali ke Brand"}
+                title={effectiveRole === "brand" ? "Jadi Kreator" : "Kembali ke Brand"}
                 className="w-9 h-9 rounded-lg border flex items-center justify-center transition-colors hover:bg-blue-50"
                 style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}
               >
                 <Users className="w-4 h-4" />
               </button>
+              )}
               <button
                 onClick={() => setShowSupport(true)}
                 title="Support"
@@ -194,7 +202,7 @@ export default function Sidebar() {
             </div>
           ) : (
             <div className="flex flex-col gap-2">
-              {role === "brand" ? (
+              {canSwitchRole && effectiveRole === "brand" ? (
                 <div className="rounded-[10px] p-[10px] border" style={{ borderColor: "var(--ch-border)" }}>
                   <div className="flex items-center gap-1.5 mb-2">
                     <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: "linear-gradient(135deg, #DBEAFE, #BFDBFE)" }}>
@@ -213,7 +221,7 @@ export default function Sidebar() {
                     Masuk sebagai Kreator →
                   </button>
                 </div>
-              ) : (
+              ) : canSwitchRole ? (
                 <div className="rounded-[10px] p-[10px] border" style={{ borderColor: "var(--ch-border)" }}>
                   <div className="flex items-center gap-2 mb-2">
                     <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-white text-xs font-bold" style={{ background: "#A855F7" }}>
@@ -232,7 +240,19 @@ export default function Sidebar() {
                     ← Kembali ke Brand
                   </button>
                 </div>
-              )}
+              ) : !canSwitchRole && isKreatorView ? (
+                <div className="rounded-[10px] p-[10px] border" style={{ borderColor: "var(--ch-border)", background: "#F0FDF4" }}>
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-white text-xs font-bold" style={{ background: "#A855F7" }}>
+                      {user?.name ? user.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase() : "K"}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[12px] font-bold leading-tight truncate" style={{ color: "var(--ch-text)" }}>{user?.name ?? "Creator"}</p>
+                      <p className="text-[10.5px]" style={{ color: "#15803D" }}>Akun Kreator</p>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
 
               <div className="rounded-[10px] p-[10px] flex items-center gap-2.5 border" style={{ borderColor: "var(--ch-border)" }}>
                 <HelpCircle className="w-7 h-7 shrink-0" style={{ color: "var(--ch-text-soft)" }} />

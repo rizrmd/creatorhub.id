@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { HomeRedirect, BrandRoute, KreatorRoute } from "@/components/RoleRoute";
 import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import Marketplace from "@/pages/Marketplace";
@@ -39,27 +40,27 @@ export default function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="/marketplace" replace />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="marketplace" element={<Marketplace />} />
-          <Route path="campaigns" element={<Campaigns />} />
-          <Route path="campaigns/:id" element={<CampaignDetail />} />
-          <Route path="analytics" element={<Analytics />} />
-          <Route path="boost-ads" element={<BoostAds />} />
-          <Route path="media-monitoring" element={<MediaMonitoring />} />
-          <Route path="messages" element={<Messages />} />
-          <Route path="payments" element={<Payments />} />
-          <Route path="settings" element={<Settings />} />
+          <Route index element={<HomeRedirect />} />
+          <Route path="dashboard" element={<BrandRoute><Dashboard /></BrandRoute>} />
+          <Route path="marketplace" element={<BrandRoute><Marketplace /></BrandRoute>} />
+          <Route path="campaigns" element={<BrandRoute><Campaigns /></BrandRoute>} />
+          <Route path="campaigns/:id" element={<BrandRoute><CampaignDetail /></BrandRoute>} />
+          <Route path="analytics" element={<BrandRoute><Analytics /></BrandRoute>} />
+          <Route path="boost-ads" element={<BrandRoute><BoostAds /></BrandRoute>} />
+          <Route path="media-monitoring" element={<BrandRoute><MediaMonitoring /></BrandRoute>} />
+          <Route path="messages" element={<BrandRoute><Messages /></BrandRoute>} />
+          <Route path="payments" element={<BrandRoute><Payments /></BrandRoute>} />
+          <Route path="settings" element={<BrandRoute><Settings /></BrandRoute>} />
           <Route path="kreator">
             <Route index element={<Navigate to="/kreator/home" replace />} />
-            <Route path="home" element={<CreatorHome />} />
-            <Route path="invitations" element={<CreatorInvitations />} />
-            <Route path="work" element={<CreatorWork />} />
-            <Route path="earnings" element={<CreatorEarnings />} />
-            <Route path="insights" element={<CreatorInsights />} />
-            <Route path="profile" element={<CreatorProfile />} />
-            <Route path="messages" element={<CreatorMessages />} />
-            <Route path="settings" element={<CreatorSettings />} />
+            <Route path="home" element={<KreatorRoute><CreatorHome /></KreatorRoute>} />
+            <Route path="invitations" element={<KreatorRoute><CreatorInvitations /></KreatorRoute>} />
+            <Route path="work" element={<KreatorRoute><CreatorWork /></KreatorRoute>} />
+            <Route path="earnings" element={<KreatorRoute><CreatorEarnings /></KreatorRoute>} />
+            <Route path="insights" element={<KreatorRoute><CreatorInsights /></KreatorRoute>} />
+            <Route path="profile" element={<KreatorRoute><CreatorProfile /></KreatorRoute>} />
+            <Route path="messages" element={<KreatorRoute><CreatorMessages /></KreatorRoute>} />
+            <Route path="settings" element={<KreatorRoute><CreatorSettings /></KreatorRoute>} />
             <Route path="dashboard" element={<Navigate to="/kreator/home" replace />} />
           </Route>
         </Route>

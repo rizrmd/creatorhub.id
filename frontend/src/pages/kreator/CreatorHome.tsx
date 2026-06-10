@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Star, TrendingUp, MessageSquare, DollarSign, Award, Zap } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 const KPIs = [
   { label: "New Invitations",    value: "3",       sub: "Awaiting response",    hue: 220, icon: MessageSquare },
@@ -29,7 +30,9 @@ const achievements = [
 ];
 
 export default function CreatorHome() {
+  const { user } = useAuth();
   const [invs, setInvs] = useState(invitations);
+  const firstName = user?.name?.split(" ")[0] ?? "Creator";
 
   const respond = (id: string, accepted: boolean) => {
     setInvs((list) => list.filter((i) => i.id !== id));
@@ -46,7 +49,7 @@ export default function CreatorHome() {
           <p className="text-green-200 text-[13px] mb-1">Creator Portal</p>
           <h1 className="text-[24px] font-extrabold text-white tracking-[-0.5px]"
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            Welcome, Tasya! 👋
+            Welcome, {firstName}! 👋
           </h1>
           <p className="text-green-200 text-[13px] mt-1">
             You have <strong className="text-white">{invs.length} new invitations</strong> waiting

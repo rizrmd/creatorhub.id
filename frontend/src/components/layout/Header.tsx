@@ -43,7 +43,7 @@ function NotifIcon({ icon, bg, fg }: { icon: string; bg: string; fg: string }) {
 export default function Header() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const { role } = useRole();
+  const { effectiveRole } = useRole();
   const [search, setSearch]             = useState("");
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [showNotif, setShowNotif]       = useState(false);
@@ -55,7 +55,7 @@ export default function Header() {
   const msgRef     = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
 
-  const displayUser = role === "kreator" ? {
+  const displayUser = effectiveRole === "kreator" ? {
     ...USER_BY_ROLE.kreator,
     name:     user?.name ?? USER_BY_ROLE.kreator.name,
     subtitle: "Content Creator",
@@ -85,9 +85,18 @@ export default function Header() {
     setShowProfile(which === "profile");
   };
 
+  const messagesPath = effectiveRole === "kreator" ? "/kreator/messages" : "/messages";
+  const settingsPath = effectiveRole === "kreator" ? "/kreator/settings" : "/settings";
+  const profilePath = effectiveRole === "kreator" ? "/kreator/profile" : "/settings";
+
   const handleSearch = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && search.trim()) {
-      navigate(`/marketplace?search=${encodeURIComponent(search.trim())}`);
+      const q = encodeURIComponent(search.trim());
+      navigate(
+        effectiveRole === "kreator"
+          ? `/kreator/invitations?search=${q}`
+          : `/marketplace?search=${q}`,
+      );
       setSearch("");
     }
   };
@@ -124,13 +133,13 @@ export default function Header() {
       <div className="flex items-center gap-3 flex-1 min-w-0">
         <div
           className="flex items-center gap-2.5 rounded-xl transition-all"
-          style={{ background: "#F1F5F9", border: "1px solid transparent", padding: "9px 14px", width: 460, maxWidth: "100%" }}
+          style={{ background: effectiveRole === "kreator" ? "#F0FDF4" : "#F1F5F9", border: "1px solid transparent", padding: "9px 14px", width: 460, maxWidth: "100%" }}
         >
           <Search className="w-4 h-4 shrink-0" style={{ color: "var(--ch-text-soft)" }} />
           <input
             className="flex-1 bg-transparent border-0 outline-none text-[13px] min-w-0"
             style={{ color: "var(--ch-text)", fontFamily: "inherit" }}
-            placeholder="Cari kreator, kampanye…"
+            placeholder={effectiveRole === "kreator" ? "Cari undangan, pekerjaan…" : "Cari kreator, kampanye…"}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={handleSearch}
@@ -142,6 +151,7 @@ export default function Header() {
           )}
         </div>
 
+        {effectiveRole === "brand" && (
         <div className="hidden lg:flex items-center gap-1.5">
           {FILTER_PILLS.map((p) => (
             <button
@@ -158,6 +168,7 @@ export default function Header() {
             </button>
           ))}
         </div>
+        )}
       </div>
 
       {/* Right actions */}
@@ -187,7 +198,7 @@ export default function Header() {
               <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: "var(--ch-border)" }}>
                 <p className="text-sm font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Pesan</p>
                 <button className="text-xs font-semibold hover:underline" style={{ color: "var(--ch-primary)" }}
-                  onClick={() => { navigate("/messages"); setShowMessages(false); }}>
+                  onClick={() => { navigate(messagesPath); setShowMessages(false); }}>
                   Lihat semua
                 </button>
               </div>
@@ -207,7 +218,7 @@ export default function Header() {
                 <button key={t.id}
                   className="w-full flex items-center gap-3 px-4 py-3 border-b text-left transition-colors hover:bg-slate-50"
                   style={{ borderColor: "var(--ch-border)" }}
-                  onClick={() => { navigate("/messages"); setShowMessages(false); }}
+                  onClick={() => { navigate(messagesPath); setShowMessages(false); }}
                 >
                   <div className="relative shrink-0">
                     <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-semibold" style={{ background: "var(--ch-primary)" }}>
@@ -294,7 +305,7 @@ export default function Header() {
           >
             <div
               className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold shrink-0"
-              style={{ background: role === "kreator" ? "#A855F7" : "var(--ch-primary)" }}
+              style={{ background: effectiveRole === "kreator" ? "#A855F7" : "var(--ch-primary)" }}
             >
               {displayUser.initial}
             </div>
@@ -331,12 +342,12 @@ export default function Header() {
               </div>
               <button className="w-full flex items-center gap-2.5 px-4 py-3 text-sm transition-colors hover:bg-slate-50"
                 style={{ color: "var(--ch-text)" }}
-                onClick={() => { navigate("/settings"); setShowProfile(false); }}>
+                onClick={() => { navigate(profilePath); setShowProfile(false); }}>
                 <User style={{ width: 16, height: 16, color: "var(--ch-text-muted)" }} /> My Profile
               </button>
               <button className="w-full flex items-center gap-2.5 px-4 py-3 text-sm transition-colors hover:bg-slate-50"
                 style={{ color: "var(--ch-text)" }}
-                onClick={() => { navigate("/settings"); setShowProfile(false); }}>
+                onClick={() => { navigate(settingsPath); setShowProfile(false); }}>
                 <Settings style={{ width: 16, height: 16, color: "var(--ch-text-muted)" }} /> Settings
               </button>
               <div className="border-t" style={{ borderColor: "var(--ch-border)" }} />

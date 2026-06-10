@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { AuthUser, LoginRequest } from "@/types";
 import { authApi } from "@/lib/api";
+import { roleFromAuth } from "@/context/RoleContext";
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -31,6 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const decoded = decodeToken(token);
       if (decoded) {
         setUser(decoded);
+        localStorage.setItem("ch_role", roleFromAuth(decoded.role));
       } else {
         localStorage.removeItem("auth_token");
       }
@@ -41,6 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (data: LoginRequest) => {
     const res = await authApi.login(data);
     localStorage.setItem("auth_token", res.token);
+    localStorage.setItem("ch_role", roleFromAuth(res.user.role));
     setUser(res.user);
     return res.user;
   };
