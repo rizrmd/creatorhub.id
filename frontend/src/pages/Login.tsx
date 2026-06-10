@@ -66,7 +66,7 @@ export default function Login() {
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             Influencer Campaign<br />
             Management Platform<br />
-            <span style={{ color: "#93C5FD" }}">#1 in Indonesia</span>
+            <span style={{ color: "#93C5FD" }}>#1 in Indonesia</span>
           </h1>
           <p className="text-blue-200 text-[15px] mb-8">
             Connect your brand with 10,000+ best content creators efficiently.

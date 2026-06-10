@@ -40,7 +40,7 @@ export default function CreatorEarnings() {
           style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
           Earnings
         </h1>
-        <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}">
+        <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
           Track your income and payment history
         </p>
       </div>

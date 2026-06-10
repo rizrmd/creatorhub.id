@@ -97,7 +97,7 @@ export default function CreatorHome() {
       {/* Invitations */}
       {invs.length > 0 && (
         <div>
-          <p className="text-[14px] font-bold mb-3" style={{ color: "var(--ch-text)" }}">
+          <p className="text-[14px] font-bold mb-3" style={{ color: "var(--ch-text)" }}>
             Latest Invitations
           </p>
           <div className="space-y-3">

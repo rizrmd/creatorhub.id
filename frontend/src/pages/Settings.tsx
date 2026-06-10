@@ -343,8 +343,10 @@ export default function Settings() {
                         className="w-[40px] h-[22px] rounded-full relative shrink-0 transition-colors"
                         style={{ background: notifications[item.key] ? "var(--ch-primary)" : "var(--ch-border)" }}>
                         <span className="absolute top-0.5 w-[18px] h-[18px] bg-white rounded-full shadow transition-transform"
-                          style={{ boxShadow: "0 1px 3px rgba(15,23,42,0.2)" }}
-                          style={{ [notifications[item.key] ? "right" : "left"]: "2px" }} />
+                          style={{
+                            boxShadow: "0 1px 3px rgba(15,23,42,0.2)",
+                            [notifications[item.key] ? "right" : "left"]: "2px",
+                          }} />
                       </button>
                     </div>
                     <Separator className="mt-3" />

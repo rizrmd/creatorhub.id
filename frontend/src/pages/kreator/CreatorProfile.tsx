@@ -107,7 +107,7 @@ export default function CreatorProfile() {
                   <Input value={profile.city} onChange={(e) => setProfile(p => ({ ...p, city: e.target.value }))} />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}">Base Rate (Rp)</label>
+                  <label className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Base Rate (Rp)</label>
                   <Input type="number" value={profile.rate} onChange={(e) => setProfile(p => ({ ...p, rate: e.target.value }))} />
                 </div>
               </div>

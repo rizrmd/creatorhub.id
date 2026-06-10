@@ -1,0 +1,27 @@
+# Git
+.git
+.gitignore
+
+# Dependencies
+**/node_modules
+
+# Local build output
+frontend/dist
+backend/creatorhub
+backend/creatorhub.exe
+
+# Environment
+.env
+.env.*
+
+# Docs & reference (not needed in image)
+docs/
+
+# Editor / OS
+.vscode
+.idea
+.DS_Store
+*.log
+
+# Claude / agent files
+.claude
