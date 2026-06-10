@@ -25,8 +25,8 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     try {
-      await login({ email, password });
-      navigate("/marketplace", { replace: true });
+      const user = await login({ email, password });
+      navigate(user.role === "kreator" ? "/kreator/home" : "/marketplace", { replace: true });
     } catch (err: unknown) {
       const msg =
         (err as { response?: { data?: { error?: string } } })?.response?.data?.error ??

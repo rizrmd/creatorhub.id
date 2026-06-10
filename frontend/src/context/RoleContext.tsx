@@ -1,6 +1,11 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export type Role = "brand" | "kreator";
+
+function roleFromAuth(role?: string): Role {
+  return role === "kreator" ? "kreator" : "brand";
+}
 
 interface RoleContextValue {
   role: Role;
@@ -10,10 +15,18 @@ interface RoleContextValue {
 export const RoleContext = createContext<RoleContextValue | null>(null);
 
 export function RoleProvider({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
   const [role, setRoleState] = useState<Role>(() => {
     const stored = localStorage.getItem("ch_role");
     return stored === "kreator" ? "kreator" : "brand";
   });
+
+  useEffect(() => {
+    if (!user) return;
+    const next = roleFromAuth(user.role);
+    setRoleState(next);
+    localStorage.setItem("ch_role", next);
+  }, [user?.id, user?.role]);
 
   const setRole = (newRole: Role) => {
     localStorage.setItem("ch_role", newRole);

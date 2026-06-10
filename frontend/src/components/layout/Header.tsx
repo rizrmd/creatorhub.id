@@ -55,10 +55,16 @@ export default function Header() {
   const msgRef     = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
 
-  const displayUser = role === "kreator" ? USER_BY_ROLE.kreator : {
+  const displayUser = role === "kreator" ? {
+    ...USER_BY_ROLE.kreator,
+    name:     user?.name ?? USER_BY_ROLE.kreator.name,
+    subtitle: "Content Creator",
+    initial:  user?.name ? user.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase() : USER_BY_ROLE.kreator.initial,
+    stats: USER_BY_ROLE.kreator.stats,
+  } : {
     ...USER_BY_ROLE.brand,
     name:     user?.name ?? "Arif Budiman",
-    subtitle: user?.role ?? "Brand Manager",
+    subtitle: user?.role === "admin" ? "Administrator" : "Brand Manager",
     initial:  user?.name ? user.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase() : "A",
     stats: USER_BY_ROLE.brand.stats,
   };

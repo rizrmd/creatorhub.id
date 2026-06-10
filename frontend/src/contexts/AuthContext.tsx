@@ -5,7 +5,7 @@ import { authApi } from "@/lib/api";
 interface AuthContextType {
   user: AuthUser | null;
   isLoading: boolean;
-  login: (data: LoginRequest) => Promise<void>;
+  login: (data: LoginRequest) => Promise<AuthUser>;
   logout: () => void;
 }
 
@@ -42,10 +42,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const res = await authApi.login(data);
     localStorage.setItem("auth_token", res.token);
     setUser(res.user);
+    return res.user;
   };
 
   const logout = () => {
     localStorage.removeItem("auth_token");
+    localStorage.removeItem("ch_role");
     setUser(null);
   };
 
