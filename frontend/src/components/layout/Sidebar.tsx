@@ -112,24 +112,31 @@ export default function Sidebar() {
         />
       )}
 
-      <aside
+      <div
         className={cn(
-          "bg-white border-r flex flex-col h-full relative overflow-hidden z-50",
+          "relative h-full shrink-0 z-50",
           "fixed inset-y-0 left-0 w-[min(280px,85vw)] transition-[transform,width] duration-200 ease-out",
           effectiveCollapsed ? "lg:w-[68px]" : "lg:w-[220px]",
-          "lg:static lg:shrink-0 lg:translate-x-0",
+          "lg:static lg:translate-x-0",
           mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         )}
-        style={{ borderColor: "var(--ch-border)" }}
       >
-        {/* Collapse toggle — desktop only */}
+        {/* Collapse toggle — desktop only, outside aside so it isn't clipped */}
         <button
           onClick={() => setCollapsed((v) => !v)}
-          className="hidden lg:flex absolute top-[22px] -right-[13px] z-10 w-[26px] h-[26px] rounded-full bg-white border items-center justify-center transition-colors hover:border-blue-300 hover:text-blue-600"
+          className="hidden lg:flex absolute top-[22px] -right-[13px] z-[60] w-[26px] h-[26px] rounded-full bg-white border items-center justify-center transition-colors hover:border-blue-300 hover:text-blue-600"
           style={{ borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)", color: "var(--ch-text-muted)" }}
         >
           {effectiveCollapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
         </button>
+
+      <aside
+        className={cn(
+          "bg-white border-r flex flex-col h-full overflow-hidden",
+          "w-full",
+        )}
+        style={{ borderColor: "var(--ch-border)" }}
+      >
 
         {/* Logo */}
         <div
@@ -314,6 +321,7 @@ export default function Sidebar() {
           )}
         </div>
       </aside>
+      </div>
 
       <Dialog open={showSupport} onOpenChange={setShowSupport}>
         <DialogContent>
