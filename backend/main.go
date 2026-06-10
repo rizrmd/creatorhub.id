@@ -129,12 +129,13 @@ func spaHandler(dir string) http.Handler {
 		// Missing static assets must 404 — never fall back to index.html.
 		// Otherwise browsers/CDN cache HTML with text/html as a .js module script.
 		if isStaticAsset(r.URL.Path) {
-			fileServer.ServeHTTP(w, r)
+			serveStaticAsset(w, r, fs, fileServer)
 			return
 		}
 
 		f, err := fs.Open(r.URL.Path)
 		if err != nil {
+			w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 			http.ServeFile(w, r, filepath.Join(dir, "index.html"))
 			return
 		}
@@ -142,12 +143,35 @@ func spaHandler(dir string) http.Handler {
 
 		stat, err := f.Stat()
 		if err != nil || stat.IsDir() {
+			w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 			http.ServeFile(w, r, filepath.Join(dir, "index.html"))
 			return
 		}
 
 		fileServer.ServeHTTP(w, r)
 	})
+}
+
+func serveStaticAsset(w http.ResponseWriter, r *http.Request, fs http.FileSystem, fileServer http.Handler) {
+	f, err := fs.Open(r.URL.Path)
+	if err != nil {
+		w.Header().Set("Cache-Control", "no-store")
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+	defer f.Close()
+
+	if stat, err := f.Stat(); err != nil || stat.IsDir() {
+		w.Header().Set("Cache-Control", "no-store")
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+
+	// Vite emits content-hashed filenames — safe to cache aggressively.
+	if strings.HasPrefix(r.URL.Path, "/assets/") {
+		w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+	}
+	fileServer.ServeHTTP(w, r)
 }
 
 func isStaticAsset(path string) bool {
