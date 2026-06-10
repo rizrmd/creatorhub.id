@@ -273,16 +273,39 @@ FULL_SHA=$(git rev-parse HEAD)
 docker exec -i coolify-db psql -U coolify -d coolify -c \
   "UPDATE applications SET git_commit_sha = '${FULL_SHA}' WHERE uuid = 'emzin0vth67dgrpfoulsz996';"
 
+# force_rebuild=false → Docker layer cache ON (~20–35s)
+# force_rebuild=true  → --no-cache full rebuild (~60–90s); only when Dockerfile/deps change
 QUEUE_ID=$(docker exec -i coolify-db psql -U coolify -d coolify -t -c \
   "INSERT INTO application_deployment_queues
    (application_id, deployment_uuid, commit, status, force_rebuild, is_webhook, created_at, updated_at, application_name, server_id)
-   SELECT '154', gen_random_uuid()::text, '${FULL_SHA}', 'queued', true, true, NOW(), NOW(), 'creatorhub.id', 0
+   SELECT '154', gen_random_uuid()::text, '${FULL_SHA}', 'queued', false, true, NOW(), NOW(), 'creatorhub.id', 0
    RETURNING id;" | grep -oE '[0-9]+' | head -1)
 
 docker exec coolify php artisan tinker --execute="\App\Jobs\ApplicationDeploymentJob::dispatch(${QUEUE_ID});"
 ```
 
 > Always use the **full 40-character SHA** from `git rev-parse HEAD`. Short SHAs cause `fatal: couldn't find remote ref` during clone.
+
+#### Fast frontend-only deploy (~5–10s, skip Docker rebuild)
+
+When only `frontend/src/` changed and the container is already running:
+
+```bash
+cd frontend && npm run build
+CONTAINER=$(docker ps --filter "name=emzin0v" --format "{{.Names}}" | head -1)
+docker cp dist/. "$CONTAINER:/app/static/"
+```
+
+This copies the new `dist/` into the live container — no image rebuild, no healthcheck wait.
+
+#### Deploy timing (measured on this server)
+
+| Mode | `force_rebuild` | Typical duration | Notes |
+|---|---|---|---|
+| Cached build | `false` | ~20–35s | Only changed Docker layers rebuild; same SHA skips build entirely |
+| Full rebuild | `true` | ~60–90s | `--no-cache` — reinstalls npm + recompiles Go every time |
+| Restart only | — | ~25s | `restart_only=true`; no code update |
+| Hot copy (above) | — | ~5–10s | Frontend-only; bypasses Coolify build |
 
 ### Database migrations (production)
 
