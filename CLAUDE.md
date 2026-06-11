@@ -12,6 +12,12 @@ npm install
 npm run dev       # Vite dev server for the old prototype
 ```
 
+> **Windows note**: `npm` is not a direct Win32 executable, so `Start-Process -FilePath "npm"` will fail. Use `cmd.exe` to launch it in background:
+> ```powershell
+> Start-Process -FilePath "cmd.exe" -ArgumentList "/c cd /d D:\creatorhub.id\docs\CreatorHub Dashboard && npm run dev" -WindowStyle Normal
+> ```
+> Or simply run `npm run dev` in a dedicated terminal. The Vite dev server runs on `http://localhost:5173/`.
+
 For the **active React frontend**, commands must be run from `frontend/`:
 
 ```bash
