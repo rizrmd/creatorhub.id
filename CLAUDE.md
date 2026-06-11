@@ -194,12 +194,12 @@ go run ./cmd/migrate version    # print current version
 
 ## Deployment
 
-Production runs on **Coolify** at `cf.avolut.com` (this machine). A single Docker container builds the React frontend and Go backend, runs DB migrations on startup, and serves the SPA + API.
+Production runs on **Coolify** at `107.155.75.50` (this machine). A single Docker container builds the React frontend and Go backend, runs DB migrations on startup, and serves the SPA + API.
 
 | Item | Value |
 |---|---|
 | **Production URL** | https://creatorhub.id |
-| **Coolify UI** | https://cf.avolut.com/project/sws0ckk/environment/wgcsog0wcog040cgssoow00c/application/emzin0vth67dgrpfoulsz996 |
+| **Coolify UI** | https://107.155.75.50/project/sws0ckk/environment/wgcsog0wcog040cgssoow00c/application/emzin0vth67dgrpfoulsz996 |
 | **App UUID** | `emzin0vth67dgrpfoulsz996` |
 | **App DB ID** | `154` |
 | **Git repo** | `rizrmd/creatorhub.id` → branch `main` |
