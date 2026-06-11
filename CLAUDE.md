@@ -4,18 +4,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-All commands must be run from `frontend/` — that is the project root where `package.json` lives.
+When the user says `npm run dev` (without specifying a directory), run it from `docs/CreatorHub Dashboard/` — that is the old Vite + vanilla JS prototype.
+
+```bash
+cd "docs/CreatorHub Dashboard"
+npm install
+npm run dev       # Vite dev server for the old prototype
+```
+
+For the **active React frontend**, commands must be run from `frontend/`:
 
 ```bash
 cd frontend
 npm install       # install dependencies
-npm run dev       # watch-mode build → frontend/dist/ (auto-rebuilds on file save)
 npm run build     # type-check (tsc) + production build → frontend/dist/
 ```
 
 There are no tests, no linter config, and no preview server script.
 
-> **After every frontend code change**: rebuild with `npm run build`, then restart the backend so it serves the new `dist/`. Watch mode (`npm run dev`) auto-rebuilds on save but the backend must still be restarted to pick up the new files.
+> **After every frontend code change**: rebuild with `npm run build`, then restart the backend so it serves the new `dist/`.
 >
 > **Restart sequence** (PowerShell from repo root):
 > ```powershell
@@ -65,7 +72,14 @@ frontend/
 ```
 
 `docs/reference/` — old vanilla JS prototype, no longer the active codebase.  
-`docs/pages/` — per-page UI spec markdown (read-only reference).
+`docs/pages/` — per-page UI spec markdown (read-only reference).  
+`docs/CreatorHub Dashboard/` — old Vite + vanilla JS prototype (referensi lama). Run with:
+
+```bash
+cd "docs/CreatorHub Dashboard"
+npm install
+npm run dev
+```
 
 ### Routing
 
