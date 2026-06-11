@@ -194,7 +194,7 @@ go run ./cmd/migrate version    # print current version
 
 ## Deployment
 
-Production runs on **Coolify** at `107.155.75.50` (this machine). A single Docker container builds the React frontend and Go backend, runs DB migrations on startup, and serves the SPA + API.
+Production runs on **Coolify** at `107.155.75.50`. A single Docker container builds the React frontend and Go backend, runs DB migrations on startup, and serves the SPA + API. use ssh riz@107.155.75.50
 
 | Item | Value |
 |---|---|
