@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Users, Megaphone, BarChart3, Radio, Sparkles,
-  ArrowRight, Star, Play, TrendingUp, Heart, Headphones,
+  ArrowRight, Play, Headphones,
   CheckCircle2, ChevronDown, Eye, MessageSquare, Settings,
   LayoutDashboard, Instagram, Youtube, Facebook, Twitter, Linkedin,
 } from "lucide-react";
@@ -86,12 +86,6 @@ const ACTIVITIES = [
   { text: "Content activated", color: "bg-purple-500" },
 ];
 
-const TESTIMONIALS = [
-  { name: "Rina Sari", role: "Marketing Director, Wardah", text: "CreatorHub transformed our influencer marketing. We found the perfect creators and our campaign engagement increased by 340%." },
-  { name: "Budi Hartono", role: "Brand Manager, Tokopedia", text: "The platform is incredibly intuitive. We managed 50+ creators for our Ramadan campaign all from one dashboard." },
-  { name: "Maya Putri", role: "CMO, Traveloka", text: "Data-driven creator selection helped us achieve 5x ROI on our latest travel campaign. Highly recommended!" },
-];
-
 export default function Landing() {
   const [solutionsOpen, setSolutionsOpen] = useState(false);
 
@@ -102,7 +96,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="CreatorHub" className="h-10" />
+              <img src="/logo.png?v=2" alt="CreatorHub" className="h-10" />
             </div>
             <div className="hidden md:flex items-center gap-7">
               <a href="#features" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">Features</a>
@@ -125,7 +119,6 @@ export default function Landing() {
                   </div>
                 )}
               </div>
-              <a href="#testimonials" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">Testimonials</a>
               <a href="#pricing" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">Pricing</a>
             </div>
             <div className="flex items-center gap-3">
@@ -143,7 +136,7 @@ export default function Landing() {
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-blue-50" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 rounded-full mb-6">
@@ -175,33 +168,7 @@ export default function Landing() {
               </div>
             </div>
             <div className="hidden lg:block relative">
-              <div className="relative bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-8 shadow-2xl shadow-blue-200">
-                <div className="grid grid-cols-2 gap-4">
-                  {[
-                    { icon: Users, label: "Active Creators", value: "10,247", color: "bg-blue-500" },
-                    { icon: Megaphone, label: "Live Campaigns", value: "342", color: "bg-orange-500" },
-                    { icon: TrendingUp, label: "Avg. Engagement", value: "4.8%", color: "bg-green-500" },
-                    { icon: Heart, label: "Total Reach", value: "25M+", color: "bg-purple-500" },
-                  ].map((stat) => (
-                    <div key={stat.label} className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                      <div className={`w-8 h-8 ${stat.color} rounded-lg flex items-center justify-center mb-2`}>
-                        <stat.icon className="w-4 h-4 text-white" />
-                      </div>
-                      <p className="text-2xl font-extrabold text-white">{stat.value}</p>
-                      <p className="text-xs text-blue-200">{stat.label}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="absolute -top-4 -right-4 bg-white rounded-xl shadow-lg p-3 flex items-center gap-2">
-                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                  <TrendingUp className="w-4 h-4 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-slate-800">+24.7%</p>
-                  <p className="text-[10px] text-slate-500">This month</p>
-                </div>
-              </div>
+              <img src="/hero.png" alt="CreatorHub Dashboard" className="w-full h-auto rounded-3xl shadow-2xl" />
             </div>
           </div>
         </div>
@@ -339,38 +306,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section id="testimonials" className="py-20 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-extrabold text-slate-900" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-              What our clients say
-            </h2>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {TESTIMONIALS.map((t) => (
-              <div key={t.name} className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-                <div className="flex gap-1 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                  ))}
-                </div>
-                <p className="text-sm text-slate-600 leading-relaxed mb-6">"{t.text}"</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-sm">
-                    {t.name[0]}
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-slate-900">{t.name}</p>
-                    <p className="text-xs text-slate-500">{t.role}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* CTA */}
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -403,7 +338,7 @@ export default function Landing() {
           <div className="grid md:grid-cols-6 gap-8 mb-12">
             {/* Logo + Tagline */}
             <div className="md:col-span-2">
-              <img src="/logo-white.png" alt="CreatorHub" className="h-10 mb-4" />
+              <img src="/logo.png?v=2" alt="CreatorHub" className="h-10 mb-4" />
               <p className="text-sm font-semibold text-white mb-2">Create &bull; Connect &bull; Grow</p>
               <p className="text-sm leading-relaxed">
                 CreatorHub.ID is an all-in-one creator marketing and digital collaboration platform built for Indonesian brands, creators, publishers, and media partners.
@@ -423,7 +358,6 @@ export default function Landing() {
               <ul className="space-y-2.5 text-sm">
                 <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
                 <li><a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a></li>
-                <li><a href="#testimonials" className="hover:text-white transition-colors">Testimonials</a></li>
                 <li><a href="#pricing" className="hover:text-white transition-colors">Pricing</a></li>
               </ul>
             </div>

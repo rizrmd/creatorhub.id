@@ -49,7 +49,7 @@ export default function Login() {
         {/* Logo */}
         <div className="relative">
           <img
-            src="/logo-white.webp"
+            src="/logo.png"
             alt="CreatorHub"
             className="h-12 w-auto max-w-[200px] object-contain"
           />
