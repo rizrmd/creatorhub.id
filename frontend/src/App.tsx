@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { HomeRedirect, BrandRoute, KreatorRoute } from "@/components/RoleRoute";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import Marketplace from "@/pages/Marketplace";
@@ -27,7 +28,26 @@ import CreatorSettings from "@/pages/kreator/CreatorSettings";
 import CreatorSearch from "@/pages/kreator/CreatorSearch";
 import BrandSearch from "@/pages/BrandSearch";
 
-export default function App() {
+function isDashboardHost(): boolean {
+  if (typeof window === "undefined") return false;
+  const host = window.location.hostname;
+  return host === "dashboard.creatorhub.id" || host === "localhost";
+}
+
+function PublicApp() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/apply" element={<ApplyWizard />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+function DashboardApp() {
   return (
     <BrowserRouter>
       <Routes>
@@ -75,4 +95,8 @@ export default function App() {
       </Routes>
     </BrowserRouter>
   );
+}
+
+export default function App() {
+  return isDashboardHost() ? <DashboardApp /> : <PublicApp />;
 }
