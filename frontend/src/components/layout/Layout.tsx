@@ -9,7 +9,8 @@ import { KreatorDataProvider } from "@/context/KreatorDataContext";
 
 const PATH_LABELS: Record<string, string> = {
   dashboard: "Dashboard",
-  marketplace: "Marketplace",
+  marketplace: "Content Creators",
+  "homeless-media": "Homeless Media",
   campaigns: "Campaigns",
   analytics: "Analytics",
   "media-monitoring": "Media Monitoring",

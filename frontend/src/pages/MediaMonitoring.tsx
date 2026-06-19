@@ -1,10 +1,12 @@
 import { Radio, TrendingUp, Smile, Zap, Activity, Heart, MessageCircle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 const mentions = [
   {
     creator: "@charlie_travels",
     platform: "Instagram",
-    platformHue: 330,
+    platformColor: "bg-pink-100 text-pink-600",
     content: "Just checked in at the beach villa recommended by #creatorhub and the experience is absolutely unreal. Highly recommend it! 🌴",
     sentiment: "positive" as const,
     likes: "12.4K",
@@ -14,7 +16,7 @@ const mentions = [
   {
     creator: "@gadget_master",
     platform: "TikTok",
-    platformHue: 0,
+    platformColor: "bg-slate-100 text-slate-700",
     content: "Unboxing the next-gen mechanical keyboard. Keycaps sound incredibly thocky and the layout is 10/10. Great review campaign collab with CreatorHub. #keyboard",
     sentiment: "positive" as const,
     likes: "42.1K",
@@ -24,7 +26,7 @@ const mentions = [
   {
     creator: "ReviewCorner ID",
     platform: "YouTube",
-    platformHue: 0,
+    platformColor: "bg-red-100 text-red-600",
     content: "Testing out the organic skin radiance serum launch package. Product details look good, waiting to see long-term effects.",
     sentiment: "neutral" as const,
     likes: "150K",
@@ -34,7 +36,7 @@ const mentions = [
   {
     creator: "Sinta Dewi",
     platform: "Instagram",
-    platformHue: 330,
+    platformColor: "bg-pink-100 text-pink-600",
     content: "Restoran baru di Surabaya ini agak mengecewakan, porsinya kecil tapi harganya lumayan tinggi. Ekspektasi vs realita...",
     sentiment: "negative" as const,
     likes: "3.2K",
@@ -44,7 +46,7 @@ const mentions = [
   {
     creator: "Fajar Nugroho",
     platform: "YouTube",
-    platformHue: 0,
+    platformColor: "bg-red-100 text-red-600",
     content: "Laptop gaming terbaru dari brand GHI - performa oke di harga segitu, tapi baterai masih jadi kelemahan utamanya.",
     sentiment: "neutral" as const,
     likes: "8.7K",
@@ -53,31 +55,18 @@ const mentions = [
   },
 ];
 
-const sentimentChip = (s: "positive" | "neutral" | "negative") => {
-  const map = {
-    positive: { label: "Positif", bg: "#DCFCE7", fg: "#15803D" },
-    neutral:  { label: "Netral",  bg: "#F1F5F9", fg: "#475569" },
-    negative: { label: "Negatif", bg: "#FEE2E2", fg: "#B91C1C" },
-  };
-  const cfg = map[s];
-  return (
-    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-      style={{ background: cfg.bg, color: cfg.fg }}>{cfg.label}</span>
-  );
+const sentimentBadge = {
+  positive: <Badge variant="success" className="text-[10px]">Positif</Badge>,
+  negative: <Badge variant="destructive" className="text-[10px]">Negatif</Badge>,
+  neutral: <Badge variant="secondary" className="text-[10px]">Netral</Badge>,
 };
 
-const platformChip = (platform: string) => {
-  const map: Record<string, { bg: string; fg: string }> = {
-    Instagram: { bg: "#FCE7F3", fg: "#9D174D" },
-    TikTok:    { bg: "#F1F5F9", fg: "#1E293B" },
-    YouTube:   { bg: "#FEE2E2", fg: "#991B1B" },
-  };
-  const cfg = map[platform] ?? { bg: "#F1F5F9", fg: "#475569" };
-  return (
-    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
-      style={{ background: cfg.bg, color: cfg.fg }}>{platform}</span>
-  );
-};
+const kpiCards = [
+  { label: "Total Mention", value: "4.218", sub: "+14.2% minggu ini", icon: MessageCircle, bgClass: "bg-blue-50", iconClass: "text-blue-600" },
+  { label: "Sentimen Positif", value: "84%", sub: "+2.1% vs minggu lalu", icon: Smile, bgClass: "bg-green-50", iconClass: "text-green-600" },
+  { label: "Viral Reach", value: "2.4M", sub: "+18.6% growth", icon: Zap, bgClass: "bg-orange-50", iconClass: "text-orange-600" },
+  { label: "Brand Health Index", value: "92/100", sub: "Excellent rating", icon: Activity, bgClass: "bg-amber-50", iconClass: "text-amber-600" },
+];
 
 export default function MediaMonitoring() {
   return (
@@ -92,71 +81,61 @@ export default function MediaMonitoring() {
         </p>
       </div>
 
-      {/* KPI tiles */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        {[
-          { label: "Total Mention", value: "4.218", sub: "+14.2% minggu ini", icon: MessageCircle, hue: 220 },
-          { label: "Sentimen Positif", value: "84%", sub: "+2.1% vs minggu lalu", icon: Smile, hue: 142 },
-          { label: "Viral Reach", value: "2.4M", sub: "+18.6% growth", icon: Zap, hue: 28 },
-          { label: "Brand Health Index", value: "92/100", sub: "Excellent rating", icon: Activity, hue: 42 },
-        ].map((m) => (
-          <div key={m.label} className="rounded-xl border p-5 flex items-center gap-4"
-            style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-              style={{ background: `hsl(${m.hue}, 80%, 95%)`, color: `hsl(${m.hue}, 60%, 40%)` }}>
-              <m.icon style={{ width: 18, height: 18 }} />
-            </div>
-            <div>
-              <p className="text-[20px] font-extrabold"
-                style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{m.value}</p>
-              <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>{m.label}</p>
-              <p className="text-[11px] mt-0.5" style={{ color: "#16A34A" }}>{m.sub}</p>
-            </div>
-          </div>
+        {kpiCards.map((m) => (
+          <Card key={m.label}>
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className={`w-10 h-10 ${m.bgClass} rounded-xl flex items-center justify-center shrink-0`}>
+                <m.icon className={`w-5 h-5 ${m.iconClass}`} />
+              </div>
+              <div>
+                <p className="text-2xl font-bold" style={{ color: "var(--ch-text)" }}>{m.value}</p>
+                <p className="text-sm" style={{ color: "var(--ch-text-muted)" }}>{m.label}</p>
+                <p className="text-xs text-green-600 mt-0.5">{m.sub}</p>
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
-      {/* Mention feed */}
-      <div className="rounded-xl border overflow-hidden"
-        style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-        <div className="px-5 py-4 border-b flex items-center gap-2"
-          style={{ borderColor: "var(--ch-border)" }}>
-          <Radio style={{ width: 15, height: 15, color: "var(--ch-primary)" }} />
-          <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>Feed Mention Terbaru</p>
-          <span className="ml-1 text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse"
-            style={{ background: "#FEE2E2", color: "#DC2626" }}>
-            ● Live Tracking
-          </span>
-        </div>
-        <div className="divide-y" style={{ borderColor: "var(--ch-border)" }}>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Radio className="w-4 h-4" style={{ color: "var(--ch-primary)" }} />
+            Feed Mention Terbaru
+            <Badge variant="destructive" className="text-[10px] ml-1 animate-pulse">Live Tracking</Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
           {mentions.map((m, i) => (
-            <div key={i} className="flex items-start gap-3 p-4 transition-colors hover:bg-slate-50">
-              <div className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold shrink-0"
-                style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>
+            <div key={i} className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors">
+              <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-sm font-semibold text-slate-600 shrink-0">
                 {m.creator[0]}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap mb-1">
-                  <span className="text-[13px] font-semibold" style={{ color: "var(--ch-text)" }}>{m.creator}</span>
-                  {platformChip(m.platform)}
-                  {sentimentChip(m.sentiment)}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-sm font-medium" style={{ color: "var(--ch-text)" }}>{m.creator}</span>
+                  <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${m.platformColor}`}>
+                    {m.platform}
+                  </span>
+                  {sentimentBadge[m.sentiment]}
                 </div>
-                <p className="text-[13px] line-clamp-2" style={{ color: "var(--ch-text-muted)" }}>{m.content}</p>
-                <div className="flex items-center gap-3 mt-2">
-                  <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-soft)" }}>
-                    <Heart style={{ width: 11, height: 11 }} /> {m.likes}
+                <p className="text-sm mt-1 line-clamp-2" style={{ color: "var(--ch-text-muted)" }}>{m.content}</p>
+                <div className="flex items-center gap-3 mt-1.5">
+                  <span className="text-xs flex items-center gap-1" style={{ color: "var(--ch-text-soft)" }}>
+                    <Heart className="w-3 h-3" /> {m.likes}
                   </span>
-                  <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-soft)" }}>
-                    <MessageCircle style={{ width: 11, height: 11 }} /> {m.comments.toLocaleString("id-ID")}
+                  <span className="text-xs flex items-center gap-1" style={{ color: "var(--ch-text-soft)" }}>
+                    <MessageCircle className="w-3 h-3" /> {m.comments.toLocaleString("id-ID")}
                   </span>
-                  <span className="text-[11px]" style={{ color: "var(--ch-text-soft)" }}>{m.time}</span>
+                  <span className="text-xs" style={{ color: "var(--ch-text-soft)" }}>{m.time}</span>
                 </div>
               </div>
-              <TrendingUp style={{ width: 14, height: 14, color: "var(--ch-text-soft)", flexShrink: 0, marginTop: 2 }} />
+              <TrendingUp className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "var(--ch-text-soft)" }} />
             </div>
           ))}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

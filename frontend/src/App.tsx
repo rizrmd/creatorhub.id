@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
-import ProtectedRoute from "@/components/ProtectedRoute";
 import { HomeRedirect, BrandRoute, KreatorRoute } from "@/components/RoleRoute";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import Marketplace from "@/pages/Marketplace";
@@ -13,6 +13,7 @@ import Messages from "@/pages/Messages";
 import Payments from "@/pages/Payments";
 import Settings from "@/pages/Settings";
 import BoostAds from "@/pages/BoostAds";
+import HomelessMedia from "@/pages/HomelessMedia";
 import ApplyWizard from "@/pages/ApplyWizard";
 import CreatorHome from "@/pages/kreator/CreatorHome";
 import CreatorInvitations from "@/pages/kreator/CreatorInvitations";
@@ -47,6 +48,7 @@ export default function App() {
           <Route path="search" element={<BrandRoute><BrandSearch /></BrandRoute>} />
           <Route path="dashboard" element={<BrandRoute><Dashboard /></BrandRoute>} />
           <Route path="marketplace" element={<BrandRoute><Marketplace /></BrandRoute>} />
+          <Route path="homeless-media" element={<BrandRoute><HomelessMedia /></BrandRoute>} />
           <Route path="campaigns" element={<BrandRoute><Campaigns /></BrandRoute>} />
           <Route path="campaigns/:id" element={<BrandRoute><CampaignDetail /></BrandRoute>} />
           <Route path="analytics" element={<BrandRoute><Analytics /></BrandRoute>} />

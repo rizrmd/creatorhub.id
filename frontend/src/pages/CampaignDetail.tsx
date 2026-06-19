@@ -157,7 +157,7 @@ export default function CampaignDetail() {
                 className="px-4 py-2 rounded-lg border text-[13px] font-semibold transition-colors hover:bg-blue-50"
                 style={{ borderColor: "var(--ch-primary)", color: "var(--ch-primary)" }}
               >
-                Cari Kreator di Marketplace
+                Cari Kreator di Content Creators
               </button>
             </div>
           ) : (

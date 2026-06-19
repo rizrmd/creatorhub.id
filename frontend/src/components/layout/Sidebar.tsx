@@ -3,7 +3,7 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
   Store, Megaphone, BarChart3, Radio,
   MessageSquare, CreditCard, Settings, HelpCircle, Users,
-  Rocket, ChevronLeft, ChevronRight, Briefcase, Coins,
+  Rocket, Briefcase, Coins,
   Lightbulb, User, Home, Mail,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -49,25 +49,11 @@ export default function Sidebar() {
   const isKreatorView = effectiveRole === "kreator";
   const navActiveBg = isKreatorView ? "#16A34A" : "var(--ch-primary)";
   const navActiveShadow = isKreatorView ? "0 4px 14px rgba(22,163,74,.35)" : "var(--ch-nav-shadow)";
-  const [collapsed, setCollapsed] = useState(() => {
-    return localStorage.getItem("ch_sidebar_collapsed") === "true";
-  });
-  const [isDesktop, setIsDesktop] = useState(
-    () => typeof window !== "undefined" && window.innerWidth >= 1024,
-  );
-  const effectiveCollapsed = isDesktop && collapsed;
+  const effectiveCollapsed = false;
   const [showSupport, setShowSupport] = useState(false);
   const [supportForm, setSupportForm] = useState({ email: "", message: "" });
 
-  useEffect(() => {
-    localStorage.setItem("ch_sidebar_collapsed", String(collapsed));
-  }, [collapsed]);
 
-  useEffect(() => {
-    const onResize = () => setIsDesktop(window.innerWidth >= 1024);
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
 
   useEffect(() => {
     closeMobile();
@@ -121,15 +107,6 @@ export default function Sidebar() {
           mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         )}
       >
-        {/* Collapse toggle — desktop only, outside aside so it isn't clipped */}
-        <button
-          onClick={() => setCollapsed((v) => !v)}
-          className="hidden lg:flex absolute top-[22px] -right-[13px] z-[60] w-[26px] h-[26px] rounded-full bg-white border items-center justify-center transition-colors hover:border-blue-300 hover:text-blue-600"
-          style={{ borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)", color: "var(--ch-text-muted)" }}
-        >
-          {effectiveCollapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
-        </button>
-
       <aside
         className={cn(
           "bg-white border-r flex flex-col h-full overflow-hidden",
@@ -144,7 +121,7 @@ export default function Sidebar() {
           style={{ borderColor: "var(--ch-border)", padding: effectiveCollapsed ? "0 12px" : "0 16px" }}
         >
           <div
-            className={cn("rounded-lg overflow-hidden shrink-0", effectiveCollapsed ? "w-9 h-9" : "w-full h-10")}
+            className={cn("rounded-lg overflow-hidden shrink-0", effectiveCollapsed ? "w-9 h-9" : "w-full h-[56px]")}
           >
             <img
               src={effectiveCollapsed ? "/favicon.png" : "/logo.webp"}
