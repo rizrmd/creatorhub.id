@@ -78,7 +78,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="CreatorHub" className="h-10 brightness-0 invert" />
+              <img src="/logo-white.png" alt="CreatorHub" className="h-10" />
             </div>
             <div className="hidden md:flex items-center gap-7">
               <a href="#features" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">Features</a>
