@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  Users, Megaphone, BarChart3, Radio, Sparkles,
-  ArrowRight, Play, Headphones,
+  Users, Megaphone, BarChart3, Sparkles,
+  ArrowRight, Play,
   CheckCircle2, ChevronDown, Eye, MessageSquare, Settings,
   LayoutDashboard, Instagram, Youtube, Facebook, Twitter, Linkedin,
 } from "lucide-react";
@@ -10,39 +10,29 @@ import { Button } from "@/components/ui/button";
 
 const FEATURES = [
   {
-    icon: Users,
     title: "Content Creators",
-    desc: "Discover and connect with vetted creators who match your niche, audience, campaign goals, and brand identity.",
-    color: "text-orange-500",
-    bg: "bg-orange-50",
+    desc: "Discover and connect with vetted creators to match your niche, audience, and campaign goals.",
+    image: "/feat-creators.png",
   },
   {
-    icon: Radio,
     title: "Homeless Media",
     desc: "Access premium media placement opportunities across high-impact digital channels, communities, and publisher networks.",
-    color: "text-purple-500",
-    bg: "bg-purple-50",
+    image: "/feat-homeless.png",
   },
   {
-    icon: Megaphone,
     title: "Publishers",
     desc: "Work with publishers and digital media platforms to amplify your campaign reach and strengthen public visibility.",
-    color: "text-blue-500",
-    bg: "bg-blue-50",
+    image: "/feat-publishers.png",
   },
   {
-    icon: Headphones,
     title: "Podcast / Live Streaming",
     desc: "Promote products and services through podcasts, live streams, live shopping sessions, and creator-led conversations.",
-    color: "text-red-500",
-    bg: "bg-red-50",
+    image: "/feat-podcast.png",
   },
   {
-    icon: Eye,
     title: "Media Monitoring Tools",
     desc: "Track conversations, mentions, reach, sentiment, and campaign performance in real time across multiple platforms.",
-    color: "text-green-500",
-    bg: "bg-green-50",
+    image: "/feat-monitoring.png",
   },
 ];
 
@@ -135,18 +125,18 @@ export default function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-28">
+      <section className="relative overflow-hidden bg-slate-100">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full mb-6 border border-white/20">
-                <Sparkles className="w-3.5 h-3.5 text-orange-400" />
-                <span className="text-xs font-semibold text-white">One-stop access to content creators, homeless media, and publishers</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white rounded-full mb-6 border border-slate-200 shadow-sm">
+                <Sparkles className="w-3.5 h-3.5 text-orange-500" />
+                <span className="text-xs font-semibold text-slate-700">One-stop access to content creators, homeless media, and publishers</span>
               </div>
-              <h1 className="text-3xl lg:text-4xl font-extrabold text-white leading-tight tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+              <h1 className="text-3xl lg:text-4xl font-extrabold text-slate-900 leading-tight tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                 Create, Connect With the Right Ecosystem, and Grow With Us
               </h1>
-              <p className="mt-6 text-lg text-slate-300 max-w-lg leading-relaxed">
+              <p className="mt-6 text-lg text-slate-600 max-w-lg leading-relaxed">
                 The all-in-one platform connecting brands with Indonesia's best content creators. Discover, collaborate, and grow together.
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
@@ -156,19 +146,23 @@ export default function Landing() {
                   </Button>
                 </Link>
                 <a href="#features">
-                  <Button size="lg" variant="outline" className="text-base font-semibold border-white/30 text-white hover:bg-white/10">
+                  <Button size="lg" variant="outline" className="text-base font-semibold border-slate-300 text-slate-700 hover:bg-white">
                     <Play className="w-4 h-4 mr-2" /> Explore Features
                   </Button>
                 </a>
               </div>
-              <div className="mt-8 flex items-center gap-6 text-sm text-white/70">
-                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-400" /> Free to join</span>
-                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-400" /> No setup fees</span>
-                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-400" /> Cancel anytime</span>
+              <div className="mt-8 flex items-center gap-6 text-sm text-slate-500">
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-500" /> Free to join</span>
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-500" /> No setup fees</span>
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-500" /> Cancel anytime</span>
               </div>
             </div>
             <div className="hidden lg:block relative">
-              <img src="/hero.png" alt="CreatorHub Dashboard" className="w-full h-auto rounded-3xl shadow-2xl" />
+              <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-slate-300/50">
+                <img src="/hero.png" alt="CreatorHub Dashboard" className="w-full h-auto" />
+              </div>
+              <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-orange-200/50 rounded-full blur-3xl" />
+              <div className="absolute -top-4 -left-4 w-24 h-24 bg-blue-200/50 rounded-full blur-3xl" />
             </div>
           </div>
         </div>
@@ -185,14 +179,16 @@ export default function Landing() {
               Powerful tools for brands to find, manage, and measure influencer campaigns at scale.
             </p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-6">
             {FEATURES.map((feat) => (
-              <div key={feat.title} className="group rounded-2xl border border-slate-100 p-6 hover:shadow-lg hover:border-blue-100 transition-all duration-300">
-                <div className={`w-12 h-12 ${feat.bg} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                  <feat.icon className={`w-6 h-6 ${feat.color}`} />
+              <div key={feat.title} className="group bg-white rounded-2xl overflow-hidden hover:scale-[1.03] transition-all duration-300" style={{ boxShadow: "0 8px 30px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04)" }}>
+                <div className="h-48 bg-gradient-to-br from-slate-50 to-white flex items-center justify-center overflow-hidden p-4">
+                  <img src={feat.image} alt={feat.title} className="max-h-full max-w-full object-contain group-hover:scale-110 transition-transform duration-300 drop-shadow-lg" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">{feat.title}</h3>
-                <p className="text-sm text-slate-600 leading-relaxed">{feat.desc}</p>
+                <div className="p-5 border-t border-slate-100">
+                  <h3 className="text-base font-extrabold text-slate-900 mb-2">{feat.title}</h3>
+                  <p className="text-sm text-slate-500 leading-relaxed">{feat.desc}</p>
+                </div>
               </div>
             ))}
           </div>
