@@ -101,7 +101,7 @@ export default function Login() {
           {/* Mobile logo */}
           <div className="flex justify-center mb-8 lg:hidden">
             <img
-              src="/logo.webp"
+              src="/logo.png"
               alt="CreatorHub"
               className="h-10 w-auto max-w-[180px] object-contain"
             />

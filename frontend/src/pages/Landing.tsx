@@ -75,7 +75,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
-              <img src="/logo.webp" alt="CreatorHub.ID" className="h-10" />
+              <img src="/logo.png" alt="CreatorHub.ID" className="h-10" />
             </div>
             <div className="hidden md:flex items-center gap-8">
               <a href="#features" className="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">Features</a>
@@ -317,7 +317,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
-              <img src="/logo.webp" alt="CreatorHub.ID" className="h-10 mb-4 brightness-0 invert" />
+              <img src="/logo.png" alt="CreatorHub.ID" className="h-10 mb-4" />
               <p className="text-sm leading-relaxed">The all-in-one influencer marketing platform for Indonesian brands and creators.</p>
             </div>
             <div>

@@ -124,7 +124,7 @@ export default function Sidebar() {
             className={cn("rounded-lg overflow-hidden shrink-0", effectiveCollapsed ? "w-9 h-9" : "w-full h-[56px]")}
           >
             <img
-              src={effectiveCollapsed ? "/favicon.png" : "/logo.webp"}
+              src={effectiveCollapsed ? "/favicon.png" : "/logo.png"}
               alt="CreatorHub"
               className="w-full h-full object-contain"
             />
