@@ -135,17 +135,13 @@ export default function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-slate-950">
-        <div className="absolute inset-0">
-          <img src="/hero.png" alt="" className="w-full h-full object-cover opacity-40" />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/60 to-transparent" />
-        </div>
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-28">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full mb-6 border border-white/20">
                 <Sparkles className="w-3.5 h-3.5 text-orange-400" />
-                <span className="text-xs font-semibold text-white">#1 Creator Marketplace in Indonesia</span>
+                <span className="text-xs font-semibold text-white">One-stop access to content creators, homeless media, and publishers</span>
               </div>
               <h1 className="text-3xl lg:text-4xl font-extrabold text-white leading-tight tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                 Create, Connect With the Right Ecosystem, and Grow With Us
