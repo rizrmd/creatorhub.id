@@ -1,8 +1,9 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Users, Megaphone, BarChart3, Radio, Search, Sparkles,
   ArrowRight, Star, Play, TrendingUp, Heart,
-  CheckCircle2,
+  CheckCircle2, ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -68,26 +69,47 @@ const TESTIMONIALS = [
 ];
 
 export default function Landing() {
+  const [solutionsOpen, setSolutionsOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
+      <nav className="sticky top-0 z-50 bg-slate-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="CreatorHub.ID" className="h-10" />
+              <img src="/logo.png" alt="CreatorHub" className="h-10 brightness-0 invert" />
             </div>
-            <div className="hidden md:flex items-center gap-8">
-              <a href="#features" className="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">Features</a>
-              <a href="#how-it-works" className="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">How It Works</a>
-              <a href="#testimonials" className="text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors">Testimonials</a>
+            <div className="hidden md:flex items-center gap-7">
+              <a href="#features" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">Features</a>
+              <a href="#how-it-works" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">How It Works</a>
+              <div className="relative">
+                <button
+                  onClick={() => setSolutionsOpen(!solutionsOpen)}
+                  onBlur={() => setTimeout(() => setSolutionsOpen(false), 150)}
+                  className="flex items-center gap-1 text-sm font-medium text-slate-300 hover:text-white transition-colors"
+                >
+                  Solutions <ChevronDown className="w-3.5 h-3.5" />
+                </button>
+                {solutionsOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-56 bg-slate-900 border border-slate-800 rounded-xl shadow-xl py-2 z-50">
+                    <Link to="/dashboard/marketplace" className="block px-4 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Content Creators</Link>
+                    <Link to="/dashboard/homeless-media" className="block px-4 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Homeless Media</Link>
+                    <Link to="/dashboard/marketplace" className="block px-4 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Publishers</Link>
+                    <Link to="/dashboard/campaigns" className="block px-4 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Campaign Brief</Link>
+                    <Link to="/dashboard/analytics" className="block px-4 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Analytics</Link>
+                  </div>
+                )}
+              </div>
+              <a href="#testimonials" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">Testimonials</a>
+              <a href="#pricing" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">Pricing</a>
             </div>
             <div className="flex items-center gap-3">
               <Link to="/login">
-                <Button variant="ghost" className="text-sm font-semibold">Log In</Button>
+                <Button variant="ghost" className="text-sm font-semibold text-slate-300 hover:text-white hover:bg-transparent">Log In</Button>
               </Link>
               <Link to="/login">
-                <Button className="text-sm font-semibold bg-blue-600 hover:bg-blue-700">Get Started</Button>
+                <Button className="text-sm font-semibold bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-0 shadow-lg shadow-orange-500/25">Get Started</Button>
               </Link>
             </div>
           </div>
