@@ -92,38 +92,39 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-gradient-to-r from-white via-slate-900 to-slate-950">
+      <nav className="sticky top-0 z-50 bg-white border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-2">
-              <img src="/logo.png?v=2" alt="CreatorHub" className="h-10" />
+            <div className="flex items-center gap-2.5">
+              <img src="/favicon.png" alt="CreatorHub" className="h-9 w-9" />
+              <span className="text-2xl font-extrabold text-slate-900 tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>CreatorHub.ID</span>
             </div>
             <div className="hidden md:flex items-center gap-7">
-              <a href="#features" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">Features</a>
-              <a href="#how-it-works" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">How It Works</a>
+              <a href="#features" className="text-sm font-semibold text-slate-900 hover:text-slate-600 transition-colors">Features</a>
+              <a href="#how-it-works" className="text-sm font-semibold text-slate-900 hover:text-slate-600 transition-colors">How It Works</a>
               <div className="relative">
                 <button
                   onClick={() => setSolutionsOpen(!solutionsOpen)}
                   onBlur={() => setTimeout(() => setSolutionsOpen(false), 150)}
-                  className="flex items-center gap-1 text-sm font-medium text-slate-300 hover:text-white transition-colors"
+                  className="flex items-center gap-1 text-sm font-semibold text-slate-900 hover:text-slate-600 transition-colors"
                 >
                   Solutions <ChevronDown className="w-3.5 h-3.5" />
                 </button>
                 {solutionsOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-56 bg-slate-900 border border-slate-800 rounded-xl shadow-xl py-2 z-50">
-                    <Link to="/dashboard/marketplace" className="block px-4 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Content Creators</Link>
-                    <Link to="/dashboard/homeless-media" className="block px-4 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Homeless Media</Link>
-                    <Link to="/dashboard/marketplace" className="block px-4 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Publishers</Link>
-                    <Link to="/dashboard/campaigns" className="block px-4 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Campaign Brief</Link>
-                    <Link to="/dashboard/analytics" className="block px-4 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Analytics</Link>
+                  <div className="absolute top-full left-0 mt-2 w-56 bg-white border border-slate-200 rounded-xl shadow-xl py-2 z-50">
+                    <Link to="/dashboard/marketplace" className="block px-4 py-2.5 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors">Content Creators</Link>
+                    <Link to="/dashboard/homeless-media" className="block px-4 py-2.5 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors">Homeless Media</Link>
+                    <Link to="/dashboard/marketplace" className="block px-4 py-2.5 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors">Publishers</Link>
+                    <Link to="/dashboard/campaigns" className="block px-4 py-2.5 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors">Campaign Brief</Link>
+                    <Link to="/dashboard/analytics" className="block px-4 py-2.5 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors">Analytics</Link>
                   </div>
                 )}
               </div>
-              <a href="#pricing" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">Pricing</a>
+              <a href="#pricing" className="text-sm font-semibold text-slate-900 hover:text-slate-600 transition-colors">Pricing</a>
             </div>
             <div className="flex items-center gap-3">
               <Link to="/login">
-                <Button variant="ghost" className="text-sm font-semibold text-slate-300 hover:text-white hover:bg-transparent">Log In</Button>
+                <Button variant="ghost" className="text-sm font-semibold text-slate-900 hover:bg-slate-100">Log In</Button>
               </Link>
               <Link to="/login">
                 <Button className="text-sm font-semibold bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-0 shadow-lg shadow-orange-500/25">Get Started</Button>
@@ -143,7 +144,7 @@ export default function Landing() {
                 <Sparkles className="w-3.5 h-3.5 text-blue-600" />
                 <span className="text-xs font-semibold text-blue-600">#1 Creator Marketplace in Indonesia</span>
               </div>
-              <h1 className="text-4xl lg:text-6xl font-extrabold text-slate-900 leading-tight tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+              <h1 className="text-2xl lg:text-3xl font-extrabold text-slate-900 leading-tight tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                 Empowering Creators, <span className="text-blue-600">Elevating Brands</span>
               </h1>
               <p className="mt-6 text-lg text-slate-600 max-w-lg leading-relaxed">
@@ -338,7 +339,10 @@ export default function Landing() {
           <div className="grid md:grid-cols-6 gap-8 mb-12">
             {/* Logo + Tagline */}
             <div className="md:col-span-2">
-              <img src="/logo.png?v=2" alt="CreatorHub" className="h-10 mb-4" />
+              <div className="flex items-center gap-2.5 mb-4">
+                <img src="/favicon.png" alt="CreatorHub" className="h-8 w-8" />
+                <span className="text-lg font-extrabold text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>CreatorHub.ID</span>
+              </div>
               <p className="text-sm font-semibold text-white mb-2">Create &bull; Connect &bull; Grow</p>
               <p className="text-sm leading-relaxed">
                 CreatorHub.ID is an all-in-one creator marketing and digital collaboration platform built for Indonesian brands, creators, publishers, and media partners.
