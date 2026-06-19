@@ -1,11 +1,14 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { Link } from "react-router-dom";
 import {
-  Users, MapPin, Award, MapPinOff, Briefcase, Wallet,
-  TrendingUp, Target, ChevronDown, Tag, Info,
-  LayoutGrid, Globe, ArrowLeft
+  Users, ArrowLeft, Star, Zap, ShieldCheck,
+  Play, BarChart3, Megaphone, Newspaper, FileText,
+  Send,
 } from "lucide-react";
 import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
 import type { GeoJSON as LeafletGeoJSON } from "leaflet";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 /* ---------- Types ---------- */
 interface ProvinceData {
@@ -58,19 +61,36 @@ const PROVINCES: ProvinceData[] = [
   { name: "Papua", studioNum: 1, baseLat: -2.5488, baseLng: 140.669, count: 5 },
 ];
 
-const NICHE_OPTIONS = [
-  "All Niches", "Beauty", "Food", "UMKM", "Finance",
-  "Lifestyle", "Politics", "Tech", "Parenting", "Travel",
+const FILTER_PILLS = [
+  { id: "topRated", label: "Top Rated", icon: Star, color: "#F59E0B" },
+  { id: "fastResponse", label: "Fast Response", icon: Zap, color: "#16A34A" },
+  { id: "verified", label: "Verified Only", icon: ShieldCheck, color: "#2563EB" },
 ];
 
-const PLATFORMS = [
-  { id: "all", label: "All Active Creators", icon: LayoutGrid },
-  { id: "instagram", label: "Instagram" },
-  { id: "tiktok", label: "TikTok" },
-  { id: "youtube", label: "YouTube" },
-  { id: "x", label: "X" },
-  { id: "facebook", label: "Facebook" },
-] as const;
+const PLATFORM_FEATURES = [
+  { title: "Content Creators", desc: "Discover top talent across platforms", icon: Users, bg: "bg-blue-50", color: "text-blue-600", link: "/marketplace" },
+  { title: "Homeless Media", desc: "Premium media placement opportunities", icon: Newspaper, bg: "bg-orange-50", color: "text-orange-600", link: "/homeless-media" },
+  { title: "Publishers", desc: "Monetize your platforms and audience", icon: Megaphone, bg: "bg-purple-50", color: "text-purple-600", link: "/marketplace" },
+  { title: "Campaign Brief", desc: "Create detailed briefs that get better results", icon: FileText, bg: "bg-green-50", color: "text-green-600", link: "/campaigns" },
+  { title: "Analytics", desc: "Track performance and campaign insights", icon: BarChart3, bg: "bg-cyan-50", color: "text-cyan-600", link: "/analytics" },
+];
+
+const ACTIVE_CAMPAIGNS = [
+  { name: "GlowUp Skincare", type: "Micro Influencer Campaign", date: "May 10 - May 30, 2024", status: "Live", color: "text-green-600 bg-green-50" },
+  { name: "SoundCore Indonesia", type: "Product Awareness", date: "May 12 - Jun 2, 2024", status: "In Progress", color: "text-blue-600 bg-blue-50" },
+  { name: "Wanderlust Travel", type: "Destination Promotion", date: "May 18 - Jun 8, 2024", status: "Pending", color: "text-amber-600 bg-amber-50" },
+];
+
+const RECENT_MESSAGES = [
+  { name: "Andi Pratama", role: "Content Creator", message: "Hi Yael! I'm excited about the campaign brief. Can we discuss the deliverables in more detail?", time: "5m ago" },
+  { name: "Andi Pratama", role: "Content Creator", message: "Hi Yael! I'm excited about the campaign brief. Can we discuss the deliverables in more detail?", time: "5m ago" },
+  { name: "Andi Pratama", role: "Content Creator", message: "Hi Yael! I'm excited about the campaign brief. Can we discuss the deliverables in more detail?", time: "5m ago" },
+];
+
+const CAMPAIGN_EVENTS = [
+  { date: 20, month: "May", year: "2024", label: "Skincare Launch Campaign", color: "bg-blue-600" },
+  { date: 28, month: "May", year: "2024", label: "Tech Gadget Review", color: "bg-white border" },
+];
 
 /* ---------- Helpers ---------- */
 function getProvinceColor(count: number): string {
@@ -82,16 +102,7 @@ function getProvinceColor(count: number): string {
   return "#0a4fa7";
 }
 
-const TOTAL_CREATORS = PROVINCES.reduce((s, p) => s + p.count, 0);
-
-const INSIGHT_PROVINCES = {
-  highest: "West Java",
-  growth: "East Nusa Tenggara",
-  gap: "Maluku & Papua",
-};
-
 /* ---------- Sub-components ---------- */
-
 function MapController({
   selectedProvince,
   geoJsonData,
@@ -218,12 +229,10 @@ function mapGeoJSONProvince(geoName: string): string {
 
 /* ---------- Main Component ---------- */
 export default function Dashboard() {
-  const [niche, setNiche] = useState("all");
   const [province, setProvince] = useState("all");
-  const [platform, setPlatform] = useState("all");
   const [geoJsonData, setGeoJsonData] = useState<GeoJSON.FeatureCollection | null>(null);
-  const [podcastMode, setPodcastMode] = useState(false);
-  const [mapKey, setMapKey] = useState(0);
+  const [mapKey] = useState(0);
+  const [activeFilters, setActiveFilters] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     fetch("/indonesia-38-provinces.geojson")
@@ -236,312 +245,343 @@ export default function Dashboard() {
     setProvince((prev) => (prev === name ? "all" : name));
   }, []);
 
-  const handleResetProvince = () => setProvince("all");
+  const sortedProvinces = [...PROVINCES].sort((a, b) => b.count - a.count);
 
-  const sortedProvinces = [...PROVINCES].sort((a, b) => {
-    if (a.count !== b.count) return b.count - a.count;
-    return a.name.localeCompare(b.name);
-  });
-
-  const statFiltered = province === "all"
-    ? PROVINCES
-    : PROVINCES.filter((p) => p.name === province);
-
-  const totalFiltered = statFiltered.reduce((s, p) => s + p.count, 0);
-  const highestProv = sortedProvinces[0];
-  const lowestProv = sortedProvinces[sortedProvinces.length - 1];
-
-  useEffect(() => {
-    setMapKey((k) => k + 1);
-  }, [platform]);
+  const leftHalf = sortedProvinces.slice(0, 20);
+  const rightHalf = sortedProvinces.slice(20);
 
   return (
     <div className="p-4 md:p-6 space-y-5" style={{ background: "var(--ch-bg)", minHeight: "100%" }}>
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-        <div>
-          <h1 className="text-xl md:text-2xl font-extrabold leading-tight" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            Creator Coverage Intelligence Dashboard
-          </h1>
-          <p className="text-[13px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
-            Provincial distribution, creator density, and campaign coverage across Indonesia.
-          </p>
-        </div>
-        <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-[12px] font-bold shrink-0" style={{ background: "#EFF6FF", color: "#1D4ED8" }}>
-          <Users className="w-3.5 h-3.5" />
-          <span>{TOTAL_CREATORS.toLocaleString()} Creators Tracked</span>
-        </div>
+      {/* Filter Pills */}
+      <div className="flex flex-wrap items-center gap-2">
+        {FILTER_PILLS.map((pill) => {
+          const Icon = pill.icon;
+          const isActive = activeFilters[pill.id] ?? false;
+          return (
+            <button
+              key={pill.id}
+              onClick={() => setActiveFilters((f) => ({ ...f, [pill.id]: !f[pill.id] }))}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-semibold transition-all border ${
+                isActive
+                  ? "bg-white border-slate-200 shadow-sm"
+                  : "bg-white border-slate-200 hover:border-slate-300"
+              }`}
+              style={{ color: isActive ? pill.color : "#64748B" }}
+            >
+              <Icon className="w-4 h-4" style={{ color: pill.color }} />
+              {pill.label}
+            </button>
+          );
+        })}
       </div>
 
-      {/* Filters Bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 rounded-xl border" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-        <div className="flex items-center gap-2 px-3 py-2 rounded-md border" style={{ borderColor: "var(--ch-border)" }}>
-          <Tag className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--ch-text-muted)" }} />
-          <select
-            value={niche}
-            onChange={(e) => setNiche(e.target.value)}
-            className="flex-1 bg-transparent text-[12px] font-semibold outline-none cursor-pointer"
-            style={{ color: "var(--ch-text)" }}
-          >
-            {NICHE_OPTIONS.map((n) => (
-              <option key={n} value={n === "All Niches" ? "all" : n.toLowerCase()}>
-                {n === "All Niches" ? "Niche: All Niches" : `Niche: ${n}`}
-              </option>
-            ))}
-          </select>
-          <ChevronDown className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--ch-text-muted)" }} />
+      {/* Hero Banner */}
+      <div className="relative rounded-2xl overflow-hidden" style={{ background: "linear-gradient(135deg, #1e40af 0%, #2563EB 50%, #3b82f6 100%)", minHeight: 200 }}>
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-4 right-12 w-16 h-16 rounded-full bg-white" />
+          <div className="absolute top-8 right-32 w-8 h-8 rounded-full bg-white" />
+          <div className="absolute bottom-8 right-24 w-12 h-12 rounded-full bg-white" />
         </div>
-        <div className="flex items-center gap-2 px-3 py-2 rounded-md border" style={{ borderColor: "var(--ch-border)" }}>
-          <MapPin className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--ch-text-muted)" }} />
-          <select
-            value={province}
-            onChange={(e) => setProvince(e.target.value)}
-            className="flex-1 bg-transparent text-[12px] font-semibold outline-none cursor-pointer"
-            style={{ color: "var(--ch-text)" }}
-          >
-            <option value="all">Region: All Indonesia</option>
-            {PROVINCES.map((p) => (
-              <option key={p.name} value={p.name}>{p.name}</option>
-            ))}
-          </select>
-          <ChevronDown className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--ch-text-muted)" }} />
-        </div>
-      </div>
-
-      {/* Insight Strip */}
-      <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3 rounded-xl border" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-        <div className="flex items-center gap-2 text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
-          <TrendingUp className="w-4 h-4" style={{ color: "#16A34A" }} />
-          Highest Coverage: <strong style={{ color: "#16A34A" }}>{INSIGHT_PROVINCES.highest}</strong>
-        </div>
-        <div className="hidden sm:block w-px h-5" style={{ background: "var(--ch-border)" }} />
-        <div className="flex items-center gap-2 text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
-          <Target className="w-4 h-4" style={{ color: "#F59E0B" }} />
-          Growth Opportunity: <strong style={{ color: "#F59E0B" }}>{INSIGHT_PROVINCES.growth}</strong>
-        </div>
-        <div className="hidden sm:block w-px h-5" style={{ background: "var(--ch-border)" }} />
-        <div className="flex items-center gap-2 text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
-          <Globe className="w-4 h-4" style={{ color: "#2563EB" }} />
-          Coverage Gap: <strong style={{ color: "#2563EB" }}>{INSIGHT_PROVINCES.gap}</strong>
-        </div>
-      </div>
-
-      {/* Map + Right Panel */}
-      <div className="grid grid-cols-1 lg:grid-cols-[2fr_1.1fr] gap-5 items-stretch">
-        {/* Map Card */}
-        <div className="rounded-xl border flex flex-col" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-          <div className="flex flex-wrap items-center justify-between gap-2 px-5 pt-4 pb-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
-            <h3 className="text-[14px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-              Indonesia Creator Density by Province
-            </h3>
-            <div className="flex items-center gap-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
-              <span>Low</span>
-              <div className="flex gap-0.5">
-                {["#dce7f6", "#adcbf7", "#6ea4ef", "#2973e3", "#0a4fa7"].map((c) => (
-                  <span key={c} className="inline-block w-3.5 h-2.5 rounded-sm" style={{ background: c }} />
-                ))}
-              </div>
-              <span>High</span>
-              <Info className="w-3 h-3" />
+        <div className="relative z-10 flex flex-col lg:flex-row items-center gap-6 p-8 lg:p-10">
+          <div className="flex-1">
+            <h2 className="text-3xl lg:text-4xl font-extrabold text-white leading-tight mb-3" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+              Empowering Creators,<br />Elevating Brands
+            </h2>
+            <p className="text-blue-100 text-sm mb-6 max-w-md">
+              The all-in-one marketplace connecting brands with the right creators to achieve real impact.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link to="/marketplace">
+                <Button className="bg-white text-blue-700 hover:bg-blue-50 font-semibold shadow-lg">
+                  Find Creators
+                </Button>
+              </Link>
+              <Link to="/campaigns">
+                <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 font-semibold">
+                  Create Campaign
+                </Button>
+              </Link>
             </div>
           </div>
-          <div className="flex-1 relative min-h-[400px]">
-            <MapContainer
-              key={mapKey}
-              center={[-2.5, 118.0]}
-              zoom={5}
-              zoomControl={true}
-              className="w-full h-full absolute inset-0 z-0"
-              scrollWheelZoom={true}
-            >
-              <TileLayer
-                attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-                url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-              />
-              <MapController
-                selectedProvince={province}
-                geoJsonData={geoJsonData}
-                onProvinceClick={handleProvinceClick}
-              />
-            </MapContainer>
-          </div>
-          {/* Platform Filters */}
-          <div className="flex flex-wrap justify-center gap-2 px-4 py-3 border-t" style={{ borderColor: "var(--ch-border)" }}>
-            {PLATFORMS.map((pf) => {
-              const isActive = platform === pf.id;
-              return (
-                <button
-                  key={pf.id}
-                  onClick={() => setPlatform(pf.id)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-semibold transition-all"
-                  style={{
-                    background: isActive ? "var(--ch-primary)" : "var(--ch-surface)",
-                    color: isActive ? "white" : "var(--ch-text-muted)",
-                    border: isActive ? "none" : "1px solid var(--ch-border)",
-                  }}
-                >
-                  {pf.id === "all" && <LayoutGrid className="w-3 h-3" />}
-                  {pf.id === "instagram" && <span className="text-[11px]">📸</span>}
-                  {pf.id === "tiktok" && <span className="text-[11px]">🎵</span>}
-                  {pf.id === "youtube" && <span className="text-[11px]">▶</span>}
-                  {pf.id === "x" && <span className="text-[11px]">𝕏</span>}
-                  {pf.id === "facebook" && <span className="text-[11px]">f</span>}
-                  <span>{pf.label}</span>
-                </button>
-              );
-            })}
-          </div>
-          {/* Podcast toggle */}
-          <div className="flex justify-center px-4 pb-4">
-            <button
-              onClick={() => setPodcastMode(!podcastMode)}
-              className="flex items-center gap-2 px-4 py-2 rounded-md text-[10px] font-semibold transition-all"
-              style={{
-                background: podcastMode ? "#006644" : "#F0FDF4",
-                color: podcastMode ? "white" : "#006644",
-                border: podcastMode ? "1px solid #005533" : "1.5px dashed #16A34A",
-              }}
-            >
-              <MapPin className="w-3 h-3" />
-              <span>Podcast Facilities by the Association of Indonesian Content Creators</span>
-            </button>
+          <div className="hidden lg:flex items-center gap-2">
+            <div className="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+              <Users className="w-10 h-10 text-white" />
+            </div>
+            <div className="w-16 h-16 rounded-xl bg-red-400/30 backdrop-blur-sm flex items-center justify-center -mt-4">
+              <Play className="w-8 h-8 text-white" />
+            </div>
+            <div className="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+              <BarChart3 className="w-10 h-10 text-white" />
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Right Panel */}
-        <div className="flex flex-col gap-4">
-          {/* Creators by Province */}
-          <div className="rounded-xl border flex flex-col flex-1" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-            <div className="flex items-center justify-between px-4 pt-4 pb-2 border-b" style={{ borderColor: "var(--ch-border)" }}>
-              <h3 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+      {/* Platform Features */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-[15px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            Platform Features
+          </h3>
+          <Link to="/marketplace" className="text-xs font-semibold text-blue-600 hover:underline">View All</Link>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          {PLATFORM_FEATURES.map((feat) => {
+            const Icon = feat.icon;
+            return (
+              <Link key={feat.title} to={feat.link}>
+                <div className="rounded-xl border p-4 flex flex-col items-center text-center gap-2 hover:shadow-md transition-shadow cursor-pointer"
+                  style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
+                  <div className={`w-12 h-12 ${feat.bg} rounded-xl flex items-center justify-center`}>
+                    <Icon className={`w-6 h-6 ${feat.color}`} />
+                  </div>
+                  <p className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>{feat.title}</p>
+                  <p className="text-[11px] leading-snug" style={{ color: "var(--ch-text-muted)" }}>{feat.desc}</p>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Creator Coverage Dashboard + Right Sidebar */}
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-5">
+        {/* Main: Map + Table */}
+        <div className="space-y-5">
+          {/* Map Section */}
+          <div className="rounded-xl border flex flex-col" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+            <div className="flex flex-wrap items-center justify-between gap-2 px-5 pt-4 pb-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
+              <h3 className="text-[15px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                Creator Coverage Dashboard
+              </h3>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
+                  <span>Low</span>
+                  <div className="flex gap-0.5">
+                    {["#dce7f6", "#adcbf7", "#6ea4ef", "#2973e3", "#0a4fa7"].map((c) => (
+                      <span key={c} className="inline-block w-3.5 h-2.5 rounded-sm" style={{ background: c }} />
+                    ))}
+                  </div>
+                  <span>High</span>
+                </div>
+                <select
+                  value={province}
+                  onChange={(e) => setProvince(e.target.value)}
+                  className="text-[12px] font-semibold border rounded-lg px-3 py-1.5 outline-none"
+                  style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)", background: "var(--ch-surface)" }}
+                >
+                  <option value="all">Indonesia</option>
+                  {PROVINCES.map((p) => (
+                    <option key={p.name} value={p.name}>{p.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="relative min-h-[380px]">
+              <MapContainer
+                key={mapKey}
+                center={[-2.5, 118.0]}
+                zoom={5}
+                zoomControl={true}
+                className="w-full h-full absolute inset-0 z-0"
+                scrollWheelZoom={true}
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+                  url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+                />
+                <MapController
+                  selectedProvince={province}
+                  geoJsonData={geoJsonData}
+                  onProvinceClick={handleProvinceClick}
+                />
+              </MapContainer>
+            </div>
+            <div className="flex items-center gap-4 px-5 py-3 border-t text-[10px] font-semibold" style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}>
+              <span>KOLs / Creators</span>
+              <div className="flex items-center gap-3">
+                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#0a4fa7] inline-block" /> 150+</span>
+                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#2973e3] inline-block" /> 50 - 149</span>
+                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#adcbf7] inline-block" /> 20 - 49</span>
+                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#dce7f6] inline-block" /> &lt; 20</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Creators by Province Table */}
+          <div className="rounded-xl border" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
+            <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
+              <h3 className="text-[15px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                 Creators by Province
               </h3>
               {province !== "all" && (
-                <button
-                  onClick={handleResetProvince}
-                  className="flex items-center gap-1 text-[11px] font-semibold hover:underline"
-                  style={{ color: "#2563EB" }}
-                >
+                <button onClick={() => setProvince("all")} className="text-xs font-semibold text-blue-600 hover:underline flex items-center gap-1">
                   <ArrowLeft className="w-3 h-3" /> Back to All
                 </button>
               )}
             </div>
-            <div className="flex-1 overflow-y-auto p-2">
-              <table className="w-full text-[11px] border-collapse">
-                <thead>
-                  <tr style={{ color: "var(--ch-text-soft)", fontSize: 9, textTransform: "uppercase", borderBottom: "1px solid var(--ch-border)" }}>
-                    <th className="p-1 text-left">#</th>
-                    <th className="p-1 text-left">Province</th>
-                    <th className="p-1 text-right">KOLs</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedProvinces.map((p, i) => (
-                    <tr
-                      key={p.name}
-                      className="cursor-pointer"
-                      style={{
-                        borderBottom: "1px solid var(--ch-border)",
-                        background: province === p.name ? "#EFF6FF" : "transparent",
-                      }}
-                      onClick={() => handleProvinceClick(p.name)}
-                    >
-                      <td className="p-1" style={{ color: "var(--ch-text-muted)", fontWeight: 500, width: 20 }}>{i + 1}</td>
-                      <td className="p-1 font-semibold" style={{ color: "var(--ch-text)" }}>{p.name}</td>
-                      <td className="p-1 text-right font-bold" style={{ color: "var(--ch-text)" }}>{p.count}</td>
+            <div className="p-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+                {/* Left column */}
+                <table className="w-full text-[12px]">
+                  <thead>
+                    <tr className="text-[10px] uppercase border-b" style={{ color: "var(--ch-text-soft)", borderColor: "var(--ch-border)" }}>
+                      <th className="py-2 text-left w-8">#</th>
+                      <th className="py-2 text-left">Province</th>
+                      <th className="py-2 text-right">KOLs</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {leftHalf.map((p, i) => (
+                      <tr
+                        key={p.name}
+                        className="cursor-pointer hover:bg-slate-50"
+                        style={{
+                          borderBottom: "1px solid var(--ch-border)",
+                          background: province === p.name ? "#EFF6FF" : "transparent",
+                        }}
+                        onClick={() => handleProvinceClick(p.name)}
+                      >
+                        <td className="py-2" style={{ color: "var(--ch-text-muted)" }}>{i + 1}</td>
+                        <td className="py-2 font-semibold" style={{ color: "var(--ch-text)" }}>{p.name}</td>
+                        <td className="py-2 text-right font-bold" style={{ color: "var(--ch-text)" }}>{p.count}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {/* Right column */}
+                <table className="w-full text-[12px]">
+                  <thead>
+                    <tr className="text-[10px] uppercase border-b" style={{ color: "var(--ch-text-soft)", borderColor: "var(--ch-border)" }}>
+                      <th className="py-2 text-left w-8">#</th>
+                      <th className="py-2 text-left">Province</th>
+                      <th className="py-2 text-right">KOLs</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rightHalf.map((p, i) => (
+                      <tr
+                        key={p.name}
+                        className="cursor-pointer hover:bg-slate-50"
+                        style={{
+                          borderBottom: "1px solid var(--ch-border)",
+                          background: province === p.name ? "#EFF6FF" : "transparent",
+                        }}
+                        onClick={() => handleProvinceClick(p.name)}
+                      >
+                        <td className="py-2" style={{ color: "var(--ch-text-muted)" }}>{i + 21}</td>
+                        <td className="py-2 font-semibold" style={{ color: "var(--ch-text)" }}>{p.name}</td>
+                        <td className="py-2 text-right font-bold" style={{ color: "var(--ch-text)" }}>{p.count}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="flex items-center justify-between mt-3 pt-3 border-t text-[11px]" style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}>
+                <span>Total 38 provinces</span>
+                <span>Last updated: May 20, 2024</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Sidebar */}
+        <div className="space-y-4">
+          {/* User Profile Card */}
+          <div className="rounded-xl border p-4" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-lg font-bold shrink-0">
+                Y
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>Yael Amari</span>
+                  <Badge variant="success" className="text-[9px] px-1 py-0">✓</Badge>
+                </div>
+                <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>Brand Partner</p>
+                <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-600">
+                  <Star className="w-2.5 h-2.5" /> Premium
+                </span>
+              </div>
             </div>
           </div>
 
-          {/* Recommended Action */}
-          <div className="rounded-xl border p-4" style={{ background: "linear-gradient(135deg, #f7f9ff 0%, #ffffff 100%)", borderColor: "#deebff" }}>
-            <div className="flex items-center gap-2 mb-2" style={{ color: "var(--ch-primary)" }}>
-              <Target className="w-4 h-4" />
-              <h4 className="text-[11px] font-bold uppercase tracking-wider" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Recommended Action</h4>
+          {/* Campaign Calendar */}
+          <div className="rounded-xl border p-4" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Campaign Calendar</h4>
+              <Link to="/campaigns" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
             </div>
-            <p className="text-[11px] leading-relaxed" style={{ color: "var(--ch-text-muted)" }}>
-              Strengthen creator recruitment in eastern provinces and use West Java, East Java, DKI Jakarta, and Central Java as anchor hubs for nationwide campaigns.
-            </p>
+            <div className="flex gap-3">
+              {CAMPAIGN_EVENTS.map((ev, i) => (
+                <div key={i} className={`flex-1 rounded-xl p-3 text-center ${ev.color === "bg-white border" ? "border border-slate-200" : "bg-blue-600 text-white"}`}>
+                  <p className={`text-[10px] font-semibold ${ev.color === "bg-white border" ? "text-slate-500" : "text-blue-100"}`}>{ev.month}</p>
+                  <p className={`text-2xl font-extrabold ${ev.color === "bg-white border" ? "text-slate-800" : "text-white"}`}>{ev.date}</p>
+                  <p className={`text-[10px] font-semibold ${ev.color === "bg-white border" ? "text-slate-500" : "text-blue-100"}`}>{ev.year}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-3 space-y-1.5">
+              {CAMPAIGN_EVENTS.map((ev, i) => (
+                <p key={i} className="text-[10px] font-medium" style={{ color: "var(--ch-text-muted)" }}>{ev.label}</p>
+              ))}
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* KPI Stats Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        {/* Total Creators */}
-        <div className="rounded-xl border p-3 flex items-center gap-3" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: "#EFF6FF" }}>
-            <Users className="w-4 h-4" style={{ color: "#1D4ED8" }} />
+          {/* Active Campaigns */}
+          <div className="rounded-xl border p-4" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Active Campaigns</h4>
+              <Link to="/campaigns" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
+            </div>
+            <div className="space-y-3">
+              {ACTIVE_CAMPAIGNS.map((c, i) => (
+                <div key={i} className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center shrink-0">
+                    <Megaphone className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[12px] font-bold truncate" style={{ color: "var(--ch-text)" }}>{c.name}</span>
+                      <Badge variant={c.status === "Live" ? "success" : c.status === "In Progress" ? "default" : "secondary"} className="text-[9px] shrink-0">
+                        {c.status}
+                      </Badge>
+                    </div>
+                    <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{c.type}</p>
+                    <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{c.date}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-          <div>
-            <p className="text-[10px] font-medium" style={{ color: "var(--ch-text-muted)" }}>Total Creators</p>
-            <p className="text-[16px] font-extrabold leading-tight" style={{ color: "var(--ch-text)" }}>
-              {totalFiltered.toLocaleString()}
-            </p>
-          </div>
-        </div>
 
-        {/* Provinces Covered */}
-        <div className="rounded-xl border p-3 flex items-center gap-3" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: "#DCFCE7" }}>
-            <MapPin className="w-4 h-4" style={{ color: "#16A34A" }} />
-          </div>
-          <div>
-            <p className="text-[10px] font-medium" style={{ color: "var(--ch-text-muted)" }}>Provinces Covered</p>
-            <p className="text-[16px] font-extrabold leading-tight" style={{ color: "#16A34A" }}>
-              {PROVINCES.length}
-            </p>
-          </div>
-        </div>
-
-        {/* Highest Province */}
-        <div className="rounded-xl border p-3 flex items-center gap-3" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: "#EDE9FE" }}>
-            <Award className="w-4 h-4" style={{ color: "#7C3AED" }} />
-          </div>
-          <div className="min-w-0">
-            <p className="text-[10px] font-medium" style={{ color: "var(--ch-text-muted)" }}>Highest-Creator Province</p>
-            <p className="text-[13px] font-bold leading-tight truncate" style={{ color: "#7C3AED" }}>
-              {highestProv?.name ?? "-"}
-            </p>
-          </div>
-        </div>
-
-        {/* Lowest Province */}
-        <div className="rounded-xl border p-3 flex items-center gap-3" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: "#FFF7ED" }}>
-            <MapPinOff className="w-4 h-4" style={{ color: "#EA580C" }} />
-          </div>
-          <div className="min-w-0">
-            <p className="text-[10px] font-medium" style={{ color: "var(--ch-text-muted)" }}>Lowest-Creator Province</p>
-            <p className="text-[13px] font-bold leading-tight truncate" style={{ color: "#EA580C" }}>
-              {lowestProv?.name ?? "-"}
-            </p>
-          </div>
-        </div>
-
-        {/* Total Campaigns */}
-        <div className="rounded-xl border p-3 flex items-center gap-3" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: "#ECFEFF" }}>
-            <Briefcase className="w-4 h-4" style={{ color: "#0891B2" }} />
-          </div>
-          <div>
-            <p className="text-[10px] font-medium" style={{ color: "var(--ch-text-muted)" }}>Total Campaigns</p>
-            <p className="text-[16px] font-extrabold leading-tight" style={{ color: "var(--ch-text)" }}>247</p>
-          </div>
-        </div>
-
-        {/* Total Budget Spent */}
-        <div className="rounded-xl border p-3 flex items-center gap-3" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: "#DCFCE7" }}>
-            <Wallet className="w-4 h-4" style={{ color: "#16A34A" }} />
-          </div>
-          <div>
-            <p className="text-[10px] font-medium" style={{ color: "var(--ch-text-muted)" }}>Total Budget Spent</p>
-            <p className="text-[16px] font-extrabold leading-tight" style={{ color: "#16A34A" }}>Rp 4.2B</p>
+          {/* Recent Messages */}
+          <div className="rounded-xl border p-4" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Recent Messages</h4>
+              <Link to="/messages" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
+            </div>
+            <div className="space-y-3">
+              {RECENT_MESSAGES.map((m, i) => (
+                <div key={i} className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-[12px] font-bold text-blue-600 shrink-0">
+                    {m.name[0]}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[12px] font-bold" style={{ color: "var(--ch-text)" }}>{m.name}</span>
+                      <Badge variant="success" className="text-[9px] px-1 py-0">✓</Badge>
+                      <span className="text-[10px] ml-auto shrink-0" style={{ color: "var(--ch-text-muted)" }}>{m.time}</span>
+                    </div>
+                    <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{m.role}</p>
+                    <p className="text-[11px] mt-1 line-clamp-2" style={{ color: "var(--ch-text-muted)" }}>{m.message}</p>
+                    <Button variant="outline" size="sm" className="mt-2 h-7 text-[11px] gap-1">
+                      <Send className="w-3 h-3" /> Reply
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
