@@ -96,8 +96,8 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2.5">
-              <img src="/favicon.png?v=3" alt="CreatorHub" className="h-9 w-9" />
-              <span className="text-2xl font-extrabold text-white tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>CreatorHub.ID</span>
+              <img src="/favicon.png?v=4" alt="CreatorHub" className="h-12 w-12" />
+              <span className="text-3xl font-extrabold text-white tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>CreatorHub.ID</span>
             </div>
             <div className="hidden md:flex items-center gap-7">
               <a href="#features" className="text-sm font-bold text-white hover:text-slate-300 transition-colors">Features</a>
@@ -135,19 +135,22 @@ export default function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-blue-50" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+      <section className="relative overflow-hidden bg-slate-950">
+        <div className="absolute inset-0">
+          <img src="/hero.png" alt="" className="w-full h-full object-cover opacity-40" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/60 to-transparent" />
+        </div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-28">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 rounded-full mb-6">
-                <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                <span className="text-xs font-semibold text-blue-600">#1 Creator Marketplace in Indonesia</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full mb-6 border border-white/20">
+                <Sparkles className="w-3.5 h-3.5 text-orange-400" />
+                <span className="text-xs font-semibold text-white">#1 Creator Marketplace in Indonesia</span>
               </div>
-              <h1 className="text-2xl lg:text-3xl font-extrabold text-slate-900 leading-tight tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                Empowering Creators, <span className="text-blue-600">Elevating Brands</span>
+              <h1 className="text-3xl lg:text-4xl font-extrabold text-white leading-tight tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                Create, Connect With the Right Ecosystem, and Grow With Us
               </h1>
-              <p className="mt-6 text-lg text-slate-600 max-w-lg leading-relaxed">
+              <p className="mt-6 text-lg text-slate-300 max-w-lg leading-relaxed">
                 The all-in-one platform connecting brands with Indonesia's best content creators. Discover, collaborate, and grow together.
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
@@ -157,15 +160,15 @@ export default function Landing() {
                   </Button>
                 </Link>
                 <a href="#features">
-                  <Button size="lg" variant="outline" className="text-base font-semibold">
+                  <Button size="lg" variant="outline" className="text-base font-semibold border-white/30 text-white hover:bg-white/10">
                     <Play className="w-4 h-4 mr-2" /> Explore Features
                   </Button>
                 </a>
               </div>
-              <div className="mt-8 flex items-center gap-6 text-sm text-slate-500">
-                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-500" /> Free to join</span>
-                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-500" /> No setup fees</span>
-                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-500" /> Cancel anytime</span>
+              <div className="mt-8 flex items-center gap-6 text-sm text-white/70">
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-400" /> Free to join</span>
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-400" /> No setup fees</span>
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-400" /> Cancel anytime</span>
               </div>
             </div>
             <div className="hidden lg:block relative">
