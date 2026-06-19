@@ -109,17 +109,17 @@ export default function Header() {
     setShowProfile(which === "profile");
   };
 
-  const messagesPath = effectiveRole === "kreator" ? "/kreator/messages" : "/messages";
-  const settingsPath = effectiveRole === "kreator" ? "/kreator/settings" : "/settings";
-  const profilePath = effectiveRole === "kreator" ? "/kreator/profile" : "/settings";
+  const messagesPath = effectiveRole === "kreator" ? "/dashboard/kreator/messages" : "/dashboard/messages";
+  const settingsPath = effectiveRole === "kreator" ? "/dashboard/kreator/settings" : "/dashboard/settings";
+  const profilePath = effectiveRole === "kreator" ? "/dashboard/kreator/profile" : "/dashboard/settings";
 
   const handleSearch = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && search.trim()) {
       const q = encodeURIComponent(search.trim());
       navigate(
         effectiveRole === "kreator"
-          ? `/kreator/search?search=${q}`
-          : `/search?search=${q}`,
+          ? `/dashboard/kreator/search?search=${q}`
+          : `/dashboard/search?search=${q}`,
       );
       setSearch("");
     }
@@ -129,7 +129,7 @@ export default function Header() {
     setActiveFilters((prev) => {
       const next = prev.includes(param) ? prev.filter((p) => p !== param) : [...prev, param];
       const qs   = next.map((p) => `${p}=true`).join("&");
-      navigate(qs ? `/marketplace?${qs}` : "/marketplace");
+      navigate(qs ? `/dashboard/marketplace?${qs}` : "/dashboard/marketplace");
       return next;
     });
   };

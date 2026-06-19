@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
-import { HomeRedirect, BrandRoute, KreatorRoute } from "@/components/RoleRoute";
+import { BrandRoute, KreatorRoute } from "@/components/RoleRoute";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
@@ -28,45 +28,26 @@ import CreatorSettings from "@/pages/kreator/CreatorSettings";
 import CreatorSearch from "@/pages/kreator/CreatorSearch";
 import BrandSearch from "@/pages/BrandSearch";
 
-function isDashboardHost(): boolean {
-  if (typeof window === "undefined") return false;
-  const host = window.location.hostname;
-  return host === "dashboard.creatorhub.id" || host === "localhost";
-}
-
-function PublicApp() {
+export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Public landing */}
         <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/apply" element={<ApplyWizard />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
-  );
-}
-
-function DashboardApp() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        {/* Public */}
         <Route path="/login" element={<Login />} />
         <Route path="/apply" element={<ApplyWizard />} />
 
         {/* Protected — all routes require a valid session */}
         <Route
-          path="/"
+          path="/dashboard"
           element={
             <ProtectedRoute>
               <Layout />
             </ProtectedRoute>
           }
         >
-          <Route index element={<HomeRedirect />} />
+          <Route index element={<BrandRoute><Dashboard /></BrandRoute>} />
           <Route path="search" element={<BrandRoute><BrandSearch /></BrandRoute>} />
-          <Route path="dashboard" element={<BrandRoute><Dashboard /></BrandRoute>} />
           <Route path="marketplace" element={<BrandRoute><Marketplace /></BrandRoute>} />
           <Route path="homeless-media" element={<BrandRoute><HomelessMedia /></BrandRoute>} />
           <Route path="campaigns" element={<BrandRoute><Campaigns /></BrandRoute>} />
@@ -78,7 +59,7 @@ function DashboardApp() {
           <Route path="payments" element={<BrandRoute><Payments /></BrandRoute>} />
           <Route path="settings" element={<BrandRoute><Settings /></BrandRoute>} />
           <Route path="kreator">
-            <Route index element={<Navigate to="/kreator/home" replace />} />
+            <Route index element={<Navigate to="/dashboard/kreator/home" replace />} />
             <Route path="home" element={<KreatorRoute><CreatorHome /></KreatorRoute>} />
             <Route path="search" element={<KreatorRoute><CreatorSearch /></KreatorRoute>} />
             <Route path="invitations" element={<KreatorRoute><CreatorInvitations /></KreatorRoute>} />
@@ -89,14 +70,23 @@ function DashboardApp() {
             <Route path="profile" element={<KreatorRoute><CreatorProfile /></KreatorRoute>} />
             <Route path="messages" element={<KreatorRoute><CreatorMessages /></KreatorRoute>} />
             <Route path="settings" element={<KreatorRoute><CreatorSettings /></KreatorRoute>} />
-            <Route path="dashboard" element={<Navigate to="/kreator/home" replace />} />
+            <Route path="dashboard" element={<Navigate to="/dashboard/kreator/home" replace />} />
           </Route>
         </Route>
+
+        {/* Legacy redirects */}
+        <Route path="/marketplace" element={<Navigate to="/dashboard/marketplace" replace />} />
+        <Route path="/campaigns" element={<Navigate to="/dashboard/campaigns" replace />} />
+        <Route path="/analytics" element={<Navigate to="/dashboard/analytics" replace />} />
+        <Route path="/messages" element={<Navigate to="/dashboard/messages" replace />} />
+        <Route path="/payments" element={<Navigate to="/dashboard/payments" replace />} />
+        <Route path="/settings" element={<Navigate to="/dashboard/settings" replace />} />
+        <Route path="/media-monitoring" element={<Navigate to="/dashboard/media-monitoring" replace />} />
+        <Route path="/boost-ads" element={<Navigate to="/dashboard/boost-ads" replace />} />
+        <Route path="/homeless-media" element={<Navigate to="/dashboard/homeless-media" replace />} />
+        <Route path="/search" element={<Navigate to="/dashboard/search" replace />} />
+        <Route path="/kreator/*" element={<Navigate to="/dashboard/kreator" replace />} />
       </Routes>
     </BrowserRouter>
   );
-}
-
-export default function App() {
-  return isDashboardHost() ? <DashboardApp /> : <PublicApp />;
 }

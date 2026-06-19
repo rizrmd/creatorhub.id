@@ -31,7 +31,7 @@ export default function CreatorHome() {
       sub: "Menunggu respons",
       hue: 220,
       icon: MessageSquare,
-      href: "/kreator/invitations",
+      href: "/dashboard/kreator/invitations",
     },
     {
       label: "Active Jobs",
@@ -39,7 +39,7 @@ export default function CreatorHome() {
       sub: stats.inProgressJobCount === 1 ? "1 in progress" : `${stats.inProgressJobCount} in progress`,
       hue: 142,
       icon: Zap,
-      href: "/kreator/work",
+      href: "/dashboard/kreator/work",
     },
     {
       label: "Earnings This Month",
@@ -47,7 +47,7 @@ export default function CreatorHome() {
       sub: `${stats.earningsGrowthPct >= 0 ? "+" : ""}${stats.earningsGrowthPct}% vs last month`,
       hue: 28,
       icon: Coins,
-      href: "/kreator/earnings",
+      href: "/dashboard/kreator/earnings",
     },
     {
       label: "Average Rating",
@@ -55,15 +55,15 @@ export default function CreatorHome() {
       sub: `From ${stats.reviewCount} reviews`,
       hue: 42,
       icon: Star,
-      href: "/kreator/profile",
+      href: "/dashboard/kreator/profile",
     },
   ], [stats]);
 
   const achievements = useMemo(() => [
-    { icon: "⭐", label: "Top Rated", desc: `Rating ${CREATOR_RATING}+`, href: "/kreator/profile" },
-    { icon: "⚡", label: "Fast Response", desc: "Reply <2 hours", href: "/kreator/profile" },
-    { icon: "✅", label: "Verified", desc: "ID verified", href: "/kreator/profile" },
-    { icon: "🔥", label: "Trending", desc: "Top 5% this month", href: "/kreator/insights" },
+    { icon: "⭐", label: "Top Rated", desc: `Rating ${CREATOR_RATING}+`, href: "/dashboard/kreator/profile" },
+    { icon: "⚡", label: "Fast Response", desc: "Reply <2 hours", href: "/dashboard/kreator/profile" },
+    { icon: "✅", label: "Verified", desc: "ID verified", href: "/dashboard/kreator/profile" },
+    { icon: "🔥", label: "Trending", desc: "Top 5% this month", href: "/dashboard/kreator/insights" },
   ], []);
 
   const respond = (id: string, accepted: boolean) => {
@@ -76,7 +76,7 @@ export default function CreatorHome() {
       {/* Hero */}
       <button
         type="button"
-        onClick={() => navigate("/kreator/invitations")}
+        onClick={() => navigate("/dashboard/kreator/invitations")}
         className={cn("rounded-2xl p-6 relative overflow-hidden block", cardHover)}
         style={{ background: "linear-gradient(135deg, #064e3b 0%, #16A34A 60%, #4ade80 100%)" }}
       >
@@ -140,7 +140,7 @@ export default function CreatorHome() {
       >
         <button
           type="button"
-          onClick={() => navigate("/kreator/profile")}
+          onClick={() => navigate("/dashboard/kreator/profile")}
           className="flex items-center justify-between w-full mb-3 group"
         >
           <p className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>
@@ -173,7 +173,7 @@ export default function CreatorHome() {
         <div>
           <button
             type="button"
-            onClick={() => navigate("/kreator/invitations")}
+            onClick={() => navigate("/dashboard/kreator/invitations")}
             className="flex items-center justify-between w-full mb-3 group"
           >
             <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>
@@ -192,7 +192,7 @@ export default function CreatorHome() {
               >
                 <button
                   type="button"
-                  onClick={() => navigate(`/kreator/invitations/${inv.id}`)}
+                  onClick={() => navigate(`/dashboard/kreator/invitations/${inv.id}`)}
                   className="flex flex-1 items-center gap-3 sm:gap-4 min-w-0 text-left cursor-pointer group"
                 >
                   <div
@@ -251,7 +251,7 @@ export default function CreatorHome() {
       <div>
         <button
           type="button"
-          onClick={() => navigate("/kreator/insights")}
+          onClick={() => navigate("/dashboard/kreator/insights")}
           className="flex items-center justify-between w-full mb-3 group"
         >
           <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>
@@ -267,7 +267,7 @@ export default function CreatorHome() {
             <button
               key={p.content}
               type="button"
-              onClick={() => navigate("/kreator/insights")}
+              onClick={() => navigate("/dashboard/kreator/insights")}
               className={cn("rounded-xl border p-4", cardHover)}
               style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}
             >

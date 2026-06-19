@@ -154,7 +154,7 @@ export default function CreatorInvitations() {
     setSearchParams({}, { replace: true });
   }, [searchParams, setSearchParams]);
 
-  const openDetail = (id: string) => navigate(`/kreator/invitations/${id}`);
+  const openDetail = (id: string) => navigate(`/dashboard/kreator/invitations/${id}`);
 
   const sorted = useMemo(() => sortInvitations(invitations), [invitations]);
   const searched = useMemo(

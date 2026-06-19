@@ -17,26 +17,26 @@ import { useSidebar } from "@/contexts/SidebarContext";
 import { useKreatorStatsOptional } from "@/context/KreatorDataContext";
 
 const brandNavItems = [
-  { to: "/dashboard",        icon: Home,            label: "Dashboard" },
-  { to: "/marketplace",      icon: Store,           label: "Marketplace" },
-  { to: "/campaigns",        icon: Megaphone,       label: "Campaigns" },
-  { to: "/boost-ads",        icon: Rocket,          label: "Boost Ads" },
-  { to: "/analytics",        icon: BarChart3,       label: "Analytics" },
-  { to: "/media-monitoring", icon: Radio,           label: "Media Monitor" },
-  { to: "/messages",         icon: MessageSquare,   label: "Messages",   badge: 12 },
-  { to: "/payments",         icon: CreditCard,      label: "Payments" },
-  { to: "/settings",         icon: Settings,        label: "Settings" },
+  { to: "/dashboard",                icon: Home,            label: "Dashboard" },
+  { to: "/dashboard/marketplace",    icon: Store,           label: "Marketplace" },
+  { to: "/dashboard/campaigns",      icon: Megaphone,       label: "Campaigns" },
+  { to: "/dashboard/boost-ads",      icon: Rocket,          label: "Boost Ads" },
+  { to: "/dashboard/analytics",      icon: BarChart3,       label: "Analytics" },
+  { to: "/dashboard/media-monitoring", icon: Radio,          label: "Media Monitor" },
+  { to: "/dashboard/messages",       icon: MessageSquare,   label: "Messages",   badge: 12 },
+  { to: "/dashboard/payments",       icon: CreditCard,      label: "Payments" },
+  { to: "/dashboard/settings",       icon: Settings,        label: "Settings" },
 ];
 
 const kreatorNavItems = [
-  { to: "/kreator/home",        icon: Home,          label: "Home" },
-  { to: "/kreator/invitations", icon: Mail,          label: "Undangan",   badgeKey: "invitations" as const },
-  { to: "/kreator/work",        icon: Briefcase,     label: "Pekerjaan" },
-  { to: "/kreator/earnings",    icon: Coins,    label: "Penghasilan" },
-  { to: "/kreator/insights",    icon: Lightbulb,     label: "Insights" },
-  { to: "/kreator/profile",     icon: User,          label: "Profil" },
-  { to: "/kreator/messages",    icon: MessageSquare, label: "Pesan",      badgeKey: "messages" as const },
-  { to: "/kreator/settings",    icon: Settings,      label: "Pengaturan" },
+  { to: "/dashboard/kreator/home",        icon: Home,          label: "Home" },
+  { to: "/dashboard/kreator/invitations", icon: Mail,          label: "Undangan",   badgeKey: "invitations" as const },
+  { to: "/dashboard/kreator/work",        icon: Briefcase,     label: "Pekerjaan" },
+  { to: "/dashboard/kreator/earnings",    icon: Coins,    label: "Penghasilan" },
+  { to: "/dashboard/kreator/insights",    icon: Lightbulb,     label: "Insights" },
+  { to: "/dashboard/kreator/profile",     icon: User,          label: "Profil" },
+  { to: "/dashboard/kreator/messages",    icon: MessageSquare, label: "Pesan",      badgeKey: "messages" as const },
+  { to: "/dashboard/kreator/settings",    icon: Settings,      label: "Pengaturan" },
 ];
 
 export default function Sidebar() {
@@ -73,7 +73,7 @@ export default function Sidebar() {
     if (!canSwitchRole) return;
     if (effectiveRole === "brand") {
       setRole("kreator");
-      navigate("/kreator/home");
+      navigate("/dashboard/kreator/home");
     } else {
       setRole("brand");
       navigate("/dashboard");

@@ -138,7 +138,7 @@ export default function CreatorInvitationDetail() {
     if (!id) return;
     respondToInvitation(id, accepted);
     toast.success(accepted ? "Undangan diterima! 🎉" : "Undangan ditolak");
-    navigate("/kreator/invitations");
+    navigate("/dashboard/kreator/invitations");
   };
 
   if (!inv) {
@@ -146,7 +146,7 @@ export default function CreatorInvitationDetail() {
       <div className="p-6 text-center" style={{ background: "var(--ch-bg)" }}>
         <p style={{ color: "var(--ch-text-muted)" }}>Undangan tidak ditemukan.</p>
         <button
-          onClick={() => navigate("/kreator/invitations")}
+          onClick={() => navigate("/dashboard/kreator/invitations")}
           className="mt-4 px-4 py-2 rounded-lg text-white text-[13px] font-semibold cursor-pointer"
           style={{ background: "#16A34A" }}
         >
@@ -159,7 +159,7 @@ export default function CreatorInvitationDetail() {
   return (
     <div className="p-4 md:p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
       <button
-        onClick={() => navigate("/kreator/invitations")}
+        onClick={() => navigate("/dashboard/kreator/invitations")}
         className="flex items-center gap-2 text-[13px] font-semibold cursor-pointer transition-colors hover:opacity-80"
         style={{ color: "var(--ch-text-muted)" }}
       >
@@ -223,7 +223,7 @@ export default function CreatorInvitationDetail() {
           <p className="text-[13px]" style={{ color: "#065F46" }}>
             Anda telah menerima undangan ini. Cek halaman{" "}
             <button
-              onClick={() => navigate("/kreator/work")}
+              onClick={() => navigate("/dashboard/kreator/work")}
               className="font-bold underline cursor-pointer"
               style={{ color: "#16A34A" }}
             >

@@ -30,12 +30,12 @@ const SECTIONS: {
   href: string;
   icon: React.ElementType;
 }[] = [
-  { key: "invitations", label: "Undangan", href: "/kreator/invitations", icon: Mail },
-  { key: "tasks", label: "Pekerjaan", href: "/kreator/work", icon: Briefcase },
-  { key: "payments", label: "Pembayaran", href: "/kreator/earnings", icon: Coins },
-  { key: "messages", label: "Pesan", href: "/kreator/messages", icon: MessageSquare },
-  { key: "posts", label: "Konten Teratas", href: "/kreator/insights", icon: TrendingUp },
-  { key: "platforms", label: "Platform", href: "/kreator/insights", icon: Share2 },
+  { key: "invitations", label: "Undangan", href: "/dashboard/kreator/invitations", icon: Mail },
+  { key: "tasks", label: "Pekerjaan", href: "/dashboard/kreator/work", icon: Briefcase },
+  { key: "payments", label: "Pembayaran", href: "/dashboard/kreator/earnings", icon: Coins },
+  { key: "messages", label: "Pesan", href: "/dashboard/kreator/messages", icon: MessageSquare },
+  { key: "posts", label: "Konten Teratas", href: "/dashboard/kreator/insights", icon: TrendingUp },
+  { key: "platforms", label: "Platform", href: "/dashboard/kreator/insights", icon: Share2 },
 ];
 
 function ResultCard({
@@ -132,7 +132,7 @@ export default function CreatorSearch() {
       title={inv.campaign}
       subtitle={`${inv.brand} · ${inv.category}`}
       meta={formatRp(inv.budget)}
-      to={`/kreator/invitations/${inv.id}`}
+      to={`/dashboard/kreator/invitations/${inv.id}`}
     />
   );
 
@@ -142,7 +142,7 @@ export default function CreatorSearch() {
       title={task.deliverable}
       subtitle={`${task.brand} · ${task.campaign}`}
       meta={`Due ${new Date(task.due).toLocaleDateString("id-ID")}`}
-      to="/kreator/work"
+      to="/dashboard/kreator/work"
     />
   );
 
@@ -152,7 +152,7 @@ export default function CreatorSearch() {
       title={payment.campaign}
       subtitle={`${payment.brand} · ${payment.id}`}
       meta={`${formatRp(payment.amount)} · ${payment.status === "paid" ? "Lunas" : "Menunggu"}`}
-      to="/kreator/earnings"
+      to="/dashboard/kreator/earnings"
     />
   );
 
@@ -162,7 +162,7 @@ export default function CreatorSearch() {
       title={channel.brand}
       subtitle={channel.campaign}
       meta={channel.lastMsg}
-      to="/kreator/messages"
+      to="/dashboard/kreator/messages"
     />
   );
 
@@ -172,7 +172,7 @@ export default function CreatorSearch() {
       title={post.content}
       subtitle={post.platform}
       meta={`${post.reach} reach · ${post.engagement} engagement`}
-      to="/kreator/insights"
+      to="/dashboard/kreator/insights"
     />
   );
 
@@ -182,7 +182,7 @@ export default function CreatorSearch() {
       title={platform.name}
       subtitle={`${platform.followers} followers · ${platform.eng} engagement`}
       meta={`${platform.posts} posts`}
-      to="/kreator/insights"
+      to="/dashboard/kreator/insights"
     />
   );
 

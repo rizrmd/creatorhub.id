@@ -26,7 +26,7 @@ export default function Login() {
     setLoading(true);
     try {
       const user = await login({ email, password });
-      navigate(user.role === "kreator" ? "/kreator/home" : "/marketplace", { replace: true });
+      navigate(user.role === "kreator" ? "/dashboard/kreator/home" : "/dashboard/marketplace", { replace: true });
     } catch (err: unknown) {
       const msg =
         (err as { response?: { data?: { error?: string } } })?.response?.data?.error ??

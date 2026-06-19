@@ -73,7 +73,7 @@ function Breadcrumb() {
 }
 
 function isFullHeightPage(pathname: string) {
-  return pathname === "/messages" || pathname === "/kreator/messages";
+  return pathname === "/dashboard/messages" || pathname === "/dashboard/kreator/messages";
 }
 
 export default function Layout() {

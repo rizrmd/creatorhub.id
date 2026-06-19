@@ -68,11 +68,11 @@ const FILTER_PILLS = [
 ];
 
 const PLATFORM_FEATURES = [
-  { title: "Content Creators", desc: "Discover top talent across platforms", icon: Users, bg: "bg-blue-50", color: "text-blue-600", link: "/marketplace" },
-  { title: "Homeless Media", desc: "Premium media placement opportunities", icon: Newspaper, bg: "bg-orange-50", color: "text-orange-600", link: "/homeless-media" },
-  { title: "Publishers", desc: "Monetize your platforms and audience", icon: Megaphone, bg: "bg-purple-50", color: "text-purple-600", link: "/marketplace" },
-  { title: "Campaign Brief", desc: "Create detailed briefs that get better results", icon: FileText, bg: "bg-green-50", color: "text-green-600", link: "/campaigns" },
-  { title: "Analytics", desc: "Track performance and campaign insights", icon: BarChart3, bg: "bg-cyan-50", color: "text-cyan-600", link: "/analytics" },
+  { title: "Content Creators", desc: "Discover top talent across platforms", icon: Users, bg: "bg-blue-50", color: "text-blue-600", link: "/dashboard/marketplace" },
+  { title: "Homeless Media", desc: "Premium media placement opportunities", icon: Newspaper, bg: "bg-orange-50", color: "text-orange-600", link: "/dashboard/homeless-media" },
+  { title: "Publishers", desc: "Monetize your platforms and audience", icon: Megaphone, bg: "bg-purple-50", color: "text-purple-600", link: "/dashboard/marketplace" },
+  { title: "Campaign Brief", desc: "Create detailed briefs that get better results", icon: FileText, bg: "bg-green-50", color: "text-green-600", link: "/dashboard/campaigns" },
+  { title: "Analytics", desc: "Track performance and campaign insights", icon: BarChart3, bg: "bg-cyan-50", color: "text-cyan-600", link: "/dashboard/analytics" },
 ];
 
 const ACTIVE_CAMPAIGNS = [
@@ -291,12 +291,12 @@ export default function Dashboard() {
               The all-in-one marketplace connecting brands with the right creators to achieve real impact.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Link to="/marketplace">
+              <Link to="/dashboard/marketplace">
                 <Button className="bg-white text-blue-700 hover:bg-blue-50 font-semibold shadow-lg">
                   Find Creators
                 </Button>
               </Link>
-              <Link to="/campaigns">
+              <Link to="/dashboard/campaigns">
                 <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 font-semibold">
                   Create Campaign
                 </Button>
@@ -323,13 +323,13 @@ export default function Dashboard() {
           <h3 className="text-[15px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             Platform Features
           </h3>
-          <Link to="/marketplace" className="text-xs font-semibold text-blue-600 hover:underline">View All</Link>
+          <Link to="/dashboard/marketplace" className="text-xs font-semibold text-blue-600 hover:underline">View All</Link>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {PLATFORM_FEATURES.map((feat) => {
             const Icon = feat.icon;
             return (
-              <Link key={feat.title} to={feat.link}>
+              <Link key={feat.title} to={feat.link.startsWith('/dashboard') ? feat.link : `/dashboard${feat.link}`}>
                 <div className="rounded-xl border p-4 flex flex-col items-center text-center gap-2 hover:shadow-md transition-shadow cursor-pointer"
                   style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
                   <div className={`w-12 h-12 ${feat.bg} rounded-xl flex items-center justify-center`}>
@@ -510,7 +510,7 @@ export default function Dashboard() {
           <div className="rounded-xl border p-4" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Campaign Calendar</h4>
-              <Link to="/campaigns" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
+              <Link to="/dashboard/campaigns" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
             </div>
             <div className="flex gap-3">
               {CAMPAIGN_EVENTS.map((ev, i) => (
@@ -532,7 +532,7 @@ export default function Dashboard() {
           <div className="rounded-xl border p-4" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Active Campaigns</h4>
-              <Link to="/campaigns" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
+              <Link to="/dashboard/campaigns" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
             </div>
             <div className="space-y-3">
               {ACTIVE_CAMPAIGNS.map((c, i) => (
@@ -559,7 +559,7 @@ export default function Dashboard() {
           <div className="rounded-xl border p-4" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Recent Messages</h4>
-              <Link to="/messages" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
+              <Link to="/dashboard/messages" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
             </div>
             <div className="space-y-3">
               {RECENT_MESSAGES.map((m, i) => (
