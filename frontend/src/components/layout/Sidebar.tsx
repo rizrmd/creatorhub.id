@@ -117,11 +117,11 @@ export default function Sidebar() {
 
         {/* Logo */}
         <div
-          className="h-[70px] flex items-center justify-center border-b shrink-0 overflow-hidden"
-          style={{ borderColor: "var(--ch-border)", padding: effectiveCollapsed ? "0 12px" : "0 16px" }}
+          className="flex items-center justify-center border-b shrink-0 overflow-hidden"
+          style={{ borderColor: "var(--ch-border)", padding: effectiveCollapsed ? "0 12px" : "16px" }}
         >
           <div
-            className={cn("rounded-lg overflow-hidden shrink-0", effectiveCollapsed ? "w-9 h-9" : "w-full h-[56px]")}
+            className={cn("rounded-lg overflow-hidden shrink-0", effectiveCollapsed ? "w-9 h-9" : "w-full h-[72px]")}
           >
             <img
               src={effectiveCollapsed ? "/favicon.png" : "/logo.png"}
