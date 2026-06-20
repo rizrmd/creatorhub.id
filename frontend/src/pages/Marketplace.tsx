@@ -54,12 +54,12 @@ const PRICE_OPTIONS = [
 ];
 
 const CATEGORY_COLORS: Record<string, string> = {
-  lifestyle: "bg-purple-100 text-purple-700",
-  travel: "bg-blue-100 text-blue-700",
-  beauty: "bg-pink-100 text-pink-700",
-  tech: "bg-slate-100 text-slate-700",
-  food: "bg-orange-100 text-orange-700",
-  sports: "bg-green-100 text-green-700",
+  lifestyle: "bg-purple-500/20 text-purple-300",
+  travel: "bg-blue-500/20 text-blue-300",
+  beauty: "bg-pink-500/20 text-pink-300",
+  tech: "bg-slate-500/20 text-slate-300",
+  food: "bg-orange-500/20 text-orange-300",
+  sports: "bg-green-500/20 text-green-300",
 };
 
 const platformIcon = (p: string) => {
@@ -137,10 +137,10 @@ function StatCard({ config, value, loading }: {
     <div
       className="group relative rounded-xl border px-2.5 py-2 flex items-center gap-2 cursor-default transition-all duration-200 hover:scale-[1.02]"
       style={{
-        background: "rgba(255,255,255,.65)",
+        background: "rgba(255,255,255,.05)",
         backdropFilter: "blur(12px)",
-        borderColor: "rgba(0,0,0,.06)",
-        boxShadow: "inset 0 1px 0 rgba(255,255,255,.7)",
+        borderColor: "rgba(255,255,255,.08)",
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,.05)",
       }}
     >
       <div
@@ -317,7 +317,7 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
         {/* Platform icons */}
         <div className="flex gap-1 mt-2">
           {creator.platforms.map((p) => (
-            <span key={p} className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
+            <span key={p} className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-slate-300">
               {platformIcon(p)}
             </span>
           ))}
@@ -761,19 +761,19 @@ export default function Marketplace() {
     : "0";
 
   const briefFooter = selectedIds.length > 0 ? (
-    <div className="p-4 border-t border-slate-200 space-y-3">
+    <div className="p-4 border-t border-white/10 space-y-3">
       <div className="space-y-1.5 text-sm">
         <div className="flex justify-between">
-          <span className="text-slate-500">Est. Total Reach</span>
-          <span className="font-semibold text-slate-700">{formatFollowers(totalReach)}</span>
+          <span className="text-slate-400">Est. Total Reach</span>
+          <span className="font-semibold text-white">{formatFollowers(totalReach)}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-slate-500">Avg. Engagement</span>
-          <span className="font-semibold text-slate-700">{avgEngagement}%</span>
+          <span className="text-slate-400">Avg. Engagement</span>
+          <span className="font-semibold text-white">{avgEngagement}%</span>
         </div>
-        <div className="flex justify-between pt-1.5 border-t border-slate-100">
-          <span className="text-slate-500">Est. Total Budget</span>
-          <span className="font-bold text-slate-800">{formatRupiah(selectedCreators.reduce((a, c) => a + c.price, 0))}</span>
+        <div className="flex justify-between pt-1.5 border-t border-white/10">
+          <span className="text-slate-400">Est. Total Budget</span>
+          <span className="font-bold text-white">{formatRupiah(selectedCreators.reduce((a, c) => a + c.price, 0))}</span>
         </div>
       </div>
       <Button className="w-full" onClick={() => { setShowMobileBrief(false); setShowCreateCampaign(true); }}>Create Campaign</Button>
@@ -789,11 +789,11 @@ export default function Marketplace() {
   ];
 
   return (
-    <div className="flex flex-col xl:flex-row h-full">
+    <div className="flex flex-col xl:flex-row h-full bg-[#070B14]">
       <div className={`flex-1 flex flex-col min-w-0 ${selectedIds.length > 0 ? "pb-20 xl:pb-0" : ""}`}>
         {/* Tabs */}
-        <div className="px-4 pt-3 pb-0 bg-white">
-          <div className="inline-flex items-center gap-1.5 p-1 rounded-2xl bg-slate-100/80">
+        <div className="px-4 pt-3 pb-0 bg-[#0B1120]">
+          <div className="inline-flex items-center gap-1.5 p-1 rounded-2xl bg-white/5">
             {tabs.map((tab) => {
               const TabIcon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -803,8 +803,8 @@ export default function Marketplace() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-1.5 px-4 py-2 text-[12px] font-semibold rounded-xl transition-all duration-200 ${
                     isActive
-                      ? "bg-white text-blue-600 shadow-[0_2px_8px_rgba(0,0,0,.08),0_1px_2px_rgba(0,0,0,.06)] border border-slate-200/60"
-                      : "text-slate-400 hover:text-slate-600 hover:bg-white/50 border border-transparent"
+                      ? "bg-[#1E293B] text-blue-400 shadow-[0_2px_8px_rgba(0,0,0,.3)] border border-white/10"
+                      : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
                   }`}
                 >
                   <TabIcon className="w-3.5 h-3.5" />
@@ -816,7 +816,7 @@ export default function Marketplace() {
         </div>
 
         {/* Stats */}
-        <div className="px-3 pt-2.5 pb-2 border-b border-slate-100">
+        <div className="px-3 pt-2.5 pb-2 border-b border-white/5">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-1.5">
             {STAT_CONFIGS.map((cfg) => (
               <StatCard key={cfg.key} config={cfg} value={statValues[cfg.key]} loading={statsLoading} />
@@ -825,7 +825,7 @@ export default function Marketplace() {
         </div>
 
         {/* Filters row 1 */}
-        <div className="px-3 sm:px-4 pt-3 pb-0 bg-white flex flex-wrap items-center gap-2">
+        <div className="px-3 sm:px-4 pt-3 pb-0 bg-[#0B1120] flex flex-wrap items-center gap-2">
           <div className="relative w-full sm:flex-1 sm:min-w-48">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <Input
@@ -863,7 +863,7 @@ export default function Marketplace() {
         </div>
 
         {/* Filters row 2 */}
-        <div className="px-3 sm:px-4 py-2 bg-white flex flex-wrap items-center gap-2">
+        <div className="px-3 sm:px-4 py-2 bg-[#0B1120] flex flex-wrap items-center gap-2">
           <Select value={followersVal} onValueChange={applyFollowers}>
             <SelectTrigger className="w-full sm:w-40"><SelectValue placeholder="Followers" /></SelectTrigger>
             <SelectContent>{FOLLOWERS_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
@@ -896,7 +896,7 @@ export default function Marketplace() {
           <button
             onClick={() => toggleQuick("topRated")}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-              filters.topRated ? "bg-orange-500 border-orange-500 text-white" : "border-slate-200 text-slate-600 hover:border-orange-300"
+              filters.topRated ? "bg-orange-500 border-orange-500 text-white" : "border-white/10 text-slate-400 hover:border-orange-500/50"
             }`}
           >
             <Flame className="w-3.5 h-3.5" /> Top Rated
@@ -904,7 +904,7 @@ export default function Marketplace() {
           <button
             onClick={() => toggleQuick("fastResponse")}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-              filters.fastResponse ? "bg-amber-500 border-amber-500 text-white" : "border-slate-200 text-slate-600 hover:border-amber-300"
+              filters.fastResponse ? "bg-amber-500 border-amber-500 text-white" : "border-white/10 text-slate-400 hover:border-amber-500/50"
             }`}
           >
             <Zap className="w-3.5 h-3.5" /> Fast Response
@@ -912,7 +912,7 @@ export default function Marketplace() {
           <button
             onClick={() => toggleQuick("verified")}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-              filters.verified ? "bg-blue-600 border-blue-600 text-white" : "border-slate-200 text-slate-600 hover:border-blue-300"
+              filters.verified ? "bg-blue-600 border-blue-600 text-white" : "border-white/10 text-slate-400 hover:border-blue-500/50"
             }`}
           >
             <CheckCircle className="w-3.5 h-3.5" /> Verified Only
@@ -920,8 +920,8 @@ export default function Marketplace() {
         </div>
 
         {/* Row 3: results info + actions */}
-        <div className="px-3 sm:px-4 py-1.5 bg-white border-b border-slate-200 flex flex-wrap items-center gap-2">
-          <p className="text-xs text-slate-500 flex-1">
+        <div className="px-3 sm:px-4 py-1.5 bg-[#0B1120] border-b border-white/5 flex flex-wrap items-center gap-2">
+          <p className="text-xs text-slate-400 flex-1">
             {isLoading ? "Loading..." : `${data?.total ?? 0} creators found`}
           </p>
           <Button variant="outline" size="sm" onClick={resetFilters} className="gap-1.5">
@@ -930,11 +930,11 @@ export default function Marketplace() {
           <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => setShowAdvanced(true)}>
             <SlidersHorizontal className="w-4 h-4" />
           </Button>
-          <div className="flex border border-slate-200 rounded-md overflow-hidden">
-            <button onClick={() => setListView(false)} className={`p-2 ${!listView ? "bg-slate-100 text-slate-700" : "text-slate-400 hover:text-slate-600"}`}>
+          <div className="flex border border-white/10 rounded-md overflow-hidden">
+            <button onClick={() => setListView(false)} className={`p-2 ${!listView ? "bg-white/10 text-white" : "text-slate-400 hover:text-white"}`}>
               <LayoutGrid className="w-4 h-4" />
             </button>
-            <button onClick={() => setListView(true)} className={`p-2 ${listView ? "bg-slate-100 text-slate-700" : "text-slate-400 hover:text-slate-600"}`}>
+            <button onClick={() => setListView(true)} className={`p-2 ${listView ? "bg-white/10 text-white" : "text-slate-400 hover:text-white"}`}>
               <List className="w-4 h-4" />
             </button>
           </div>
@@ -962,7 +962,7 @@ export default function Marketplace() {
               ))}
             </div>
           ) : data?.data.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 text-slate-400">
+            <div className="flex flex-col items-center justify-center py-24 text-slate-500">
               <Users className="w-12 h-12 mb-3 opacity-40" />
               <p className="font-medium">No creators found</p>
               <p className="text-sm mt-1">Try adjusting your filters</p>
@@ -991,7 +991,7 @@ export default function Marketplace() {
                 onClick={() => setFilters((f) => ({ ...f, page: (f.page ?? 1) - 1 }))}>
                 Sebelumnya
               </Button>
-              <span className="text-xs text-slate-500 self-center">
+              <span className="text-xs text-slate-400 self-center">
                 Menampilkan {((filters.page ?? 1) - 1) * (filters.pageSize ?? 20) + 1}–{Math.min((filters.page ?? 1) * (filters.pageSize ?? 20), data.total)} dari {data.total} kreator
                 {" · "}Halaman {filters.page} dari {data.totalPages}
               </span>
@@ -1006,39 +1006,38 @@ export default function Marketplace() {
 
       {/* Mobile campaign brief bar */}
       {selectedIds.length > 0 && (
-        <div className="xl:hidden fixed bottom-0 left-0 right-0 z-30 p-3 bg-white border-t shadow-lg flex items-center gap-3"
-          style={{ borderColor: "var(--ch-border)" }}>
+        <div className="xl:hidden fixed bottom-0 left-0 right-0 z-30 p-3 bg-[#111827] border-t border-white/10 shadow-lg flex items-center gap-3">
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold truncate" style={{ color: "var(--ch-text)" }}>Campaign Brief</p>
-            <p className="text-xs" style={{ color: "var(--ch-text-muted)" }}>{selectedIds.length}/5 creators selected</p>
+            <p className="text-sm font-bold truncate text-white">Campaign Brief</p>
+            <p className="text-xs text-slate-400">{selectedIds.length}/5 creators selected</p>
           </div>
           <Button size="sm" onClick={() => setShowMobileBrief(true)}>View Brief</Button>
         </div>
       )}
 
       {/* Campaign Brief Panel — desktop */}
-      <aside className="hidden xl:flex w-[312px] shrink-0 flex-col" style={{ background: "var(--ch-surface)", borderLeft: "1px solid var(--ch-border)" }}>
-        <div className="p-4 border-b" style={{ borderColor: "var(--ch-border)" }}>
-          <h2 className="font-bold text-[15px]" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Campaign Brief</h2>
-          <p className="text-[12px] mt-0.5" style={{ color: "var(--ch-text-muted)" }}>{selectedIds.length}/5 creators selected</p>
+      <aside className="hidden xl:flex w-[312px] shrink-0 flex-col bg-[#111827] border-l border-white/10">
+        <div className="p-4 border-b border-white/10">
+          <h2 className="font-bold text-[15px] text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Campaign Brief</h2>
+          <p className="text-[12px] mt-0.5 text-slate-400">{selectedIds.length}/5 creators selected</p>
         </div>
 
         <div className="flex-1 overflow-auto p-4 space-y-3">
           {selectedCreators.length === 0 ? (
-            <div className="text-center py-12 text-slate-400">
+            <div className="text-center py-12 text-slate-500">
               <p className="text-sm">No creators selected yet</p>
               <p className="text-xs mt-1">Click "Invite" or open creator profile</p>
             </div>
           ) : (
             selectedCreators.map((c) => (
-              <div key={c.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-semibold text-slate-600 overflow-hidden shrink-0">
+              <div key={c.id} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl">
+                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-semibold text-slate-300 overflow-hidden shrink-0">
                   {c.imageUrl ? <img src={c.imageUrl} alt={c.name} className="w-full h-full object-cover" /> : c.name[0]}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-800 truncate">{c.name}</p>
-                  <p className="text-xs text-slate-500">{c.followersText} followers</p>
-                  <p className="text-xs text-slate-400">{c.engagementRate}% ER · {c.priceText}</p>
+                  <p className="text-sm font-medium text-white truncate">{c.name}</p>
+                  <p className="text-xs text-slate-400">{c.followersText} followers</p>
+                  <p className="text-xs text-slate-500">{c.engagementRate}% ER · {c.priceText}</p>
                 </div>
                 <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-red-500"
                   onClick={() => toggleSelect(c.id)}>
