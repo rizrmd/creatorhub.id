@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Sparkles,
   ArrowRight, Play, Volume2, VolumeX,
-  CheckCircle2, ChevronDown, Instagram, Youtube, Facebook, Twitter, Linkedin,
+  CheckCircle2, ChevronDown, Instagram, Youtube, Twitter, Linkedin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -42,14 +42,6 @@ const HOW_IT_WORKS = [
   { step: "04", title: "Track Results", desc: "Monitor performance, engagement, reach, sentiment, and campaign impact from one dashboard." },
 ];
 
-const PLATFORMS = [
-  { name: "Instagram", icon: Instagram },
-  { name: "TikTok", icon: Play },
-  { name: "YouTube", icon: Youtube },
-  { name: "Facebook", icon: Facebook },
-  { name: "X / Twitter", icon: Twitter },
-  { name: "LinkedIn", icon: Linkedin },
-];
 
 
 
@@ -162,47 +154,67 @@ export default function Landing() {
             </div>
 
             <div className="w-full justify-self-center lg:justify-self-end">
-              <div className="flex gap-3">
-                <div className="rounded-2xl border border-white/15 bg-white/10 p-1.5 shadow-xl shadow-orange-950/30 backdrop-blur-sm">
-                  <div className="overflow-hidden rounded-xl bg-black ring-1 ring-white/10">
-                    <video
-                      ref={videoRef}
-                      src="/hero-video.mp4"
-                      poster="/hero.png"
-                      className="h-[220px] w-[180px] object-cover sm:h-[260px] sm:w-[220px] lg:h-[300px] lg:w-[250px]"
-                      autoPlay
-                      muted={isVideoMuted}
-                      loop
-                      playsInline
-                      preload="auto"
-                      onLoadedMetadata={(event) => {
-                        event.currentTarget.volume = videoVolume / 100;
-                        event.currentTarget.muted = isVideoMuted;
-                      }}
-                      aria-label="CreatorHub video preview"
-                    />
+              <div className="flex gap-5 items-end">
+                {/* Monitor 1 */}
+                <div className="relative">
+                  <div className="rounded-t-xl bg-gradient-to-b from-slate-700 to-slate-800 p-2 shadow-2xl shadow-orange-950/20 border border-white/10 border-b-0">
+                    <div className="overflow-hidden rounded bg-black ring-1 ring-white/10">
+                      <video
+                        ref={videoRef}
+                        src="/hero-video.mp4"
+                        poster="/hero.png"
+                        className="h-[200px] w-[260px] object-cover sm:h-[240px] sm:w-[320px] lg:h-[280px] lg:w-[380px]"
+                        autoPlay
+                        muted={isVideoMuted}
+                        loop
+                        playsInline
+                        preload="auto"
+                        onLoadedMetadata={(event) => {
+                          event.currentTarget.volume = videoVolume / 100;
+                          event.currentTarget.muted = isVideoMuted;
+                        }}
+                        aria-label="CreatorHub video preview"
+                      />
+                    </div>
+                  </div>
+                  <div className="h-2 bg-gradient-to-b from-slate-700 to-slate-800 border-x border-white/10" />
+                  <div className="flex justify-center">
+                    <div className="w-20 h-3 bg-gradient-to-b from-slate-700 to-slate-800 border-x border-b border-white/10 rounded-b-lg" />
+                  </div>
+                  <div className="flex justify-center">
+                    <div className="w-32 h-1 bg-slate-700 rounded-full" />
                   </div>
                 </div>
-                <div className="rounded-2xl border border-white/15 bg-white/10 p-1.5 shadow-xl shadow-orange-950/30 backdrop-blur-sm">
-                  <div className="overflow-hidden rounded-xl bg-black ring-1 ring-white/10">
-                    <video
-                      src="/hero-video-2.mp4"
-                      className="h-[220px] w-[180px] object-cover sm:h-[260px] sm:w-[220px] lg:h-[300px] lg:w-[250px]"
-                      autoPlay
-                      muted={isVideoMuted}
-                      loop
-                      playsInline
-                      preload="auto"
-                      onLoadedMetadata={(event) => {
-                        event.currentTarget.volume = videoVolume / 100;
-                        event.currentTarget.muted = isVideoMuted;
-                      }}
-                      aria-label="CreatorHub second video preview"
-                    />
+                {/* Monitor 2 */}
+                <div className="relative">
+                  <div className="rounded-t-xl bg-gradient-to-b from-slate-700 to-slate-800 p-2 shadow-2xl shadow-orange-950/20 border border-white/10 border-b-0">
+                    <div className="overflow-hidden rounded bg-black ring-1 ring-white/10">
+                      <video
+                        src="/hero-video-2.mp4"
+                        className="h-[200px] w-[260px] object-cover sm:h-[240px] sm:w-[320px] lg:h-[280px] lg:w-[380px]"
+                        autoPlay
+                        muted={isVideoMuted}
+                        loop
+                        playsInline
+                        preload="auto"
+                        onLoadedMetadata={(event) => {
+                          event.currentTarget.volume = videoVolume / 100;
+                          event.currentTarget.muted = isVideoMuted;
+                        }}
+                        aria-label="CreatorHub second video preview"
+                      />
+                    </div>
+                  </div>
+                  <div className="h-2 bg-gradient-to-b from-slate-700 to-slate-800 border-x border-white/10" />
+                  <div className="flex justify-center">
+                    <div className="w-20 h-3 bg-gradient-to-b from-slate-700 to-slate-800 border-x border-b border-white/10 rounded-b-lg" />
+                  </div>
+                  <div className="flex justify-center">
+                    <div className="w-32 h-1 bg-slate-700 rounded-full" />
                   </div>
                 </div>
               </div>
-              <div className="mt-2 flex items-center gap-3 rounded-2xl bg-black/80 px-4 py-3 text-white ring-1 ring-white/10">
+              <div className="mt-3 flex items-center gap-3 rounded-2xl bg-black/80 px-4 py-3 text-white ring-1 ring-white/10">
                 <button
                   type="button"
                   onClick={toggleVideoMute}
@@ -256,32 +268,18 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Dashboard Section */}
+      {/* Dashboard Preview */}
       <section className="py-20 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left - Dark Card */}
-            <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-8 lg:p-10">
-              <h3 className="text-2xl lg:text-3xl font-extrabold text-white mb-4" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                All platforms, one dashboard
-              </h3>
-              <p className="text-slate-400 mb-8 leading-relaxed">
-                Connect with creators and track your campaign activity across every major social media platform from a single command center.
-              </p>
-              <div className="flex flex-wrap gap-3">
-                {PLATFORMS.map((p) => (
-                  <div key={p.name} className="flex items-center gap-2 px-4 py-2.5 bg-white/10 backdrop-blur-sm rounded-xl border border-white/10">
-                    <p.icon className="w-4 h-4 text-white" />
-                    <span className="text-sm font-medium text-white">{p.name}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right - Dashboard Image */}
-            <div className="rounded-2xl overflow-hidden shadow-2xl border border-slate-200">
-              <img src="/feat-one-dashboard.png" alt="CreatorHub Dashboard" className="w-full h-auto object-cover" />
-            </div>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-sm font-semibold text-orange-500 mb-2 uppercase tracking-wider">Platform Preview</p>
+          <h2 className="text-3xl lg:text-4xl font-extrabold text-slate-900 mb-4" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            All platforms, one dashboard
+          </h2>
+          <p className="text-lg text-slate-500 max-w-2xl mx-auto mb-10">
+            Connect with creators and track your campaign activity across every major social media platform from a single command center.
+          </p>
+          <div className="rounded-2xl overflow-hidden shadow-2xl border border-slate-200">
+            <img src="/feat-one-dashboard.png" alt="CreatorHub Dashboard" className="w-full h-auto object-cover" />
           </div>
         </div>
       </section>
@@ -309,10 +307,11 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-12 lg:p-16 shadow-2xl">
+      {/* Footer */}
+      <footer className="text-slate-400">
+        {/* CTA - slightly lighter than footer */}
+        <div className="bg-gradient-to-b from-slate-800 to-slate-900 py-16">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl lg:text-4xl font-extrabold text-white mb-4" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
               Ready to launch your next creator campaign?
             </h2>
@@ -333,10 +332,12 @@ export default function Landing() {
             </div>
           </div>
         </div>
-      </section>
 
-      {/* Footer */}
-      <footer className="bg-slate-900 text-slate-400 py-16">
+        {/* Divider line */}
+        <div className="border-t border-white/10" />
+
+        {/* Footer content - darker */}
+        <div className="bg-slate-900 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-6 gap-8 mb-12">
             {/* Logo + Tagline */}
@@ -410,6 +411,7 @@ export default function Landing() {
           <div className="border-t border-slate-800 pt-8 text-center text-sm">
             <p>&copy; 2025 CreatorHub.ID. All rights reserved.</p>
           </div>
+        </div>
         </div>
       </footer>
     </div>
