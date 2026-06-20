@@ -48,7 +48,6 @@ const HOW_IT_WORKS = [
 export default function Landing() {
   const [solutionsOpen, setSolutionsOpen] = useState(false);
   const [isVideoMuted, setIsVideoMuted] = useState(true);
-  const [videoVolume, setVideoVolume] = useState(60);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   function toggleVideoMute() {
@@ -57,18 +56,6 @@ export default function Landing() {
     setIsVideoMuted(nextMuted);
     if (videoRef.current) {
       videoRef.current.muted = nextMuted;
-      videoRef.current.volume = videoVolume / 100;
-    }
-  }
-
-  function changeVideoVolume(nextVolume: number) {
-    const shouldMute = nextVolume === 0;
-
-    setVideoVolume(nextVolume);
-    setIsVideoMuted(shouldMute);
-    if (videoRef.current) {
-      videoRef.current.volume = nextVolume / 100;
-      videoRef.current.muted = shouldMute;
     }
   }
 
@@ -118,9 +105,7 @@ export default function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-slate-950">
-        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_80%_20%,rgba(249,115,22,0.22),transparent_32%),radial-gradient(circle_at_20%_80%,rgba(59,130,246,0.14),transparent_30%)]" />
-        <div className="absolute inset-0 pointer-events-none bg-slate-950/65" />
+      <section className="relative overflow-hidden bg-black">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12 lg:pt-8 lg:pb-16">
           <div className="grid lg:grid-cols-[1fr_0.78fr] gap-10 lg:gap-14 items-center">
             <div className="max-w-2xl lg:max-w-xl">
@@ -154,87 +139,45 @@ export default function Landing() {
             </div>
 
             <div className="w-full justify-self-center lg:justify-self-end">
-              <div className="flex gap-5 items-end">
-                {/* Monitor 1 */}
-                <div className="relative">
-                  <div className="rounded-t-xl bg-gradient-to-b from-slate-700 to-slate-800 p-2 shadow-2xl shadow-orange-950/20 border border-white/10 border-b-0">
-                    <div className="overflow-hidden rounded bg-black ring-1 ring-white/10">
-                      <video
-                        ref={videoRef}
-                        src="/hero-video.mp4"
-                        poster="/hero.png"
-                        className="h-[200px] w-[260px] object-cover sm:h-[240px] sm:w-[320px] lg:h-[280px] lg:w-[380px]"
-                        autoPlay
-                        muted={isVideoMuted}
-                        loop
-                        playsInline
-                        preload="auto"
-                        onLoadedMetadata={(event) => {
-                          event.currentTarget.volume = videoVolume / 100;
-                          event.currentTarget.muted = isVideoMuted;
-                        }}
-                        aria-label="CreatorHub video preview"
-                      />
-                    </div>
-                  </div>
-                  <div className="h-2 bg-gradient-to-b from-slate-700 to-slate-800 border-x border-white/10" />
-                  <div className="flex justify-center">
-                    <div className="w-20 h-3 bg-gradient-to-b from-slate-700 to-slate-800 border-x border-b border-white/10 rounded-b-lg" />
-                  </div>
-                  <div className="flex justify-center">
-                    <div className="w-32 h-1 bg-slate-700 rounded-full" />
-                  </div>
-                </div>
-                {/* Monitor 2 */}
-                <div className="relative">
-                  <div className="rounded-t-xl bg-gradient-to-b from-slate-700 to-slate-800 p-2 shadow-2xl shadow-orange-950/20 border border-white/10 border-b-0">
-                    <div className="overflow-hidden rounded bg-black ring-1 ring-white/10">
-                      <video
-                        src="/hero-video-2.mp4"
-                        className="h-[200px] w-[260px] object-cover sm:h-[240px] sm:w-[320px] lg:h-[280px] lg:w-[380px]"
-                        autoPlay
-                        muted={isVideoMuted}
-                        loop
-                        playsInline
-                        preload="auto"
-                        onLoadedMetadata={(event) => {
-                          event.currentTarget.volume = videoVolume / 100;
-                          event.currentTarget.muted = isVideoMuted;
-                        }}
-                        aria-label="CreatorHub second video preview"
-                      />
-                    </div>
-                  </div>
-                  <div className="h-2 bg-gradient-to-b from-slate-700 to-slate-800 border-x border-white/10" />
-                  <div className="flex justify-center">
-                    <div className="w-20 h-3 bg-gradient-to-b from-slate-700 to-slate-800 border-x border-b border-white/10 rounded-b-lg" />
-                  </div>
-                  <div className="flex justify-center">
-                    <div className="w-32 h-1 bg-slate-700 rounded-full" />
-                  </div>
-                </div>
+              <div className="flex gap-4 items-end">
+                <video
+                  ref={videoRef}
+                  src="/hero-video.mp4"
+                  poster="/hero.png"
+                  className="h-[220px] w-[180px] rounded-2xl object-cover sm:h-[260px] sm:w-[220px] lg:h-[320px] lg:w-[280px]"
+                  autoPlay
+                  muted={isVideoMuted}
+                  loop
+                  playsInline
+                  preload="auto"
+                  onLoadedMetadata={(event) => {
+                    event.currentTarget.muted = isVideoMuted;
+                  }}
+                  aria-label="CreatorHub video preview"
+                />
+                <video
+                  src="/hero-video-2.mp4"
+                  className="h-[220px] w-[180px] rounded-2xl object-cover sm:h-[260px] sm:w-[220px] lg:h-[320px] lg:w-[280px]"
+                  autoPlay
+                  muted={isVideoMuted}
+                  loop
+                  playsInline
+                  preload="auto"
+                  onLoadedMetadata={(event) => {
+                    event.currentTarget.muted = isVideoMuted;
+                  }}
+                  aria-label="CreatorHub second video preview"
+                />
               </div>
-              <div className="mt-3 flex items-center gap-3 rounded-2xl bg-black/80 px-4 py-3 text-white ring-1 ring-white/10">
+              <div className="mt-3 flex justify-center">
                 <button
                   type="button"
                   onClick={toggleVideoMute}
-                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-red-500/90 text-white transition-colors hover:bg-red-500"
                   aria-label={isVideoMuted ? "Unmute video" : "Mute video"}
                 >
-                  {isVideoMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+                  {isVideoMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
                 </button>
-                <div className="flex flex-1 items-center gap-3">
-                  <span className="text-xs font-semibold text-slate-300">Volume</span>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={isVideoMuted ? 0 : videoVolume}
-                    onChange={(event) => changeVideoVolume(Number(event.currentTarget.value))}
-                    className="h-1.5 flex-1 cursor-pointer accent-orange-500"
-                    aria-label="Video volume"
-                  />
-                </div>
               </div>
             </div>
           </div>
