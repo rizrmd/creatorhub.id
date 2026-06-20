@@ -169,8 +169,6 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
   onToggle: () => void; onCardClick: () => void; onFavorite: () => void; listView: boolean;
 }) {
   const catColor = CATEGORY_COLORS[creator.category] ?? "bg-white/10 text-slate-300";
-  const highPrice = creator.price * 2;
-  const highPriceText = formatBudget(highPrice);
 
   if (listView) {
     return (
@@ -214,7 +212,7 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
               <span className="font-semibold">{creator.followersText}</span>
               <span className="font-semibold">{creator.engagementRate}% ER</span>
               <span className="font-bold whitespace-nowrap" style={{ color: "var(--ch-text)" }}>
-                {creator.priceText} – {highPriceText}
+                Starts from {creator.priceText}
               </span>
             </div>
             <button
@@ -233,7 +231,7 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
                 border: "1.5px solid var(--ch-primary-100)",
               }}
             >
-              {selected ? "✓ Invited" : "Invite"}
+              {selected ? "✓ Invited" : "Invite to Project"}
             </button>
           </div>
         </div>
@@ -322,40 +320,47 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
           </span>
         </div>
 
-        {/* Active Platforms with names */}
-        <div className="mt-2.5 space-y-1">
-          {creator.platforms.map((p) => (
-            <div key={p} className="flex items-center gap-1.5 text-[11px]" style={{ color: "var(--ch-text-muted)" }}>
-              <span className="w-4 h-4 rounded bg-white/5 flex items-center justify-center text-slate-400 shrink-0">
-                {platformIcon(p)}
-              </span>
-              <span className="capitalize font-medium" style={{ color: "var(--ch-text)" }}>{p}</span>
-            </div>
-          ))}
+        {/* Platform metrics table */}
+        {creator.platformMetrics && creator.platformMetrics.length > 0 && (
+          <div className="mt-2.5 rounded-lg border overflow-hidden" style={{ borderColor: "var(--ch-border)" }}>
+            <table className="w-full text-[10px]">
+              <thead>
+                <tr className="border-b" style={{ borderColor: "var(--ch-border)", background: "rgba(255,255,255,.03)" }}>
+                  <th className="text-left py-1.5 px-2 font-semibold" style={{ color: "var(--ch-text-muted)" }}>Platform</th>
+                  <th className="text-right py-1.5 px-2 font-semibold" style={{ color: "var(--ch-text-muted)" }}>Followers</th>
+                  <th className="text-right py-1.5 px-2 font-semibold" style={{ color: "var(--ch-text-muted)" }}>ER</th>
+                </tr>
+              </thead>
+              <tbody>
+                {creator.platformMetrics.map((pm) => (
+                  <tr key={pm.platform} className="border-b last:border-b-0" style={{ borderColor: "var(--ch-border)" }}>
+                    <td className="py-1.5 px-2 flex items-center gap-1.5 font-medium" style={{ color: "var(--ch-text)" }}>
+                      <span className="w-3 h-3 flex items-center justify-center text-slate-400">{platformIcon(pm.platform)}</span>
+                      <span className="capitalize">{pm.platform}</span>
+                    </td>
+                    <td className="py-1.5 px-2 text-right font-semibold" style={{ color: "var(--ch-text)" }}>{formatFollowers(pm.followers)}</td>
+                    <td className="py-1.5 px-2 text-right font-semibold" style={{ color: "var(--ch-text)" }}>{pm.engagementRate}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Price */}
+        <div className="mt-2 text-[11px]" style={{ color: "var(--ch-text-soft)" }}>
+          Starts from <span className="font-semibold" style={{ color: "var(--ch-text)" }}>{creator.priceText}</span>
         </div>
 
-        {/* Total followers + engagement */}
-        <div className="flex items-center gap-2 mt-2.5 text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
-          <span className="font-semibold" style={{ color: "var(--ch-text)" }}>{creator.followersText}</span> followers
-          <span className="text-white/20">·</span>
-          <span>{creator.engagementRate}% ER</span>
-        </div>
-
-        {/* Price range */}
-        <div className="mt-2 px-2.5 py-1.5 rounded-lg bg-white/5 border border-white/5">
-          <p className="text-[11px] font-semibold" style={{ color: "var(--ch-text)" }}>
-            Starts from {creator.priceText}
-          </p>
-          <p className="text-[10px]" style={{ color: "var(--ch-text-soft)" }}>
-            to {highPriceText} per post
-          </p>
-          <p className="text-[10px] mt-0.5" style={{ color: "var(--ch-text-soft)" }}>
-            ({creator.platforms.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(", ")})
-          </p>
-        </div>
-
-        {/* Invite button */}
-        <div className="flex justify-end mt-2.5">
+        {/* Actions */}
+        <div className="flex items-center justify-between mt-2.5">
+          <button
+            onClick={(e) => { e.stopPropagation(); onCardClick(); }}
+            className="text-[11px] font-semibold hover:underline"
+            style={{ color: "var(--ch-primary)" }}
+          >
+            Full Profile
+          </button>
           <button
             onClick={(e) => { e.stopPropagation(); onToggle(); }}
             className="px-3.5 py-1.5 rounded-lg text-[12px] font-bold transition-all"
@@ -366,7 +371,7 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
               border: "1.5px solid var(--ch-primary-100)",
             }}
           >
-            {selected ? "✓ Invited" : "Invite"}
+            {selected ? "✓ Invited" : "Invite to Project"}
           </button>
         </div>
       </div>
@@ -380,11 +385,9 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
 }) {
   const catColor = CATEGORY_COLORS[creator.category] ?? "bg-white/10 text-slate-300";
 
-  const platformWeights = [0.55, 0.30, 0.15];
-  const platformSplit = creator.platforms.map((p, i) => ({
-    platform: p,
-    count: Math.round(creator.followers * (platformWeights[i] ?? 0.1)),
-  }));
+  const platformSplit = (creator.platformMetrics && creator.platformMetrics.length > 0)
+    ? creator.platformMetrics
+    : creator.platforms.map((p) => ({ platform: p, followers: 0, engagementRate: 0 }));
 
   const collaborationCount = Math.max(1, Math.round(creator.rating * 8) - 12);
   const responseTimeLabel = creator.fastResponse ? "< 2 jam" : "< 24 jam";
@@ -485,30 +488,35 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
               <div className="rounded-xl p-4" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
                 <h3 className="text-sm font-bold mb-3" style={{ color: "var(--ch-text)" }}>Platform & Audience</h3>
                 <div className="space-y-2">
-                  {platformSplit.map(({ platform, count }) => (
+                  {platformSplit.map((pm) => (
                     <div
-                      key={platform}
+                      key={pm.platform}
                       className={`flex items-center justify-between px-4 py-3 rounded-lg border
-                        ${platform === "instagram" ? "border-pink-500/30 bg-pink-500/10" :
-                          platform === "tiktok" ? "border-white/10 bg-white/5" :
-                          platform === "youtube" ? "border-red-500/30 bg-red-500/10" :
-                          platform === "facebook" ? "border-blue-500/30 bg-blue-500/10" :
-                          platform === "x" ? "border-white/10 bg-white/5" :
+                        ${pm.platform === "instagram" ? "border-pink-500/30 bg-pink-500/10" :
+                          pm.platform === "tiktok" ? "border-white/10 bg-white/5" :
+                          pm.platform === "youtube" ? "border-red-500/30 bg-red-500/10" :
+                          pm.platform === "facebook" ? "border-blue-500/30 bg-blue-500/10" :
+                          pm.platform === "x" ? "border-white/10 bg-white/5" :
                           "border-blue-500/30 bg-blue-500/10"}`}
                     >
                       <span className={`flex items-center gap-2 text-sm font-semibold
-                        ${platform === "tiktok" ? "text-white" :
-                          platform === "x" ? "text-white" :
-                          platform === "instagram" ? "text-pink-300" :
-                          platform === "youtube" ? "text-red-300" :
-                          platform === "facebook" ? "text-blue-300" :
+                        ${pm.platform === "tiktok" ? "text-white" :
+                          pm.platform === "x" ? "text-white" :
+                          pm.platform === "instagram" ? "text-pink-300" :
+                          pm.platform === "youtube" ? "text-red-300" :
+                          pm.platform === "facebook" ? "text-blue-300" :
                           "text-blue-300"}`}>
-                        {platformIcon(platform)}
-                        <span className="capitalize">{platform}</span>
+                        {platformIcon(pm.platform)}
+                        <span className="capitalize">{pm.platform}</span>
                       </span>
-                      <span className={`text-sm font-bold ${platform === "tiktok" || platform === "x" ? "text-white" : "text-slate-200"}`}>
-                        {formatFollowers(count)} followers
-                      </span>
+                      <div className="text-right">
+                        <span className={`text-sm font-bold block ${pm.platform === "tiktok" || pm.platform === "x" ? "text-white" : "text-slate-200"}`}>
+                          {formatFollowers(pm.followers)} followers
+                        </span>
+                        <span className="text-xs" style={{ color: "var(--ch-text-muted)" }}>
+                          {pm.engagementRate}% ER
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -608,7 +616,7 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
               {selected ? (
                 <>Remove from Brief</>
               ) : (
-                <><User style={{ width: 16, height: 16 }} /> Invite to Campaign</>
+                <><User style={{ width: 16, height: 16 }} /> Invite to Project</>
               )}
             </Button>
           </div>

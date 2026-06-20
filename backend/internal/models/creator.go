@@ -1,29 +1,36 @@
 package models
 
+type PlatformMetric struct {
+	Platform       string  `json:"platform"`
+	Followers      int64   `json:"followers"`
+	EngagementRate float64 `json:"engagementRate"`
+}
+
 type Creator struct {
-	ID             string   `json:"id"`
-	Name           string   `json:"name"`
-	Handle         string   `json:"handle"`
-	City           string   `json:"city"`
-	Country        string   `json:"country"`
-	Category       string   `json:"category"`
-	Platforms      []string `json:"platforms"`
-	Followers      int64    `json:"followers"`
-	FollowersText  string   `json:"followersText"`
-	EngagementRate float64  `json:"engagementRate"`
-	Price          int64    `json:"price"`
-	PriceText      string   `json:"priceText"`
-	Verified       bool     `json:"verified"`
-	StarCreator    bool     `json:"starCreator"`
-	Rating         float64  `json:"rating"`
-	FastResponse   bool     `json:"fastResponse"`
-	TopRated       bool     `json:"topRated"`
-	LastSeen       string   `json:"lastSeen"`
-	ImageURL       string   `json:"imageUrl"`
-	ImgPath        string   `json:"img"`
-	Focus          string   `json:"focus"`
-	Hue            int      `json:"hue"`
-	Bio            string   `json:"bio"`
+	ID              string           `json:"id"`
+	Name            string           `json:"name"`
+	Handle          string           `json:"handle"`
+	City            string           `json:"city"`
+	Country         string           `json:"country"`
+	Category        string           `json:"category"`
+	Platforms       []string         `json:"platforms"`
+	PlatformMetrics []PlatformMetric `json:"platformMetrics"`
+	Followers       int64            `json:"followers"`
+	FollowersText   string           `json:"followersText"`
+	EngagementRate  float64          `json:"engagementRate"`
+	Price           int64            `json:"price"`
+	PriceText       string           `json:"priceText"`
+	Verified        bool             `json:"verified"`
+	StarCreator     bool             `json:"starCreator"`
+	Rating          float64          `json:"rating"`
+	FastResponse    bool             `json:"fastResponse"`
+	TopRated        bool             `json:"topRated"`
+	LastSeen        string           `json:"lastSeen"`
+	ImageURL        string           `json:"imageUrl"`
+	ImgPath         string           `json:"img"`
+	Focus           string           `json:"focus"`
+	Hue             int              `json:"hue"`
+	Bio             string           `json:"bio"`
 }
 
 type CreatorListParams struct {

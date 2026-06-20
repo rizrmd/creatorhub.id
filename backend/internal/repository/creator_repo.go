@@ -141,7 +141,16 @@ func (r *CreatorRepository) List(ctx context.Context, params models.CreatorListP
 				(SELECT array_agg(cp.platform ORDER BY cp.platform)
 				 FROM creator_platforms cp WHERE cp.creator_id = c.id),
 				ARRAY[]::text[]
-			) AS platforms
+			) AS platforms,
+			COALESCE(
+				(SELECT jsonb_agg(jsonb_build_object(
+					'platform', cp.platform,
+					'followers', cp.followers,
+					'engagementRate', cp.engagement_rate
+				) ORDER BY cp.platform)
+				FROM creator_platforms cp WHERE cp.creator_id = c.id),
+				'[]'::jsonb
+			) AS platform_metrics
 		FROM creators c
 		WHERE %s
 		ORDER BY %s
@@ -162,12 +171,15 @@ func (r *CreatorRepository) List(ctx context.Context, params models.CreatorListP
 			&c.Followers, &c.FollowersText, &c.EngagementRate,
 			&c.Price, &c.PriceText, &c.Verified, &c.StarCreator, &c.Rating,
 			&c.FastResponse, &c.TopRated, &c.LastSeen, &c.ImageURL, &c.ImgPath, &c.Focus, &c.Hue, &c.Bio,
-			&c.Platforms,
+			&c.Platforms, &c.PlatformMetrics,
 		); err != nil {
 			return nil, err
 		}
 		if c.Platforms == nil {
 			c.Platforms = []string{}
+		}
+		if c.PlatformMetrics == nil {
+			c.PlatformMetrics = []models.PlatformMetric{}
 		}
 		creators = append(creators, c)
 	}
@@ -207,7 +219,16 @@ func (r *CreatorRepository) GetByID(ctx context.Context, id string) (*models.Cre
 				(SELECT array_agg(cp.platform ORDER BY cp.platform)
 				 FROM creator_platforms cp WHERE cp.creator_id = c.id),
 				ARRAY[]::text[]
-			) AS platforms
+			) AS platforms,
+			COALESCE(
+				(SELECT jsonb_agg(jsonb_build_object(
+					'platform', cp.platform,
+					'followers', cp.followers,
+					'engagementRate', cp.engagement_rate
+				) ORDER BY cp.platform)
+				FROM creator_platforms cp WHERE cp.creator_id = c.id),
+				'[]'::jsonb
+			) AS platform_metrics
 		FROM creators c
 		WHERE c.id = $1`, id,
 	).Scan(
@@ -215,13 +236,16 @@ func (r *CreatorRepository) GetByID(ctx context.Context, id string) (*models.Cre
 		&c.Followers, &c.FollowersText, &c.EngagementRate,
 		&c.Price, &c.PriceText, &c.Verified, &c.StarCreator, &c.Rating,
 		&c.FastResponse, &c.TopRated, &c.LastSeen, &c.ImageURL, &c.ImgPath, &c.Focus, &c.Hue, &c.Bio,
-		&c.Platforms,
+		&c.Platforms, &c.PlatformMetrics,
 	)
 	if err != nil {
 		return nil, err
 	}
 	if c.Platforms == nil {
 		c.Platforms = []string{}
+	}
+	if c.PlatformMetrics == nil {
+		c.PlatformMetrics = []models.PlatformMetric{}
 	}
 	return &c, nil
 }

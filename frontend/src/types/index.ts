@@ -1,3 +1,9 @@
+export interface PlatformMetric {
+  platform: string;
+  followers: number;
+  engagementRate: number;
+}
+
 export interface Creator {
   id: string;
   name: string;
@@ -6,6 +12,7 @@ export interface Creator {
   country: string;
   category: string;
   platforms: string[];
+  platformMetrics: PlatformMetric[];
   followers: number;
   followersText: string;
   engagementRate: number;
