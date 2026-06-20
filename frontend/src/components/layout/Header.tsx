@@ -44,10 +44,16 @@ export default function Header() {
   const [showMessages, setShowMessages] = useState(false);
   const [showProfile, setShowProfile]   = useState(false);
   const [msgSearch, setMsgSearch]       = useState("");
+  const [now, setNow] = useState(new Date());
 
   const notifRef   = useRef<HTMLDivElement>(null);
   const msgRef     = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
 
   const displayUser = effectiveRole === "kreator" ? {
     ...USER_BY_ROLE.kreator,
@@ -97,9 +103,12 @@ export default function Header() {
   const unreadNotif = NOTIFICATIONS.filter((n) => n.unread).length;
   const unreadMsg   = MESSAGE_THREADS.reduce((s, t) => s + t.unread, 0);
 
+  const dateStr = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  const timeStr = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
+
   return (
     <header
-      className="h-14 lg:h-[70px] bg-slate-950 flex items-center gap-2 md:gap-4 shrink-0 relative z-30 px-4 md:px-6"
+      className="h-16 bg-slate-950 border-b border-white/20 flex items-center gap-2 md:gap-4 shrink-0 relative z-30 px-4 md:px-6"
     >
       <button
         type="button"
@@ -110,14 +119,16 @@ export default function Header() {
         <Menu style={{ width: 20, height: 20 }} />
       </button>
 
-      {/* Logo + Brand */}
+      {/* Logo + Brand — same size as landing page */}
       <div className="flex items-center gap-2.5 shrink-0">
-        <img src="/favicon.png?v=4" alt="CreatorHub" className="h-9 w-9" />
-        <span className="text-lg font-extrabold text-white tracking-tight hidden sm:block" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>CreatorHub.ID</span>
+        <img src="/favicon.png?v=4" alt="CreatorHub" className="h-12 w-12" />
+        <span className="text-2xl font-extrabold text-white tracking-tight hidden sm:block" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>CreatorHub.ID</span>
       </div>
 
-      {/* Spacer */}
-      <div className="flex-1" />
+      {/* Center — Date & Time */}
+      <div className="flex-1 flex items-center justify-center">
+        <span className="text-sm font-semibold text-white/70 hidden md:block">{dateStr} | {timeStr}</span>
+      </div>
 
       {/* Right actions */}
       <div className="flex items-center gap-0.5 sm:gap-1 ml-auto shrink-0">
