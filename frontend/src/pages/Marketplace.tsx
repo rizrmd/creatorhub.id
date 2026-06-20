@@ -320,30 +320,29 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
           </span>
         </div>
 
-        {/* Platform metrics table */}
+        {/* Platform metrics — mini cards */}
         {creator.platformMetrics && creator.platformMetrics.length > 0 && (
-          <div className="mt-2.5 rounded-lg border overflow-hidden" style={{ borderColor: "var(--ch-border)" }}>
-            <table className="w-full text-[10px]">
-              <thead>
-                <tr className="border-b" style={{ borderColor: "var(--ch-border)", background: "rgba(255,255,255,.03)" }}>
-                  <th className="text-left py-1.5 px-2 font-semibold" style={{ color: "var(--ch-text-muted)" }}>Platform</th>
-                  <th className="text-right py-1.5 px-2 font-semibold" style={{ color: "var(--ch-text-muted)" }}>Followers</th>
-                  <th className="text-right py-1.5 px-2 font-semibold" style={{ color: "var(--ch-text-muted)" }}>ER</th>
-                </tr>
-              </thead>
-              <tbody>
-                {creator.platformMetrics.map((pm) => (
-                  <tr key={pm.platform} className="border-b last:border-b-0" style={{ borderColor: "var(--ch-border)" }}>
-                    <td className="py-1.5 px-2 flex items-center gap-1.5 font-medium" style={{ color: "var(--ch-text)" }}>
-                      <span className="w-3 h-3 flex items-center justify-center text-slate-400">{platformIcon(pm.platform)}</span>
-                      <span className="capitalize">{pm.platform}</span>
-                    </td>
-                    <td className="py-1.5 px-2 text-right font-semibold" style={{ color: "var(--ch-text)" }}>{formatFollowers(pm.followers)}</td>
-                    <td className="py-1.5 px-2 text-right font-semibold" style={{ color: "var(--ch-text)" }}>{pm.engagementRate}%</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="mt-2 space-y-1">
+            {creator.platformMetrics.map((pm) => {
+              const platformColor = pm.platform === "instagram" ? "#EC4899"
+                : pm.platform === "youtube" ? "#EF4444"
+                : pm.platform === "facebook" ? "#3B82F6"
+                : pm.platform === "linkedin" ? "#60A5FA"
+                : pm.platform === "x" ? "#94A3B8"
+                : "#E2E8F0";
+              return (
+                <div key={pm.platform} className="flex items-center gap-2 rounded-md px-2 py-1.5" style={{ background: "rgba(255,255,255,.03)", borderLeft: `3px solid ${platformColor}` }}>
+                  <span className="w-3.5 h-3.5 flex items-center justify-center text-slate-400 shrink-0">
+                    {platformIcon(pm.platform)}
+                  </span>
+                  <span className="text-[10px] font-semibold capitalize shrink-0" style={{ color: "var(--ch-text)" }}>{pm.platform}</span>
+                  <span className="ml-auto text-[10px] font-bold" style={{ color: "var(--ch-text)" }}>{formatFollowers(pm.followers)}</span>
+                  <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full shrink-0" style={{ background: `${platformColor}15`, color: platformColor }}>
+                    {pm.engagementRate}% ER
+                  </span>
+                </div>
+              );
+            })}
           </div>
         )}
 
@@ -966,7 +965,7 @@ export default function Marketplace() {
         {/* Grid / List */}
         <div className="p-3 sm:p-4">
           {isLoading ? (
-            <div className={listView ? "space-y-2" : "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"}>
+            <div className={listView ? "space-y-2" : "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3"}>
               {Array.from({ length: 9 }).map((_, i) => (
                 <div key={i} className="rounded-xl border overflow-hidden"
                   style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
@@ -992,7 +991,7 @@ export default function Marketplace() {
               <Button variant="outline" size="sm" className="mt-4" onClick={resetFilters}>Reset Filters</Button>
             </div>
           ) : (
-            <div className={listView ? "space-y-2" : "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"}>
+            <div className={listView ? "space-y-2" : "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3"}>
               {data?.data.map((creator) => (
                 <CreatorCard
                   key={creator.id}
