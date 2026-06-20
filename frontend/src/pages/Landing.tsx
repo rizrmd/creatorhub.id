@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  Users, Megaphone, BarChart3, Sparkles,
-  ArrowRight, Play,
-  CheckCircle2, ChevronDown, Eye, MessageSquare, Settings,
-  LayoutDashboard, Instagram, Youtube, Facebook, Twitter, Linkedin,
+  Sparkles,
+  ArrowRight, Play, Volume2, VolumeX,
+  CheckCircle2, ChevronDown, Instagram, Youtube, Facebook, Twitter, Linkedin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -52,42 +51,44 @@ const PLATFORMS = [
   { name: "LinkedIn", icon: Linkedin },
 ];
 
-const SIDEBAR_MENU = [
-  { icon: LayoutDashboard, label: "Dashboard" },
-  { icon: Megaphone, label: "Campaigns" },
-  { icon: Users, label: "Creators" },
-  { icon: MessageSquare, label: "Messages" },
-  { icon: BarChart3, label: "Reports" },
-  { icon: Eye, label: "Media Monitoring" },
-  { icon: Settings, label: "Settings" },
-];
 
-const CAMPAIGN_METRICS = [
-  { label: "Active Campaigns", value: "12" },
-  { label: "Open Invites", value: "8" },
-  { label: "Creators Engaged", value: "247" },
-  { label: "Completed", value: "56" },
-];
-
-const ACTIVITIES = [
-  { text: "New creator joined", color: "bg-green-500" },
-  { text: "Campaign updated", color: "bg-blue-500" },
-  { text: "New message received", color: "bg-orange-500" },
-  { text: "Content activated", color: "bg-purple-500" },
-];
 
 export default function Landing() {
   const [solutionsOpen, setSolutionsOpen] = useState(false);
+  const [isVideoMuted, setIsVideoMuted] = useState(true);
+  const [videoVolume, setVideoVolume] = useState(60);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  function toggleVideoMute() {
+    const nextMuted = !isVideoMuted;
+
+    setIsVideoMuted(nextMuted);
+    if (videoRef.current) {
+      videoRef.current.muted = nextMuted;
+      videoRef.current.volume = videoVolume / 100;
+    }
+  }
+
+  function changeVideoVolume(nextVolume: number) {
+    const shouldMute = nextVolume === 0;
+
+    setVideoVolume(nextVolume);
+    setIsVideoMuted(shouldMute);
+    if (videoRef.current) {
+      videoRef.current.volume = nextVolume / 100;
+      videoRef.current.muted = shouldMute;
+    }
+  }
 
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-slate-950">
+      <nav className="sticky top-0 z-50 border-b border-white/20 bg-slate-950 shadow-[0_1px_0_rgba(255,255,255,0.06)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2.5">
               <img src="/favicon.png?v=4" alt="CreatorHub" className="h-12 w-12" />
-              <span className="text-3xl font-extrabold text-white tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>CreatorHub.ID</span>
+              <span className="text-2xl font-extrabold text-white tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>CreatorHub.ID</span>
             </div>
             <div className="hidden md:flex items-center gap-7">
               <a href="#features" className="text-sm font-bold text-white hover:text-slate-300 transition-colors">Features</a>
@@ -125,44 +126,104 @@ export default function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-white">
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white rounded-full mb-6 border border-slate-200 shadow-sm">
-                <Sparkles className="w-3.5 h-3.5 text-orange-500" />
-                <span className="text-xs font-semibold text-slate-700">One-stop access to content creators, homeless media, and publishers</span>
+      <section className="relative overflow-hidden bg-slate-950">
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_80%_20%,rgba(249,115,22,0.22),transparent_32%),radial-gradient(circle_at_20%_80%,rgba(59,130,246,0.14),transparent_30%)]" />
+        <div className="absolute inset-0 pointer-events-none bg-slate-950/65" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12 lg:pt-8 lg:pb-16">
+          <div className="grid lg:grid-cols-[1fr_0.78fr] gap-10 lg:gap-14 items-center">
+            <div className="max-w-2xl lg:max-w-xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full mb-6 border border-white/20 text-white">
+                <Sparkles className="w-3.5 h-3.5 text-orange-400" />
+                <span className="text-xs font-semibold">One-stop access to content creators, homeless media, and publishers</span>
               </div>
-              <h1 className="text-3xl lg:text-4xl font-extrabold text-slate-900 leading-tight tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+              <h1 className="text-3xl lg:text-5xl font-extrabold text-white leading-tight tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                 Create, Connect With the Right Ecosystem, and Grow With Us
               </h1>
-              <p className="mt-6 text-lg text-slate-600 max-w-lg leading-relaxed">
+              <p className="mt-6 text-lg lg:text-xl text-slate-300 max-w-lg leading-relaxed">
                 The all-in-one platform connecting brands with Indonesia's best content creators. Discover, collaborate, and grow together.
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
                 <Link to="/login">
                   <Button size="lg" className="text-base font-semibold bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-0 shadow-lg shadow-orange-500/25">
-                    Get Started <ArrowRight className="w-4 h-4 ml-2" />
+                    I'm a Creator <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
                 <a href="#features">
-                  <Button size="lg" variant="outline" className="text-base font-semibold border-slate-300 text-slate-700 hover:bg-white">
-                    <Play className="w-4 h-4 mr-2" /> Explore Features
+                  <Button size="lg" variant="outline" className="text-base font-semibold border-white/30 text-white hover:bg-white/10">
+                    I'm a Brand
                   </Button>
                 </a>
               </div>
-              <div className="mt-8 flex items-center gap-6 text-sm text-slate-500">
-                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-500" /> Free to join</span>
-                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-500" /> No setup fees</span>
-                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-500" /> Cancel anytime</span>
+              <div className="mt-8 flex flex-wrap items-center gap-6 text-sm text-slate-300">
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-400" /> Free to join</span>
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-400" /> No setup fees</span>
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-green-400" /> Cancel anytime</span>
               </div>
             </div>
-            <div className="hidden lg:block relative">
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-slate-300/50">
-                <img src="/hero.png" alt="CreatorHub Dashboard" className="w-full h-auto" />
+
+            <div className="w-full justify-self-center lg:justify-self-end">
+              <div className="flex gap-3">
+                <div className="rounded-2xl border border-white/15 bg-white/10 p-1.5 shadow-xl shadow-orange-950/30 backdrop-blur-sm">
+                  <div className="overflow-hidden rounded-xl bg-black ring-1 ring-white/10">
+                    <video
+                      ref={videoRef}
+                      src="/hero-video.mp4"
+                      poster="/hero.png"
+                      className="h-[220px] w-[180px] object-cover sm:h-[260px] sm:w-[220px] lg:h-[300px] lg:w-[250px]"
+                      autoPlay
+                      muted={isVideoMuted}
+                      loop
+                      playsInline
+                      preload="auto"
+                      onLoadedMetadata={(event) => {
+                        event.currentTarget.volume = videoVolume / 100;
+                        event.currentTarget.muted = isVideoMuted;
+                      }}
+                      aria-label="CreatorHub video preview"
+                    />
+                  </div>
+                </div>
+                <div className="rounded-2xl border border-white/15 bg-white/10 p-1.5 shadow-xl shadow-orange-950/30 backdrop-blur-sm">
+                  <div className="overflow-hidden rounded-xl bg-black ring-1 ring-white/10">
+                    <video
+                      src="/hero-video-2.mp4"
+                      className="h-[220px] w-[180px] object-cover sm:h-[260px] sm:w-[220px] lg:h-[300px] lg:w-[250px]"
+                      autoPlay
+                      muted={isVideoMuted}
+                      loop
+                      playsInline
+                      preload="auto"
+                      onLoadedMetadata={(event) => {
+                        event.currentTarget.volume = videoVolume / 100;
+                        event.currentTarget.muted = isVideoMuted;
+                      }}
+                      aria-label="CreatorHub second video preview"
+                    />
+                  </div>
+                </div>
               </div>
-              <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-orange-200/50 rounded-full blur-3xl" />
-              <div className="absolute -top-4 -left-4 w-24 h-24 bg-blue-200/50 rounded-full blur-3xl" />
+              <div className="mt-2 flex items-center gap-3 rounded-2xl bg-black/80 px-4 py-3 text-white ring-1 ring-white/10">
+                <button
+                  type="button"
+                  onClick={toggleVideoMute}
+                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+                  aria-label={isVideoMuted ? "Unmute video" : "Mute video"}
+                >
+                  {isVideoMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+                </button>
+                <div className="flex flex-1 items-center gap-3">
+                  <span className="text-xs font-semibold text-slate-300">Volume</span>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={isVideoMuted ? 0 : videoVolume}
+                    onChange={(event) => changeVideoVolume(Number(event.currentTarget.value))}
+                    className="h-1.5 flex-1 cursor-pointer accent-orange-500"
+                    aria-label="Video volume"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -217,63 +278,9 @@ export default function Landing() {
               </div>
             </div>
 
-            {/* Right - Dashboard Mockup */}
-            <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
-              <div className="flex">
-                {/* Sidebar */}
-                <div className="w-48 bg-slate-900 p-4 min-h-[400px]">
-                  <div className="flex items-center gap-2 mb-6">
-                    <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
-                      <Sparkles className="w-4 h-4 text-white" />
-                    </div>
-                    <span className="text-sm font-bold text-white">Campaign</span>
-                  </div>
-                  <nav className="space-y-1">
-                    {SIDEBAR_MENU.map((item, i) => (
-                      <div key={item.label} className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm ${i === 0 ? "bg-white/10 text-white" : "text-slate-400 hover:text-white hover:bg-white/5"} transition-colors cursor-pointer`}>
-                        <item.icon className="w-4 h-4" />
-                        <span>{item.label}</span>
-                      </div>
-                    ))}
-                  </nav>
-                </div>
-
-                {/* Main Content */}
-                <div className="flex-1 p-5">
-                  <h4 className="text-base font-bold text-slate-900 mb-4">Campaign Overview</h4>
-                  <div className="grid grid-cols-2 gap-3 mb-5">
-                    {CAMPAIGN_METRICS.map((m) => (
-                      <div key={m.label} className="bg-slate-50 rounded-xl p-3">
-                        <p className="text-2xl font-extrabold text-slate-900">{m.value}</p>
-                        <p className="text-xs text-slate-500">{m.label}</p>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Chart Placeholder */}
-                  <div className="bg-slate-50 rounded-xl p-4 mb-5">
-                    <p className="text-sm font-semibold text-slate-700 mb-3">Performance Overview</p>
-                    <div className="flex items-end gap-1.5 h-24">
-                      {[40, 65, 45, 80, 55, 90, 70, 85, 60, 95, 75, 88].map((h, i) => (
-                        <div key={i} className="flex-1 bg-gradient-to-t from-blue-500 to-blue-400 rounded-t" style={{ height: `${h}%` }} />
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Activity */}
-                  <div>
-                    <p className="text-sm font-semibold text-slate-700 mb-3">Recent Activity</p>
-                    <div className="space-y-2">
-                      {ACTIVITIES.map((a, i) => (
-                        <div key={i} className="flex items-center gap-2.5 text-sm">
-                          <div className={`w-2 h-2 ${a.color} rounded-full`} />
-                          <span className="text-slate-600">{a.text}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
+            {/* Right - Dashboard Image */}
+            <div className="rounded-2xl overflow-hidden shadow-2xl border border-slate-200">
+              <img src="/feat-one-dashboard.png" alt="CreatorHub Dashboard" className="w-full h-auto object-cover" />
             </div>
           </div>
         </div>
