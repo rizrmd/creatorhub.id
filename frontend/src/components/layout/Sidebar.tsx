@@ -117,17 +117,19 @@ export default function Sidebar() {
 
         {/* Logo */}
         <div
-          className="flex items-center justify-center border-b shrink-0 overflow-hidden"
-          style={{ borderColor: "var(--ch-border)", padding: effectiveCollapsed ? "0 12px" : "16px" }}
+          className="flex items-center border-b shrink-0 overflow-hidden"
+          style={{ borderColor: "var(--ch-border)", padding: effectiveCollapsed ? "12px" : "16px" }}
         >
-          <div
-            className={cn("rounded-lg overflow-hidden shrink-0", effectiveCollapsed ? "w-9 h-9" : "w-full h-[72px]")}
-          >
+          <div className={cn("flex items-center gap-2", effectiveCollapsed ? "justify-center" : "")}>
             <img
-              src={effectiveCollapsed ? "/favicon.png" : "/logo.png"}
+              src="/favicon.png?v=4"
               alt="CreatorHub"
-              className="w-full h-full object-contain"
+              className="shrink-0"
+              style={{ width: effectiveCollapsed ? 36 : 32, height: effectiveCollapsed ? 36 : 32 }}
             />
+            {!effectiveCollapsed && (
+              <span className="text-base font-extrabold tracking-tight" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>CreatorHub.ID</span>
+            )}
           </div>
         </div>
 

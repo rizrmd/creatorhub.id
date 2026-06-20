@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { Search, Bell, ChevronDown, Settings, LogOut, User, Megaphone, Users, Coins, Menu } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Bell, ChevronDown, Settings, LogOut, User, Megaphone, Users, Coins, Menu, Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRole } from "@/context/RoleContext";
@@ -20,12 +20,6 @@ const MESSAGE_THREADS = [
   { id: 5, name: "Nessie Judge",  online: true,  last: "Udah upload kak, cek ya",           time: "2d", unread: 4 },
 ];
 
-const FILTER_PILLS = [
-  { label: "Top Rated 🔥",     param: "topRated" },
-  { label: "Fast Response ⚡", param: "fastResponse" },
-  { label: "Verified Only ✅", param: "verified" },
-];
-
 const USER_BY_ROLE = {
   brand:   { name: "Arif Budiman",  subtitle: "Brand Manager",     initial: "A", stats: { campaigns: 8, creators: 24, spent: "Rp 1.4B" } },
   kreator: { name: "Rina Pratiwi",  subtitle: "Lifestyle Creator", initial: "R", stats: { campaigns: 3, creators: 0,  spent: "Rp 48jt" } },
@@ -43,12 +37,9 @@ function NotifIcon({ icon, bg, fg }: { icon: string; bg: string; fg: string }) {
 
 export default function Header() {
   const navigate = useNavigate();
-  const location = useLocation();
   const { user, logout } = useAuth();
   const { effectiveRole } = useRole();
   const { toggleMobile } = useSidebar();
-  const [search, setSearch]             = useState("");
-  const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [showNotif, setShowNotif]       = useState(false);
   const [showMessages, setShowMessages] = useState(false);
   const [showProfile, setShowProfile]   = useState(false);
@@ -57,7 +48,6 @@ export default function Header() {
   const notifRef   = useRef<HTMLDivElement>(null);
   const msgRef     = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
-  const searchRef  = useRef<HTMLInputElement>(null);
 
   const displayUser = effectiveRole === "kreator" ? {
     ...USER_BY_ROLE.kreator,
@@ -68,7 +58,7 @@ export default function Header() {
   } : {
     ...USER_BY_ROLE.brand,
     name:     user?.name ?? "Arif Budiman",
-    subtitle: user?.role === "admin" ? "Administrator" : "Brand Manager",
+    subtitle: user?.role === "admin" ? "Super Admin" : "Brand Manager",
     initial:  user?.name ? user.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase() : "A",
     stats: USER_BY_ROLE.brand.stats,
   };
@@ -83,26 +73,6 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const active: string[] = [];
-    if (params.get("topRated") === "true") active.push("topRated");
-    if (params.get("fastResponse") === "true") active.push("fastResponse");
-    if (params.get("verified") === "true") active.push("verified");
-    setActiveFilters(active);
-  }, [location.search]);
-
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "/" && document.activeElement?.tagName !== "INPUT" && document.activeElement?.tagName !== "TEXTAREA") {
-        e.preventDefault();
-        searchRef.current?.focus();
-      }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, []);
-
   const open = (which: "notif" | "msg" | "profile") => {
     setShowNotif(which === "notif");
     setShowMessages(which === "msg");
@@ -112,27 +82,6 @@ export default function Header() {
   const messagesPath = effectiveRole === "kreator" ? "/dashboard/kreator/messages" : "/dashboard/messages";
   const settingsPath = effectiveRole === "kreator" ? "/dashboard/kreator/settings" : "/dashboard/settings";
   const profilePath = effectiveRole === "kreator" ? "/dashboard/kreator/profile" : "/dashboard/settings";
-
-  const handleSearch = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && search.trim()) {
-      const q = encodeURIComponent(search.trim());
-      navigate(
-        effectiveRole === "kreator"
-          ? `/dashboard/kreator/search?search=${q}`
-          : `/dashboard/search?search=${q}`,
-      );
-      setSearch("");
-    }
-  };
-
-  const toggleFilter = (param: string) => {
-    setActiveFilters((prev) => {
-      const next = prev.includes(param) ? prev.filter((p) => p !== param) : [...prev, param];
-      const qs   = next.map((p) => `${p}=true`).join("&");
-      navigate(qs ? `/dashboard/marketplace?${qs}` : "/dashboard/marketplace");
-      return next;
-    });
-  };
 
   const handleLogout = () => {
     setShowProfile(false);
@@ -150,61 +99,25 @@ export default function Header() {
 
   return (
     <header
-      className="h-14 lg:h-[70px] bg-white border-b flex items-center gap-2 md:gap-4 shrink-0 relative z-30 px-4 md:px-6"
-      style={{ borderColor: "var(--ch-border)" }}
+      className="h-14 lg:h-[70px] bg-slate-950 flex items-center gap-2 md:gap-4 shrink-0 relative z-30 px-4 md:px-6"
     >
       <button
         type="button"
         onClick={toggleMobile}
-        className="lg:hidden w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors hover:bg-slate-50"
-        style={{ color: "var(--ch-text-muted)" }}
+        className="lg:hidden w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors hover:bg-white/10 text-white"
         aria-label="Buka menu"
       >
         <Menu style={{ width: 20, height: 20 }} />
       </button>
 
-      {/* Search + filter pills */}
-      <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
-        <div
-          className="flex items-center gap-2 rounded-xl transition-all flex-1 min-w-0 max-w-[460px]"
-          style={{ background: effectiveRole === "kreator" ? "#F0FDF4" : "#F1F5F9", border: "1px solid transparent", padding: "8px 12px" }}
-        >
-          <Search className="w-4 h-4 shrink-0" style={{ color: "var(--ch-text-soft)" }} />
-          <input
-            ref={searchRef}
-            className="flex-1 bg-transparent border-0 outline-none text-[13px] min-w-0"
-            style={{ color: "var(--ch-text)", fontFamily: "inherit" }}
-            placeholder={effectiveRole === "kreator" ? "Cari undangan, pekerjaan, pembayaran…" : "Cari kreator, kampanye, pesan…"}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={handleSearch}
-          />
-          {!search && (
-            <kbd className="hidden sm:flex text-[10px] px-1.5 py-0.5 rounded font-mono border" style={{ color: "var(--ch-text-soft)", borderColor: "var(--ch-border)", background: "white" }}>
-              /
-            </kbd>
-          )}
-        </div>
-
-        {effectiveRole === "brand" && (
-        <div className="hidden xl:flex items-center gap-1.5 shrink-0">
-          {FILTER_PILLS.map((p) => (
-            <button
-              key={p.param}
-              onClick={() => toggleFilter(p.param)}
-              className="px-3 py-1.5 rounded-full text-[12px] font-semibold transition-all border whitespace-nowrap"
-              style={
-                activeFilters.includes(p.param)
-                  ? { background: "var(--ch-primary)", color: "white", borderColor: "var(--ch-primary)" }
-                  : { background: "white", color: "var(--ch-text-muted)", borderColor: "var(--ch-border)" }
-              }
-            >
-              {p.label}
-            </button>
-          ))}
-        </div>
-        )}
+      {/* Logo + Brand */}
+      <div className="flex items-center gap-2.5 shrink-0">
+        <img src="/favicon.png?v=4" alt="CreatorHub" className="h-9 w-9" />
+        <span className="text-lg font-extrabold text-white tracking-tight hidden sm:block" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>CreatorHub.ID</span>
       </div>
+
+      {/* Spacer */}
+      <div className="flex-1" />
 
       {/* Right actions */}
       <div className="flex items-center gap-0.5 sm:gap-1 ml-auto shrink-0">
@@ -213,15 +126,13 @@ export default function Header() {
         <div ref={msgRef} className="relative">
           <button
             onClick={() => open("msg")}
-            className="relative w-9 h-9 rounded-lg flex items-center justify-center transition-colors hover:bg-slate-50"
-            style={{ color: "var(--ch-text-muted)" }}
+            className="relative w-9 h-9 rounded-lg flex items-center justify-center transition-colors hover:bg-white/10 text-white"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
             </svg>
             {unreadMsg > 0 && (
-              <span className="absolute top-1 right-1 min-w-[16px] h-4 rounded-full text-[10px] text-white font-bold flex items-center justify-center px-0.5 leading-none"
-                style={{ background: "var(--ch-orange)" }}>
+              <span className="absolute top-1 right-1 min-w-[16px] h-4 rounded-full text-[10px] text-white font-bold flex items-center justify-center px-0.5 leading-none bg-red-500">
                 {unreadMsg}
               </span>
             )}
@@ -284,13 +195,11 @@ export default function Header() {
         <div ref={notifRef} className="relative">
           <button
             onClick={() => open("notif")}
-            className="relative w-9 h-9 rounded-lg flex items-center justify-center transition-colors hover:bg-slate-50"
-            style={{ color: "var(--ch-text-muted)" }}
+            className="relative w-9 h-9 rounded-lg flex items-center justify-center transition-colors hover:bg-white/10 text-white"
           >
             <Bell style={{ width: 18, height: 18 }} />
             {unreadNotif > 0 && (
-              <span className="absolute top-1 right-1 min-w-[16px] h-4 rounded-full text-[10px] text-white font-bold flex items-center justify-center px-0.5 leading-none"
-                style={{ background: "var(--ch-primary)" }}>
+              <span className="absolute top-1 right-1 min-w-[16px] h-4 rounded-full text-[10px] text-white font-bold flex items-center justify-center px-0.5 leading-none bg-red-500">
                 {unreadNotif}
               </span>
             )}
@@ -334,21 +243,18 @@ export default function Header() {
         {/* Profile */}
         <div ref={profileRef} className="relative">
           <button
-            className="flex items-center gap-2 pl-2 sm:pl-3 ml-0.5 sm:ml-1 cursor-pointer sm:border-l"
-            style={{ borderColor: "var(--ch-border)" }}
+            className="flex items-center gap-2 pl-2 sm:pl-3 ml-0.5 sm:ml-1 cursor-pointer"
             onClick={() => open("profile")}
           >
             <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold shrink-0"
-              style={{ background: effectiveRole === "kreator" ? "#A855F7" : "var(--ch-primary)" }}
+              className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold shrink-0 bg-orange-500"
             >
               {displayUser.initial}
             </div>
             <div className="hidden sm:block text-left">
-              <p className="text-[13px] font-semibold leading-none" style={{ color: "var(--ch-text)" }}>{displayUser.name}</p>
-              <p className="text-[11px] mt-0.5" style={{ color: "var(--ch-text-muted)" }}>{displayUser.subtitle}</p>
+              <p className="text-[13px] font-semibold leading-none text-white">{displayUser.subtitle}</p>
             </div>
-            <ChevronDown className="hidden sm:block" style={{ width: 14, height: 14, color: "var(--ch-text-soft)" }} />
+            <ChevronDown className="hidden sm:block text-white/60" style={{ width: 14, height: 14 }} />
           </button>
 
           {showProfile && (
