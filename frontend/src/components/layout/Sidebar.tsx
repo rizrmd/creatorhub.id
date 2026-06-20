@@ -47,8 +47,8 @@ export default function Sidebar() {
   const { user } = useAuth();
   const { effectiveRole, canSwitchRole, setRole } = useRole();
   const isKreatorView = effectiveRole === "kreator";
-  const navActiveBg = isKreatorView ? "#16A34A" : "var(--ch-primary)";
-  const navActiveShadow = isKreatorView ? "0 4px 14px rgba(22,163,74,.35)" : "var(--ch-nav-shadow)";
+  const navActiveBg = isKreatorView ? "#16A34A" : "#F97316";
+  const navActiveShadow = isKreatorView ? "0 4px 14px rgba(22,163,74,.35)" : "0 4px 14px rgba(249,115,22,.35)";
   const effectiveCollapsed = false;
   const [showSupport, setShowSupport] = useState(false);
   const [supportForm, setSupportForm] = useState({ email: "", message: "" });
@@ -109,16 +109,15 @@ export default function Sidebar() {
       >
       <aside
         className={cn(
-          "bg-white border-r flex flex-col h-full overflow-hidden",
+          "bg-[#0B1120] border-r border-white/10 flex flex-col h-full overflow-hidden",
           "w-full",
         )}
-        style={{ borderColor: "var(--ch-border)" }}
       >
 
         {/* Logo */}
         <div
-          className="flex items-center border-b shrink-0 overflow-hidden"
-          style={{ borderColor: "var(--ch-border)", padding: effectiveCollapsed ? "12px" : "16px" }}
+          className="flex items-center border-b border-white/10 shrink-0 overflow-hidden"
+          style={{ padding: effectiveCollapsed ? "12px" : "16px" }}
         >
           <div className={cn("flex items-center gap-2", effectiveCollapsed ? "justify-center" : "")}>
             <img
@@ -163,7 +162,7 @@ export default function Sidebar() {
                   effectiveCollapsed ? "justify-center w-11 h-11 mx-auto" : "gap-2.5 px-[11px] py-2",
                   isActive
                     ? "text-white"
-                    : "hover:text-[#2563EB]"
+                    : "hover:text-white"
                 )
               }
               style={({ isActive }) => isActive ? {
@@ -207,7 +206,7 @@ export default function Sidebar() {
         </nav>
 
         {/* Bottom section */}
-        <div className="border-t shrink-0" style={{ borderColor: "var(--ch-border)", padding: effectiveCollapsed ? "10px 8px" : "10px" }}>
+        <div className="border-t border-white/10 shrink-0" style={{ padding: effectiveCollapsed ? "10px 8px" : "10px" }}>
           {effectiveCollapsed ? (
             <div className="flex flex-col items-center gap-2">
               {canSwitchRole && (
@@ -232,65 +231,62 @@ export default function Sidebar() {
           ) : (
             <div className="flex flex-col gap-2">
               {canSwitchRole && effectiveRole === "brand" ? (
-                <div className="rounded-[10px] p-[10px] border" style={{ borderColor: "var(--ch-border)" }}>
+                <div className="rounded-[10px] p-[10px] border border-white/10 bg-white/5">
                   <div className="flex items-center gap-1.5 mb-2">
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: "linear-gradient(135deg, #DBEAFE, #BFDBFE)" }}>
-                      <Users className="w-3.5 h-3.5" style={{ color: "#2563EB" }} />
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-blue-500/20">
+                      <Users className="w-3.5 h-3.5 text-blue-400" />
                     </div>
                     <div>
-                      <p className="text-[12px] font-bold" style={{ color: "var(--ch-text)" }}>Jadi Kreator?</p>
-                      <p className="text-[10.5px] leading-tight" style={{ color: "var(--ch-text-muted)" }}>Kelola profil kreatormu</p>
+                      <p className="text-[12px] font-bold text-white">Jadi Kreator?</p>
+                      <p className="text-[10.5px] leading-tight text-slate-400">Kelola profil kreatormu</p>
                     </div>
                   </div>
                   <button
                     onClick={handleSwitchRole}
-                    className="w-full py-[6px] px-[10px] rounded-lg border-[1.5px] text-[11.5px] font-bold transition-colors hover:bg-orange-50"
-                    style={{ borderColor: "#FED7AA", color: "#F97316" }}
+                    className="w-full py-[6px] px-[10px] rounded-lg border-[1.5px] text-[11.5px] font-bold transition-colors border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
                   >
                     Masuk sebagai Kreator →
                   </button>
                 </div>
               ) : canSwitchRole ? (
-                <div className="rounded-[10px] p-[10px] border" style={{ borderColor: "var(--ch-border)" }}>
+                <div className="rounded-[10px] p-[10px] border border-white/10 bg-white/5">
                   <div className="flex items-center gap-2 mb-2">
-                    <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-white text-xs font-bold" style={{ background: "#A855F7" }}>
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-white text-xs font-bold bg-purple-500">
                       R
                     </div>
                     <div>
-                      <p className="text-[12px] font-bold leading-tight" style={{ color: "var(--ch-text)" }}>Rina Pratiwi</p>
-                      <p className="text-[10.5px]" style={{ color: "var(--ch-text-muted)" }}>Lifestyle Creator · Jakarta</p>
+                      <p className="text-[12px] font-bold leading-tight text-white">Rina Pratiwi</p>
+                      <p className="text-[10.5px] text-slate-400">Lifestyle Creator · Jakarta</p>
                     </div>
                   </div>
                   <button
                     onClick={handleSwitchRole}
-                    className="w-full py-[6px] px-[10px] rounded-lg border-[1.5px] text-[11.5px] font-bold transition-colors hover:bg-blue-50"
-                    style={{ borderColor: "#BFDBFE", color: "#2563EB" }}
+                    className="w-full py-[6px] px-[10px] rounded-lg border-[1.5px] text-[11.5px] font-bold transition-colors border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
                   >
                     ← Kembali ke Brand
                   </button>
                 </div>
               ) : !canSwitchRole && isKreatorView ? (
-                <div className="rounded-[10px] p-[10px] border" style={{ borderColor: "var(--ch-border)", background: "#F0FDF4" }}>
+                <div className="rounded-[10px] p-[10px] border border-white/10 bg-green-500/10">
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-white text-xs font-bold" style={{ background: "#A855F7" }}>
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-white text-xs font-bold bg-purple-500">
                       {user?.name ? user.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase() : "K"}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[12px] font-bold leading-tight truncate" style={{ color: "var(--ch-text)" }}>{user?.name ?? "Creator"}</p>
-                      <p className="text-[10.5px]" style={{ color: "#15803D" }}>Akun Kreator</p>
+                      <p className="text-[12px] font-bold leading-tight truncate text-white">{user?.name ?? "Creator"}</p>
+                      <p className="text-[10.5px] text-green-400">Akun Kreator</p>
                     </div>
                   </div>
                 </div>
               ) : null}
 
-              <div className="rounded-[10px] p-[10px] flex items-center gap-2.5 border" style={{ borderColor: "var(--ch-border)" }}>
-                <HelpCircle className="w-7 h-7 shrink-0" style={{ color: "var(--ch-text-soft)" }} />
+              <div className="rounded-[10px] p-[10px] flex items-center gap-2.5 border border-white/10 bg-white/5">
+                <HelpCircle className="w-7 h-7 shrink-0 text-slate-500" />
                 <div className="min-w-0">
-                  <p className="text-[12px] font-bold" style={{ color: "var(--ch-text)" }}>Butuh Bantuan?</p>
+                  <p className="text-[12px] font-bold text-white">Butuh Bantuan?</p>
                   <button
                     onClick={() => setShowSupport(true)}
-                    className="text-[11px] font-semibold hover:underline mt-0.5 block"
-                    style={{ color: "var(--ch-primary)" }}
+                    className="text-[11px] font-semibold hover:underline mt-0.5 block text-blue-400"
                   >
                     Contact Support
                   </button>

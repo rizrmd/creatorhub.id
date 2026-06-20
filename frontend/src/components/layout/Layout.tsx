@@ -54,17 +54,17 @@ function Breadcrumb() {
   });
 
   return (
-    <nav className="flex items-center gap-1.5 px-4 md:px-6 py-2 text-xs text-slate-500 border-b border-slate-100 bg-white overflow-x-auto shrink-0">
-      <Link to="/" className="flex items-center gap-1 cursor-pointer hover:text-slate-700 transition-colors">
+    <nav className="flex items-center gap-1.5 px-4 md:px-6 py-2 text-xs text-slate-400 border-b border-white/5 bg-[#0B1120] overflow-x-auto shrink-0">
+      <Link to="/" className="flex items-center gap-1 cursor-pointer hover:text-white transition-colors">
         <Home className="w-3 h-3" />
       </Link>
       {crumbs.map((c) => (
         <span key={c.path} className="flex items-center gap-1.5">
-          <ChevronRight className="w-3 h-3 text-slate-300" />
+          <ChevronRight className="w-3 h-3 text-slate-600" />
           {c.isLast ? (
-            <span className="font-medium text-slate-700">{c.label}</span>
+            <span className="font-medium text-white">{c.label}</span>
           ) : (
-            <Link to={c.path} className="cursor-pointer hover:text-slate-700 transition-colors">{c.label}</Link>
+            <Link to={c.path} className="cursor-pointer hover:text-white transition-colors">{c.label}</Link>
           )}
         </span>
       ))}
@@ -84,7 +84,7 @@ export default function Layout() {
     <SidebarProvider>
       <BreadcrumbProvider>
       <KreatorDataProvider>
-      <div className="flex h-[100dvh] bg-slate-50 overflow-hidden">
+      <div className="flex h-[100dvh] bg-[#070B14] overflow-hidden">
         <Toaster position="top-right" richColors />
         <Sidebar />
         <div className="flex-1 flex flex-col min-w-0 min-h-0 w-full">

@@ -103,8 +103,9 @@ export default function Header() {
   const unreadNotif = NOTIFICATIONS.filter((n) => n.unread).length;
   const unreadMsg   = MESSAGE_THREADS.reduce((s, t) => s + t.unread, 0);
 
-  const dateStr = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
-  const timeStr = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
+  const dateStr = now.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  const dayStr = now.toLocaleDateString("en-US", { weekday: "long" });
+  const timeStr = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
 
   return (
     <header
@@ -127,7 +128,7 @@ export default function Header() {
 
       {/* Center — Date & Time */}
       <div className="flex-1 flex items-center justify-center">
-        <span className="text-sm font-semibold text-white/70 hidden md:block">{dateStr} | {timeStr}</span>
+        <span className="text-sm font-semibold text-white/70 hidden md:block">{dateStr} &bull; {dayStr} | {timeStr}</span>
       </div>
 
       {/* Right actions */}
