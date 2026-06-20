@@ -109,14 +109,14 @@ export default function Sidebar() {
       >
       <aside
         className={cn(
-          "bg-[#0B1120] border-r border-white/10 flex flex-col h-full overflow-hidden",
+          "bg-[#070B14] flex flex-col h-full overflow-hidden",
           "w-full",
         )}
       >
 
         {/* Logo */}
         <div
-          className="flex items-center border-b border-white/10 shrink-0 overflow-hidden"
+          className="flex items-center shrink-0 overflow-hidden"
           style={{ padding: effectiveCollapsed ? "12px" : "16px" }}
         >
           <div className={cn("flex items-center gap-2", effectiveCollapsed ? "justify-center" : "")}>
@@ -213,8 +213,7 @@ export default function Sidebar() {
               <button
                 onClick={handleSwitchRole}
                 title={effectiveRole === "brand" ? "Jadi Kreator" : "Kembali ke Brand"}
-                className="w-9 h-9 rounded-lg border flex items-center justify-center transition-colors hover:bg-blue-50"
-                style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}
+                className="w-9 h-9 rounded-lg border border-white/10 flex items-center justify-center transition-colors hover:bg-white/10 text-slate-400"
               >
                 <Users className="w-4 h-4" />
               </button>
@@ -222,8 +221,7 @@ export default function Sidebar() {
               <button
                 onClick={() => setShowSupport(true)}
                 title="Support"
-                className="w-9 h-9 rounded-lg border flex items-center justify-center transition-colors hover:bg-blue-50"
-                style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}
+                className="w-9 h-9 rounded-lg border border-white/10 flex items-center justify-center transition-colors hover:bg-white/10 text-slate-400"
               >
                 <HelpCircle className="w-4 h-4" />
               </button>

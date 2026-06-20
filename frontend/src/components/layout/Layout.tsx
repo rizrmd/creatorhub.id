@@ -54,7 +54,7 @@ function Breadcrumb() {
   });
 
   return (
-    <nav className="flex items-center gap-1.5 px-4 md:px-6 py-2 text-xs text-slate-400 border-b border-white/5 bg-[#0B1120] overflow-x-auto shrink-0">
+    <nav className="flex items-center gap-1.5 px-4 md:px-6 py-2 text-xs text-slate-400 bg-[#070B14] overflow-x-auto shrink-0">
       <Link to="/" className="flex items-center gap-1 cursor-pointer hover:text-white transition-colors">
         <Home className="w-3 h-3" />
       </Link>

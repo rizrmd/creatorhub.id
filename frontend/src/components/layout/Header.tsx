@@ -109,7 +109,7 @@ export default function Header() {
 
   return (
     <header
-      className="h-16 bg-slate-950 border-b border-white/20 flex items-center gap-2 md:gap-4 shrink-0 relative z-30 px-4 md:px-6"
+      className="h-16 bg-[#070B14] flex items-center gap-2 md:gap-4 shrink-0 relative z-30 px-4 md:px-6"
     >
       <button
         type="button"
@@ -119,12 +119,6 @@ export default function Header() {
       >
         <Menu style={{ width: 20, height: 20 }} />
       </button>
-
-      {/* Logo + Brand — same size as landing page */}
-      <div className="flex items-center gap-2.5 shrink-0">
-        <img src="/favicon.png?v=4" alt="CreatorHub" className="h-12 w-12" />
-        <span className="text-2xl font-extrabold text-white tracking-tight hidden sm:block" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>CreatorHub.ID</span>
-      </div>
 
       {/* Center — Date & Time */}
       <div className="flex-1 flex items-center justify-center">
@@ -151,18 +145,18 @@ export default function Header() {
           </button>
 
           {showMessages && (
-            <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] max-w-[380px] bg-white rounded-xl border overflow-hidden animate-slide-in"
-              style={{ borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-lg)" }}>
-              <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: "var(--ch-border)" }}>
-                <p className="text-sm font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Pesan</p>
+            <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] max-w-[380px] bg-[#111827] rounded-xl border border-white/10 overflow-hidden animate-slide-in"
+              style={{ boxShadow: "var(--ch-shadow-lg)" }}>
+              <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+                <p className="text-sm font-bold text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Pesan</p>
                 <button className="text-xs font-semibold hover:underline" style={{ color: "var(--ch-primary)" }}
                   onClick={() => { navigate(messagesPath); setShowMessages(false); }}>
                   Lihat semua
                 </button>
               </div>
-              <div className="px-3 py-2 border-b" style={{ borderColor: "var(--ch-border)" }}>
-                <div className="flex items-center gap-2 px-3 py-2 rounded-lg" style={{ background: "#F1F5F9" }}>
-                  <Search className="w-3.5 h-3.5" style={{ color: "var(--ch-text-soft)" }} />
+              <div className="px-3 py-2 border-b border-white/10">
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5">
+                  <Search className="w-3.5 h-3.5 text-slate-400" />
                   <input
                     className="flex-1 bg-transparent border-0 outline-none text-[12px]"
                     style={{ color: "var(--ch-text)", fontFamily: "inherit" }}
@@ -174,8 +168,7 @@ export default function Header() {
               </div>
               {filteredThreads.map((t) => (
                 <button key={t.id}
-                  className="w-full flex items-center gap-3 px-4 py-3 border-b text-left transition-colors hover:bg-slate-50"
-                  style={{ borderColor: "var(--ch-border)" }}
+                  className="w-full flex items-center gap-3 px-4 py-3 border-b border-white/10 text-left transition-colors hover:bg-white/5"
                   onClick={() => { navigate(messagesPath); setShowMessages(false); }}
                 >
                   <div className="relative shrink-0">
@@ -218,18 +211,18 @@ export default function Header() {
           </button>
 
           {showNotif && (
-            <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] max-w-[400px] bg-white rounded-xl border overflow-hidden animate-slide-in"
-              style={{ borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-lg)" }}>
-              <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: "var(--ch-border)" }}>
-                <p className="text-sm font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Notifikasi</p>
+            <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] max-w-[400px] bg-[#111827] rounded-xl border border-white/10 overflow-hidden animate-slide-in"
+              style={{ boxShadow: "var(--ch-shadow-lg)" }}>
+              <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+                <p className="text-sm font-bold text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Notifikasi</p>
                 <button className="text-xs font-semibold hover:underline" style={{ color: "var(--ch-primary)" }} onClick={() => setShowNotif(false)}>
                   Tandai semua dibaca
                 </button>
               </div>
               {NOTIFICATIONS.map((n) => (
                 <div key={n.id}
-                  className="flex items-start gap-3 px-4 py-3 border-b cursor-pointer transition-colors hover:bg-slate-50"
-                  style={{ borderColor: "var(--ch-border)", background: n.unread ? "#EFF6FF" : "white" }}
+                  className="flex items-start gap-3 px-4 py-3 border-b border-white/10 cursor-pointer transition-colors hover:bg-white/5"
+                  style={{ background: n.unread ? "rgba(37,99,235,.08)" : "transparent" }}
                   onClick={() => setShowNotif(false)}
                 >
                   <NotifIcon icon={n.icon} bg={n.iconBg} fg={n.iconFg} />
@@ -270,41 +263,39 @@ export default function Header() {
           </button>
 
           {showProfile && (
-            <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl border overflow-hidden animate-slide-in"
-              style={{ borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-lg)" }}>
-              <div className="px-4 py-3" style={{ background: "linear-gradient(135deg, var(--ch-primary-100), #EDE9FE)" }}>
-                <p className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>{displayUser.name}</p>
-                <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>{displayUser.subtitle}</p>
+            <div className="absolute right-0 top-full mt-2 w-52 bg-[#111827] rounded-xl border border-white/10 overflow-hidden animate-slide-in"
+              style={{ boxShadow: "var(--ch-shadow-lg)" }}>
+              <div className="px-4 py-3" style={{ background: "linear-gradient(135deg, rgba(59,130,246,.15), rgba(139,92,246,.1))" }}>
+                <p className="text-[13px] font-bold text-white">{displayUser.name}</p>
+                <p className="text-[11px] text-slate-400">{displayUser.subtitle}</p>
               </div>
-              <div className="grid grid-cols-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
-                <div className="flex flex-col items-center py-2.5 border-r" style={{ borderColor: "var(--ch-border)" }}>
+              <div className="grid grid-cols-3 border-b border-white/10">
+                <div className="flex flex-col items-center py-2.5 border-r border-white/10">
                   <Megaphone style={{ width: 14, height: 14, marginBottom: 2, color: "var(--ch-text-muted)" }} />
-                  <span className="text-[11px] font-bold" style={{ color: "var(--ch-text)" }}>{displayUser.stats.campaigns}</span>
-                  <span className="text-[9px]" style={{ color: "var(--ch-text-soft)" }}>Kampanye</span>
+                  <span className="text-[11px] font-bold text-white">{displayUser.stats.campaigns}</span>
+                  <span className="text-[9px] text-slate-500">Kampanye</span>
                 </div>
-                <div className="flex flex-col items-center py-2.5 border-r" style={{ borderColor: "var(--ch-border)" }}>
+                <div className="flex flex-col items-center py-2.5 border-r border-white/10">
                   <Users style={{ width: 14, height: 14, marginBottom: 2, color: "var(--ch-text-muted)" }} />
-                  <span className="text-[11px] font-bold" style={{ color: "var(--ch-text)" }}>{displayUser.stats.creators}</span>
-                  <span className="text-[9px]" style={{ color: "var(--ch-text-soft)" }}>Kreator</span>
+                  <span className="text-[11px] font-bold text-white">{displayUser.stats.creators}</span>
+                  <span className="text-[9px] text-slate-500">Kreator</span>
                 </div>
                 <div className="flex flex-col items-center py-2.5">
                   <Coins style={{ width: 14, height: 14, marginBottom: 2, color: "var(--ch-text-muted)" }} />
-                  <span className="text-[10px] font-bold leading-tight text-center" style={{ color: "var(--ch-text)" }}>{displayUser.stats.spent}</span>
-                  <span className="text-[9px]" style={{ color: "var(--ch-text-soft)" }}>Spent</span>
+                  <span className="text-[10px] font-bold leading-tight text-center text-white">{displayUser.stats.spent}</span>
+                  <span className="text-[9px] text-slate-500">Spent</span>
                 </div>
               </div>
-              <button className="w-full flex items-center gap-2.5 px-4 py-3 text-sm transition-colors hover:bg-slate-50"
-                style={{ color: "var(--ch-text)" }}
+              <button className="w-full flex items-center gap-2.5 px-4 py-3 text-sm transition-colors hover:bg-white/5 text-white"
                 onClick={() => { navigate(profilePath); setShowProfile(false); }}>
                 <User style={{ width: 16, height: 16, color: "var(--ch-text-muted)" }} /> My Profile
               </button>
-              <button className="w-full flex items-center gap-2.5 px-4 py-3 text-sm transition-colors hover:bg-slate-50"
-                style={{ color: "var(--ch-text)" }}
+              <button className="w-full flex items-center gap-2.5 px-4 py-3 text-sm transition-colors hover:bg-white/5 text-white"
                 onClick={() => { navigate(settingsPath); setShowProfile(false); }}>
                 <Settings style={{ width: 16, height: 16, color: "var(--ch-text-muted)" }} /> Settings
               </button>
-              <div className="border-t" style={{ borderColor: "var(--ch-border)" }} />
-              <button className="w-full flex items-center gap-2.5 px-4 py-3 text-sm transition-colors hover:bg-red-50 text-red-600"
+              <div className="border-t border-white/10" />
+              <button className="w-full flex items-center gap-2.5 px-4 py-3 text-sm transition-colors hover:bg-red-500/10 text-red-400"
                 onClick={handleLogout}>
                 <LogOut style={{ width: 16, height: 16 }} /> Logout
               </button>

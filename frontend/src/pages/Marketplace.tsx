@@ -168,7 +168,9 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
   creator: Creator; selected: boolean; favorited: boolean;
   onToggle: () => void; onCardClick: () => void; onFavorite: () => void; listView: boolean;
 }) {
-  const catColor = CATEGORY_COLORS[creator.category] ?? "bg-slate-100 text-slate-700";
+  const catColor = CATEGORY_COLORS[creator.category] ?? "bg-white/10 text-slate-300";
+  const highPrice = creator.price * 2;
+  const highPriceText = formatBudget(highPrice);
 
   if (listView) {
     return (
@@ -201,17 +203,23 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
                 <span className={`px-1.5 py-0 rounded-full text-[10px] font-medium capitalize ${catColor}`}>{creator.category}</span>
               </div>
             </div>
+            <div className="hidden md:flex items-center gap-1.5">
+              {creator.platforms.map((p) => (
+                <span key={p} className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/5 text-slate-300 border border-white/5">
+                  {platformIcon(p)} <span className="capitalize">{p}</span>
+                </span>
+              ))}
+            </div>
             <div className="hidden sm:flex items-center gap-4 text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
               <span className="font-semibold">{creator.followersText}</span>
               <span className="font-semibold">{creator.engagementRate}% ER</span>
-              <span className="flex items-center gap-0.5">
-                <Star style={{ width: 12, height: 12, fill: "#FBBF24", color: "#FBBF24" }} />{creator.rating}
+              <span className="font-bold whitespace-nowrap" style={{ color: "var(--ch-text)" }}>
+                {creator.priceText} – {highPriceText}
               </span>
-              <span className="font-bold" style={{ color: "var(--ch-text)" }}>{creator.priceText}</span>
             </div>
             <button
               onClick={(e) => { e.stopPropagation(); onFavorite(); }}
-              className="p-1.5 rounded-full hover:bg-slate-100 transition-colors shrink-0"
+              className="p-1.5 rounded-full hover:bg-white/10 transition-colors shrink-0"
             >
               <Heart style={{ width: 14, height: 14, color: favorited ? "#EF4444" : "#94A3B8", fill: favorited ? "#EF4444" : "none" }} />
             </button>
@@ -284,7 +292,7 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
         {/* Heart — top-right */}
         <button
           onClick={(e) => { e.stopPropagation(); onFavorite(); }}
-          className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white flex items-center justify-center transition-colors hover:scale-110 shadow"
+          className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center transition-colors hover:scale-110"
           style={{ boxShadow: "var(--ch-shadow-sm)" }}
         >
           <Heart style={{ width: 14, height: 14, color: favorited ? "#EF4444" : "#94A3B8", fill: favorited ? "#EF4444" : "none" }} />
@@ -300,7 +308,7 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
 
       {/* Card body */}
       <div className="p-3.5">
-        {/* Name + city */}
+        {/* Name + city + category */}
         <div className="flex items-start justify-between gap-2 mb-1">
           <div className="min-w-0">
             <p className="font-bold text-[14px] truncate leading-tight" style={{ color: "var(--ch-text)" }}>{creator.name}</p>
@@ -314,33 +322,40 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
           </span>
         </div>
 
-        {/* Platform icons */}
-        <div className="flex gap-1 mt-2">
+        {/* Active Platforms with names */}
+        <div className="mt-2.5 space-y-1">
           {creator.platforms.map((p) => (
-            <span key={p} className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-slate-300">
-              {platformIcon(p)}
-            </span>
+            <div key={p} className="flex items-center gap-1.5 text-[11px]" style={{ color: "var(--ch-text-muted)" }}>
+              <span className="w-4 h-4 rounded bg-white/5 flex items-center justify-center text-slate-400 shrink-0">
+                {platformIcon(p)}
+              </span>
+              <span className="capitalize font-medium" style={{ color: "var(--ch-text)" }}>{p}</span>
+            </div>
           ))}
         </div>
 
-        {/* Two-cell metric strip */}
-        <div className="grid grid-cols-2 mt-3 rounded-lg overflow-hidden border" style={{ borderColor: "var(--ch-border)" }}>
-          <div className="text-center py-2 border-r" style={{ borderColor: "var(--ch-border)" }}>
-            <p className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>{creator.followersText}</p>
-            <p className="text-[10px]" style={{ color: "var(--ch-text-soft)" }}>Followers</p>
-          </div>
-          <div className="text-center py-2">
-            <p className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>{creator.engagementRate}%</p>
-            <p className="text-[10px]" style={{ color: "var(--ch-text-soft)" }}>Engagement</p>
-          </div>
+        {/* Total followers + engagement */}
+        <div className="flex items-center gap-2 mt-2.5 text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
+          <span className="font-semibold" style={{ color: "var(--ch-text)" }}>{creator.followersText}</span> followers
+          <span className="text-white/20">·</span>
+          <span>{creator.engagementRate}% ER</span>
         </div>
 
-        {/* Price + invite button */}
-        <div className="flex items-center justify-between mt-3">
-          <div>
-            <p className="text-[10px]" style={{ color: "var(--ch-text-soft)" }}>Starts at</p>
-            <p className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>{creator.priceText}</p>
-          </div>
+        {/* Price range */}
+        <div className="mt-2 px-2.5 py-1.5 rounded-lg bg-white/5 border border-white/5">
+          <p className="text-[11px] font-semibold" style={{ color: "var(--ch-text)" }}>
+            Starts from {creator.priceText}
+          </p>
+          <p className="text-[10px]" style={{ color: "var(--ch-text-soft)" }}>
+            to {highPriceText} per post
+          </p>
+          <p className="text-[10px] mt-0.5" style={{ color: "var(--ch-text-soft)" }}>
+            ({creator.platforms.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(", ")})
+          </p>
+        </div>
+
+        {/* Invite button */}
+        <div className="flex justify-end mt-2.5">
           <button
             onClick={(e) => { e.stopPropagation(); onToggle(); }}
             className="px-3.5 py-1.5 rounded-lg text-[12px] font-bold transition-all"
@@ -363,7 +378,7 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
   creator: Creator; selected: boolean; favorited: boolean;
   onToggle: () => void; onClose: () => void; onChat: () => void; onFavorite: () => void;
 }) {
-  const catColor = CATEGORY_COLORS[creator.category] ?? "bg-slate-100 text-slate-700";
+  const catColor = CATEGORY_COLORS[creator.category] ?? "bg-white/10 text-slate-300";
 
   const platformWeights = [0.55, 0.30, 0.15];
   const platformSplit = creator.platforms.map((p, i) => ({
@@ -379,9 +394,9 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90dvh] overflow-hidden flex flex-col p-0 bg-white">
+      <DialogContent className="max-w-3xl max-h-[90dvh] overflow-hidden flex flex-col p-0 bg-[#111827]">
         {/* Header Section */}
-        <div className="p-4 sm:p-6 border-b bg-white" style={{ borderColor: "var(--ch-border)" }}>
+        <div className="p-4 sm:p-6 border-b bg-[#111827]" style={{ borderColor: "var(--ch-border)" }}>
           <div className="flex items-start gap-4">
             {/* Avatar */}
             <div className="w-20 h-20 rounded-full overflow-hidden shrink-0 border-2" style={{ borderColor: "var(--ch-border)", background: "var(--ch-primary-50)" }}>
@@ -446,7 +461,7 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
             {/* Favorite Button */}
             <button
               onClick={onFavorite}
-              className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 bg-slate-100"
+              className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110 bg-white/10"
             >
               <Heart style={{ width: 20, height: 20, color: favorited ? "#EF4444" : "#94A3B8", fill: favorited ? "#EF4444" : "none" }} />
             </button>
@@ -454,7 +469,7 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-50">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-[#0B1120]">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column - Main Content */}
             <div className="lg:col-span-2 space-y-6">
@@ -474,24 +489,24 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
                     <div
                       key={platform}
                       className={`flex items-center justify-between px-4 py-3 rounded-lg border
-                        ${platform === "instagram" ? "border-pink-200 bg-pink-50" :
-                          platform === "tiktok" ? "border-slate-700 bg-slate-800" :
-                          platform === "youtube" ? "border-red-200 bg-red-50" :
-                          platform === "facebook" ? "border-blue-200 bg-blue-50" :
-                          platform === "x" ? "border-slate-900 bg-slate-900" :
-                          "border-blue-200 bg-blue-50"}`}
+                        ${platform === "instagram" ? "border-pink-500/30 bg-pink-500/10" :
+                          platform === "tiktok" ? "border-white/10 bg-white/5" :
+                          platform === "youtube" ? "border-red-500/30 bg-red-500/10" :
+                          platform === "facebook" ? "border-blue-500/30 bg-blue-500/10" :
+                          platform === "x" ? "border-white/10 bg-white/5" :
+                          "border-blue-500/30 bg-blue-500/10"}`}
                     >
                       <span className={`flex items-center gap-2 text-sm font-semibold
                         ${platform === "tiktok" ? "text-white" :
                           platform === "x" ? "text-white" :
-                          platform === "instagram" ? "text-pink-700" :
-                          platform === "youtube" ? "text-red-700" :
-                          platform === "facebook" ? "text-blue-700" :
-                          "text-blue-700"}`}>
+                          platform === "instagram" ? "text-pink-300" :
+                          platform === "youtube" ? "text-red-300" :
+                          platform === "facebook" ? "text-blue-300" :
+                          "text-blue-300"}`}>
                         {platformIcon(platform)}
                         <span className="capitalize">{platform}</span>
                       </span>
-                      <span className={`text-sm font-bold ${platform === "tiktok" || platform === "x" ? "text-white" : "text-slate-800"}`}>
+                      <span className={`text-sm font-bold ${platform === "tiktok" || platform === "x" ? "text-white" : "text-slate-200"}`}>
                         {formatFollowers(count)} followers
                       </span>
                     </div>
@@ -576,7 +591,7 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 border-t flex items-center justify-between gap-3 bg-white" style={{ borderColor: "var(--ch-border)" }}>
+        <div className="p-4 border-t flex items-center justify-between gap-3 bg-[#111827]" style={{ borderColor: "var(--ch-border)" }}>
           <Button variant="outline" size="sm" className="gap-2" onClick={onClose}>
             Tutup
           </Button>
@@ -1107,17 +1122,17 @@ export default function Marketplace() {
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-700">Minimum Price ($)</label>
+              <label className="text-sm font-medium text-slate-300">Minimum Price ($)</label>
               <Input type="number" placeholder="e.g. 500" defaultValue={advMinPrice.current}
                 onChange={(e) => { advMinPrice.current = e.target.value; }} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-700">Maximum Price ($)</label>
+              <label className="text-sm font-medium text-slate-300">Maximum Price ($)</label>
               <Input type="number" placeholder="e.g. 1000" defaultValue={advMaxPrice.current}
                 onChange={(e) => { advMaxPrice.current = e.target.value; }} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-700">Minimum Rating</label>
+              <label className="text-sm font-medium text-slate-300">Minimum Rating</label>
               <Select onValueChange={(v) => setFilters((f) => ({ ...f, minRating: v === "all" ? undefined : Number(v) }))}>
                 <SelectTrigger><SelectValue placeholder="All Ratings" /></SelectTrigger>
                 <SelectContent>
@@ -1129,16 +1144,16 @@ export default function Marketplace() {
               </Select>
             </div>
             <div className="flex items-center gap-3">
-              <label className="text-sm font-medium text-slate-700 flex-1">Fast Response Only</label>
+              <label className="text-sm font-medium text-slate-300 flex-1">Fast Response Only</label>
               <button onClick={() => setFilters((f) => ({ ...f, fastResponse: !f.fastResponse }))}
-                className={`w-10 h-5 rounded-full relative transition-colors ${filters.fastResponse ? "bg-blue-600" : "bg-slate-200"}`}>
+                className={`w-10 h-5 rounded-full relative transition-colors ${filters.fastResponse ? "bg-blue-600" : "bg-white/10"}`}>
                 <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${filters.fastResponse ? "right-0.5" : "left-0.5"}`} />
               </button>
             </div>
             <div className="flex items-center gap-3">
-              <label className="text-sm font-medium text-slate-700 flex-1">Top Rated Only</label>
+              <label className="text-sm font-medium text-slate-300 flex-1">Top Rated Only</label>
               <button onClick={() => setFilters((f) => ({ ...f, topRated: !f.topRated }))}
-                className={`w-10 h-5 rounded-full relative transition-colors ${filters.topRated ? "bg-blue-600" : "bg-slate-200"}`}>
+                className={`w-10 h-5 rounded-full relative transition-colors ${filters.topRated ? "bg-blue-600" : "bg-white/10"}`}>
                 <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${filters.topRated ? "right-0.5" : "left-0.5"}`} />
               </button>
             </div>
@@ -1166,21 +1181,21 @@ export default function Marketplace() {
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-700">Campaign Name</label>
+              <label className="text-sm font-medium text-slate-300">Campaign Name</label>
               <Input placeholder="e.g. Summer Campaign 2025" value={campaignForm.title}
                 onChange={(e) => setCampaignForm((f) => ({ ...f, title: e.target.value }))} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-700">Description</label>
+              <label className="text-sm font-medium text-slate-300">Description</label>
               <Input placeholder="Brief campaign description..." value={campaignForm.description}
                 onChange={(e) => setCampaignForm((f) => ({ ...f, description: e.target.value }))} />
             </div>
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-700">Budget ($)</label>
+              <label className="text-sm font-medium text-slate-300">Budget ($)</label>
               <Input type="number" placeholder={String(selectedCreators.reduce((a, c) => a + c.price, 0))}
                 value={campaignForm.budget} onChange={(e) => setCampaignForm((f) => ({ ...f, budget: e.target.value }))} />
             </div>
-            <div className="bg-slate-50 rounded-lg p-3 text-sm text-slate-600">
+            <div className="bg-white/5 rounded-lg p-3 text-sm text-slate-400">
               <p className="font-medium mb-1">Selected Creators:</p>
               {selectedCreators.map((c) => (
                 <span key={c.id} className="inline-block mr-2 text-xs text-slate-500">· {c.name}</span>
