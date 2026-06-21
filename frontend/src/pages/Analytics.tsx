@@ -14,6 +14,7 @@ const projects = [
     timeline: "Jan - Mar 2026",
     deliverables: "30 Reels, 15 Stories, 10 Feed Posts",
     hue: 210,
+    logo: "/client-logos/komdigi.png",
   },
   {
     id: "kemenkop-umkm",
@@ -25,6 +26,7 @@ const projects = [
     timeline: "Feb - Jun 2026",
     deliverables: "50 Reels, 20 Carousel, 8 Video Tutorial",
     hue: 142,
+    logo: "/client-logos/kementrian-umkm.png",
   },
   {
     id: "kemenkop",
@@ -36,6 +38,7 @@ const projects = [
     timeline: "Mar - Jul 2026",
     deliverables: "40 Reels, 12 Carousel, 6 Video Profile",
     hue: 262,
+    logo: "/client-logos/kemenkop.jpg",
   },
   {
     id: "bni",
@@ -223,13 +226,21 @@ export default function Analytics() {
                       className="w-full sm:w-48 h-32 sm:h-auto flex items-center justify-center shrink-0"
                       style={{ background: `hsl(${p.hue}, 80%, 95%)` }}
                     >
-                      <Briefcase
-                        style={{
-                          width: 40,
-                          height: 40,
-                          color: `hsl(${p.hue}, 60%, 45%)`,
-                        }}
-                      />
+                      {"logo" in p && p.logo ? (
+                        <img
+                          src={p.logo}
+                          alt={p.name}
+                          className="w-20 h-20 object-contain"
+                        />
+                      ) : (
+                        <Briefcase
+                          style={{
+                            width: 40,
+                            height: 40,
+                            color: `hsl(${p.hue}, 60%, 45%)`,
+                          }}
+                        />
+                      )}
                     </div>
                     <div className="flex-1 p-4 sm:p-5 space-y-2">
                       <p
