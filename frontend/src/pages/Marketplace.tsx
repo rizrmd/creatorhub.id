@@ -817,27 +817,29 @@ export default function Marketplace() {
       <div className={`flex-1 flex flex-col min-w-0 ${selectedIds.length > 0 ? "pb-20 xl:pb-0" : ""}`}>
         {/* Tabs */}
         <div className="px-4 pt-3 pb-0 bg-[#0B1120]">
-          <div className="inline-flex items-center gap-1.5 p-1 rounded-2xl bg-white/5">
-            {tabs.map((tab) => {
+          <div className="flex items-center gap-0 rounded-2xl overflow-hidden" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
+            {tabs.map((tab, i) => {
               const TabIcon = tab.icon;
               const isActive = activeTab === tab.id;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-1.5 px-4 py-2 text-[12px] font-semibold rounded-xl transition-all duration-200 border ${
+                  className={`flex items-center gap-1.5 px-4 py-2.5 text-[12px] font-semibold transition-all duration-200 relative ${
                     isActive
-                      ? "text-[#F97316]"
-                      : "text-slate-400 hover:text-white hover:bg-white/5 border-transparent"
+                      ? "text-white"
+                      : "text-slate-400 hover:text-white hover:bg-white/5"
                   }`}
                   style={isActive ? {
-                    background: "rgba(249,115,22,.12)",
-                    borderColor: "rgba(249,115,22,.25)",
-                    boxShadow: "0 2px 8px rgba(249,115,22,.15)",
+                    background: "#F97316",
+                    boxShadow: "0 4px 14px rgba(249,115,22,.35)",
                   } : undefined}
                 >
                   <TabIcon className="w-3.5 h-3.5" />
                   {tab.label}
+                  {i < tabs.length - 1 && !isActive && (
+                    <span className="absolute right-0 top-1/2 -translate-y-1/2 w-px h-4 bg-white/10" />
+                  )}
                 </button>
               );
             })}
