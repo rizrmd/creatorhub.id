@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Database, Search,
   ExternalLink, MapPin, Users, Globe,
   Video, Building2, Globe2,
+  ChevronDown, ChevronRight, Save, Loader2,
+  Instagram, Youtube,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { mediaNetworkApi, type MediaGroup, type MediaOutlet } from "@/lib/api";
 
 type MediaEntry = {
   no: number;
@@ -271,10 +274,125 @@ function parseFollowers(f: string): number {
   return parseFloat(clean) || 0;
 }
 
+// Social media link builder
+function socialUrl(platform: string, handle: string | null): string | null {
+  if (!handle) return null;
+  const h = handle.replace(/^@/, "");
+  switch (platform) {
+    case "instagram": return `https://instagram.com/${h}`;
+    case "facebook": return `https://facebook.com/${h}`;
+    case "tiktok": return `https://tiktok.com/@${h}`;
+    case "youtube": return `https://youtube.com/@${h}`;
+    case "twitter": return `https://x.com/${h}`;
+    case "threads": return `https://threads.net/@${h}`;
+    default: return null;
+  }
+}
+
 export default function DatabasePage() {
   const [activeTab, setActiveTab] = useState("creators");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("Semua");
+
+  // Media Network state
+  const [groups, setGroups] = useState<MediaGroup[]>([]);
+  const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
+  const [outlets, setOutlets] = useState<MediaOutlet[]>([]);
+  const [outletsLoading, setOutletsLoading] = useState(false);
+  const [networkSearch, setNetworkSearch] = useState("");
+  const [editedOutlets, setEditedOutlets] = useState<Map<number, Partial<MediaOutlet>>>(new Map());
+  const [saving, setSaving] = useState(false);
+  const [groupsLoading, setGroupsLoading] = useState(false);
+
+  // Fetch groups on tab change
+  useEffect(() => {
+    if (activeTab === "idn-network" && groups.length === 0) {
+      setGroupsLoading(true);
+      mediaNetworkApi.listGroups()
+        .then(setGroups)
+        .catch(console.error)
+        .finally(() => setGroupsLoading(false));
+    }
+  }, [activeTab, groups.length]);
+
+  // Fetch outlets when group is expanded
+  const toggleGroup = useCallback(async (groupId: string) => {
+    if (expandedGroup === groupId) {
+      setExpandedGroup(null);
+      setOutlets([]);
+      return;
+    }
+    setExpandedGroup(groupId);
+    setOutletsLoading(true);
+    try {
+      const data = await mediaNetworkApi.listOutlets(groupId);
+      setOutlets(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setOutletsLoading(false);
+    }
+  }, [expandedGroup]);
+
+  // Handle field edit
+  const handleEdit = useCallback((outletId: number, field: keyof MediaOutlet, value: string | boolean | number) => {
+    setEditedOutlets(prev => {
+      const next = new Map(prev);
+      const existing = next.get(outletId) || {};
+      next.set(outletId, { ...existing, [field]: value });
+      return next;
+    });
+  }, []);
+
+  // Save changed outlets
+  const handleSave = useCallback(async () => {
+    if (editedOutlets.size === 0) return;
+    setSaving(true);
+    try {
+      const toUpdate = Array.from(editedOutlets.entries()).map(([id, changes]) => ({
+        id,
+        ...changes,
+      }));
+      await mediaNetworkApi.bulkUpdate(toUpdate);
+      setEditedOutlets(new Map());
+      // Refresh outlets
+      if (expandedGroup) {
+        const data = await mediaNetworkApi.listOutlets(expandedGroup);
+        setOutlets(data);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
+  }, [editedOutlets, expandedGroup]);
+
+  // Search across all outlets
+  const handleNetworkSearch = useCallback(async () => {
+    if (!networkSearch.trim()) {
+      // Reset to group view
+      if (expandedGroup) {
+        setOutletsLoading(true);
+        try {
+          const data = await mediaNetworkApi.listOutlets(expandedGroup);
+          setOutlets(data);
+        } finally {
+          setOutletsLoading(false);
+        }
+      }
+      return;
+    }
+    setOutletsLoading(true);
+    try {
+      const data = await mediaNetworkApi.searchOutlets(networkSearch);
+      setOutlets(data);
+      setExpandedGroup(null); // Show search results flat
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setOutletsLoading(false);
+    }
+  }, [networkSearch, expandedGroup]);
 
   const filtered = allMedia.filter((m) => {
     const matchesSearch =
@@ -454,14 +572,258 @@ export default function DatabasePage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="idn-network" className="mt-4">
-          <Card>
-            <CardContent className="py-12 text-center">
-              <Building2 className="w-10 h-10 mx-auto mb-3" style={{ color: "var(--ch-text-soft)" }} />
-              <p className="text-[14px] font-semibold" style={{ color: "var(--ch-text)" }}>Indonesian Media Network</p>
-              <p className="text-[12px] mt-1" style={{ color: "var(--ch-text-muted)" }}>Fitur ini akan segera tersedia.</p>
-            </CardContent>
-          </Card>
+        <TabsContent value="idn-network" className="mt-4 space-y-4">
+          {/* Summary Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <Card>
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: "var(--ch-primary-50)" }}>
+                  <Building2 className="w-5 h-5" style={{ color: "var(--ch-primary)" }} />
+                </div>
+                <div>
+                  <p className="text-[20px] font-bold" style={{ color: "var(--ch-text)" }}>{groups.length}</p>
+                  <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>Media Groups</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: "#DCFCE7" }}>
+                  <Globe className="w-5 h-5" style={{ color: "#16A34A" }} />
+                </div>
+                <div>
+                  <p className="text-[20px] font-bold" style={{ color: "var(--ch-text)" }}>
+                    {groups.reduce((sum, g) => sum + g.outletCount, 0).toLocaleString()}
+                  </p>
+                  <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>Total Outlets</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: "#FEF3C7" }}>
+                  <Database className="w-5 h-5" style={{ color: "#D97706" }} />
+                </div>
+                <div>
+                  <p className="text-[20px] font-bold" style={{ color: "var(--ch-text)" }}>{editedOutlets.size}</p>
+                  <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>Unsaved Changes</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Search + Save */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <div className="relative flex-1 max-w-sm w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--ch-text-muted)" }} />
+              <input
+                type="text"
+                placeholder="Search media groups or outlets..."
+                value={networkSearch}
+                onChange={(e) => setNetworkSearch(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleNetworkSearch()}
+                className="w-full pl-9 pr-3 py-2 text-[13px] rounded-lg border"
+                style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)", background: "var(--ch-surface)" }}
+              />
+            </div>
+            {editedOutlets.size > 0 && (
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="flex items-center gap-2 px-4 py-2 text-[13px] font-semibold rounded-lg text-white transition-colors"
+                style={{ background: saving ? "#94A3B8" : "var(--ch-primary)" }}
+              >
+                {saving ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Save className="w-4 h-4" />
+                )}
+                Save All ({editedOutlets.size})
+              </button>
+            )}
+          </div>
+
+          {/* Groups List */}
+          {groupsLoading ? (
+            <Card>
+              <CardContent className="py-12 text-center">
+                <Loader2 className="w-8 h-8 mx-auto mb-3 animate-spin" style={{ color: "var(--ch-primary)" }} />
+                <p className="text-[14px]" style={{ color: "var(--ch-text-muted)" }}>Loading media groups...</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-2">
+              {groups.map((group) => (
+                <Card key={group.id}>
+                  <button
+                    onClick={() => toggleGroup(group.id)}
+                    className="w-full flex items-center gap-3 p-4 text-left transition-colors hover:bg-slate-50"
+                  >
+                    {expandedGroup === group.id ? (
+                      <ChevronDown className="w-4 h-4 shrink-0" style={{ color: "var(--ch-text-muted)" }} />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 shrink-0" style={{ color: "var(--ch-text-muted)" }} />
+                    )}
+                    <Building2 className="w-4 h-4 shrink-0" style={{ color: "var(--ch-primary)" }} />
+                    <span className="text-[14px] font-semibold flex-1" style={{ color: "var(--ch-text)" }}>
+                      {group.name}
+                    </span>
+                    <span className="text-[12px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>
+                      {group.outletCount} outlets
+                    </span>
+                  </button>
+
+                  {expandedGroup === group.id && (
+                    <div className="border-t" style={{ borderColor: "var(--ch-border)" }}>
+                      {outletsLoading ? (
+                        <div className="py-8 text-center">
+                          <Loader2 className="w-6 h-6 mx-auto mb-2 animate-spin" style={{ color: "var(--ch-primary)" }} />
+                          <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>Loading outlets...</p>
+                        </div>
+                      ) : (
+                        <div className="overflow-x-auto">
+                          <table className="w-full">
+                            <thead>
+                              <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
+                                <th className="text-left px-4 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Name</th>
+                                <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Agency Price</th>
+                                <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Rate Card</th>
+                                <th className="text-center px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>GNews</th>
+                                <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Instagram</th>
+                                <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>TikTok</th>
+                                <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>YouTube</th>
+                                <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Genre</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {outlets.map((outlet) => {
+                                const edited = editedOutlets.get(outlet.id);
+                                const displayHarga = edited?.hargaAgency ?? outlet.hargaAgency;
+                                const displayRate = edited?.hargaRateCard ?? outlet.hargaRateCard;
+                                const displayIg = edited?.instagramHandle ?? outlet.instagramHandle;
+                                const displayTiktok = edited?.tiktokHandle ?? outlet.tiktokHandle;
+                                const displayYoutube = edited?.youtubeHandle ?? outlet.youtubeHandle;
+                                const displayGenre = edited?.genre ?? outlet.genre;
+
+                                return (
+                                  <tr key={outlet.id} className="border-b transition-colors hover:bg-slate-50/50" style={{ borderColor: "var(--ch-border)" }}>
+                                    <td className="px-4 py-2">
+                                      <div className="flex items-center gap-2">
+                                        <span className="text-[13px] font-semibold" style={{ color: "var(--ch-text)" }}>{outlet.name}</span>
+                                        {outlet.url && (
+                                          <a href={outlet.url} target="_blank" rel="noopener noreferrer" className="text-[10px]" style={{ color: "var(--ch-primary)" }}>
+                                            <ExternalLink className="w-3 h-3" />
+                                          </a>
+                                        )}
+                                      </div>
+                                    </td>
+                                    <td className="px-3 py-2">
+                                      <input
+                                        type="text"
+                                        value={displayHarga || ""}
+                                        onChange={(e) => handleEdit(outlet.id, "hargaAgency", e.target.value)}
+                                        placeholder="—"
+                                        className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
+                                        style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+                                      />
+                                    </td>
+                                    <td className="px-3 py-2">
+                                      <input
+                                        type="text"
+                                        value={displayRate || ""}
+                                        onChange={(e) => handleEdit(outlet.id, "hargaRateCard", e.target.value)}
+                                        placeholder="—"
+                                        className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
+                                        style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+                                      />
+                                    </td>
+                                    <td className="px-3 py-2 text-center">
+                                      <input
+                                        type="checkbox"
+                                        checked={edited?.googleNews ?? outlet.googleNews}
+                                        onChange={(e) => handleEdit(outlet.id, "googleNews", e.target.checked)}
+                                        className="w-4 h-4 rounded"
+                                      />
+                                    </td>
+                                    <td className="px-3 py-2">
+                                      <div className="flex items-center gap-1.5">
+                                        <Instagram className="w-3.5 h-3.5 shrink-0" style={{ color: "#E1306C" }} />
+                                        <input
+                                          type="text"
+                                          value={displayIg || ""}
+                                          onChange={(e) => handleEdit(outlet.id, "instagramHandle", e.target.value)}
+                                          placeholder="@handle"
+                                          className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
+                                          style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+                                        />
+                                        {displayIg && (
+                                          <a href={socialUrl("instagram", displayIg) || "#"} target="_blank" rel="noopener noreferrer">
+                                            <ExternalLink className="w-3 h-3" style={{ color: "var(--ch-primary)" }} />
+                                          </a>
+                                        )}
+                                      </div>
+                                    </td>
+                                    <td className="px-3 py-2">
+                                      <div className="flex items-center gap-1.5">
+                                        <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="currentColor" style={{ color: "#00F2EA" }}>
+                                          <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 0010.86 4.48V13.2a8.16 8.16 0 005.58 2.18v-3.45a4.85 4.85 0 01-3.59-1.62V6.69h3.59z" />
+                                        </svg>
+                                        <input
+                                          type="text"
+                                          value={displayTiktok || ""}
+                                          onChange={(e) => handleEdit(outlet.id, "tiktokHandle", e.target.value)}
+                                          placeholder="@handle"
+                                          className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
+                                          style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+                                        />
+                                        {displayTiktok && (
+                                          <a href={socialUrl("tiktok", displayTiktok) || "#"} target="_blank" rel="noopener noreferrer">
+                                            <ExternalLink className="w-3 h-3" style={{ color: "var(--ch-primary)" }} />
+                                          </a>
+                                        )}
+                                      </div>
+                                    </td>
+                                    <td className="px-3 py-2">
+                                      <div className="flex items-center gap-1.5">
+                                        <Youtube className="w-3.5 h-3.5 shrink-0" style={{ color: "#FF0000" }} />
+                                        <input
+                                          type="text"
+                                          value={displayYoutube || ""}
+                                          onChange={(e) => handleEdit(outlet.id, "youtubeHandle", e.target.value)}
+                                          placeholder="@handle"
+                                          className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
+                                          style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+                                        />
+                                        {displayYoutube && (
+                                          <a href={socialUrl("youtube", displayYoutube) || "#"} target="_blank" rel="noopener noreferrer">
+                                            <ExternalLink className="w-3 h-3" style={{ color: "var(--ch-primary)" }} />
+                                          </a>
+                                        )}
+                                      </div>
+                                    </td>
+                                    <td className="px-3 py-2">
+                                      <input
+                                        type="text"
+                                        value={displayGenre || ""}
+                                        onChange={(e) => handleEdit(outlet.id, "genre", e.target.value)}
+                                        placeholder="—"
+                                        className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
+                                        style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+                                      />
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </Card>
+              ))}
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="intl-outlets" className="mt-4">

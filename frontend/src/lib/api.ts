@@ -71,4 +71,51 @@ export const messagesApi = {
       .then((r) => r.data),
 };
 
+export interface MediaGroup {
+  id: string;
+  name: string;
+  outletCount: number;
+  createdAt: string;
+}
+
+export interface MediaOutlet {
+  id: number;
+  groupId: string | null;
+  groupName?: string;
+  name: string;
+  isGroupHeader: boolean;
+  url: string | null;
+  totalBrands: number | null;
+  hargaAgency: string | null;
+  hargaRateCard: string | null;
+  googleNews: boolean;
+  instagramHandle: string | null;
+  instagramFollowers: string | null;
+  facebookHandle: string | null;
+  facebookFollowers: string | null;
+  threadsHandle: string | null;
+  threadsFollowers: string | null;
+  tiktokHandle: string | null;
+  tiktokFollowers: string | null;
+  twitterHandle: string | null;
+  twitterFollowers: string | null;
+  youtubeHandle: string | null;
+  youtubeFollowers: string | null;
+  genre: string | null;
+  keterangan: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const mediaNetworkApi = {
+  listGroups: () =>
+    api.get<MediaGroup[]>("/media-groups").then((r) => r.data),
+  listOutlets: (groupId: string) =>
+    api.get<MediaOutlet[]>(`/media-groups/${groupId}/outlets`).then((r) => r.data),
+  searchOutlets: (query: string) =>
+    api.get<MediaOutlet[]>("/media-outlets/search", { params: { q: query } }).then((r) => r.data),
+  bulkUpdate: (outlets: Partial<MediaOutlet>[]) =>
+    api.put<{ updated: number }>("/media-outlets/bulk", { outlets }).then((r) => r.data),
+};
+
 export default api;

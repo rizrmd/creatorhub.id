@@ -41,6 +41,7 @@ func main() {
 	campaignRepo := repository.NewCampaignRepository(db)
 	messageRepo := repository.NewMessageRepository(db)
 	userRepo := repository.NewUserRepository(db)
+	mediaNetworkRepo := repository.NewMediaNetworkRepository(db)
 
 	if err := ensureAdminUser(context.Background(), userRepo); err != nil {
 		log.Printf("warning: could not ensure admin user: %v", err)
@@ -50,6 +51,7 @@ func main() {
 	campaignHandler := handlers.NewCampaignHandler(campaignRepo)
 	messageHandler := handlers.NewMessageHandler(messageRepo)
 	authHandler := handlers.NewAuthHandler(userRepo)
+	mediaNetworkHandler := handlers.NewMediaNetworkHandler(mediaNetworkRepo)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -88,6 +90,14 @@ func main() {
 				r.Post("/channels", messageHandler.CreateChannel)
 				r.Get("/channels/{channelId}/messages", messageHandler.ListMessages)
 				r.Post("/channels/{channelId}/messages", messageHandler.SendMessage)
+			})
+			r.Route("/media-groups", func(r chi.Router) {
+				r.Get("/", mediaNetworkHandler.ListGroups)
+				r.Get("/{id}/outlets", mediaNetworkHandler.ListOutlets)
+			})
+			r.Route("/media-outlets", func(r chi.Router) {
+				r.Get("/search", mediaNetworkHandler.SearchOutlets)
+				r.Put("/bulk", mediaNetworkHandler.BulkUpdate)
 			})
 		})
 	})
