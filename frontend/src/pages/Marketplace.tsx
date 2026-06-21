@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import {
-  Search, SlidersHorizontal, Star, CheckCircle, Zap, Award,
+  Search, SlidersHorizontal, Star, CheckCircle, Award,
   Instagram, Youtube, Users, Megaphone, TrendingUp, Wallet,
   LayoutGrid, List, RotateCcw, X, Flame, MessageSquare, MapPin,
   Heart, ArrowUpRight, User, Video, Building2, Globe2,
@@ -389,7 +389,7 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
     : creator.platforms.map((p) => ({ platform: p, followers: 0, engagementRate: 0 }));
 
   const collaborationCount = Math.max(1, Math.round(creator.rating * 8) - 12);
-  const responseTimeLabel = creator.fastResponse ? "< 2 jam" : "< 24 jam";
+  const responseTimeLabel = "< 24 jam";
   const avgLikes = formatFollowers(Math.round(creator.followers * creator.engagementRate / 100 * 0.8));
   const avgComments = formatFollowers(Math.round(creator.followers * creator.engagementRate / 100 * 0.15));
   const avgViews = formatFollowers(Math.round(creator.followers * 2.3));
@@ -425,12 +425,6 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
                   <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold shrink-0"
                     style={{ background: "var(--ch-orange-50)", color: "var(--ch-orange)" }}>
                     <Award style={{ width: 12, height: 12 }} /> Top Rated
-                  </span>
-                )}
-                {creator.fastResponse && (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold shrink-0"
-                    style={{ background: "#DCFCE7", color: "#16A34A" }}>
-                    <Zap style={{ width: 12, height: 12 }} /> Fast Response
                   </span>
                 )}
               </div>
@@ -653,7 +647,6 @@ export default function Marketplace() {
       searchParams.has("search") ||
       searchParams.has("city") ||
       searchParams.has("topRated") ||
-      searchParams.has("fastResponse") ||
       searchParams.has("verified");
 
     if (!hasUpdates) return;
@@ -668,7 +661,6 @@ export default function Marketplace() {
         next.city = searchParams.get("city") ?? undefined;
       }
       if (searchParams.get("topRated") === "true") next.topRated = true;
-      if (searchParams.get("fastResponse") === "true") next.fastResponse = true;
       if (searchParams.get("verified") === "true") next.verified = true;
       return next;
     });
@@ -751,7 +743,7 @@ export default function Marketplace() {
     setFilters((f) => ({ ...f, minPrice: min, maxPrice: max, page: 1 }));
   };
 
-  const toggleQuick = (key: "verified" | "topRated" | "fastResponse") => {
+  const toggleQuick = (key: "verified" | "topRated") => {
     setFilters((f) => ({ ...f, [key]: f[key] ? undefined : true, page: 1 }));
   };
 
@@ -933,14 +925,6 @@ export default function Marketplace() {
             }`}
           >
             <Flame className="w-3.5 h-3.5" /> Top Rated
-          </button>
-          <button
-            onClick={() => toggleQuick("fastResponse")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-              filters.fastResponse ? "bg-amber-500 border-amber-500 text-white" : "border-white/10 text-slate-400 hover:border-amber-500/50"
-            }`}
-          >
-            <Zap className="w-3.5 h-3.5" /> Fast Response
           </button>
           <button
             onClick={() => toggleQuick("verified")}
@@ -1168,13 +1152,6 @@ export default function Marketplace() {
                   <SelectItem value="4.5">4.5+</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-            <div className="flex items-center gap-3">
-              <label className="text-sm font-medium text-slate-300 flex-1">Fast Response Only</label>
-              <button onClick={() => setFilters((f) => ({ ...f, fastResponse: !f.fastResponse }))}
-                className={`w-10 h-5 rounded-full relative transition-colors ${filters.fastResponse ? "bg-blue-600" : "bg-white/10"}`}>
-                <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform ${filters.fastResponse ? "right-0.5" : "left-0.5"}`} />
-              </button>
             </div>
             <div className="flex items-center gap-3">
               <label className="text-sm font-medium text-slate-300 flex-1">Top Rated Only</label>

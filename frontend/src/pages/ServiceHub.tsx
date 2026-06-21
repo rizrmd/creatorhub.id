@@ -3,14 +3,12 @@ import { Link } from "react-router-dom";
 import {
   Users, ArrowLeft,
   Megaphone, Newspaper, Podcast, Radio,
-  Send, Sparkles,
+  Send,
 } from "lucide-react";
 import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
 import type { GeoJSON as LeafletGeoJSON } from "leaflet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import ServiceHubAnimation from "@/components/ServiceHubAnimation";
-import ProvincePopup from "@/components/ProvincePopup";
 
 /* ---------- Types ---------- */
 interface ProvinceData {
@@ -87,163 +85,6 @@ const CAMPAIGN_EVENTS = [
   { date: 20, month: "May", year: "2024", label: "Skincare Launch Campaign", color: "bg-blue-600" },
   { date: 28, month: "May", year: "2024", label: "Tech Gadget Review", color: "bg-white border" },
 ];
-
-/* ---------- Mock Creator Data per Province ---------- */
-const MOCK_CREATORS: Record<string, { name: string; img?: string }[]> = {
-  "DKI Jakarta": [
-    { name: "Jerome Polin", img: "jerome-polin.png" },
-    { name: "Nessie Judge", img: "nessie-judge.png" },
-    { name: "Tasya Farasya", img: "tasya-farasya.png" },
-    { name: "Rachel Vennya", img: "rachel-vennya.png" },
-    { name: "Deddy Corbuzier" },
-    { name: "Atta Halilintar" },
-    { name: "Ria Ricis" },
-    { name: "Bayu Skak" },
-  ],
-  "West Java": [
-    { name: "Arief Muhammad", img: "arief-muhammad.png" },
-    { name: "Fadil Jaidi", img: "fadil-jaidi.png" },
-    { name: "Indra Jegel" },
-    { name: "Cindercles" },
-    { name: "Reza Oktovian" },
-    { name: "Dedy Irfan" },
-  ],
-  "East Java": [
-    { name: "Yoga Pratama" },
-    { name: "Dian Sastrowardoyo" },
-    { name: "Rizky Febian" },
-    { name: "Aldi Taher" },
-    { name: "Winda Viska" },
-  ],
-  "Central Java": [
-    { name: "Gilang Dirga" },
-    { name: "Irwansyah" },
-    { name: "Zaskia Adya Mecca" },
-    { name: "Raffi Ahmad" },
-  ],
-  "Banten": [
-    { name: "Vicky Prasetyo" },
-    { name: "Kuya Cagur" },
-    { name: "Andhika Pratama" },
-  ],
-  "North Sumatra": [
-    { name: "Randy Martin" },
-    { name: "Putra Ridho" },
-    { name: "Fanny Ghassani" },
-  ],
-  "DI Yogyakarta": [
-    { name: "Ardi Persada" },
-    { name: "Nanda Arsyint" },
-    { name: "Dimas Djay" },
-    { name: "Rizal Effendi" },
-  ],
-  "Bali": [
-    { name: "Kadek Devina" },
-    { name: "Komang Ayu" },
-    { name: "Wayan Sudana" },
-  ],
-  "South Sulawesi": [
-    { name: "Ismail Fajar" },
-    { name: "Rina Sukses" },
-    { name: "Andi Baso" },
-  ],
-  "South Sumatra": [
-    { name: "Rahman Yakub" },
-    { name: "Siti Aminah" },
-  ],
-  "Lampung": [
-    { name: "Budi Santoso" },
-    { name: "Dewi Lestari" },
-  ],
-  "Riau": [
-    { name: "Fadhil Pratama" },
-    { name: "Maya Sari" },
-  ],
-  "West Sumatra": [
-    { name: "Riko Apriliansyah" },
-    { name: "Putri Wulandari" },
-  ],
-  "West Kalimantan": [
-    { name: "Hendra Wijaya" },
-    { name: "Siti Nurhaliza" },
-  ],
-  "Aceh": [
-    { name: "Muzakir Ramadhan" },
-    { name: "Nanda Syaputra" },
-  ],
-  "East Nusa Tenggara": [
-    { name: "Yohanes Bura" },
-  ],
-  "West Nusa Tenggara": [
-    { name: "Lalu Ahmad" },
-    { name: "Siti Maimunah" },
-  ],
-  "South Kalimantan": [
-    { name: "Ahmad Rizky" },
-  ],
-  "East Kalimantan": [
-    { name: "Surya Saputra" },
-    { name: "Dian Puspa" },
-  ],
-  "Riau Islands": [
-    { name: "Budi Hartono" },
-  ],
-  "North Sulawesi": [
-    { name: "Octavianto Lumentut" },
-  ],
-  "Jambi": [
-    { name: "Rudi Saputra" },
-  ],
-  "Central Kalimantan": [
-    { name: "Hadi Prabowo" },
-  ],
-  "Central Sulawesi": [
-    { name: "Rahmat Saleh" },
-  ],
-  "Southeast Sulawesi": [
-    { name: "La Ode Ali" },
-  ],
-  "Bengkulu": [
-    { name: "Agung Pratama" },
-  ],
-  "Bangka Belitung": [
-    { name: "Firmansyah" },
-  ],
-  "Gorontalo": [
-    { name: "Risky Monggilo" },
-  ],
-  "Maluku": [
-    { name: "Yusuf Tuasikal" },
-  ],
-  "North Maluku": [
-    { name: "Alwi Assegaf" },
-  ],
-  "West Sulawesi": [
-    { name: "Ashar Tanu" },
-  ],
-  "North Kalimantan": [
-    { name: "Hendra Yudha" },
-  ],
-  "West Papua": [
-    { name: "Yulianus Sanadi" },
-  ],
-  "Papua": [
-    { name: "Boas Sondegau" },
-    { name: "Melin Ombui" },
-  ],
-  "Southwest Papua": [
-    { name: "Matheos Wijaya" },
-  ],
-  "Central Papua": [
-    { name: "Nathan Wenda" },
-  ],
-  "Highland Papua": [
-    { name: "Yulianus Frogomo" },
-  ],
-  "South Papua": [
-    { name: "Yakobus Duwitau" },
-  ],
-};
 
 /* ---------- Helpers ---------- */
 function getProvinceColor(count: number): string {
@@ -386,8 +227,6 @@ export default function ServiceHub() {
   const [geoJsonData, setGeoJsonData] = useState<GeoJSON.FeatureCollection | null>(null);
   const [mapKey] = useState(0);
   const [mapTab, setMapTab] = useState<"creator" | "homeless">("creator");
-  const [animPanelOpen, setAnimPanelOpen] = useState(false);
-  const [popupProvince, setPopupProvince] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/indonesia-38-provinces.geojson")
@@ -398,7 +237,6 @@ export default function ServiceHub() {
 
   const handleProvinceClick = useCallback((name: string) => {
     setProvince((prev) => (prev === name ? "all" : name));
-    setPopupProvince((prev) => (prev === name ? null : name));
   }, []);
 
   const sortedProvinces = [...PROVINCES].sort((a, b) => b.count - a.count);
@@ -465,113 +303,85 @@ export default function ServiceHub() {
         </div>
       </div>
 
-      {/* Map Section + Animation Panel */}
-      <div className="rounded-xl border flex overflow-hidden" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-        {/* Map — flex-1 */}
-        <div className="flex-1 flex flex-col min-w-0">
-          <div className="flex flex-wrap items-center justify-between gap-2 px-5 pt-4 pb-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setMapTab("creator")}
-                className={`text-[13px] font-bold px-3 py-1.5 rounded-lg transition-all ${
-                  mapTab === "creator"
-                    ? "bg-orange-500 text-white shadow-md shadow-orange-500/20"
-                    : "text-white/50 hover:text-white/80"
-                }`}
-                style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-              >
-                Content Creator Coverage in Indonesia
-              </button>
-              <button
-                onClick={() => setMapTab("homeless")}
-                className={`text-[13px] font-bold px-3 py-1.5 rounded-lg transition-all ${
-                  mapTab === "homeless"
-                    ? "bg-orange-500 text-white shadow-md shadow-orange-500/20"
-                    : "text-white/50 hover:text-white/80"
-                }`}
-                style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-              >
-                Homeless Media Coverage in Indonesia
-              </button>
-              {!animPanelOpen && (
-                <button
-                  onClick={() => setAnimPanelOpen(true)}
-                  className="flex items-center gap-1.5 text-[12px] font-bold px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-all ml-2"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-orange-400" /> AI Analysis
-                </button>
-              )}
-            </div>
-            <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
-                <span>Low</span>
-                <div className="flex gap-0.5">
-                  {["#1e3a5f", "#1d4ed8", "#3b82f6", "#60a5fa", "#93c5fd"].map((c) => (
-                    <span key={c} className="inline-block w-3.5 h-2.5 rounded-sm" style={{ background: c }} />
-                  ))}
-                </div>
-                <span>High</span>
-              </div>
-              <select
-                value={province}
-                onChange={(e) => setProvince(e.target.value)}
-                className="text-[12px] font-semibold border rounded-lg px-3 py-1.5 outline-none"
-                style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)", background: "var(--ch-surface)" }}
-              >
-                <option value="all">Indonesia</option>
-                {PROVINCES.map((p) => (
-                  <option key={p.name} value={p.name}>{p.name}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div className="relative min-h-[380px]">
-            <MapContainer
-              key={mapKey}
-              center={[-2.5, 118.0]}
-              zoom={5}
-              zoomControl={true}
-              className="w-full h-full absolute inset-0 z-0"
-              scrollWheelZoom={true}
+      {/* Map Section — full width */}
+      <div className="rounded-xl border flex flex-col" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+        <div className="flex flex-wrap items-center justify-between gap-2 px-5 pt-4 pb-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setMapTab("creator")}
+              className={`text-[13px] font-bold px-3 py-1.5 rounded-lg transition-all ${
+                mapTab === "creator"
+                  ? "bg-orange-500 text-white shadow-md shadow-orange-500/20"
+                  : "text-white/50 hover:text-white/80"
+              }`}
+              style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
             >
-              <TileLayer
-                attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-              />
-              <MapController
-                selectedProvince={province}
-                geoJsonData={geoJsonData}
-                onProvinceClick={handleProvinceClick}
-              />
-            </MapContainer>
-            {/* Province Popup */}
-            {popupProvince && (
-              <ProvincePopup
-                province={popupProvince}
-                count={PROVINCES.find((p) => p.name === popupProvince)?.count ?? 0}
-                creators={MOCK_CREATORS[popupProvince] ?? []}
-                onClose={() => setPopupProvince(null)}
-              />
-            )}
+              Content Creator Coverage in Indonesia
+            </button>
+            <button
+              onClick={() => setMapTab("homeless")}
+              className={`text-[13px] font-bold px-3 py-1.5 rounded-lg transition-all ${
+                mapTab === "homeless"
+                  ? "bg-orange-500 text-white shadow-md shadow-orange-500/20"
+                  : "text-white/50 hover:text-white/80"
+              }`}
+              style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+            >
+              Homeless Media Coverage in Indonesia
+            </button>
           </div>
-          <div className="flex items-center gap-4 px-5 py-3 border-t text-[10px] font-semibold" style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}>
-            <span>{mapTab === "creator" ? "KOLs / Creators" : "Media Channels"}</span>
-            <div className="flex items-center gap-3">
-              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#93c5fd] inline-block" /> 150+</span>
-              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#60a5fa] inline-block" /> 50 - 149</span>
-              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#3b82f6] inline-block" /> 20 - 49</span>
-              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#1e3a5f] inline-block" /> &lt; 20</span>
+          <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
+              <span>Low</span>
+              <div className="flex gap-0.5">
+                {["#1e3a5f", "#1d4ed8", "#3b82f6", "#60a5fa", "#93c5fd"].map((c) => (
+                  <span key={c} className="inline-block w-3.5 h-2.5 rounded-sm" style={{ background: c }} />
+                ))}
+              </div>
+              <span>High</span>
             </div>
+            <select
+              value={province}
+              onChange={(e) => setProvince(e.target.value)}
+              className="text-[12px] font-semibold border rounded-lg px-3 py-1.5 outline-none"
+              style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)", background: "var(--ch-surface)" }}
+            >
+              <option value="all">Indonesia</option>
+              {PROVINCES.map((p) => (
+                <option key={p.name} value={p.name}>{p.name}</option>
+              ))}
+            </select>
           </div>
         </div>
-
-        {/* AI Animation Panel */}
-        <ServiceHubAnimation
-          provinces={PROVINCES}
-          isOpen={animPanelOpen}
-          onClose={() => setAnimPanelOpen(false)}
-          onProvinceHighlight={() => {}}
-        />
+        <div className="relative min-h-[380px]">
+          <MapContainer
+            key={mapKey}
+            center={[-2.5, 118.0]}
+            zoom={5}
+            zoomControl={true}
+            className="w-full h-full absolute inset-0 z-0"
+            scrollWheelZoom={true}
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            />
+            <MapController
+              selectedProvince={province}
+              geoJsonData={geoJsonData}
+              onProvinceClick={handleProvinceClick}
+            />
+          </MapContainer>
+        </div>
+        <div className="flex items-center gap-4 px-5 py-3 border-t text-[10px] font-semibold" style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}>
+          <span>{mapTab === "creator" ? "KOLs / Creators" : "Media Channels"}</span>
+          <div className="flex items-center gap-3">
+            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#93c5fd] inline-block" /> 150+</span>
+            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#60a5fa] inline-block" /> 50 - 149</span>
+            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#3b82f6] inline-block" /> 20 - 49</span>
+            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#1e3a5f] inline-block" /> &lt; 20</span>
+          </div>
+        </div>
       </div>
 
       {/* Platform Features */}
