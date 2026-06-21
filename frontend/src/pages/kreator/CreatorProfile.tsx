@@ -18,7 +18,7 @@ export default function CreatorProfile() {
   const [profile, setProfile] = useState({
     name: fullName,
     handle,
-    bio: `Content creator di CreatorHub. Hubungi saya via ${email || "email bisnis"}.`,
+    bio: `Content creator at CreatorHub. Contact me via ${email || "business email"}.`,
     city: "Jakarta",
     rate: "4500000",
   });

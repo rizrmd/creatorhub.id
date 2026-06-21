@@ -5,6 +5,7 @@ import {
   MessageSquare, CreditCard, Settings, HelpCircle,
   Rocket, Briefcase, Coins, Network,
   Lightbulb, User, Home, Mail, Database, FolderOpen, Sparkles,
+  LayoutDashboard,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -16,29 +17,30 @@ import { useSidebar } from "@/contexts/SidebarContext";
 import { useKreatorStatsOptional } from "@/context/KreatorDataContext";
 
 const brandNavItems = [
-  { to: "/service-hub",                icon: Network,         label: "Service Hub" },
-  { to: "/service-hub/analytics",      icon: FolderKanban,    label: "Projects" },
-  { to: "/service-hub/marketplace",    icon: Store,           label: "Marketplace" },
-  { to: "/service-hub/campaigns",      icon: Megaphone,       label: "Campaigns" },
-  { to: "/service-hub/boost-ads",      icon: Rocket,          label: "Boost Ads" },
-  { to: "/service-hub/database",       icon: Database,        label: "Database" },
-  { to: "/service-hub/content-hub",    icon: FolderOpen,      label: "Content Hub" },
-  { to: "/service-hub/media-monitoring", icon: Radio,          label: "Media Monitoring" },
-  { to: "/service-hub/ai-support",       icon: Sparkles,      label: "AI Support" },
-  { to: "/service-hub/messages",       icon: MessageSquare,   label: "Messages",   badge: 12 },
-  { to: "/service-hub/payments",       icon: CreditCard,      label: "Payments" },
-  { to: "/service-hub/settings",       icon: Settings,        label: "Settings" },
+  { to: "/dashboard",                    icon: LayoutDashboard, label: "Dashboard" },
+  { to: "/dashboard/service-hub",        icon: Network,         label: "Service Hub" },
+  { to: "/dashboard/projects",           icon: FolderKanban,    label: "Projects" },
+  { to: "/dashboard/marketplace",        icon: Store,           label: "Marketplace" },
+  { to: "/dashboard/campaigns",          icon: Megaphone,       label: "Campaigns" },
+  { to: "/dashboard/boost-ads",          icon: Rocket,          label: "Boost Ads" },
+  { to: "/dashboard/database",           icon: Database,        label: "Database" },
+  { to: "/dashboard/content-hub",        icon: FolderOpen,      label: "Content Hub" },
+  { to: "/dashboard/media-monitoring",   icon: Radio,           label: "Media Monitoring" },
+  { to: "/dashboard/ai-support",         icon: Sparkles,        label: "AI Support" },
+  { to: "/dashboard/messages",           icon: MessageSquare,   label: "Messages",   badge: 12 },
+  { to: "/dashboard/payments",           icon: CreditCard,      label: "Payments" },
+  { to: "/dashboard/settings",           icon: Settings,        label: "Settings" },
 ];
 
 const kreatorNavItems = [
-  { to: "/service-hub/kreator/home",        icon: Home,          label: "Home" },
-  { to: "/service-hub/kreator/invitations", icon: Mail,          label: "Undangan",   badgeKey: "invitations" as const },
-  { to: "/service-hub/kreator/work",        icon: Briefcase,     label: "Pekerjaan" },
-  { to: "/service-hub/kreator/earnings",    icon: Coins,    label: "Penghasilan" },
-  { to: "/service-hub/kreator/insights",    icon: Lightbulb,     label: "Insights" },
-  { to: "/service-hub/kreator/profile",     icon: User,          label: "Profil" },
-  { to: "/service-hub/kreator/messages",    icon: MessageSquare, label: "Pesan",      badgeKey: "messages" as const },
-  { to: "/service-hub/kreator/settings",    icon: Settings,      label: "Pengaturan" },
+  { to: "/dashboard/kreator/home",        icon: Home,          label: "Home" },
+  { to: "/dashboard/kreator/invitations", icon: Mail,          label: "Invitations",   badgeKey: "invitations" as const },
+  { to: "/dashboard/kreator/work",        icon: Briefcase,     label: "Work" },
+  { to: "/dashboard/kreator/earnings",    icon: Coins,         label: "Earnings" },
+  { to: "/dashboard/kreator/insights",    icon: Lightbulb,     label: "Insights" },
+  { to: "/dashboard/kreator/profile",     icon: User,          label: "Profile" },
+  { to: "/dashboard/kreator/messages",    icon: MessageSquare, label: "Messages",      badgeKey: "messages" as const },
+  { to: "/dashboard/kreator/settings",    icon: Settings,      label: "Settings" },
 ];
 
 export default function Sidebar() {
@@ -52,8 +54,6 @@ export default function Sidebar() {
   const effectiveCollapsed = false;
   const [showSupport, setShowSupport] = useState(false);
   const [supportForm, setSupportForm] = useState({ email: "", message: "" });
-
-
 
   useEffect(() => {
     closeMobile();
@@ -71,7 +71,7 @@ export default function Sidebar() {
 
   const handleContactSupport = () => {
     if (!supportForm.email || !supportForm.message) return;
-    toast.success("Pesan berhasil dikirim! Tim support kami akan membalas dalam 24 jam.");
+    toast.success("Message sent successfully! Our support team will reply within 24 hours.");
     setSupportForm({ email: "", message: "" });
     setShowSupport(false);
   };
@@ -81,7 +81,7 @@ export default function Sidebar() {
       {mobileOpen && (
         <button
           type="button"
-          aria-label="Tutup menu"
+          aria-label="Close menu"
           className="fixed inset-0 z-40 bg-black/50 lg:hidden"
           onClick={closeMobile}
         />
@@ -105,7 +105,7 @@ export default function Sidebar() {
 
         {/* Logo */}
         <Link
-          to="/service-hub"
+          to="/dashboard"
           className="flex items-center shrink-0 overflow-hidden no-underline"
           style={{ padding: effectiveCollapsed ? "12px" : "16px" }}
         >
@@ -145,7 +145,7 @@ export default function Sidebar() {
             <NavLink
               key={to}
               to={to}
-              end={to === "/service-hub" || to === "/service-hub/kreator/home"}
+              end={to === "/dashboard" || to === "/dashboard/kreator/home"}
               title={effectiveCollapsed ? label : undefined}
               className={({ isActive }) =>
                 cn(
@@ -213,7 +213,7 @@ export default function Sidebar() {
               <div className="rounded-[10px] p-[10px] flex items-center gap-2.5 border border-white/10 bg-white/5">
                 <HelpCircle className="w-7 h-7 shrink-0 text-slate-500" />
                 <div className="min-w-0">
-                  <p className="text-[12px] font-bold text-white">Butuh Bantuan?</p>
+                  <p className="text-[12px] font-bold text-white">Need Help?</p>
                   <button
                     onClick={() => setShowSupport(true)}
                     className="text-[11px] font-semibold hover:underline mt-0.5 block text-blue-400"
@@ -231,7 +231,7 @@ export default function Sidebar() {
       <Dialog open={showSupport} onOpenChange={setShowSupport}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Hubungi Support</DialogTitle>
+            <DialogTitle>Contact Support</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
@@ -244,21 +244,21 @@ export default function Sidebar() {
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-sm font-medium" style={{ color: "var(--ch-text)" }}>Pesan *</label>
+              <label className="text-sm font-medium" style={{ color: "var(--ch-text)" }}>Message *</label>
               <textarea
                 className="w-full border rounded-md px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
                 style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
                 rows={4}
-                placeholder="Deskripsikan masalah atau pertanyaan Anda..."
+                placeholder="Describe your issue or question..."
                 value={supportForm.message}
                 onChange={(e) => setSupportForm((f) => ({ ...f, message: e.target.value }))}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowSupport(false)}>Batal</Button>
+            <Button variant="outline" onClick={() => setShowSupport(false)}>Cancel</Button>
             <Button onClick={handleContactSupport} disabled={!supportForm.email || !supportForm.message}>
-              Kirim Pesan
+              Send Message
             </Button>
           </DialogFooter>
         </DialogContent>

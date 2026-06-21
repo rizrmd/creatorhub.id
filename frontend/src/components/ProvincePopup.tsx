@@ -1,4 +1,4 @@
-import { X, MapPin, ExternalLink } from "lucide-react";
+﻿import { X, MapPin, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface Creator {
@@ -119,7 +119,7 @@ export default function ProvincePopup({ province, count, creators, onClose }: Pr
 
         {/* Action */}
         <Link
-          to="/service-hub/marketplace"
+          to="/dashboard/marketplace"
           className="flex items-center justify-center gap-1.5 w-full px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold transition-colors"
         >
           View All in Marketplace <ExternalLink className="w-3 h-3" />

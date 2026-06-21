@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+﻿import { useParams, useNavigate } from "react-router-dom";
 import { useSetBreadcrumbTitle } from "@/contexts/BreadcrumbContext";
 import { ArrowLeft, Calendar, Clock, Coins, Tag, FileText } from "lucide-react";
 import { toast } from "sonner";
@@ -15,9 +15,9 @@ import { cn } from "@/lib/utils";
 
 function StatusBadge({ status }: { status: InvitationStatus }) {
   const map: Record<InvitationStatus, { label: string; bg: string; fg: string }> = {
-    pending: { label: "Menunggu respons", bg: "#FEF3C7", fg: "#B45309" },
-    accepted: { label: "Diterima", bg: "#DCFCE7", fg: "#15803D" },
-    declined: { label: "Ditolak", bg: "#FEE2E2", fg: "#B91C1C" },
+    pending: { label: "Awaiting response", bg: "#FEF3C7", fg: "#B45309" },
+    accepted: { label: "Accepted", bg: "#DCFCE7", fg: "#15803D" },
+    declined: { label: "Declined", bg: "#FEE2E2", fg: "#B91C1C" },
   };
   const s = map[status];
   return (
@@ -103,7 +103,7 @@ function InvitationHero({ inv }: { inv: KreatorInvitation }) {
                 className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide"
                 style={{ background: "#16A34A", color: "white" }}
               >
-                Menunggu
+                Pending
               </span>
             )}
             <StatusBadge status={inv.status} />
@@ -114,7 +114,7 @@ function InvitationHero({ inv }: { inv: KreatorInvitation }) {
           <p className="text-[12px] mt-1 flex flex-wrap items-center gap-2" style={{ color: "var(--ch-text-soft)" }}>
             <span className="flex items-center gap-1">
               <Clock style={{ width: 12, height: 12 }} />
-              Diterima {formatReceivedAgo(inv.receivedAt)}
+              Received {formatReceivedAgo(inv.receivedAt)}
             </span>
             <span>·</span>
             <span>{new Date(inv.receivedAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</span>
@@ -137,20 +137,20 @@ export default function CreatorInvitationDetail() {
   const respond = (accepted: boolean) => {
     if (!id) return;
     respondToInvitation(id, accepted);
-    toast.success(accepted ? "Undangan diterima! 🎉" : "Undangan ditolak");
-    navigate("/service-hub/kreator/invitations");
+    toast.success(accepted ? "Invitation accepted! 🎉" : "Invitation declined");
+    navigate("/dashboard/kreator/invitations");
   };
 
   if (!inv) {
     return (
       <div className="p-6 text-center" style={{ background: "var(--ch-bg)" }}>
-        <p style={{ color: "var(--ch-text-muted)" }}>Undangan tidak ditemukan.</p>
+        <p style={{ color: "var(--ch-text-muted)" }}>Invitation not found.</p>
         <button
-          onClick={() => navigate("/service-hub/kreator/invitations")}
+          onClick={() => navigate("/dashboard/kreator/invitations")}
           className="mt-4 px-4 py-2 rounded-lg text-white text-[13px] font-semibold cursor-pointer"
           style={{ background: "#16A34A" }}
         >
-          Kembali ke Undangan
+          Back to Invitations
         </button>
       </div>
     );
@@ -159,12 +159,12 @@ export default function CreatorInvitationDetail() {
   return (
     <div className="p-4 md:p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
       <button
-        onClick={() => navigate("/service-hub/kreator/invitations")}
+        onClick={() => navigate("/dashboard/kreator/invitations")}
         className="flex items-center gap-2 text-[13px] font-semibold cursor-pointer transition-colors hover:opacity-80"
         style={{ color: "var(--ch-text-muted)" }}
       >
         <ArrowLeft className="w-4 h-4" />
-        Kembali ke Undangan
+        Back to Invitations
       </button>
 
       <InvitationHero inv={inv} />
@@ -178,7 +178,7 @@ export default function CreatorInvitationDetail() {
           icon={Calendar}
           hue={28}
         />
-        <DetailStat label="Kategori" value={inv.category} icon={Tag} hue={220} />
+        <DetailStat label="Category" value={inv.category} icon={Tag} hue={220} />
       </div>
 
       <div
@@ -188,7 +188,7 @@ export default function CreatorInvitationDetail() {
         <div className="flex items-center gap-2 mb-3">
           <FileText style={{ width: 16, height: 16, color: "var(--ch-primary)" }} />
           <h2 className="text-[15px] font-bold" style={{ color: "var(--ch-text)" }}>
-            Brief Kampanye
+            Campaign Brief
           </h2>
         </div>
         <p className="text-[14px] leading-relaxed" style={{ color: "var(--ch-text)" }}>
@@ -203,14 +203,14 @@ export default function CreatorInvitationDetail() {
             className="flex-1 py-3 rounded-xl border text-[14px] font-semibold cursor-pointer transition-colors hover:bg-red-50"
             style={{ borderColor: "#FCA5A5", color: "#DC2626" }}
           >
-            Tolak Undangan
+            Decline Invitation
           </button>
           <button
             onClick={() => respond(true)}
             className="flex-1 py-3 rounded-xl text-white text-[14px] font-semibold cursor-pointer transition-opacity hover:opacity-90"
             style={{ background: "#16A34A" }}
           >
-            Terima Undangan
+            Accept Invitation
           </button>
         </div>
       )}
@@ -221,15 +221,15 @@ export default function CreatorInvitationDetail() {
           style={{ background: "#ECFDF5", border: "1px solid #A7F3D0" }}
         >
           <p className="text-[13px]" style={{ color: "#065F46" }}>
-            Anda telah menerima undangan ini. Cek halaman{" "}
+            You have accepted this invitation. Check the{" "}
             <button
-              onClick={() => navigate("/service-hub/kreator/work")}
+              onClick={() => navigate("/dashboard/kreator/work")}
               className="font-bold underline cursor-pointer"
               style={{ color: "#16A34A" }}
             >
-              Pekerjaan Aktif
+              Active Work
             </button>{" "}
-            untuk melihat deliverables.
+            page to view deliverables.
           </p>
         </div>
       )}

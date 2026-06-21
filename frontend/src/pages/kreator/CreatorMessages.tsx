@@ -144,7 +144,7 @@ export default function CreatorMessages() {
               onClick={() => setActiveId("")}
               className="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors hover:bg-slate-100"
               style={{ color: "var(--ch-text-muted)" }}
-              aria-label="Kembali ke daftar pesan"
+              aria-label="Back to message list"
             >
               <ArrowLeft style={{ width: 18, height: 18 }} />
             </button>

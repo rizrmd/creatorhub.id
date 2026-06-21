@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Inbox, CheckCircle, XCircle, Clock, Sparkles, Search, ChevronRight } from "lucide-react";
 import { useKreatorData } from "@/context/KreatorDataContext";
@@ -13,17 +13,17 @@ import {
 import { cn } from "@/lib/utils";
 
 const TAB_FILTERS: { key: "all" | InvitationStatus; label: string; icon: React.ElementType }[] = [
-  { key: "all", label: "Semua", icon: Inbox },
-  { key: "pending", label: "Menunggu", icon: Clock },
-  { key: "accepted", label: "Diterima", icon: CheckCircle },
-  { key: "declined", label: "Ditolak", icon: XCircle },
+  { key: "all", label: "All", icon: Inbox },
+  { key: "pending", label: "Pending", icon: Clock },
+  { key: "accepted", label: "Accepted", icon: CheckCircle },
+  { key: "declined", label: "Declined", icon: XCircle },
 ];
 
 const statusChip = (status: InvitationStatus) => {
   const map: Record<InvitationStatus, { label: string; bg: string; fg: string }> = {
-    pending: { label: "Menunggu respons", bg: "#FEF3C7", fg: "#B45309" },
-    accepted: { label: "Diterima", bg: "#DCFCE7", fg: "#15803D" },
-    declined: { label: "Ditolak", bg: "#FEE2E2", fg: "#B91C1C" },
+    pending: { label: "Awaiting response", bg: "#FEF3C7", fg: "#B45309" },
+    accepted: { label: "Accepted", bg: "#DCFCE7", fg: "#15803D" },
+    declined: { label: "Declined", bg: "#FEE2E2", fg: "#B91C1C" },
   };
   const s = map[status];
   return (
@@ -81,7 +81,7 @@ function InvitationCard({ inv, onOpen }: { inv: KreatorInvitation; onOpen: () =>
                 className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide"
                 style={{ background: "#16A34A", color: "white" }}
               >
-                Menunggu
+                Pending
               </span>
             )}
             {statusChip(inv.status)}
@@ -154,7 +154,7 @@ export default function CreatorInvitations() {
     setSearchParams({}, { replace: true });
   }, [searchParams, setSearchParams]);
 
-  const openDetail = (id: string) => navigate(`/service-hub/kreator/invitations/${id}`);
+  const openDetail = (id: string) => navigate(`/dashboard/kreator/invitations/${id}`);
 
   const sorted = useMemo(() => sortInvitations(invitations), [invitations]);
   const searched = useMemo(
@@ -183,14 +183,14 @@ export default function CreatorInvitations() {
         <div className="min-w-0">
           <h1 className="text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]"
             style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            Undangan Brand
+            Brand Invitations
           </h1>
           <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
             <strong style={{ color: "var(--ch-text)" }}>
-              {search.trim() ? `${counts.all} hasil` : `${invitations.length} undangan total`}
+              {search.trim() ? `${counts.all} results` : `${invitations.length} total invitations`}
             </strong>
             {" · "}
-            <strong style={{ color: "#16A34A" }}>{counts.pending} menunggu</strong> respons Anda
+            <strong style={{ color: "#16A34A" }}>{counts.pending} pending</strong> your response
           </p>
         </div>
         <div className="relative w-full sm:w-72 lg:w-80 shrink-0">
@@ -198,7 +198,7 @@ export default function CreatorInvitations() {
           <input
             className="w-full rounded-xl border pl-9 pr-3 py-2.5 text-[13px] outline-none"
             style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
-            placeholder="Cari brand, kampanye, kategori…"
+            placeholder="Search brand, campaign, category..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -233,10 +233,10 @@ export default function CreatorInvitations() {
           <Sparkles style={{ width: 18, height: 18, color: "#16A34A", flexShrink: 0, marginTop: 1 }} />
           <div>
             <p className="text-[13px] font-bold" style={{ color: "#064E3B" }}>
-              {counts.pending} undangan menunggu respons
+              {counts.pending} invitations awaiting response
             </p>
             <p className="text-[12px] mt-0.5" style={{ color: "#065F46" }}>
-              Kartu berwarna hijau dengan label &quot;Menunggu&quot; adalah undangan yang perlu tindakan Anda.
+              Cards with green label &quot;Pending&quot; are invitations that need your action.
             </p>
           </div>
         </div>
@@ -247,7 +247,7 @@ export default function CreatorInvitations() {
           <>
             {newInvitations.length > 0 && (
               <div className="space-y-3">
-                <SectionHeader title="Undangan Menunggu" count={newInvitations.length} highlight />
+                <SectionHeader title="Pending Invitations" count={newInvitations.length} highlight />
                 {newInvitations.map((inv) => (
                   <InvitationCard key={inv.id} inv={inv} onOpen={() => openDetail(inv.id)} />
                 ))}
@@ -255,7 +255,7 @@ export default function CreatorInvitations() {
             )}
             {historyInvitations.length > 0 && (
               <div className="space-y-3">
-                <SectionHeader title="Riwayat" count={historyInvitations.length} />
+                <SectionHeader title="History" count={historyInvitations.length} />
                 {historyInvitations.map((inv) => (
                   <InvitationCard key={inv.id} inv={inv} onOpen={() => openDetail(inv.id)} />
                 ))}
@@ -272,7 +272,7 @@ export default function CreatorInvitations() {
           <div className="py-16 text-center" style={{ color: "var(--ch-text-soft)" }}>
             <Inbox style={{ width: 32, height: 32, margin: "0 auto 12px", opacity: 0.4 }} />
             <p className="text-[14px] font-medium">
-              {search.trim() ? `Tidak ada undangan untuk "${search.trim()}"` : "Tidak ada undangan di kategori ini"}
+              {search.trim() ? `No invitations found for "${search.trim()}"` : "No invitations in this category"}
             </p>
           </div>
         )}

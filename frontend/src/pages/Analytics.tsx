@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Briefcase, Clock, CheckCircle2, Loader2, User } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -210,7 +210,7 @@ export default function Analytics() {
               return (
                 <div
                   key={p.id}
-                  onClick={() => navigate(`/service-hub/analytics/${p.id}`)}
+                  onClick={() => navigate(`/dashboard/projects/${p.id}`)}
                   className="rounded-[14px] border overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
                   style={{
                     background: "#FFFFFF",

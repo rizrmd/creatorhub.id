@@ -426,7 +426,7 @@ export default function Settings() {
                 </div>
               ))}
               <div className="pt-4">
-                <Button variant="outline" onClick={() => toast.info("Hubungi sales untuk upgrade ke Enterprise")}>
+                <Button variant="outline" onClick={() => toast.info("Contact sales to upgrade to Enterprise")}>
                   Upgrade Plan
                 </Button>
               </div>

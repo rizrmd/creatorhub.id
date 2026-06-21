@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { ChevronLeft, ChevronRight, CheckCircle, Star, Upload, Instagram, Youtube } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
@@ -404,7 +404,7 @@ export default function ApplyWizard() {
                 <Star key={i} style={{ width: 20, height: 20, fill: "#FCD34D", color: "#FCD34D" }} />
               ))}
             </div>
-            <a href="/service-hub/kreator/home"
+            <a href="/dashboard/kreator/home"
               className="block w-full py-3 rounded-xl text-white text-[14px] font-bold text-center"
               style={{ background: "#16A34A", boxShadow: "0 4px 10px -3px rgba(22,163,74,.45)" }}>
               Masuk ke Creator Portal →

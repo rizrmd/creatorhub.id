@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { Plus, Megaphone, Calendar, Coins, Trash2, Users, CheckCircle2, Circle, Search } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -96,9 +96,9 @@ export default function Campaigns() {
   };
 
   const handleAction = (c: Campaign) => {
-    if (c.status === "active" || c.status === "paused") navigate(`/service-hub/campaigns/${c.id}`);
+    if (c.status === "active" || c.status === "paused") navigate(`/dashboard/campaigns/${c.id}`);
     else if (c.status === "draft") openEdit(c);
-    else if (c.status === "completed") navigate("/service-hub/analytics");
+    else if (c.status === "completed") navigate("/dashboard/projects");
   };
 
   const actionLabel: Record<string, string> = {

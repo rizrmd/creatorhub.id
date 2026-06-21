@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -36,7 +36,7 @@ export default function Login() {
     setLoading(true);
     try {
       const user = await login({ email, password });
-      navigate(user.role === "kreator" ? "/service-hub/kreator/home" : "/service-hub/marketplace", { replace: true });
+      navigate(user.role === "kreator" ? "/dashboard/kreator/home" : "/dashboard/marketplace", { replace: true });
     } catch (err: unknown) {
       const msg =
         (err as { response?: { data?: { error?: string } } })?.response?.data?.error ??
@@ -187,7 +187,7 @@ export default function Login() {
                 onMouseEnter={(e) => { e.currentTarget.style.color = "var(--ch-text)"; e.currentTarget.style.borderColor = "var(--ch-text-muted)"; }}
                 onMouseLeave={(e) => { e.currentTarget.style.color = "var(--ch-text-muted)"; e.currentTarget.style.borderColor = "var(--ch-border)"; }}
               >
-                ← Kembali
+                ← Back
               </button>
 
               <div className="flex items-center gap-2.5 mb-1">

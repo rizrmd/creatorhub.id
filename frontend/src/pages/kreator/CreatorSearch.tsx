@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   Search,
@@ -30,12 +30,12 @@ const SECTIONS: {
   href: string;
   icon: React.ElementType;
 }[] = [
-  { key: "invitations", label: "Undangan", href: "/service-hub/kreator/invitations", icon: Mail },
-  { key: "tasks", label: "Pekerjaan", href: "/service-hub/kreator/work", icon: Briefcase },
-  { key: "payments", label: "Pembayaran", href: "/service-hub/kreator/earnings", icon: Coins },
-  { key: "messages", label: "Pesan", href: "/service-hub/kreator/messages", icon: MessageSquare },
-  { key: "posts", label: "Konten Teratas", href: "/service-hub/kreator/insights", icon: TrendingUp },
-  { key: "platforms", label: "Platform", href: "/service-hub/kreator/insights", icon: Share2 },
+  { key: "invitations", label: "Invitations", href: "/dashboard/kreator/invitations", icon: Mail },
+  { key: "tasks", label: "Work", href: "/dashboard/kreator/work", icon: Briefcase },
+  { key: "payments", label: "Earnings", href: "/dashboard/kreator/earnings", icon: Coins },
+  { key: "messages", label: "Messages", href: "/dashboard/kreator/messages", icon: MessageSquare },
+  { key: "posts", label: "Top Content", href: "/dashboard/kreator/insights", icon: TrendingUp },
+  { key: "platforms", label: "Platform", href: "/dashboard/kreator/insights", icon: Share2 },
 ];
 
 function ResultCard({
@@ -132,7 +132,7 @@ export default function CreatorSearch() {
       title={inv.campaign}
       subtitle={`${inv.brand} · ${inv.category}`}
       meta={formatRp(inv.budget)}
-      to={`/service-hub/kreator/invitations/${inv.id}`}
+      to={`/dashboard/kreator/invitations/${inv.id}`}
     />
   );
 
@@ -142,7 +142,7 @@ export default function CreatorSearch() {
       title={task.deliverable}
       subtitle={`${task.brand} · ${task.campaign}`}
       meta={`Due ${new Date(task.due).toLocaleDateString("id-ID")}`}
-      to="/service-hub/kreator/work"
+      to="/dashboard/kreator/work"
     />
   );
 
@@ -151,8 +151,8 @@ export default function CreatorSearch() {
       key={`pay-${payment.id}`}
       title={payment.campaign}
       subtitle={`${payment.brand} · ${payment.id}`}
-      meta={`${formatRp(payment.amount)} · ${payment.status === "paid" ? "Lunas" : "Menunggu"}`}
-      to="/service-hub/kreator/earnings"
+      meta={`${formatRp(payment.amount)} · ${payment.status === "paid" ? "Paid" : "Pending"}`}
+      to="/dashboard/kreator/earnings"
     />
   );
 
@@ -162,7 +162,7 @@ export default function CreatorSearch() {
       title={channel.brand}
       subtitle={channel.campaign}
       meta={channel.lastMsg}
-      to="/service-hub/kreator/messages"
+      to="/dashboard/kreator/messages"
     />
   );
 
@@ -172,7 +172,7 @@ export default function CreatorSearch() {
       title={post.content}
       subtitle={post.platform}
       meta={`${post.reach} reach · ${post.engagement} engagement`}
-      to="/service-hub/kreator/insights"
+      to="/dashboard/kreator/insights"
     />
   );
 
@@ -182,7 +182,7 @@ export default function CreatorSearch() {
       title={platform.name}
       subtitle={`${platform.followers} followers · ${platform.eng} engagement`}
       meta={`${platform.posts} posts`}
-      to="/service-hub/kreator/insights"
+      to="/dashboard/kreator/insights"
     />
   );
 
@@ -206,7 +206,7 @@ export default function CreatorSearch() {
             Pencarian
           </h1>
           <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
-            Cari undangan, pekerjaan, pembayaran, pesan, dan konten
+            Search invitations, work, payments, messages, and content
           </p>
         </div>
         <div className="relative w-full sm:w-72 lg:w-80 shrink-0">
@@ -215,7 +215,7 @@ export default function CreatorSearch() {
             autoFocus
             className="w-full rounded-xl border pl-9 pr-3 py-2.5 text-[13px] outline-none"
             style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
-            placeholder="Cari undangan, pekerjaan, pembayaran, pesan…"
+            placeholder="Search invitations, work, payments, messages..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -229,7 +229,7 @@ export default function CreatorSearch() {
         >
           <Search style={{ width: 28, height: 28, margin: "0 auto 12px", color: "var(--ch-text-soft)", opacity: 0.5 }} />
           <p className="text-[14px] font-medium" style={{ color: "var(--ch-text-muted)" }}>
-            Ketik kata kunci untuk mencari di seluruh portal kreator
+            Type a keyword to search across the creator portal
           </p>
           <div className="flex flex-wrap justify-center gap-2 mt-4">
             {SECTIONS.map((s) => (
@@ -247,7 +247,7 @@ export default function CreatorSearch() {
         <div className="py-16 text-center" style={{ color: "var(--ch-text-soft)" }}>
           <Search style={{ width: 32, height: 32, margin: "0 auto 12px", opacity: 0.4 }} />
           <p className="text-[14px] font-medium">Tidak ada hasil untuk &quot;{debouncedSearch}&quot;</p>
-          <p className="text-[12px] mt-1">Coba kata kunci lain seperti nama brand atau kampanye</p>
+          <p className="text-[12px] mt-1">Try different keywords like brand name or campaign</p>
         </div>
       ) : (
         <div className="space-y-6">

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+﻿import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
   Users, ArrowLeft,
@@ -62,11 +62,11 @@ const PROVINCES: ProvinceData[] = [
 ];
 
 const PLATFORM_FEATURES = [
-  { title: "Content Creators", desc: "Find and connect with trusted creators who align with your niche, target audience, and campaign objectives.", icon: Users, bg: "bg-blue-500/10", color: "text-blue-400", border: "border-blue-500/20", link: "/service-hub/marketplace" },
-  { title: "Homeless Media", desc: "Explore strategic media placement opportunities across influential digital channels, online communities, and publisher networks.", icon: Newspaper, bg: "bg-orange-500/10", color: "text-orange-400", border: "border-orange-500/20", link: "/service-hub/homeless-media" },
-  { title: "Publishers", desc: "Find the right publishers and digital media platforms to expand your campaign reach and increase public visibility.", icon: Megaphone, bg: "bg-purple-500/10", color: "text-purple-400", border: "border-purple-500/20", link: "/service-hub/marketplace" },
-  { title: "Podcast / Live Streaming", desc: "Promote your products and services through podcasts, live streams, live shopping sessions, and creator-driven conversations.", icon: Podcast, bg: "bg-teal-500/10", color: "text-teal-400", border: "border-teal-500/20", link: "/service-hub" },
-  { title: "Media Monitoring Tools", desc: "Monitor conversations, mentions, reach, sentiment, and campaign performance in real time across multiple digital platforms.", icon: Radio, bg: "bg-red-500/10", color: "text-red-400", border: "border-red-500/20", link: "/service-hub" },
+  { title: "Content Creators", desc: "Find and connect with trusted creators who align with your niche, target audience, and campaign objectives.", icon: Users, bg: "bg-blue-500/10", color: "text-blue-400", border: "border-blue-500/20", link: "/dashboard/marketplace" },
+  { title: "Homeless Media", desc: "Explore strategic media placement opportunities across influential digital channels, online communities, and publisher networks.", icon: Newspaper, bg: "bg-orange-500/10", color: "text-orange-400", border: "border-orange-500/20", link: "/dashboard/homeless-media" },
+  { title: "Publishers", desc: "Find the right publishers and digital media platforms to expand your campaign reach and increase public visibility.", icon: Megaphone, bg: "bg-purple-500/10", color: "text-purple-400", border: "border-purple-500/20", link: "/dashboard/marketplace" },
+  { title: "Podcast / Live Streaming", desc: "Promote your products and services through podcasts, live streams, live shopping sessions, and creator-driven conversations.", icon: Podcast, bg: "bg-teal-500/10", color: "text-teal-400", border: "border-teal-500/20", link: "/dashboard" },
+  { title: "Media Monitoring Tools", desc: "Monitor conversations, mentions, reach, sentiment, and campaign performance in real time across multiple digital platforms.", icon: Radio, bg: "bg-red-500/10", color: "text-red-400", border: "border-red-500/20", link: "/dashboard" },
 ];
 
 const ACTIVE_CAMPAIGNS = [
@@ -267,12 +267,12 @@ export default function ServiceHub() {
               The all-in-one marketplace connecting brands with the right creators to achieve real impact.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Link to="/service-hub/marketplace">
+              <Link to="/dashboard/marketplace">
                 <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg shadow-blue-600/25 text-sm px-5">
                   <Users className="w-4 h-4 mr-1.5" /> Find Creators
                 </Button>
               </Link>
-              <Link to="/service-hub/campaigns">
+              <Link to="/dashboard/campaigns">
                 <Button variant="outline" className="border-white/25 text-white hover:bg-white/10 font-semibold text-sm px-5">
                   Create Campaign
                 </Button>
@@ -390,13 +390,13 @@ export default function ServiceHub() {
           <h3 className="text-[15px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             Platform Features
           </h3>
-          <Link to="/service-hub/marketplace" className="text-xs font-semibold text-blue-400 hover:underline">View All</Link>
+          <Link to="/dashboard/marketplace" className="text-xs font-semibold text-blue-400 hover:underline">View All</Link>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {PLATFORM_FEATURES.map((feat) => {
             const Icon = feat.icon;
             return (
-              <Link key={feat.title} to={feat.link.startsWith('/service-hub') ? feat.link : `/service-hub${feat.link}`}>
+              <Link key={feat.title} to={feat.link}>
                 <div className="rounded-xl border border-white/[0.06] p-4 flex flex-col items-center text-center gap-2 hover:border-white/15 transition-all cursor-pointer group"
                   style={{ background: "rgba(15,23,42,0.6)" }}>
                   <div className={`w-12 h-12 ${feat.bg} border ${feat.border} rounded-xl flex items-center justify-center`}>
@@ -498,7 +498,7 @@ export default function ServiceHub() {
           <div className="rounded-xl border p-4" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Campaign Calendar</h4>
-              <Link to="/service-hub/campaigns" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
+              <Link to="/dashboard/campaigns" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
             </div>
             <div className="flex gap-3">
               {CAMPAIGN_EVENTS.map((ev, i) => (
@@ -520,7 +520,7 @@ export default function ServiceHub() {
           <div className="rounded-xl border p-4" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Active Campaigns</h4>
-              <Link to="/service-hub/campaigns" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
+              <Link to="/dashboard/campaigns" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
             </div>
             <div className="space-y-3">
               {ACTIVE_CAMPAIGNS.map((c, i) => (
@@ -547,7 +547,7 @@ export default function ServiceHub() {
           <div className="rounded-xl border p-4" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Recent Messages</h4>
-              <Link to="/service-hub/messages" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
+              <Link to="/dashboard/messages" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
             </div>
             <div className="space-y-3">
               {RECENT_MESSAGES.map((m, i) => (

@@ -4,11 +4,11 @@ import { Briefcase, CheckSquare, Clock, AlertCircle, Search, Inbox } from "lucid
 import { KREATOR_TASKS, type KreatorTask, type TaskStatus } from "@/data/kreatorData";
 
 const STATUS_TABS: { key: "all" | TaskStatus; label: string; icon: React.ElementType }[] = [
-  { key: "all", label: "Semua", icon: Inbox },
-  { key: "pending", label: "Belum Mulai", icon: Clock },
-  { key: "in-progress", label: "Dalam Proses", icon: Briefcase },
-  { key: "submitted", label: "Sudah Dikirim", icon: CheckSquare },
-  { key: "revision", label: "Perlu Revisi", icon: AlertCircle },
+  { key: "all", label: "All", icon: Inbox },
+  { key: "pending", label: "Not Started", icon: Clock },
+  { key: "in-progress", label: "In Progress", icon: Briefcase },
+  { key: "submitted", label: "Submitted", icon: CheckSquare },
+  { key: "revision", label: "Needs Revision", icon: AlertCircle },
 ];
 
 function matchesTaskSearch(task: KreatorTask, query: string): boolean {
@@ -18,10 +18,10 @@ function matchesTaskSearch(task: KreatorTask, query: string): boolean {
 }
 
 const statusConfig: Record<TaskStatus, { label: string; bg: string; fg: string; icon: React.ElementType }> = {
-  pending: { label: "Belum Mulai", bg: "#F1F5F9", fg: "#475569", icon: Clock },
-  "in-progress": { label: "Dalam Proses", bg: "#DBEAFE", fg: "#1D4ED8", icon: Briefcase },
-  submitted: { label: "Sudah Dikirim", bg: "#DCFCE7", fg: "#15803D", icon: CheckSquare },
-  revision: { label: "Perlu Revisi", bg: "#FEE2E2", fg: "#B91C1C", icon: AlertCircle },
+  pending: { label: "Not Started", bg: "#F1F5F9", fg: "#475569", icon: Clock },
+  "in-progress": { label: "In Progress", bg: "#DBEAFE", fg: "#1D4ED8", icon: Briefcase },
+  submitted: { label: "Submitted", bg: "#DCFCE7", fg: "#15803D", icon: CheckSquare },
+  revision: { label: "Needs Revision", bg: "#FEE2E2", fg: "#B91C1C", icon: AlertCircle },
 };
 
 export default function CreatorWork() {
@@ -59,10 +59,10 @@ export default function CreatorWork() {
         <div className="min-w-0">
           <h1 className="text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]"
             style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            Pekerjaan Aktif
+            Active Work
           </h1>
           <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
-            Pantau dan kelola semua deliverables kampanye
+            Track and manage all campaign deliverables
           </p>
         </div>
         <div className="relative w-full sm:w-72 lg:w-80 shrink-0">
@@ -70,7 +70,7 @@ export default function CreatorWork() {
           <input
             className="w-full rounded-xl border pl-9 pr-3 py-2.5 text-[13px] outline-none"
             style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
-            placeholder="Cari brand, kampanye, deliverable…"
+            placeholder="Search brand, campaign, deliverable..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />

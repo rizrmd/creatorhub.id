@@ -8,7 +8,7 @@ import { KreatorDataProvider } from "@/context/KreatorDataContext";
 
 export default function Layout() {
   const { pathname } = useLocation();
-  const fullHeight = pathname === "/service-hub/messages" || pathname === "/service-hub/kreator/messages";
+  const fullHeight = pathname === "/dashboard/messages" || pathname === "/dashboard/kreator/messages";
 
   return (
     <SidebarProvider>

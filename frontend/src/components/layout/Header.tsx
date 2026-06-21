@@ -7,17 +7,17 @@ import { useRole } from "@/context/RoleContext";
 import { useSidebar } from "@/contexts/SidebarContext";
 
 const NOTIFICATIONS = [
-  { id: 1, who: "Tasya Farasya", action: "menerima brief", target: "Ramadan Glow 2026", time: "2 mnt lalu", unread: true, iconBg: "#DBEAFE", iconFg: "#2563EB", icon: "check" },
-  { id: 2, who: "Sistem",        action: "memproses pembayaran", target: "INV-9281",        time: "1 jam lalu", unread: true, iconBg: "#DCFCE7", iconFg: "#16A34A", icon: "coins" },
-  { id: 3, who: "Analytics",     action: "laporan mingguan tersedia", target: "",           time: "5 jam lalu", unread: false, iconBg: "#FEF3C7", iconFg: "#B45309", icon: "chart" },
+  { id: 1, who: "Tasya Farasya", action: "accepted brief", target: "Ramadan Glow 2026", time: "2 min ago", unread: true, iconBg: "#DBEAFE", iconFg: "#2563EB", icon: "check" },
+  { id: 2, who: "System",        action: "processed payment", target: "INV-9281",        time: "1 hour ago", unread: true, iconBg: "#DCFCE7", iconFg: "#16A34A", icon: "coins" },
+  { id: 3, who: "Analytics",     action: "weekly report available", target: "",           time: "5 hours ago", unread: false, iconBg: "#FEF3C7", iconFg: "#B45309", icon: "chart" },
 ];
 
 const MESSAGE_THREADS = [
-  { id: 1, name: "Tasya Farasya", online: true,  last: "Siap, kapan brief-nya dikirim?",  time: "2m", unread: 2 },
-  { id: 2, name: "Jerome Polin",  online: true,  last: "Noted kak, akan saya review",      time: "1h", unread: 0 },
-  { id: 3, name: "Rachel Vennya", online: false, last: "Oke noted ya, makasih!",            time: "3h", unread: 1 },
-  { id: 4, name: "Fadil Jaidi",   online: false, last: "Deal! Let's collab again 🔥",      time: "1d", unread: 0 },
-  { id: 5, name: "Nessie Judge",  online: true,  last: "Udah upload kak, cek ya",           time: "2d", unread: 4 },
+  { id: 1, name: "Tasya Farasya", online: true,  last: "Ready, when will the brief be sent?",  time: "2m", unread: 2 },
+  { id: 2, name: "Jerome Polin",  online: true,  last: "Noted, I'll review it",               time: "1h", unread: 0 },
+  { id: 3, name: "Rachel Vennya", online: false, last: "Okay noted, thanks!",                  time: "3h", unread: 1 },
+  { id: 4, name: "Fadil Jaidi",   online: false, last: "Deal! Let's collab again",            time: "1d", unread: 0 },
+  { id: 5, name: "Nessie Judge",  online: true,  last: "Already uploaded, please check",       time: "2d", unread: 4 },
 ];
 
 const USER_BY_ROLE = {
@@ -85,14 +85,14 @@ export default function Header() {
     setShowProfile(which === "profile");
   };
 
-  const messagesPath = effectiveRole === "kreator" ? "/service-hub/kreator/messages" : "/service-hub/messages";
-  const settingsPath = effectiveRole === "kreator" ? "/service-hub/kreator/settings" : "/service-hub/settings";
-  const profilePath = effectiveRole === "kreator" ? "/service-hub/kreator/profile" : "/service-hub/settings";
+  const messagesPath = effectiveRole === "kreator" ? "/dashboard/kreator/messages" : "/dashboard/messages";
+  const settingsPath = effectiveRole === "kreator" ? "/dashboard/kreator/settings" : "/dashboard/settings";
+  const profilePath = effectiveRole === "kreator" ? "/dashboard/kreator/profile" : "/dashboard/settings";
 
   const handleLogout = () => {
     setShowProfile(false);
     logout();
-    toast.success("Berhasil logout");
+    toast.success("Logged out successfully");
     navigate("/login", { replace: true });
   };
 
@@ -115,7 +115,7 @@ export default function Header() {
         type="button"
         onClick={toggleMobile}
         className="lg:hidden w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors hover:bg-white/10 text-white"
-        aria-label="Buka menu"
+        aria-label="Open menu"
       >
         <Menu style={{ width: 20, height: 20 }} />
       </button>
@@ -148,10 +148,10 @@ export default function Header() {
             <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] max-w-[380px] bg-[#111827] rounded-xl border border-white/10 overflow-hidden animate-slide-in"
               style={{ boxShadow: "var(--ch-shadow-lg)" }}>
               <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
-                <p className="text-sm font-bold text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Pesan</p>
+                <p className="text-sm font-bold text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Messages</p>
                 <button className="text-xs font-semibold hover:underline" style={{ color: "var(--ch-primary)" }}
                   onClick={() => { navigate(messagesPath); setShowMessages(false); }}>
-                  Lihat semua
+                  View all
                 </button>
               </div>
               <div className="px-3 py-2 border-b border-white/10">
@@ -160,7 +160,7 @@ export default function Header() {
                   <input
                     className="flex-1 bg-transparent border-0 outline-none text-[12px]"
                     style={{ color: "var(--ch-text)", fontFamily: "inherit" }}
-                    placeholder="Cari percakapan…"
+                    placeholder="Search conversations..."
                     value={msgSearch}
                     onChange={(e) => setMsgSearch(e.target.value)}
                   />
@@ -214,9 +214,9 @@ export default function Header() {
             <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] max-w-[400px] bg-[#111827] rounded-xl border border-white/10 overflow-hidden animate-slide-in"
               style={{ boxShadow: "var(--ch-shadow-lg)" }}>
               <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
-                <p className="text-sm font-bold text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Notifikasi</p>
+                <p className="text-sm font-bold text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Notifications</p>
                 <button className="text-xs font-semibold hover:underline" style={{ color: "var(--ch-primary)" }} onClick={() => setShowNotif(false)}>
-                  Tandai semua dibaca
+                  Mark all read
                 </button>
               </div>
               {NOTIFICATIONS.map((n) => (
@@ -238,7 +238,7 @@ export default function Header() {
               ))}
               <div className="px-4 py-2.5 text-center">
                 <button className="text-xs font-semibold hover:underline" style={{ color: "var(--ch-primary)" }}>
-                  Lihat semua notifikasi
+                  View all notifications
                 </button>
               </div>
             </div>
@@ -273,12 +273,12 @@ export default function Header() {
                 <div className="flex flex-col items-center py-2.5 border-r border-white/10">
                   <Megaphone style={{ width: 14, height: 14, marginBottom: 2, color: "var(--ch-text-muted)" }} />
                   <span className="text-[11px] font-bold text-white">{displayUser.stats.campaigns}</span>
-                  <span className="text-[9px] text-slate-500">Kampanye</span>
+                  <span className="text-[9px] text-slate-500">Campaigns</span>
                 </div>
                 <div className="flex flex-col items-center py-2.5 border-r border-white/10">
                   <Users style={{ width: 14, height: 14, marginBottom: 2, color: "var(--ch-text-muted)" }} />
                   <span className="text-[11px] font-bold text-white">{displayUser.stats.creators}</span>
-                  <span className="text-[9px] text-slate-500">Kreator</span>
+                  <span className="text-[9px] text-slate-500">Creators</span>
                 </div>
                 <div className="flex flex-col items-center py-2.5">
                   <Coins style={{ width: 14, height: 14, marginBottom: 2, color: "var(--ch-text-muted)" }} />

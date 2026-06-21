@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+﻿import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Star, TrendingUp, MessageSquare, Coins, Award, Zap, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
@@ -26,12 +26,12 @@ export default function CreatorHome() {
 
   const kpis = useMemo(() => [
     {
-      label: "Undangan Menunggu",
+      label: "Pending Invitations",
       value: String(stats.pendingInvitationCount),
-      sub: "Menunggu respons",
+      sub: "Awaiting response",
       hue: 220,
       icon: MessageSquare,
-      href: "/service-hub/kreator/invitations",
+      href: "/dashboard/kreator/invitations",
     },
     {
       label: "Active Jobs",
@@ -39,7 +39,7 @@ export default function CreatorHome() {
       sub: stats.inProgressJobCount === 1 ? "1 in progress" : `${stats.inProgressJobCount} in progress`,
       hue: 142,
       icon: Zap,
-      href: "/service-hub/kreator/work",
+      href: "/dashboard/kreator/work",
     },
     {
       label: "Earnings This Month",
@@ -47,7 +47,7 @@ export default function CreatorHome() {
       sub: `${stats.earningsGrowthPct >= 0 ? "+" : ""}${stats.earningsGrowthPct}% vs last month`,
       hue: 28,
       icon: Coins,
-      href: "/service-hub/kreator/earnings",
+      href: "/dashboard/kreator/earnings",
     },
     {
       label: "Average Rating",
@@ -55,15 +55,15 @@ export default function CreatorHome() {
       sub: `From ${stats.reviewCount} reviews`,
       hue: 42,
       icon: Star,
-      href: "/service-hub/kreator/profile",
+      href: "/dashboard/kreator/profile",
     },
   ], [stats]);
 
   const achievements = useMemo(() => [
-    { icon: "⭐", label: "Top Rated", desc: `Rating ${CREATOR_RATING}+`, href: "/service-hub/kreator/profile" },
-    { icon: "⚡", label: "Fast Response", desc: "Reply <2 hours", href: "/service-hub/kreator/profile" },
-    { icon: "✅", label: "Verified", desc: "ID verified", href: "/service-hub/kreator/profile" },
-    { icon: "🔥", label: "Trending", desc: "Top 5% this month", href: "/service-hub/kreator/insights" },
+    { icon: "⭐", label: "Top Rated", desc: `Rating ${CREATOR_RATING}+`, href: "/dashboard/kreator/profile" },
+    { icon: "⚡", label: "Fast Response", desc: "Reply <2 hours", href: "/dashboard/kreator/profile" },
+    { icon: "✅", label: "Verified", desc: "ID verified", href: "/dashboard/kreator/profile" },
+    { icon: "🔥", label: "Trending", desc: "Top 5% this month", href: "/dashboard/kreator/insights" },
   ], []);
 
   const respond = (id: string, accepted: boolean) => {
@@ -76,7 +76,7 @@ export default function CreatorHome() {
       {/* Hero */}
       <button
         type="button"
-        onClick={() => navigate("/service-hub/kreator/invitations")}
+        onClick={() => navigate("/dashboard/kreator/invitations")}
         className={cn("rounded-2xl p-6 relative overflow-hidden block", cardHover)}
         style={{ background: "linear-gradient(135deg, #064e3b 0%, #16A34A 60%, #4ade80 100%)" }}
       >
@@ -93,7 +93,7 @@ export default function CreatorHome() {
             <p className="text-green-200 text-[13px] mt-1">
               Anda punya{" "}
               <strong className="text-white">
-                {stats.pendingInvitationCount} undangan menunggu
+                {stats.pendingInvitationCount} pending invitations
               </strong>{" "}
               respons
             </p>
@@ -140,7 +140,7 @@ export default function CreatorHome() {
       >
         <button
           type="button"
-          onClick={() => navigate("/service-hub/kreator/profile")}
+          onClick={() => navigate("/dashboard/kreator/profile")}
           className="flex items-center justify-between w-full mb-3 group"
         >
           <p className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>
@@ -173,7 +173,7 @@ export default function CreatorHome() {
         <div>
           <button
             type="button"
-            onClick={() => navigate("/service-hub/kreator/invitations")}
+            onClick={() => navigate("/dashboard/kreator/invitations")}
             className="flex items-center justify-between w-full mb-3 group"
           >
             <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>
@@ -192,7 +192,7 @@ export default function CreatorHome() {
               >
                 <button
                   type="button"
-                  onClick={() => navigate(`/service-hub/kreator/invitations/${inv.id}`)}
+                  onClick={() => navigate(`/dashboard/kreator/invitations/${inv.id}`)}
                   className="flex flex-1 items-center gap-3 sm:gap-4 min-w-0 text-left cursor-pointer group"
                 >
                   <div
@@ -207,7 +207,7 @@ export default function CreatorHome() {
                         {inv.campaign}
                       </p>
                       <span className="px-1.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase"
-                        style={{ background: "#16A34A", color: "white" }}>Menunggu</span>
+                        style={{ background: "#16A34A", color: "white" }}>Pending</span>
                     </div>
                     <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
                       {inv.brand} · {inv.category} ·{" "}
@@ -251,7 +251,7 @@ export default function CreatorHome() {
       <div>
         <button
           type="button"
-          onClick={() => navigate("/service-hub/kreator/insights")}
+          onClick={() => navigate("/dashboard/kreator/insights")}
           className="flex items-center justify-between w-full mb-3 group"
         >
           <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>
@@ -267,7 +267,7 @@ export default function CreatorHome() {
             <button
               key={p.content}
               type="button"
-              onClick={() => navigate("/service-hub/kreator/insights")}
+              onClick={() => navigate("/dashboard/kreator/insights")}
               className={cn("rounded-xl border p-4", cardHover)}
               style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}
             >

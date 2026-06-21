@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+﻿import { useState, useRef, useEffect } from "react";
 import {
   Search, SlidersHorizontal, Star, CheckCircle, Award,
   Instagram, Youtube, Users, Megaphone, TrendingUp, Wallet,
@@ -1119,7 +1119,7 @@ export default function Marketplace() {
           favorited={favoriteIds.includes(profileCreator.id)}
           onToggle={() => toggleSelect(profileCreator.id)}
           onClose={() => setProfileCreator(null)}
-          onChat={() => { setProfileCreator(null); navigate("/service-hub/messages"); }}
+          onChat={() => { setProfileCreator(null); navigate("/dashboard/messages"); }}
           onFavorite={() => toggleFavorite(profileCreator.id)}
         />
       )}
