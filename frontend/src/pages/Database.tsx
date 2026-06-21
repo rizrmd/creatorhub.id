@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   Database, Search,
   ExternalLink, MapPin, Users, Globe,
+  Video, Building2, Globe2,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -271,7 +272,7 @@ function parseFollowers(f: string): number {
 }
 
 export default function DatabasePage() {
-  const [activeTab, setActiveTab] = useState("homeless");
+  const [activeTab, setActiveTab] = useState("creators");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("Semua");
 
@@ -293,21 +294,43 @@ export default function DatabasePage() {
           Database
         </h1>
         <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
-          Database homeless media dan aset konten di seluruh Indonesia.
+          Database content creators, media, dan aset konten di seluruh Indonesia.
         </p>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList variant="line" className="border-b w-full justify-start gap-0">
-          <TabsTrigger value="homeless" className="text-[14px] font-semibold px-4 py-2 rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--ch-primary)] data-[state=active]:text-[var(--ch-primary)] data-[state=active]:shadow-none">
+        <TabsList variant="line" className="border-b w-full justify-start gap-0 overflow-x-auto">
+          <TabsTrigger value="creators" className="text-[14px] font-semibold px-4 py-2 rounded-none border-b-2 border-transparent whitespace-nowrap data-[state=active]:border-[var(--ch-primary)] data-[state=active]:text-[var(--ch-primary)] data-[state=active]:shadow-none">
+            <Users className="w-4 h-4 mr-1.5" />
+            Content Creators
+          </TabsTrigger>
+          <TabsTrigger value="homeless" className="text-[14px] font-semibold px-4 py-2 rounded-none border-b-2 border-transparent whitespace-nowrap data-[state=active]:border-[var(--ch-primary)] data-[state=active]:text-[var(--ch-primary)] data-[state=active]:shadow-none">
             <Globe className="w-4 h-4 mr-1.5" />
             Homeless Media
           </TabsTrigger>
-          <TabsTrigger value="creators" className="text-[14px] font-semibold px-4 py-2 rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--ch-primary)] data-[state=active]:text-[var(--ch-primary)] data-[state=active]:shadow-none">
-            <Users className="w-4 h-4 mr-1.5" />
-            Kreator
+          <TabsTrigger value="live-shopping" className="text-[14px] font-semibold px-4 py-2 rounded-none border-b-2 border-transparent whitespace-nowrap data-[state=active]:border-[var(--ch-primary)] data-[state=active]:text-[var(--ch-primary)] data-[state=active]:shadow-none">
+            <Video className="w-4 h-4 mr-1.5" />
+            Live Shopping &amp; Podcast Providers
+          </TabsTrigger>
+          <TabsTrigger value="idn-network" className="text-[14px] font-semibold px-4 py-2 rounded-none border-b-2 border-transparent whitespace-nowrap data-[state=active]:border-[var(--ch-primary)] data-[state=active]:text-[var(--ch-primary)] data-[state=active]:shadow-none">
+            <Building2 className="w-4 h-4 mr-1.5" />
+            Indonesian Media Network
+          </TabsTrigger>
+          <TabsTrigger value="intl-outlets" className="text-[14px] font-semibold px-4 py-2 rounded-none border-b-2 border-transparent whitespace-nowrap data-[state=active]:border-[var(--ch-primary)] data-[state=active]:text-[var(--ch-primary)] data-[state=active]:shadow-none">
+            <Globe2 className="w-4 h-4 mr-1.5" />
+            International Media Outlets
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="creators" className="mt-4">
+          <Card>
+            <CardContent className="py-12 text-center">
+              <Users className="w-10 h-10 mx-auto mb-3" style={{ color: "var(--ch-text-soft)" }} />
+              <p className="text-[14px] font-semibold" style={{ color: "var(--ch-text)" }}>Database Content Creators</p>
+              <p className="text-[12px] mt-1" style={{ color: "var(--ch-text-muted)" }}>Fitur ini akan segera tersedia.</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="homeless" className="mt-4 space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -421,11 +444,31 @@ export default function DatabasePage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="creators" className="mt-4">
+        <TabsContent value="live-shopping" className="mt-4">
           <Card>
             <CardContent className="py-12 text-center">
-              <Users className="w-10 h-10 mx-auto mb-3" style={{ color: "var(--ch-text-soft)" }} />
-              <p className="text-[14px] font-semibold" style={{ color: "var(--ch-text)" }}>Database Kreator</p>
+              <Video className="w-10 h-10 mx-auto mb-3" style={{ color: "var(--ch-text-soft)" }} />
+              <p className="text-[14px] font-semibold" style={{ color: "var(--ch-text)" }}>Live Shopping &amp; Podcast Providers</p>
+              <p className="text-[12px] mt-1" style={{ color: "var(--ch-text-muted)" }}>Fitur ini akan segera tersedia.</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="idn-network" className="mt-4">
+          <Card>
+            <CardContent className="py-12 text-center">
+              <Building2 className="w-10 h-10 mx-auto mb-3" style={{ color: "var(--ch-text-soft)" }} />
+              <p className="text-[14px] font-semibold" style={{ color: "var(--ch-text)" }}>Indonesian Media Network</p>
+              <p className="text-[12px] mt-1" style={{ color: "var(--ch-text-muted)" }}>Fitur ini akan segera tersedia.</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="intl-outlets" className="mt-4">
+          <Card>
+            <CardContent className="py-12 text-center">
+              <Globe2 className="w-10 h-10 mx-auto mb-3" style={{ color: "var(--ch-text-soft)" }} />
+              <p className="text-[14px] font-semibold" style={{ color: "var(--ch-text)" }}>International Media Outlets</p>
               <p className="text-[12px] mt-1" style={{ color: "var(--ch-text-muted)" }}>Fitur ini akan segera tersedia.</p>
             </CardContent>
           </Card>
