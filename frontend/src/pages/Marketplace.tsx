@@ -3,7 +3,7 @@ import {
   Search, SlidersHorizontal, Star, CheckCircle, Zap, Award,
   Instagram, Youtube, Users, Megaphone, TrendingUp, Wallet,
   LayoutGrid, List, RotateCcw, X, Flame, MessageSquare, MapPin,
-  Heart, ArrowUpRight, User,
+  Heart, ArrowUpRight, User, Video, Building2, Globe2,
 } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -807,7 +807,9 @@ export default function Marketplace() {
   const tabs = [
     { id: "creators", label: "Content Creators", icon: Users },
     { id: "homeless", label: "Homeless Media", icon: Megaphone },
-    { id: "publishers", label: "Publishers", icon: Megaphone },
+    { id: "live-shopping", label: "Live Shopping & Podcast Providers", icon: Video },
+    { id: "idn-network", label: "Indonesian Media Network", icon: Building2 },
+    { id: "intl-outlets", label: "International Media Outlets", icon: Globe2 },
   ];
 
   return (
@@ -823,11 +825,16 @@ export default function Marketplace() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-1.5 px-4 py-2 text-[12px] font-semibold rounded-xl transition-all duration-200 ${
+                  className={`flex items-center gap-1.5 px-4 py-2 text-[12px] font-semibold rounded-xl transition-all duration-200 border ${
                     isActive
-                      ? "bg-[#1E293B] text-blue-400 shadow-[0_2px_8px_rgba(0,0,0,.3)] border border-white/10"
-                      : "text-slate-400 hover:text-white hover:bg-white/5 border border-transparent"
+                      ? "text-[#F97316]"
+                      : "text-slate-400 hover:text-white hover:bg-white/5 border-transparent"
                   }`}
+                  style={isActive ? {
+                    background: "rgba(249,115,22,.12)",
+                    borderColor: "rgba(249,115,22,.25)",
+                    boxShadow: "0 2px 8px rgba(249,115,22,.15)",
+                  } : undefined}
                 >
                   <TabIcon className="w-3.5 h-3.5" />
                   {tab.label}
@@ -837,6 +844,8 @@ export default function Marketplace() {
           </div>
         </div>
 
+        {activeTab === "creators" ? (
+          <>
         {/* Stats */}
         <div className="px-3 pt-2.5 pb-2 border-b border-white/5">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-1.5">
@@ -1024,6 +1033,14 @@ export default function Marketplace() {
             </div>
           )}
         </div>
+          </>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-24 text-slate-500">
+            <Megaphone className="w-12 h-12 mb-3 opacity-40" />
+            <p className="font-medium">{tabs.find(t => t.id === activeTab)?.label}</p>
+            <p className="text-sm mt-1">Fitur ini akan segera tersedia.</p>
+          </div>
+        )}
       </div>
 
       {/* Mobile campaign brief bar */}
