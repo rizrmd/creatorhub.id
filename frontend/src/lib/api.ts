@@ -10,6 +10,9 @@ import type {
   Message,
   LoginRequest,
   LoginResponse,
+  ScrapeRequest,
+  ScrapeResponse,
+  CreateCreatorRequest,
 } from "@/types";
 
 const api = axios.create({
@@ -37,6 +40,10 @@ export const creatorsApi = {
     api.get<Creator>(`/creators/${id}`).then((r) => r.data),
   stats: () =>
     api.get<MarketplaceStats>("/creators/stats").then((r) => r.data),
+  scrapeSocial: (data: ScrapeRequest) =>
+    api.post<ScrapeResponse>("/creators/scrape", data).then((r) => r.data),
+  create: (data: CreateCreatorRequest) =>
+    api.post<Creator>("/creators", data).then((r) => r.data),
 };
 
 export const campaignsApi = {

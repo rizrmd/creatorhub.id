@@ -4,6 +4,7 @@ import {
   Instagram, Youtube, Users, Megaphone, TrendingUp, Wallet,
   LayoutGrid, List, RotateCcw, X, Flame, MessageSquare, MapPin,
   Heart, ArrowUpRight, User, Video, Building2, Globe2,
+  UserPlus, Loader2, Link2,
 } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -15,7 +16,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useCreators, useMarketplaceStats } from "@/hooks/useCreators";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useCreateCampaign } from "@/hooks/useCampaigns";
-import type { Creator, CreatorListParams } from "@/types";
+import { creatorsApi } from "@/lib/api";
+import type { Creator, CreatorListParams, ScrapeResponse, PlatformInput } from "@/types";
 import { formatRupiah, formatFollowers } from "@/lib/utils";
 
 function formatBudget(n: number): string {
@@ -654,6 +656,315 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
   );
 }
 
+const ADD_PLATFORMS = [
+  { id: "instagram", label: "Instagram", icon: Instagram },
+  { id: "tiktok", label: "TikTok", icon: () => (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 0010.86 4.46v-7.2a8.16 8.16 0 005.58 2.19V11.2a4.83 4.83 0 01-3.77-1.7V2h3.77z"/>
+    </svg>
+  )},
+  { id: "youtube", label: "YouTube", icon: Youtube },
+  { id: "x", label: "X / Twitter", icon: () => (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+    </svg>
+  )},
+  { id: "facebook", label: "Facebook", icon: () => (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+    </svg>
+  )},
+  { id: "threads", label: "Threads", icon: () => (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.59 12c.025 3.086.718 5.496 2.057 7.164 1.432 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.34-.776-.963-1.394-1.813-1.807-.1 1.578-.47 2.89-1.104 3.92-.89 1.44-2.17 2.215-3.81 2.302-1.276.068-2.447-.218-3.48-.855-1.166-.72-1.948-1.858-2.203-3.267-.22-1.212-.082-2.552.4-3.74.666-1.65 1.98-2.79 3.82-3.295.94-.258 1.96-.366 2.95-.314.364.02.727.063 1.085.128l.066.013-.003-.173-.075-1.764c-.058-1.374-.082-2.415-.448-3.348-.554-1.412-1.636-2.167-3.16-2.217h-.11c-1.046.035-1.88.36-2.475.97-.548.564-.878 1.327-.974 2.264-.072.708.014 1.488.258 2.32l1.728-.636c-.196-.662-.292-1.265-.262-1.802.047-.845.335-1.47.847-1.893.555-.457 1.273-.668 2.13-.64h.063c1.57.046 2.575.735 3.056 2.04.338.926.377 2.05.42 3.293l-.006.237.234.025c1.06.108 2.007.407 2.808.9.937.58 1.647 1.43 2.095 2.513.612 1.482.652 3.593-.592 5.394C18.307 22.683 15.762 24 12.186 24zM11.64 13.98c-.008.044-.016.088-.025.133-.14 1.626.155 2.838.863 3.62.557.616 1.35.926 2.28.926.066 0 .134-.002.2-.006.968-.06 1.777-.5 2.343-1.42.478-.778.738-1.818.774-3.066.023-.81-.014-1.587-.108-2.322-.163-.08-.343-.14-.536-.177-.76-.148-1.552-.165-2.366-.052a7.753 7.753 0 00-.782.155l-.177.045-.003.134z"/>
+    </svg>
+  )},
+];
+
+function AddCreatorDialog({ open, onOpenChange, onCreated }: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onCreated: () => void;
+}) {
+  const [name, setName] = useState("");
+  const [bio, setBio] = useState("");
+  const [category, setCategory] = useState("lifestyle");
+  const [city, setCity] = useState("Jakarta");
+  const [platforms, setPlatforms] = useState<PlatformInput[]>([]);
+  const [scraping, setScraping] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+
+  const togglePlatform = (platformId: string) => {
+    setPlatforms((prev) => {
+      const exists = prev.find((p) => p.platform === platformId);
+      if (exists) {
+        return prev.filter((p) => p.platform !== platformId);
+      }
+      return [...prev, { platform: platformId, handle: "", profilePictureUrl: "", followers: 0 }];
+    });
+  };
+
+  const updatePlatformHandle = (platformId: string, handle: string) => {
+    setPlatforms((prev) =>
+      prev.map((p) => (p.platform === platformId ? { ...p, handle } : p))
+    );
+  };
+
+  const scrapePlatform = async (platformId: string) => {
+    const platform = platforms.find((p) => p.platform === platformId);
+    if (!platform?.handle) return;
+
+    setScraping(platformId);
+    try {
+      const result: ScrapeResponse = await creatorsApi.scrapeSocial({
+        platform: platformId,
+        handle: platform.handle.replace(/^@/, ""),
+      });
+
+      setPlatforms((prev) =>
+        prev.map((p) =>
+          p.platform === platformId
+            ? {
+                ...p,
+                profilePictureUrl: result.profilePictureUrl || p.profilePictureUrl,
+                followers: result.followerCount || p.followers,
+              }
+            : p
+        )
+      );
+
+      if (result.success) {
+        toast.success(`${platformId} data fetched successfully`);
+      } else {
+        toast.error(result.error || `Failed to fetch ${platformId} data`);
+      }
+    } catch {
+      toast.error(`Failed to fetch ${platformId} data`);
+    } finally {
+      setScraping(null);
+    }
+  };
+
+  const handleCreate = async () => {
+    if (!name.trim()) return;
+
+    setCreating(true);
+    try {
+      // Use the first platform's profile picture as the main image
+      const firstWithPic = platforms.find((p) => p.profilePictureUrl);
+      const imageUrl = firstWithPic?.profilePictureUrl || "";
+
+      await creatorsApi.create({
+        name: name.trim(),
+        bio: bio.trim(),
+        category,
+        city,
+        imageUrl,
+        platforms: platforms.filter((p) => p.handle),
+      });
+
+      toast.success("Creator created successfully!");
+      onOpenChange(false);
+      onCreated();
+      resetForm();
+    } catch {
+      toast.error("Failed to create creator");
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const resetForm = () => {
+    setName("");
+    setBio("");
+    setCategory("lifestyle");
+    setCity("Jakarta");
+    setPlatforms([]);
+  };
+
+  const firstProfilePic = platforms.find((p) => p.profilePictureUrl)?.profilePictureUrl;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[90dvh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <UserPlus className="w-5 h-5" /> Add New Creator
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-5 py-2">
+          {/* Profile Preview */}
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 flex items-center justify-center text-xl font-bold"
+              style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>
+              {firstProfilePic ? (
+                <img src={firstProfilePic} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                name[0]?.toUpperCase() || "?"
+              )}
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium" style={{ color: "var(--ch-text)" }}>
+                {name || "Creator Name"}
+              </p>
+              <p className="text-xs" style={{ color: "var(--ch-text-muted)" }}>
+                {bio || "Brief description"}
+              </p>
+            </div>
+          </div>
+
+          {/* Basic Info */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium" style={{ color: "var(--ch-text)" }}>
+                Name <span className="text-red-500">*</span>
+              </label>
+              <Input
+                placeholder="Creator name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium" style={{ color: "var(--ch-text)" }}>
+                Category
+              </label>
+              <Select value={category} onValueChange={setCategory}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {CATEGORIES.map((c) => (
+                    <SelectItem key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium" style={{ color: "var(--ch-text)" }}>
+              Bio / Description <span className="text-red-500">*</span>
+            </label>
+            <Input
+              placeholder="Brief description of the creator"
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium" style={{ color: "var(--ch-text)" }}>City</label>
+            <Select value={city} onValueChange={setCity}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {CITIES.map((c) => (
+                  <SelectItem key={c} value={c}>{c}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Social Media Links */}
+          <div className="space-y-3">
+            <label className="text-sm font-medium flex items-center gap-2" style={{ color: "var(--ch-text)" }}>
+              <Link2 className="w-4 h-4" /> Social Media Links
+            </label>
+
+            <div className="space-y-2">
+              {ADD_PLATFORMS.map((platformDef) => {
+                const isActive = platforms.some((p) => p.platform === platformDef.id);
+                const platformData = platforms.find((p) => p.platform === platformDef.id);
+                const PlatformIcon = platformDef.icon;
+
+                return (
+                  <div
+                    key={platformDef.id}
+                    className="rounded-lg border p-3 transition-colors"
+                    style={{
+                      background: isActive ? "rgba(255,255,255,.05)" : "transparent",
+                      borderColor: isActive ? "var(--ch-border)" : "rgba(255,255,255,.05)",
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => togglePlatform(platformDef.id)}
+                        className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${
+                          isActive ? "bg-blue-600 border-blue-600" : "border-white/20"
+                        }`}
+                      >
+                        {isActive && <CheckCircle className="w-3 h-3 text-white" />}
+                      </button>
+                      <PlatformIcon />
+                      <span className="text-sm font-medium flex-1" style={{ color: "var(--ch-text)" }}>
+                        {platformDef.label}
+                      </span>
+                      {platformData?.profilePictureUrl && (
+                        <img
+                          src={platformData.profilePictureUrl}
+                          alt={platformDef.label}
+                          className="w-6 h-6 rounded-full object-cover"
+                        />
+                      )}
+                      {platformData && platformData.followers > 0 && (
+                        <span className="text-xs" style={{ color: "var(--ch-text-muted)" }}>
+                          {formatFollowers(platformData.followers)}
+                        </span>
+                      )}
+                    </div>
+
+                    {isActive && (
+                      <div className="mt-3 flex items-center gap-2">
+                        <Input
+                          placeholder={`@${platformDef.label.toLowerCase()} handle`}
+                          value={platformData?.handle || ""}
+                          onChange={(e) => updatePlatformHandle(platformDef.id, e.target.value)}
+                          className="flex-1"
+                        />
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => scrapePlatform(platformDef.id)}
+                          disabled={!platformData?.handle || scraping === platformDef.id}
+                        >
+                          {scraping === platformDef.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            "Fetch"
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleCreate}
+            disabled={!name.trim() || !bio.trim() || creating}
+          >
+            {creating ? (
+              <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Creating...</>
+            ) : (
+              "Create Creator"
+            )}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function parseRange(val: string): { min?: number; max?: number } {
   if (!val || val === "all") return {};
   const [a, b] = val.split("-").map(Number);
@@ -725,6 +1036,7 @@ export default function Marketplace() {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showMobileBrief, setShowMobileBrief] = useState(false);
   const [showCreateCampaign, setShowCreateCampaign] = useState(false);
+  const [showAddCreator, setShowAddCreator] = useState(false);
   const [campaignForm, setCampaignForm] = useState({ title: "", description: "", budget: "" });
 
   const [profileCreator, setProfileCreator] = useState<Creator | null>(null);
@@ -978,6 +1290,9 @@ export default function Marketplace() {
           </p>
           <Button variant="outline" size="sm" onClick={resetFilters} className="gap-1.5">
             <RotateCcw className="w-3.5 h-3.5" /> Reset
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => setShowAddCreator(true)} className="gap-1.5">
+            <UserPlus className="w-3.5 h-3.5" /> Add Creator
           </Button>
           <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => setShowAdvanced(true)}>
             <SlidersHorizontal className="w-4 h-4" />
@@ -1248,6 +1563,16 @@ export default function Marketplace() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Add Creator Dialog */}
+      <AddCreatorDialog
+        open={showAddCreator}
+        onOpenChange={setShowAddCreator}
+        onCreated={() => {
+          // Refetch creators list
+          window.location.reload();
+        }}
+      />
     </div>
   );
 }

@@ -146,3 +146,32 @@ export interface LoginResponse {
   token: string;
   user: AuthUser;
 }
+
+export interface ScrapeRequest {
+  platform: string;
+  handle: string;
+}
+
+export interface ScrapeResponse {
+  profilePictureUrl: string;
+  followerCount: number;
+  displayName: string;
+  success: boolean;
+  error?: string;
+}
+
+export interface PlatformInput {
+  platform: string;
+  handle: string;
+  profilePictureUrl: string;
+  followers: number;
+}
+
+export interface CreateCreatorRequest {
+  name: string;
+  bio: string;
+  category: string;
+  city: string;
+  imageUrl: string;
+  platforms: PlatformInput[];
+}

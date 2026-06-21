@@ -74,6 +74,8 @@ func main() {
 			r.Route("/creators", func(r chi.Router) {
 				r.Get("/", creatorHandler.List)
 				r.Get("/stats", creatorHandler.Stats)
+				r.Post("/scrape", creatorHandler.ScrapeSocial)
+				r.Post("/", creatorHandler.Create)
 				r.Get("/{id}", creatorHandler.GetByID)
 			})
 			r.Route("/campaigns", func(r chi.Router) {

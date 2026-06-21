@@ -9,6 +9,7 @@ import (
 
 	"creatorhub/backend/internal/models"
 	"creatorhub/backend/internal/repository"
+	"creatorhub/backend/internal/services"
 )
 
 type CreatorHandler struct {
@@ -94,6 +95,51 @@ func (h *CreatorHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusOK, creator)
+}
+
+func (h *CreatorHandler) ScrapeSocial(w http.ResponseWriter, r *http.Request) {
+	var req models.ScrapeRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+	if req.Platform == "" || req.Handle == "" {
+		writeError(w, http.StatusBadRequest, "platform and handle are required")
+		return
+	}
+
+	result := services.ScrapeSocial(req.Platform, req.Handle)
+	writeJSON(w, http.StatusOK, result)
+}
+
+func (h *CreatorHandler) Create(w http.ResponseWriter, r *http.Request) {
+	var req models.CreateCreatorRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+	if req.Name == "" {
+		writeError(w, http.StatusBadRequest, "name is required")
+		return
+	}
+
+	creator, err := h.repo.Create(r.Context(), req)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	// Add platforms
+	for _, p := range req.Platforms {
+		if p.Handle != "" {
+			if err := h.repo.AddPlatform(r.Context(), creator.ID, p); err != nil {
+				writeError(w, http.StatusInternalServerError, "failed to add platform: "+err.Error())
+				return
+			}
+		}
+	}
+
+	writeJSON(w, http.StatusCreated, creator)
 }
 
 func writeJSON(w http.ResponseWriter, status int, v any) {

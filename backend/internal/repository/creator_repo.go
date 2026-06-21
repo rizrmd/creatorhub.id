@@ -249,3 +249,78 @@ func (r *CreatorRepository) GetByID(ctx context.Context, id string) (*models.Cre
 	}
 	return &c, nil
 }
+
+func (r *CreatorRepository) Create(ctx context.Context, req models.CreateCreatorRequest) (*models.Creator, error) {
+	var c models.Creator
+
+	// Generate a slug-style ID from the name
+	id := strings.ToLower(strings.ReplaceAll(req.Name, " ", "-"))
+	id = strings.Map(func(r rune) rune {
+		if (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') || r == '-' {
+			return r
+		}
+		return -1
+	}, id)
+
+	// Use first platform's profile picture if no image URL provided
+	imageURL := req.ImageURL
+	if imageURL == "" && len(req.Platforms) > 0 {
+		imageURL = req.Platforms[0].ProfilePictureURL
+	}
+
+	// Calculate total followers
+	var totalFollowers int64
+	for _, p := range req.Platforms {
+		totalFollowers += p.Followers
+	}
+
+	followersText := formatFollowers(totalFollowers)
+
+	err := r.db.QueryRow(ctx, `
+		INSERT INTO creators (id, name, handle, city, country, category, followers, followers_text, image_url, bio)
+		VALUES ($1, $2, $3, $4, 'Indonesia', $5, $6, $7, $8, $9)
+		RETURNING id, name, handle, city, country, category, followers, followers_text, engagement_rate,
+			price, price_text, verified, star_creator, rating, fast_response, top_rated,
+			last_seen, image_url, img_path, focus, hue, bio`,
+		id, req.Name, "", req.City, req.Category, totalFollowers, followersText, imageURL, req.Bio,
+	).Scan(
+		&c.ID, &c.Name, &c.Handle, &c.City, &c.Country, &c.Category,
+		&c.Followers, &c.FollowersText, &c.EngagementRate,
+		&c.Price, &c.PriceText, &c.Verified, &c.StarCreator, &c.Rating,
+		&c.FastResponse, &c.TopRated, &c.LastSeen, &c.ImageURL, &c.ImgPath, &c.Focus, &c.Hue, &c.Bio,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	c.Platforms = []string{}
+	c.PlatformMetrics = []models.PlatformMetric{}
+
+	return &c, nil
+}
+
+func (r *CreatorRepository) AddPlatform(ctx context.Context, creatorID string, p models.PlatformInput) error {
+	_, err := r.db.Exec(ctx, `
+		INSERT INTO creator_platforms (creator_id, platform, handle, profile_picture_url, platform_followers)
+		VALUES ($1, $2, $3, $4, $5)
+		ON CONFLICT (creator_id, platform) DO UPDATE SET
+			handle = EXCLUDED.handle,
+			profile_picture_url = EXCLUDED.profile_picture_url,
+			platform_followers = EXCLUDED.platform_followers`,
+		creatorID, p.Platform, p.Handle, p.ProfilePictureURL, p.Followers,
+	)
+	return err
+}
+
+func formatFollowers(n int64) string {
+	if n >= 1000000000 {
+		return fmt.Sprintf("%.1fB", float64(n)/1000000000)
+	}
+	if n >= 1000000 {
+		return fmt.Sprintf("%.1fM", float64(n)/1000000)
+	}
+	if n >= 1000 {
+		return fmt.Sprintf("%.1fK", float64(n)/1000)
+	}
+	return fmt.Sprintf("%d", n)
+}
