@@ -98,12 +98,13 @@ func (r *MediaNetworkRepository) SearchOutlets(ctx context.Context, query string
 		FROM media_outlets o
 		LEFT JOIN media_groups g ON g.id = o.group_id
 		WHERE o.name ILIKE $1
+		   OR g.name ILIKE $1
 		   OR o.instagram_handle ILIKE $1
 		   OR o.tiktok_handle ILIKE $1
 		   OR o.youtube_handle ILIKE $1
 		   OR o.genre ILIKE $1
-		ORDER BY o.name
-		LIMIT 100
+		ORDER BY g.name, o.name
+		LIMIT 200
 	`, "%"+query+"%")
 	if err != nil {
 		return nil, fmt.Errorf("search outlets: %w", err)

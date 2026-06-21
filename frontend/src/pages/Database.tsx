@@ -300,6 +300,7 @@ export default function DatabasePage() {
   const [outlets, setOutlets] = useState<MediaOutlet[]>([]);
   const [outletsLoading, setOutletsLoading] = useState(false);
   const [networkSearch, setNetworkSearch] = useState("");
+  const [searchActive, setSearchActive] = useState(false);
   const [editedOutlets, setEditedOutlets] = useState<Map<number, Partial<MediaOutlet>>>(new Map());
   const [saving, setSaving] = useState(false);
   const [groupsLoading, setGroupsLoading] = useState(false);
@@ -370,29 +371,28 @@ export default function DatabasePage() {
   // Search across all outlets
   const handleNetworkSearch = useCallback(async () => {
     if (!networkSearch.trim()) {
-      // Reset to group view
-      if (expandedGroup) {
-        setOutletsLoading(true);
-        try {
-          const data = await mediaNetworkApi.listOutlets(expandedGroup);
-          setOutlets(data);
-        } finally {
-          setOutletsLoading(false);
-        }
-      }
+      clearNetworkSearch();
       return;
     }
     setOutletsLoading(true);
+    setSearchActive(true);
+    setExpandedGroup(null);
     try {
       const data = await mediaNetworkApi.searchOutlets(networkSearch);
       setOutlets(data);
-      setExpandedGroup(null); // Show search results flat
     } catch (err) {
       console.error(err);
     } finally {
       setOutletsLoading(false);
     }
-  }, [networkSearch, expandedGroup]);
+  }, [networkSearch]);
+
+  const clearNetworkSearch = useCallback(() => {
+    setNetworkSearch("");
+    setSearchActive(false);
+    setExpandedGroup(null);
+    setOutlets([]);
+  }, []);
 
   const filtered = allMedia.filter((m) => {
     const matchesSearch =
@@ -643,8 +643,186 @@ export default function DatabasePage() {
             )}
           </div>
 
-          {/* Groups List */}
-          {groupsLoading ? (
+          {/* Search Results or Groups List */}
+          {searchActive ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <p className="text-[14px] font-semibold" style={{ color: "var(--ch-text)" }}>
+                  Search results for "{networkSearch}" — {outlets.length} found
+                </p>
+                <button
+                  onClick={clearNetworkSearch}
+                  className="text-[12px] font-semibold px-3 py-1 rounded-lg border transition-colors hover:bg-slate-50"
+                  style={{ borderColor: "var(--ch-border)", color: "var(--ch-primary)" }}
+                >
+                  Clear search
+                </button>
+              </div>
+              {outletsLoading ? (
+                <Card>
+                  <CardContent className="py-12 text-center">
+                    <Loader2 className="w-8 h-8 mx-auto mb-3 animate-spin" style={{ color: "var(--ch-primary)" }} />
+                    <p className="text-[14px]" style={{ color: "var(--ch-text-muted)" }}>Searching...</p>
+                  </CardContent>
+                </Card>
+              ) : outlets.length === 0 ? (
+                <Card>
+                  <CardContent className="py-12 text-center">
+                    <Search className="w-10 h-10 mx-auto mb-3" style={{ color: "var(--ch-text-soft)" }} />
+                    <p className="text-[14px] font-semibold" style={{ color: "var(--ch-text)" }}>No results found</p>
+                    <p className="text-[12px] mt-1" style={{ color: "var(--ch-text-muted)" }}>Try a different search term</p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <Card>
+                  <CardContent className="p-0">
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
+                            <th className="text-left px-4 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Name</th>
+                            <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Group</th>
+                            <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Agency Price</th>
+                            <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Rate Card</th>
+                            <th className="text-center px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>GNews</th>
+                            <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Instagram</th>
+                            <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>TikTok</th>
+                            <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>YouTube</th>
+                            <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Genre</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {outlets.map((outlet) => {
+                            const edited = editedOutlets.get(outlet.id);
+                            const displayHarga = edited?.hargaAgency ?? outlet.hargaAgency;
+                            const displayRate = edited?.hargaRateCard ?? outlet.hargaRateCard;
+                            const displayIg = edited?.instagramHandle ?? outlet.instagramHandle;
+                            const displayTiktok = edited?.tiktokHandle ?? outlet.tiktokHandle;
+                            const displayYoutube = edited?.youtubeHandle ?? outlet.youtubeHandle;
+                            const displayGenre = edited?.genre ?? outlet.genre;
+
+                            return (
+                              <tr key={outlet.id} className="border-b transition-colors hover:bg-slate-50/50" style={{ borderColor: "var(--ch-border)" }}>
+                                <td className="px-4 py-2">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[13px] font-semibold" style={{ color: "var(--ch-text)" }}>{outlet.name}</span>
+                                    {outlet.url && (
+                                      <a href={outlet.url} target="_blank" rel="noopener noreferrer" className="text-[10px]" style={{ color: "var(--ch-primary)" }}>
+                                        <ExternalLink className="w-3 h-3" />
+                                      </a>
+                                    )}
+                                  </div>
+                                </td>
+                                <td className="px-3 py-2">
+                                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>
+                                    {outlet.groupName || "—"}
+                                  </span>
+                                </td>
+                                <td className="px-3 py-2">
+                                  <input
+                                    type="text"
+                                    value={displayHarga || ""}
+                                    onChange={(e) => handleEdit(outlet.id, "hargaAgency", e.target.value)}
+                                    placeholder="—"
+                                    className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
+                                    style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+                                  />
+                                </td>
+                                <td className="px-3 py-2">
+                                  <input
+                                    type="text"
+                                    value={displayRate || ""}
+                                    onChange={(e) => handleEdit(outlet.id, "hargaRateCard", e.target.value)}
+                                    placeholder="—"
+                                    className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
+                                    style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+                                  />
+                                </td>
+                                <td className="px-3 py-2 text-center">
+                                  <input
+                                    type="checkbox"
+                                    checked={edited?.googleNews ?? outlet.googleNews}
+                                    onChange={(e) => handleEdit(outlet.id, "googleNews", e.target.checked)}
+                                    className="w-4 h-4 rounded"
+                                  />
+                                </td>
+                                <td className="px-3 py-2">
+                                  <div className="flex items-center gap-1.5">
+                                    <Instagram className="w-3.5 h-3.5 shrink-0" style={{ color: "#E1306C" }} />
+                                    <input
+                                      type="text"
+                                      value={displayIg || ""}
+                                      onChange={(e) => handleEdit(outlet.id, "instagramHandle", e.target.value)}
+                                      placeholder="@handle"
+                                      className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
+                                      style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+                                    />
+                                    {displayIg && (
+                                      <a href={socialUrl("instagram", displayIg) || "#"} target="_blank" rel="noopener noreferrer">
+                                        <ExternalLink className="w-3 h-3" style={{ color: "var(--ch-primary)" }} />
+                                      </a>
+                                    )}
+                                  </div>
+                                </td>
+                                <td className="px-3 py-2">
+                                  <div className="flex items-center gap-1.5">
+                                    <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="currentColor" style={{ color: "#00F2EA" }}>
+                                      <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 0010.86 4.48V13.2a8.16 8.16 0 005.58 2.18v-3.45a4.85 4.85 0 01-3.59-1.62V6.69h3.59z" />
+                                    </svg>
+                                    <input
+                                      type="text"
+                                      value={displayTiktok || ""}
+                                      onChange={(e) => handleEdit(outlet.id, "tiktokHandle", e.target.value)}
+                                      placeholder="@handle"
+                                      className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
+                                      style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+                                    />
+                                    {displayTiktok && (
+                                      <a href={socialUrl("tiktok", displayTiktok) || "#"} target="_blank" rel="noopener noreferrer">
+                                        <ExternalLink className="w-3 h-3" style={{ color: "var(--ch-primary)" }} />
+                                      </a>
+                                    )}
+                                  </div>
+                                </td>
+                                <td className="px-3 py-2">
+                                  <div className="flex items-center gap-1.5">
+                                    <Youtube className="w-3.5 h-3.5 shrink-0" style={{ color: "#FF0000" }} />
+                                    <input
+                                      type="text"
+                                      value={displayYoutube || ""}
+                                      onChange={(e) => handleEdit(outlet.id, "youtubeHandle", e.target.value)}
+                                      placeholder="@handle"
+                                      className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
+                                      style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+                                    />
+                                    {displayYoutube && (
+                                      <a href={socialUrl("youtube", displayYoutube) || "#"} target="_blank" rel="noopener noreferrer">
+                                        <ExternalLink className="w-3 h-3" style={{ color: "var(--ch-primary)" }} />
+                                      </a>
+                                    )}
+                                  </div>
+                                </td>
+                                <td className="px-3 py-2">
+                                  <input
+                                    type="text"
+                                    value={displayGenre || ""}
+                                    onChange={(e) => handleEdit(outlet.id, "genre", e.target.value)}
+                                    placeholder="—"
+                                    className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
+                                    style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+                                  />
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          ) : groupsLoading ? (
             <Card>
               <CardContent className="py-12 text-center">
                 <Loader2 className="w-8 h-8 mx-auto mb-3 animate-spin" style={{ color: "var(--ch-primary)" }} />
