@@ -9,7 +9,7 @@ WORKDIR /app/frontend
 # Dependency layer — only rebuilds when package-lock changes
 COPY frontend/package.json frontend/package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm \
-    npm ci --prefer-offline --no-audit --no-fund
+    npm install --no-audit --no-fund
 
 # Config layer — rebuilds when build tooling changes
 COPY frontend/index.html frontend/vite.config.ts frontend/tsconfig.json frontend/tsconfig.app.json frontend/tsconfig.node.json frontend/components.json ./
