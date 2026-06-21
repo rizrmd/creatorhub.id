@@ -142,7 +142,7 @@ export default function BrandSearch() {
       title={creator.name}
       subtitle={`${creator.city} · ${creator.category}`}
       meta={`${creator.followersText} · ${creator.priceText} · ⭐ ${creator.rating}`}
-      to="/dashboard/marketplace"
+      to="/service-hub/marketplace"
     />
   );
 
@@ -154,7 +154,7 @@ export default function BrandSearch() {
         title={campaign.title}
         subtitle={campaign.brand ?? campaign.description.slice(0, 60)}
         meta={`${formatRupiah(campaign.budget)} · ${status?.label ?? campaign.status}`}
-        to={`/dashboard/campaigns/${campaign.id}`}
+        to={`/service-hub/campaigns/${campaign.id}`}
       />
     );
   };
@@ -165,7 +165,7 @@ export default function BrandSearch() {
       title={channel.creatorName}
       subtitle={channel.lastMessage}
       meta={channel.unreadCount > 0 ? `${channel.unreadCount} belum dibaca` : undefined}
-      to="/dashboard/messages"
+      to="/service-hub/messages"
     />
   );
 
@@ -238,7 +238,7 @@ export default function BrandSearch() {
             label="Kreator"
             icon={Users}
             count={creatorsData?.total ?? 0}
-            href="/dashboard/marketplace"
+            href="/service-hub/marketplace"
             query={debouncedSearch}
             loading={loadingCreators}
           >
@@ -249,7 +249,7 @@ export default function BrandSearch() {
             label="Kampanye"
             icon={Megaphone}
             count={matchedCampaigns.length}
-            href="/dashboard/campaigns"
+            href="/service-hub/campaigns"
             query={debouncedSearch}
             loading={loadingCampaigns}
           >
@@ -260,7 +260,7 @@ export default function BrandSearch() {
             label="Pesan"
             icon={MessageSquare}
             count={matchedChannels.length}
-            href="/dashboard/messages"
+            href="/service-hub/messages"
             query={debouncedSearch}
             loading={loadingChannels}
           >

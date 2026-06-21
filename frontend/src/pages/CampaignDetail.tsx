@@ -31,7 +31,7 @@ export default function CampaignDetail() {
   const handleDelete = async () => {
     if (!id) return;
     await deleteMutation.mutateAsync(id);
-    navigate("/dashboard/campaigns");
+    navigate("/service-hub/campaigns");
   };
 
   if (isLoading) {
@@ -55,7 +55,7 @@ export default function CampaignDetail() {
     return (
       <div className="p-6 text-center">
         <p style={{ color: "var(--ch-text-muted)" }}>Kampanye tidak ditemukan.</p>
-        <Button className="mt-4" onClick={() => navigate("/dashboard/campaigns")}>Kembali</Button>
+        <Button className="mt-4" onClick={() => navigate("/service-hub/campaigns")}>Kembali</Button>
       </div>
     );
   }
@@ -67,7 +67,7 @@ export default function CampaignDetail() {
       {/* Header */}
       <div className="flex items-start gap-4">
         <button
-          onClick={() => navigate("/dashboard/campaigns")}
+          onClick={() => navigate("/service-hub/campaigns")}
           className="mt-1 w-9 h-9 rounded-lg border flex items-center justify-center transition-colors hover:bg-slate-50"
           style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}
         >
@@ -153,7 +153,7 @@ export default function CampaignDetail() {
                 Belum ada kreator yang ditambahkan
               </p>
               <button
-                onClick={() => navigate("/dashboard/marketplace")}
+                onClick={() => navigate("/service-hub/marketplace")}
                 className="px-4 py-2 rounded-lg border text-[13px] font-semibold transition-colors hover:bg-blue-50"
                 style={{ borderColor: "var(--ch-primary)", color: "var(--ch-primary)" }}
               >
@@ -205,7 +205,7 @@ export default function CampaignDetail() {
       {/* Actions */}
       <div className="flex gap-3">
         <button
-          onClick={() => navigate("/dashboard/campaigns")}
+          onClick={() => navigate("/service-hub/campaigns")}
           className="flex items-center gap-2 px-4 py-2 rounded-lg border text-[13px] font-semibold transition-colors hover:bg-slate-50"
           style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}
         >
@@ -213,7 +213,7 @@ export default function CampaignDetail() {
           Kembali ke Kampanye
         </button>
         <button
-          onClick={() => navigate("/dashboard/marketplace")}
+          onClick={() => navigate("/service-hub/marketplace")}
           className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-[13px] font-semibold transition-opacity hover:opacity-90"
           style={{ background: "var(--ch-primary)", boxShadow: "var(--ch-nav-shadow)" }}
         >

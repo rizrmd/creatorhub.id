@@ -5,7 +5,7 @@ export function HomeRedirect() {
   const { effectiveRole } = useRole();
   return (
     <Navigate
-      to={effectiveRole === "kreator" ? "/dashboard/kreator/home" : "/dashboard/marketplace"}
+      to={effectiveRole === "kreator" ? "/service-hub/kreator/home" : "/service-hub/marketplace"}
       replace
     />
   );
@@ -14,7 +14,7 @@ export function HomeRedirect() {
 export function BrandRoute({ children }: { children: React.ReactNode }) {
   const { effectiveRole } = useRole();
   if (effectiveRole === "kreator") {
-    return <Navigate to="/dashboard/kreator/home" replace />;
+    return <Navigate to="/service-hub/kreator/home" replace />;
   }
   return <>{children}</>;
 }
@@ -22,7 +22,7 @@ export function BrandRoute({ children }: { children: React.ReactNode }) {
 export function KreatorRoute({ children }: { children: React.ReactNode }) {
   const { effectiveRole } = useRole();
   if (effectiveRole === "brand") {
-    return <Navigate to="/dashboard/marketplace" replace />;
+    return <Navigate to="/service-hub/marketplace" replace />;
   }
   return <>{children}</>;
 }

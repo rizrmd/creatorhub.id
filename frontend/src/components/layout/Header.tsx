@@ -85,9 +85,9 @@ export default function Header() {
     setShowProfile(which === "profile");
   };
 
-  const messagesPath = effectiveRole === "kreator" ? "/dashboard/kreator/messages" : "/dashboard/messages";
-  const settingsPath = effectiveRole === "kreator" ? "/dashboard/kreator/settings" : "/dashboard/settings";
-  const profilePath = effectiveRole === "kreator" ? "/dashboard/kreator/profile" : "/dashboard/settings";
+  const messagesPath = effectiveRole === "kreator" ? "/service-hub/kreator/messages" : "/service-hub/messages";
+  const settingsPath = effectiveRole === "kreator" ? "/service-hub/kreator/settings" : "/service-hub/settings";
+  const profilePath = effectiveRole === "kreator" ? "/service-hub/kreator/profile" : "/service-hub/settings";
 
   const handleLogout = () => {
     setShowProfile(false);

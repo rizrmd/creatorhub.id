@@ -96,9 +96,9 @@ export default function Campaigns() {
   };
 
   const handleAction = (c: Campaign) => {
-    if (c.status === "active" || c.status === "paused") navigate(`/dashboard/campaigns/${c.id}`);
+    if (c.status === "active" || c.status === "paused") navigate(`/service-hub/campaigns/${c.id}`);
     else if (c.status === "draft") openEdit(c);
-    else if (c.status === "completed") navigate("/dashboard/analytics");
+    else if (c.status === "completed") navigate("/service-hub/analytics");
   };
 
   const actionLabel: Record<string, string> = {

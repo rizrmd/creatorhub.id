@@ -1135,7 +1135,7 @@ export default function Marketplace() {
           favorited={favoriteIds.includes(profileCreator.id)}
           onToggle={() => toggleSelect(profileCreator.id)}
           onClose={() => setProfileCreator(null)}
-          onChat={() => { setProfileCreator(null); navigate("/dashboard/messages"); }}
+          onChat={() => { setProfileCreator(null); navigate("/service-hub/messages"); }}
           onFavorite={() => toggleFavorite(profileCreator.id)}
         />
       )}

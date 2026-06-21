@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import {
   Store, Megaphone, BarChart3, Radio,
-  MessageSquare, CreditCard, Settings, HelpCircle, Users,
+  MessageSquare, CreditCard, Settings, HelpCircle,
   Rocket, Briefcase, Coins,
-  Lightbulb, User, Home, Mail,
+  Lightbulb, User, Home, Mail, Database, FolderOpen, Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -12,40 +12,40 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRole } from "@/context/RoleContext";
-import { useAuth } from "@/contexts/AuthContext";
 import { useSidebar } from "@/contexts/SidebarContext";
 import { useKreatorStatsOptional } from "@/context/KreatorDataContext";
 
 const brandNavItems = [
-  { to: "/dashboard",                icon: Home,            label: "Dashboard" },
-  { to: "/dashboard/marketplace",    icon: Store,           label: "Marketplace" },
-  { to: "/dashboard/campaigns",      icon: Megaphone,       label: "Campaigns" },
-  { to: "/dashboard/boost-ads",      icon: Rocket,          label: "Boost Ads" },
-  { to: "/dashboard/analytics",      icon: BarChart3,       label: "Analytics" },
-  { to: "/dashboard/media-monitoring", icon: Radio,          label: "Media Monitor" },
-  { to: "/dashboard/messages",       icon: MessageSquare,   label: "Messages",   badge: 12 },
-  { to: "/dashboard/payments",       icon: CreditCard,      label: "Payments" },
-  { to: "/dashboard/settings",       icon: Settings,        label: "Settings" },
+  { to: "/service-hub",                icon: Home,            label: "Service Hub" },
+  { to: "/service-hub/analytics",      icon: BarChart3,       label: "Projects" },
+  { to: "/service-hub/marketplace",    icon: Store,           label: "Marketplace" },
+  { to: "/service-hub/campaigns",      icon: Megaphone,       label: "Campaigns" },
+  { to: "/service-hub/boost-ads",      icon: Rocket,          label: "Boost Ads" },
+  { to: "/service-hub/database",       icon: Database,        label: "Database" },
+  { to: "/service-hub/content-hub",    icon: FolderOpen,      label: "Content Hub" },
+  { to: "/service-hub/media-monitoring", icon: Radio,          label: "Media Monitoring" },
+  { to: "/service-hub/ai-support",       icon: Sparkles,      label: "AI Support" },
+  { to: "/service-hub/messages",       icon: MessageSquare,   label: "Messages",   badge: 12 },
+  { to: "/service-hub/payments",       icon: CreditCard,      label: "Payments" },
+  { to: "/service-hub/settings",       icon: Settings,        label: "Settings" },
 ];
 
 const kreatorNavItems = [
-  { to: "/dashboard/kreator/home",        icon: Home,          label: "Home" },
-  { to: "/dashboard/kreator/invitations", icon: Mail,          label: "Undangan",   badgeKey: "invitations" as const },
-  { to: "/dashboard/kreator/work",        icon: Briefcase,     label: "Pekerjaan" },
-  { to: "/dashboard/kreator/earnings",    icon: Coins,    label: "Penghasilan" },
-  { to: "/dashboard/kreator/insights",    icon: Lightbulb,     label: "Insights" },
-  { to: "/dashboard/kreator/profile",     icon: User,          label: "Profil" },
-  { to: "/dashboard/kreator/messages",    icon: MessageSquare, label: "Pesan",      badgeKey: "messages" as const },
-  { to: "/dashboard/kreator/settings",    icon: Settings,      label: "Pengaturan" },
+  { to: "/service-hub/kreator/home",        icon: Home,          label: "Home" },
+  { to: "/service-hub/kreator/invitations", icon: Mail,          label: "Undangan",   badgeKey: "invitations" as const },
+  { to: "/service-hub/kreator/work",        icon: Briefcase,     label: "Pekerjaan" },
+  { to: "/service-hub/kreator/earnings",    icon: Coins,    label: "Penghasilan" },
+  { to: "/service-hub/kreator/insights",    icon: Lightbulb,     label: "Insights" },
+  { to: "/service-hub/kreator/profile",     icon: User,          label: "Profil" },
+  { to: "/service-hub/kreator/messages",    icon: MessageSquare, label: "Pesan",      badgeKey: "messages" as const },
+  { to: "/service-hub/kreator/settings",    icon: Settings,      label: "Pengaturan" },
 ];
 
 export default function Sidebar() {
-  const navigate = useNavigate();
   const { pathname } = useLocation();
   const { mobileOpen, closeMobile } = useSidebar();
   const kreatorStats = useKreatorStatsOptional();
-  const { user } = useAuth();
-  const { effectiveRole, canSwitchRole, setRole } = useRole();
+  const { effectiveRole } = useRole();
   const isKreatorView = effectiveRole === "kreator";
   const navActiveBg = isKreatorView ? "#16A34A" : "#F97316";
   const navActiveShadow = isKreatorView ? "0 4px 14px rgba(22,163,74,.35)" : "0 4px 14px rgba(249,115,22,.35)";
@@ -67,17 +67,6 @@ export default function Sidebar() {
       if (item.badgeKey === "messages") return kreatorStats.unreadMessages;
     }
     return item.badge;
-  };
-
-  const handleSwitchRole = () => {
-    if (!canSwitchRole) return;
-    if (effectiveRole === "brand") {
-      setRole("kreator");
-      navigate("/dashboard/kreator/home");
-    } else {
-      setRole("brand");
-      navigate("/dashboard");
-    }
   };
 
   const handleContactSupport = () => {
@@ -155,7 +144,7 @@ export default function Sidebar() {
             <NavLink
               key={to}
               to={to}
-              end={to === "/dashboard" || to === "/dashboard/kreator/home"}
+              end={to === "/service-hub" || to === "/service-hub/kreator/home"}
               title={effectiveCollapsed ? label : undefined}
               className={({ isActive }) =>
                 cn(
@@ -210,15 +199,6 @@ export default function Sidebar() {
         <div className="border-t border-white/10 shrink-0" style={{ padding: effectiveCollapsed ? "10px 8px" : "10px" }}>
           {effectiveCollapsed ? (
             <div className="flex flex-col items-center gap-2">
-              {canSwitchRole && (
-              <button
-                onClick={handleSwitchRole}
-                title={effectiveRole === "brand" ? "Jadi Kreator" : "Kembali ke Brand"}
-                className="w-9 h-9 rounded-lg border border-white/10 flex items-center justify-center transition-colors hover:bg-white/10 text-slate-400"
-              >
-                <Users className="w-4 h-4" />
-              </button>
-              )}
               <button
                 onClick={() => setShowSupport(true)}
                 title="Support"
@@ -229,56 +209,6 @@ export default function Sidebar() {
             </div>
           ) : (
             <div className="flex flex-col gap-2">
-              {canSwitchRole && effectiveRole === "brand" ? (
-                <div className="rounded-[10px] p-[10px] border border-white/10 bg-white/5">
-                  <div className="flex items-center gap-1.5 mb-2">
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-blue-500/20">
-                      <Users className="w-3.5 h-3.5 text-blue-400" />
-                    </div>
-                    <div>
-                      <p className="text-[12px] font-bold text-white">Jadi Kreator?</p>
-                      <p className="text-[10.5px] leading-tight text-slate-400">Kelola profil kreatormu</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={handleSwitchRole}
-                    className="w-full py-[6px] px-[10px] rounded-lg border-[1.5px] text-[11.5px] font-bold transition-colors border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
-                  >
-                    Masuk sebagai Kreator →
-                  </button>
-                </div>
-              ) : canSwitchRole ? (
-                <div className="rounded-[10px] p-[10px] border border-white/10 bg-white/5">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-white text-xs font-bold bg-purple-500">
-                      R
-                    </div>
-                    <div>
-                      <p className="text-[12px] font-bold leading-tight text-white">Rina Pratiwi</p>
-                      <p className="text-[10.5px] text-slate-400">Lifestyle Creator · Jakarta</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={handleSwitchRole}
-                    className="w-full py-[6px] px-[10px] rounded-lg border-[1.5px] text-[11.5px] font-bold transition-colors border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
-                  >
-                    ← Kembali ke Brand
-                  </button>
-                </div>
-              ) : !canSwitchRole && isKreatorView ? (
-                <div className="rounded-[10px] p-[10px] border border-white/10 bg-green-500/10">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-white text-xs font-bold bg-purple-500">
-                      {user?.name ? user.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase() : "K"}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-[12px] font-bold leading-tight truncate text-white">{user?.name ?? "Creator"}</p>
-                      <p className="text-[10.5px] text-green-400">Akun Kreator</p>
-                    </div>
-                  </div>
-                </div>
-              ) : null}
-
               <div className="rounded-[10px] p-[10px] flex items-center gap-2.5 border border-white/10 bg-white/5">
                 <HelpCircle className="w-7 h-7 shrink-0 text-slate-500" />
                 <div className="min-w-0">

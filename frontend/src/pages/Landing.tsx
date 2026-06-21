@@ -39,7 +39,7 @@ const HOW_IT_WORKS = [
   { step: "01", title: "Create Account", desc: "Sign up as a brand, creator, publisher, or media partner in minutes." },
   { step: "02", title: "Discover Creators", desc: "Browse and filter verified creators based on category, audience, platform, location, and performance." },
   { step: "03", title: "Launch Campaigns", desc: "Create your campaign brief, invite selected creators, manage deliverables, and start collaborating." },
-  { step: "04", title: "Track Results", desc: "Monitor performance, engagement, reach, sentiment, and campaign impact from one dashboard." },
+  { step: "04", title: "Track Results", desc: "Monitor performance, engagement, reach, sentiment, and campaign impact from one service hub." },
 ];
 
 
@@ -82,11 +82,11 @@ export default function Landing() {
                 </button>
                 {solutionsOpen && (
                   <div className="absolute top-full left-0 mt-2 w-56 bg-slate-900 border border-slate-800 rounded-xl shadow-xl py-2 z-50">
-                    <Link to="/dashboard/marketplace" className="block px-4 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Content Creators</Link>
-                    <Link to="/dashboard/homeless-media" className="block px-4 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Homeless Media</Link>
-                    <Link to="/dashboard/marketplace" className="block px-4 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Publishers</Link>
-                    <Link to="/dashboard/campaigns" className="block px-4 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Campaign Brief</Link>
-                    <Link to="/dashboard/analytics" className="block px-4 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Analytics</Link>
+                    <Link to="/service-hub/marketplace" className="block px-4 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Content Creators</Link>
+                    <Link to="/service-hub/homeless-media" className="block px-4 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Homeless Media</Link>
+                    <Link to="/service-hub/marketplace" className="block px-4 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Publishers</Link>
+                    <Link to="/service-hub/campaigns" className="block px-4 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Campaign Brief</Link>
+                    <Link to="/service-hub/analytics" className="block px-4 py-2.5 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">Analytics</Link>
                   </div>
                 )}
               </div>
@@ -216,13 +216,13 @@ export default function Landing() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-sm font-semibold text-orange-500 mb-2 uppercase tracking-wider">Platform Preview</p>
           <h2 className="text-3xl lg:text-4xl font-extrabold text-slate-900 mb-4" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            All platforms, one dashboard
+            All platforms, one service hub
           </h2>
           <p className="text-lg text-slate-500 max-w-2xl mx-auto mb-10">
             Connect with creators and track your campaign activity across every major social media platform from a single command center.
           </p>
           <div className="rounded-2xl overflow-hidden shadow-2xl border border-slate-200">
-            <img src="/feat-one-dashboard.png" alt="CreatorHub Dashboard" className="w-full h-auto object-cover" />
+            <img src="/feat-one-dashboard.png" alt="CreatorHub Service Hub" className="w-full h-auto object-cover" />
           </div>
         </div>
       </section>
@@ -317,9 +317,9 @@ export default function Landing() {
               <h4 className="text-sm font-bold text-white mb-4">For Creators</h4>
               <ul className="space-y-2.5 text-sm">
                 <li><Link to="/login" className="hover:text-white transition-colors">Sign Up</Link></li>
-                <li><Link to="/dashboard" className="hover:text-white transition-colors">Creator Dashboard</Link></li>
-                <li><Link to="/dashboard/campaigns" className="hover:text-white transition-colors">Find Campaigns</Link></li>
-                <li><Link to="/dashboard" className="hover:text-white transition-colors">Creator Community</Link></li>
+                <li><Link to="/service-hub" className="hover:text-white transition-colors">Creator Service Hub</Link></li>
+                <li><Link to="/service-hub/campaigns" className="hover:text-white transition-colors">Find Campaigns</Link></li>
+                <li><Link to="/service-hub" className="hover:text-white transition-colors">Creator Community</Link></li>
               </ul>
             </div>
 
@@ -327,10 +327,10 @@ export default function Landing() {
             <div>
               <h4 className="text-sm font-bold text-white mb-4">For Brands</h4>
               <ul className="space-y-2.5 text-sm">
-                <li><Link to="/dashboard" className="hover:text-white transition-colors">Brand Dashboard</Link></li>
-                <li><Link to="/dashboard/campaigns" className="hover:text-white transition-colors">Launch Campaign</Link></li>
-                <li><Link to="/dashboard/marketplace" className="hover:text-white transition-colors">Find Creators</Link></li>
-                <li><Link to="/dashboard/analytics" className="hover:text-white transition-colors">Track Performance</Link></li>
+                <li><Link to="/service-hub" className="hover:text-white transition-colors">Brand Service Hub</Link></li>
+                <li><Link to="/service-hub/campaigns" className="hover:text-white transition-colors">Launch Campaign</Link></li>
+                <li><Link to="/service-hub/marketplace" className="hover:text-white transition-colors">Find Creators</Link></li>
+                <li><Link to="/service-hub/analytics" className="hover:text-white transition-colors">Track Performance</Link></li>
               </ul>
             </div>
 

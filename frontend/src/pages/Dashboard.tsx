@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
-  Users, ArrowLeft, Star, Zap, ShieldCheck,
-  Play, BarChart3, Megaphone, Newspaper, FileText,
+  Users, ArrowLeft, Star,
+  Megaphone, Newspaper, Podcast, Radio,
   Send,
 } from "lucide-react";
 import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
@@ -61,18 +61,12 @@ const PROVINCES: ProvinceData[] = [
   { name: "Papua", studioNum: 1, baseLat: -2.5488, baseLng: 140.669, count: 5 },
 ];
 
-const FILTER_PILLS = [
-  { id: "topRated", label: "Top Rated", icon: Star, color: "#F59E0B" },
-  { id: "fastResponse", label: "Fast Response", icon: Zap, color: "#16A34A" },
-  { id: "verified", label: "Verified Only", icon: ShieldCheck, color: "#2563EB" },
-];
-
 const PLATFORM_FEATURES = [
-  { title: "Content Creators", desc: "Discover top talent across platforms", icon: Users, bg: "bg-blue-50", color: "text-blue-600", link: "/dashboard/marketplace" },
-  { title: "Homeless Media", desc: "Premium media placement opportunities", icon: Newspaper, bg: "bg-orange-50", color: "text-orange-600", link: "/dashboard/homeless-media" },
-  { title: "Publishers", desc: "Monetize your platforms and audience", icon: Megaphone, bg: "bg-purple-50", color: "text-purple-600", link: "/dashboard/marketplace" },
-  { title: "Campaign Brief", desc: "Create detailed briefs that get better results", icon: FileText, bg: "bg-green-50", color: "text-green-600", link: "/dashboard/campaigns" },
-  { title: "Analytics", desc: "Track performance and campaign insights", icon: BarChart3, bg: "bg-cyan-50", color: "text-cyan-600", link: "/dashboard/analytics" },
+  { title: "Content Creators", desc: "Find and connect with trusted creators who align with your niche, target audience, and campaign objectives.", icon: Users, bg: "bg-blue-500/10", color: "text-blue-400", border: "border-blue-500/20", link: "/service-hub/marketplace" },
+  { title: "Homeless Media", desc: "Explore strategic media placement opportunities across influential digital channels, online communities, and publisher networks.", icon: Newspaper, bg: "bg-orange-500/10", color: "text-orange-400", border: "border-orange-500/20", link: "/service-hub/homeless-media" },
+  { title: "Publishers", desc: "Find the right publishers and digital media platforms to expand your campaign reach and increase public visibility.", icon: Megaphone, bg: "bg-purple-500/10", color: "text-purple-400", border: "border-purple-500/20", link: "/service-hub/marketplace" },
+  { title: "Podcast / Live Streaming", desc: "Promote your products and services through podcasts, live streams, live shopping sessions, and creator-driven conversations.", icon: Podcast, bg: "bg-teal-500/10", color: "text-teal-400", border: "border-teal-500/20", link: "/service-hub" },
+  { title: "Media Monitoring Tools", desc: "Monitor conversations, mentions, reach, sentiment, and campaign performance in real time across multiple digital platforms.", icon: Radio, bg: "bg-red-500/10", color: "text-red-400", border: "border-red-500/20", link: "/service-hub" },
 ];
 
 const ACTIVE_CAMPAIGNS = [
@@ -94,12 +88,12 @@ const CAMPAIGN_EVENTS = [
 
 /* ---------- Helpers ---------- */
 function getProvinceColor(count: number): string {
-  if (count === 0) return "#f0f0f0";
-  if (count <= 5) return "#dce7f6";
-  if (count <= 15) return "#adcbf7";
-  if (count <= 40) return "#6ea4ef";
-  if (count <= 100) return "#2973e3";
-  return "#0a4fa7";
+  if (count === 0) return "rgba(30,41,59,0.4)";
+  if (count <= 5) return "#1e3a5f";
+  if (count <= 15) return "#1d4ed8";
+  if (count <= 40) return "#3b82f6";
+  if (count <= 100) return "#60a5fa";
+  return "#93c5fd";
 }
 
 /* ---------- Sub-components ---------- */
@@ -150,8 +144,8 @@ function MapController({
           return {
             fillColor: getProvinceColor(count),
             weight: isSelected ? 2.5 : 0.5,
-            opacity: isSelected ? 1 : 0.2,
-            color: "#ffffff",
+            opacity: isSelected ? 1 : 0.3,
+            color: "rgba(148,163,184,0.4)",
             fillOpacity: isSelected ? 0.85 : 0.15,
           };
         }
@@ -159,8 +153,8 @@ function MapController({
         return {
           fillColor: getProvinceColor(count),
           weight: 1,
-          opacity: 0.6,
-          color: "#ffffff",
+          opacity: 0.5,
+          color: "rgba(148,163,184,0.3)",
           fillOpacity: 0.7,
         };
       }}
@@ -170,11 +164,11 @@ function MapController({
         const count = p?.count ?? 0;
 
         layer.bindTooltip(
-          `<div style="font-family:Inter,sans-serif;padding:4px;line-height:1.4;">
-            <strong style="font-size:12px;color:#0F172A;">${provName}</strong><br>
-            <span style="font-size:11px;color:#64748B;">${count} creators</span>
+          `<div style="font-family:Inter,sans-serif;padding:4px;line-height:1.4;background:#0F172A;border:1px solid rgba(255,255,255,0.1);border-radius:8px;">
+            <strong style="font-size:12px;color:#F1F5F9;">${provName}</strong><br>
+            <span style="font-size:11px;color:#94A3B8;">${count} creators</span>
           </div>`,
-          { direction: "top", sticky: true },
+          { direction: "top", sticky: true, className: "" },
         );
 
         layer.on("click", () => onProvinceClick(provName));
@@ -232,7 +226,6 @@ export default function Dashboard() {
   const [province, setProvince] = useState("all");
   const [geoJsonData, setGeoJsonData] = useState<GeoJSON.FeatureCollection | null>(null);
   const [mapKey] = useState(0);
-  const [activeFilters, setActiveFilters] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     fetch("/indonesia-38-provinces.geojson")
@@ -252,67 +245,59 @@ export default function Dashboard() {
 
   return (
     <div className="p-4 md:p-6 space-y-5" style={{ background: "var(--ch-bg)", minHeight: "100%" }}>
-      {/* Filter Pills */}
-      <div className="flex flex-wrap items-center gap-2">
-        {FILTER_PILLS.map((pill) => {
-          const Icon = pill.icon;
-          const isActive = activeFilters[pill.id] ?? false;
-          return (
-            <button
-              key={pill.id}
-              onClick={() => setActiveFilters((f) => ({ ...f, [pill.id]: !f[pill.id] }))}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-semibold transition-all border ${
-                isActive
-                  ? "bg-white border-slate-200 shadow-sm"
-                  : "bg-white border-slate-200 hover:border-slate-300"
-              }`}
-              style={{ color: isActive ? pill.color : "#64748B" }}
-            >
-              <Icon className="w-4 h-4" style={{ color: pill.color }} />
-              {pill.label}
-            </button>
-          );
-        })}
-      </div>
-
       {/* Hero Banner */}
-      <div className="relative rounded-2xl overflow-hidden" style={{ background: "linear-gradient(135deg, #1e40af 0%, #2563EB 50%, #3b82f6 100%)", minHeight: 200 }}>
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-4 right-12 w-16 h-16 rounded-full bg-white" />
-          <div className="absolute top-8 right-32 w-8 h-8 rounded-full bg-white" />
-          <div className="absolute bottom-8 right-24 w-12 h-12 rounded-full bg-white" />
-        </div>
-        <div className="relative z-10 flex flex-col lg:flex-row items-center gap-6 p-8 lg:p-10">
-          <div className="flex-1">
-            <h2 className="text-3xl lg:text-4xl font-extrabold text-white leading-tight mb-3" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-              Empowering Creators,<br />Elevating Brands
+      <div
+        className="relative rounded-2xl overflow-hidden border border-white/10"
+        style={{ background: "#040e1f", minHeight: 240 }}
+      >
+        <div className="relative z-10 grid lg:grid-cols-2 gap-0 items-center">
+          {/* Left: Text */}
+          <div className="px-8 py-10 lg:px-12 lg:py-12">
+            <h2
+              className="text-2xl lg:text-[2rem] font-extrabold text-white leading-[1.15] tracking-tight mb-4"
+              style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+            >
+              One Platform to Connect with{" "}
+              <span className="text-orange-400">Creators</span>,{" "}
+              <span className="text-blue-400">Homeless Media</span>, and{" "}
+              <span className="text-blue-500">Publishers</span>
             </h2>
-            <p className="text-blue-100 text-sm mb-6 max-w-md">
+            <p className="text-sm text-slate-400 mb-6 max-w-md leading-relaxed">
               The all-in-one marketplace connecting brands with the right creators to achieve real impact.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Link to="/dashboard/marketplace">
-                <Button className="bg-white text-blue-700 hover:bg-blue-50 font-semibold shadow-lg">
-                  Find Creators
+              <Link to="/service-hub/marketplace">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg shadow-blue-600/25 text-sm px-5">
+                  <Users className="w-4 h-4 mr-1.5" /> Find Creators
                 </Button>
               </Link>
-              <Link to="/dashboard/campaigns">
-                <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 font-semibold">
+              <Link to="/service-hub/campaigns">
+                <Button variant="outline" className="border-white/25 text-white hover:bg-white/10 font-semibold text-sm px-5">
                   Create Campaign
                 </Button>
               </Link>
             </div>
           </div>
-          <div className="hidden lg:flex items-center gap-2">
-            <div className="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-              <Users className="w-10 h-10 text-white" />
-            </div>
-            <div className="w-16 h-16 rounded-xl bg-red-400/30 backdrop-blur-sm flex items-center justify-center -mt-4">
-              <Play className="w-8 h-8 text-white" />
-            </div>
-            <div className="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-              <BarChart3 className="w-10 h-10 text-white" />
-            </div>
+
+          {/* Right: Hero Image — centered in column, not edge-to-edge */}
+          <div className="hidden lg:flex items-center justify-center relative px-6 py-5">
+            <div
+              className="absolute inset-0 z-10 pointer-events-none"
+              style={{
+                background: `
+                  radial-gradient(ellipse at 0% 0%, #040e1f 0%, transparent 50%),
+                  linear-gradient(to right, #040e1f 0%, transparent 15%),
+                  linear-gradient(to bottom, #040e1f 0%, transparent 12%),
+                  linear-gradient(to left, #040e1f 0%, transparent 15%),
+                  linear-gradient(to top, #040e1f 0%, transparent 10%)
+                `
+              }}
+            />
+            <img
+              src="/hero-banner.jpg"
+              alt="CreatorHub Platform"
+              className="rounded-xl object-cover w-full max-h-[280px]"
+            />
           </div>
         </div>
       </div>
@@ -323,16 +308,16 @@ export default function Dashboard() {
           <h3 className="text-[15px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             Platform Features
           </h3>
-          <Link to="/dashboard/marketplace" className="text-xs font-semibold text-blue-600 hover:underline">View All</Link>
+          <Link to="/service-hub/marketplace" className="text-xs font-semibold text-blue-400 hover:underline">View All</Link>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {PLATFORM_FEATURES.map((feat) => {
             const Icon = feat.icon;
             return (
-              <Link key={feat.title} to={feat.link.startsWith('/dashboard') ? feat.link : `/dashboard${feat.link}`}>
-                <div className="rounded-xl border p-4 flex flex-col items-center text-center gap-2 hover:shadow-md transition-shadow cursor-pointer"
-                  style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-                  <div className={`w-12 h-12 ${feat.bg} rounded-xl flex items-center justify-center`}>
+              <Link key={feat.title} to={feat.link.startsWith('/service-hub') ? feat.link : `/service-hub${feat.link}`}>
+                <div className="rounded-xl border border-white/[0.06] p-4 flex flex-col items-center text-center gap-2 hover:border-white/15 transition-all cursor-pointer group"
+                  style={{ background: "rgba(15,23,42,0.6)" }}>
+                  <div className={`w-12 h-12 ${feat.bg} border ${feat.border} rounded-xl flex items-center justify-center`}>
                     <Icon className={`w-6 h-6 ${feat.color}`} />
                   </div>
                   <p className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>{feat.title}</p>
@@ -352,13 +337,13 @@ export default function Dashboard() {
           <div className="rounded-xl border flex flex-col" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
             <div className="flex flex-wrap items-center justify-between gap-2 px-5 pt-4 pb-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
               <h3 className="text-[15px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                Creator Coverage Dashboard
+                Creator Coverage Service Hub
               </h3>
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
+                  <div className="flex items-center gap-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
                   <span>Low</span>
                   <div className="flex gap-0.5">
-                    {["#dce7f6", "#adcbf7", "#6ea4ef", "#2973e3", "#0a4fa7"].map((c) => (
+                    {["#1e3a5f", "#1d4ed8", "#3b82f6", "#60a5fa", "#93c5fd"].map((c) => (
                       <span key={c} className="inline-block w-3.5 h-2.5 rounded-sm" style={{ background: c }} />
                     ))}
                   </div>
@@ -388,7 +373,7 @@ export default function Dashboard() {
               >
                 <TileLayer
                   attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-                  url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+                  url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                 />
                 <MapController
                   selectedProvince={province}
@@ -400,10 +385,10 @@ export default function Dashboard() {
             <div className="flex items-center gap-4 px-5 py-3 border-t text-[10px] font-semibold" style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}>
               <span>KOLs / Creators</span>
               <div className="flex items-center gap-3">
-                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#0a4fa7] inline-block" /> 150+</span>
-                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#2973e3] inline-block" /> 50 - 149</span>
-                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#adcbf7] inline-block" /> 20 - 49</span>
-                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#dce7f6] inline-block" /> &lt; 20</span>
+                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#93c5fd] inline-block" /> 150+</span>
+                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#60a5fa] inline-block" /> 50 - 149</span>
+                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#3b82f6] inline-block" /> 20 - 49</span>
+                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#1e3a5f] inline-block" /> &lt; 20</span>
               </div>
             </div>
           </div>
@@ -510,7 +495,7 @@ export default function Dashboard() {
           <div className="rounded-xl border p-4" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Campaign Calendar</h4>
-              <Link to="/dashboard/campaigns" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
+              <Link to="/service-hub/campaigns" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
             </div>
             <div className="flex gap-3">
               {CAMPAIGN_EVENTS.map((ev, i) => (
@@ -532,7 +517,7 @@ export default function Dashboard() {
           <div className="rounded-xl border p-4" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Active Campaigns</h4>
-              <Link to="/dashboard/campaigns" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
+              <Link to="/service-hub/campaigns" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
             </div>
             <div className="space-y-3">
               {ACTIVE_CAMPAIGNS.map((c, i) => (
@@ -559,7 +544,7 @@ export default function Dashboard() {
           <div className="rounded-xl border p-4" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Recent Messages</h4>
-              <Link to="/dashboard/messages" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
+              <Link to="/service-hub/messages" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
             </div>
             <div className="space-y-3">
               {RECENT_MESSAGES.map((m, i) => (
