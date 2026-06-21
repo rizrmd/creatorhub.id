@@ -224,18 +224,23 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
               </div>
             </div>
             <div className="hidden md:flex items-center gap-1.5">
-              {creator.platforms.map((p) => (
-                <a
-                  key={p}
-                  href={socialUrl(p, creator.handle)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border transition-colors hover:opacity-80 ${platformBg[p] ?? "bg-white/5 text-slate-300 border-white/5"}`}
-                >
-                  {platformIcon(p)} <span className="capitalize">{p}</span>
-                </a>
-              ))}
+              {creator.platforms.map((p) => {
+                const pm = creator.platformMetrics?.find((m) => m.platform === p);
+                const followers = pm?.followers ?? 0;
+                return (
+                  <a
+                    key={p}
+                    href={socialUrl(p, creator.handle)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border transition-colors hover:opacity-80 ${platformBg[p] ?? "bg-white/5 text-slate-300 border-white/5"}`}
+                  >
+                    {platformIcon(p)} <span className="capitalize">{p}</span>
+                    {followers > 0 && <span className="opacity-70">{formatFollowers(followers)}</span>}
+                  </a>
+                );
+              })}
             </div>
             <div className="hidden sm:flex items-center gap-4 text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
               <span className="font-semibold">{creator.followersText}</span>
@@ -349,23 +354,30 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
           </span>
         </div>
 
-        {/* Social media links */}
+        {/* Social media links with followers */}
         {creator.platforms && creator.platforms.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-2.5">
-            {creator.platforms.map((p) => (
-              <a
-                key={p}
-                href={socialUrl(p, creator.handle)}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold border transition-colors hover:opacity-80 ${platformBg[p] ?? "bg-white/10 text-slate-300 border-white/10"}`}
-              >
-                {platformIcon(p)}
-                <span className="capitalize">{p}</span>
-                <ArrowUpRight className="w-2.5 h-2.5 opacity-50" />
-              </a>
-            ))}
+            {creator.platforms.map((p) => {
+              const pm = creator.platformMetrics?.find((m) => m.platform === p);
+              const followers = pm?.followers ?? 0;
+              return (
+                <a
+                  key={p}
+                  href={socialUrl(p, creator.handle)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold border transition-colors hover:opacity-80 ${platformBg[p] ?? "bg-white/10 text-slate-300 border-white/10"}`}
+                >
+                  {platformIcon(p)}
+                  <span className="capitalize">{p}</span>
+                  {followers > 0 && (
+                    <span className="opacity-70">{formatFollowers(followers)}</span>
+                  )}
+                  <ArrowUpRight className="w-2.5 h-2.5 opacity-50" />
+                </a>
+              );
+            })}
           </div>
         )}
 
