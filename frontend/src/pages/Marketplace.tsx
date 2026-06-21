@@ -164,6 +164,28 @@ function StatCard({ config, value, loading }: {
   );
 }
 
+function socialUrl(platform: string, handle: string): string {
+  const h = handle.replace(/^@/, "");
+  switch (platform) {
+    case "instagram": return `https://www.instagram.com/${h}`;
+    case "tiktok":    return `https://www.tiktok.com/@${h}`;
+    case "youtube":   return `https://www.youtube.com/@${h}`;
+    case "facebook":  return `https://www.facebook.com/${h}`;
+    case "x":         return `https://x.com/${h}`;
+    case "linkedin":  return `https://www.linkedin.com/in/${h}`;
+    default:          return `https://www.google.com/search?q=${h}`;
+  }
+}
+
+const platformBg: Record<string, string> = {
+  instagram: "bg-pink-500/15 text-pink-400 border-pink-500/20",
+  tiktok:    "bg-white/10 text-white border-white/10",
+  youtube:   "bg-red-500/15 text-red-400 border-red-500/20",
+  facebook:  "bg-blue-500/15 text-blue-400 border-blue-500/20",
+  x:         "bg-white/10 text-slate-300 border-white/10",
+  linkedin:  "bg-blue-400/15 text-blue-300 border-blue-400/20",
+};
+
 function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFavorite, listView }: {
   creator: Creator; selected: boolean; favorited: boolean;
   onToggle: () => void; onCardClick: () => void; onFavorite: () => void; listView: boolean;
@@ -203,9 +225,16 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
             </div>
             <div className="hidden md:flex items-center gap-1.5">
               {creator.platforms.map((p) => (
-                <span key={p} className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-white/5 text-slate-300 border border-white/5">
+                <a
+                  key={p}
+                  href={socialUrl(p, creator.handle)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border transition-colors hover:opacity-80 ${platformBg[p] ?? "bg-white/5 text-slate-300 border-white/5"}`}
+                >
                   {platformIcon(p)} <span className="capitalize">{p}</span>
-                </span>
+                </a>
               ))}
             </div>
             <div className="hidden sm:flex items-center gap-4 text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
@@ -320,29 +349,23 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
           </span>
         </div>
 
-        {/* Platform metrics — mini cards */}
-        {creator.platformMetrics && creator.platformMetrics.length > 0 && (
-          <div className="mt-2 space-y-1">
-            {creator.platformMetrics.map((pm) => {
-              const platformColor = pm.platform === "instagram" ? "#EC4899"
-                : pm.platform === "youtube" ? "#EF4444"
-                : pm.platform === "facebook" ? "#3B82F6"
-                : pm.platform === "linkedin" ? "#60A5FA"
-                : pm.platform === "x" ? "#94A3B8"
-                : "#E2E8F0";
-              return (
-                <div key={pm.platform} className="flex items-center gap-2 rounded-md px-2 py-1.5" style={{ background: "rgba(255,255,255,.03)", borderLeft: `3px solid ${platformColor}` }}>
-                  <span className="w-3.5 h-3.5 flex items-center justify-center text-slate-400 shrink-0">
-                    {platformIcon(pm.platform)}
-                  </span>
-                  <span className="text-[10px] font-semibold capitalize shrink-0" style={{ color: "var(--ch-text)" }}>{pm.platform}</span>
-                  <span className="ml-auto text-[10px] font-bold" style={{ color: "var(--ch-text)" }}>{formatFollowers(pm.followers)}</span>
-                  <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full shrink-0" style={{ background: `${platformColor}15`, color: platformColor }}>
-                    {pm.engagementRate}% ER
-                  </span>
-                </div>
-              );
-            })}
+        {/* Social media links */}
+        {creator.platforms && creator.platforms.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mt-2.5">
+            {creator.platforms.map((p) => (
+              <a
+                key={p}
+                href={socialUrl(p, creator.handle)}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold border transition-colors hover:opacity-80 ${platformBg[p] ?? "bg-white/10 text-slate-300 border-white/10"}`}
+              >
+                {platformIcon(p)}
+                <span className="capitalize">{p}</span>
+                <ArrowUpRight className="w-2.5 h-2.5 opacity-50" />
+              </a>
+            ))}
           </div>
         )}
 
