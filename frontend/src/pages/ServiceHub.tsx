@@ -21,44 +21,44 @@ interface ProvinceData {
 
 /* ---------- Data ---------- */
 const PROVINCES: ProvinceData[] = [
-  { name: "Aceh", studioNum: 1, baseLat: 5.5483, baseLng: 95.3238, count: 15 },
-  { name: "North Sumatra", studioNum: 1, baseLat: 3.5952, baseLng: 98.6722, count: 48 },
-  { name: "West Sumatra", studioNum: 1, baseLat: -0.9471, baseLng: 100.4172, count: 14 },
-  { name: "Riau", studioNum: 1, baseLat: 0.5071, baseLng: 101.4478, count: 24 },
-  { name: "Riau Islands", studioNum: 1, baseLat: 1.0881, baseLng: 104.0305, count: 12 },
-  { name: "Jambi", studioNum: 1, baseLat: -1.6101, baseLng: 103.6131, count: 11 },
-  { name: "South Sumatra", studioNum: 1, baseLat: -2.9909, baseLng: 104.7567, count: 20 },
+  { name: "Aceh", studioNum: 1, baseLat: 5.5483, baseLng: 95.3238, count: 16 },
+  { name: "North Sumatra", studioNum: 1, baseLat: 3.5952, baseLng: 98.6722, count: 52 },
+  { name: "West Sumatra", studioNum: 1, baseLat: -0.9471, baseLng: 100.4172, count: 20 },
+  { name: "Riau", studioNum: 1, baseLat: 0.5071, baseLng: 101.4478, count: 25 },
+  { name: "Riau Islands", studioNum: 1, baseLat: 1.0881, baseLng: 104.0305, count: 14 },
+  { name: "Jambi", studioNum: 1, baseLat: -1.6101, baseLng: 103.6131, count: 10 },
+  { name: "South Sumatra", studioNum: 1, baseLat: -2.9909, baseLng: 104.7567, count: 28 },
   { name: "Bengkulu", studioNum: 1, baseLat: -3.7928, baseLng: 102.2608, count: 10 },
-  { name: "Lampung", studioNum: 1, baseLat: -5.3971, baseLng: 105.2663, count: 21 },
-  { name: "Bangka Belitung", studioNum: 1, baseLat: -2.1301, baseLng: 106.1161, count: 9 },
+  { name: "Lampung", studioNum: 1, baseLat: -5.3971, baseLng: 105.2663, count: 28 },
+  { name: "Bangka Belitung", studioNum: 1, baseLat: -2.1301, baseLng: 106.1161, count: 8 },
   { name: "Banten", studioNum: 1, baseLat: -6.1149, baseLng: 106.1502, count: 62 },
-  { name: "DKI Jakarta", studioNum: 1, baseLat: -6.2088, baseLng: 106.8456, count: 118 },
-  { name: "West Java", studioNum: 1, baseLat: -6.9175, baseLng: 107.6191, count: 156 },
-  { name: "Central Java", studioNum: 1, baseLat: -6.9667, baseLng: 110.4167, count: 104 },
-  { name: "DI Yogyakarta", studioNum: 1, baseLat: -7.7956, baseLng: 110.3695, count: 28 },
-  { name: "East Java", studioNum: 1, baseLat: -7.2575, baseLng: 112.7521, count: 132 },
-  { name: "Bali", studioNum: 1, baseLat: -8.6705, baseLng: 115.2126, count: 32 },
-  { name: "West Nusa Tenggara", studioNum: 1, baseLat: -8.5833, baseLng: 116.1167, count: 9 },
-  { name: "East Nusa Tenggara", studioNum: 1, baseLat: -10.1772, baseLng: 123.607, count: 8 },
+  { name: "DKI Jakarta", studioNum: 1, baseLat: -6.2088, baseLng: 106.8456, count: 140 },
+  { name: "West Java", studioNum: 1, baseLat: -6.9175, baseLng: 107.6191, count: 185 },
+  { name: "Central Java", studioNum: 1, baseLat: -6.9667, baseLng: 110.4167, count: 128 },
+  { name: "DI Yogyakarta", studioNum: 1, baseLat: -7.7956, baseLng: 110.3695, count: 52 },
+  { name: "East Java", studioNum: 1, baseLat: -7.2575, baseLng: 112.7521, count: 152 },
+  { name: "Bali", studioNum: 1, baseLat: -8.6705, baseLng: 115.2126, count: 38 },
+  { name: "West Nusa Tenggara", studioNum: 1, baseLat: -8.5833, baseLng: 116.1167, count: 16 },
+  { name: "East Nusa Tenggara", studioNum: 1, baseLat: -10.1772, baseLng: 123.607, count: 12 },
   { name: "West Kalimantan", studioNum: 1, baseLat: -0.0263, baseLng: 109.3425, count: 18 },
-  { name: "Central Kalimantan", studioNum: 1, baseLat: -2.2083, baseLng: 113.9167, count: 8 },
-  { name: "South Kalimantan", studioNum: 1, baseLat: -3.3167, baseLng: 114.59, count: 8 },
-  { name: "East Kalimantan", studioNum: 1, baseLat: -1.2654, baseLng: 116.8312, count: 16 },
-  { name: "North Kalimantan", studioNum: 1, baseLat: 3.3, baseLng: 117.6333, count: 7 },
-  { name: "North Sulawesi", studioNum: 1, baseLat: 1.4748, baseLng: 124.8428, count: 10 },
-  { name: "Gorontalo", studioNum: 1, baseLat: 0.543, baseLng: 123.056, count: 6 },
-  { name: "Central Sulawesi", studioNum: 1, baseLat: -0.8917, baseLng: 119.8708, count: 8 },
+  { name: "Central Kalimantan", studioNum: 1, baseLat: -2.2083, baseLng: 113.9167, count: 10 },
+  { name: "South Kalimantan", studioNum: 1, baseLat: -3.3167, baseLng: 114.59, count: 14 },
+  { name: "East Kalimantan", studioNum: 1, baseLat: -1.2654, baseLng: 116.8312, count: 14 },
+  { name: "North Kalimantan", studioNum: 1, baseLat: 3.3, baseLng: 117.6333, count: 8 },
+  { name: "North Sulawesi", studioNum: 1, baseLat: 1.4748, baseLng: 124.8428, count: 12 },
+  { name: "Gorontalo", studioNum: 1, baseLat: 0.543, baseLng: 123.056, count: 8 },
+  { name: "Central Sulawesi", studioNum: 1, baseLat: -0.8917, baseLng: 119.8708, count: 10 },
   { name: "South Sulawesi", studioNum: 1, baseLat: -5.1477, baseLng: 119.4327, count: 35 },
-  { name: "Southeast Sulawesi", studioNum: 1, baseLat: -3.988, baseLng: 122.514, count: 7 },
-  { name: "West Sulawesi", studioNum: 1, baseLat: -2.6772, baseLng: 118.8922, count: 5 },
-  { name: "Maluku", studioNum: 1, baseLat: -3.6954, baseLng: 128.1814, count: 6 },
-  { name: "North Maluku", studioNum: 1, baseLat: 0.79, baseLng: 127.38, count: 5 },
-  { name: "West Papua", studioNum: 1, baseLat: -0.8614, baseLng: 134.062, count: 4 },
-  { name: "Southwest Papua", studioNum: 1, baseLat: -0.8667, baseLng: 131.25, count: 3 },
-  { name: "Central Papua", studioNum: 1, baseLat: -3.3667, baseLng: 135.4833, count: 3 },
-  { name: "Highland Papua", studioNum: 1, baseLat: -4.095, baseLng: 138.948, count: 2 },
-  { name: "South Papua", studioNum: 1, baseLat: -8.5, baseLng: 140.4, count: 3 },
-  { name: "Papua", studioNum: 1, baseLat: -2.5488, baseLng: 140.669, count: 5 },
+  { name: "Southeast Sulawesi", studioNum: 1, baseLat: -3.988, baseLng: 122.514, count: 10 },
+  { name: "West Sulawesi", studioNum: 1, baseLat: -2.6772, baseLng: 118.8922, count: 8 },
+  { name: "Maluku", studioNum: 1, baseLat: -3.6954, baseLng: 128.1814, count: 10 },
+  { name: "North Maluku", studioNum: 1, baseLat: 0.79, baseLng: 127.38, count: 8 },
+  { name: "West Papua", studioNum: 1, baseLat: -0.8614, baseLng: 134.062, count: 8 },
+  { name: "Southwest Papua", studioNum: 1, baseLat: -0.8667, baseLng: 131.25, count: 8 },
+  { name: "Central Papua", studioNum: 1, baseLat: -3.3667, baseLng: 135.4833, count: 8 },
+  { name: "Highland Papua", studioNum: 1, baseLat: -4.095, baseLng: 138.948, count: 8 },
+  { name: "South Papua", studioNum: 1, baseLat: -8.5, baseLng: 140.4, count: 6 },
+  { name: "Papua", studioNum: 1, baseLat: -2.5488, baseLng: 140.669, count: 10 },
 ];
 
 const PLATFORM_FEATURES = [
@@ -226,6 +226,7 @@ export default function ServiceHub() {
   const [province, setProvince] = useState("all");
   const [geoJsonData, setGeoJsonData] = useState<GeoJSON.FeatureCollection | null>(null);
   const [mapKey] = useState(0);
+  const [mapTab, setMapTab] = useState<"creator" | "homeless">("creator");
 
   useEffect(() => {
     fetch("/indonesia-38-provinces.geojson")
@@ -302,39 +303,33 @@ export default function ServiceHub() {
         </div>
       </div>
 
-      {/* Platform Features */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-[15px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            Platform Features
-          </h3>
-          <Link to="/service-hub/marketplace" className="text-xs font-semibold text-blue-400 hover:underline">View All</Link>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-          {PLATFORM_FEATURES.map((feat) => {
-            const Icon = feat.icon;
-            return (
-              <Link key={feat.title} to={feat.link.startsWith('/service-hub') ? feat.link : `/service-hub${feat.link}`}>
-                <div className="rounded-xl border border-white/[0.06] p-4 flex flex-col items-center text-center gap-2 hover:border-white/15 transition-all cursor-pointer group"
-                  style={{ background: "rgba(15,23,42,0.6)" }}>
-                  <div className={`w-12 h-12 ${feat.bg} border ${feat.border} rounded-xl flex items-center justify-center`}>
-                    <Icon className={`w-6 h-6 ${feat.color}`} />
-                  </div>
-                  <p className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>{feat.title}</p>
-                  <p className="text-[11px] leading-snug" style={{ color: "var(--ch-text-muted)" }}>{feat.desc}</p>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Map Section — full width */}
+      {/* Map Section — full width, above Platform Features */}
       <div className="rounded-xl border flex flex-col" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
         <div className="flex flex-wrap items-center justify-between gap-2 px-5 pt-4 pb-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
-          <h3 className="text-[15px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            Creator & Media Coverage
-          </h3>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setMapTab("creator")}
+              className={`text-[13px] font-bold px-3 py-1.5 rounded-lg transition-all ${
+                mapTab === "creator"
+                  ? "bg-orange-500 text-white shadow-md shadow-orange-500/20"
+                  : "text-white/50 hover:text-white/80"
+              }`}
+              style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+            >
+              Content Creator Coverage in Indonesia
+            </button>
+            <button
+              onClick={() => setMapTab("homeless")}
+              className={`text-[13px] font-bold px-3 py-1.5 rounded-lg transition-all ${
+                mapTab === "homeless"
+                  ? "bg-orange-500 text-white shadow-md shadow-orange-500/20"
+                  : "text-white/50 hover:text-white/80"
+              }`}
+              style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+            >
+              Homeless Media Coverage in Indonesia
+            </button>
+          </div>
           <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
               <span>Low</span>
@@ -379,13 +374,40 @@ export default function ServiceHub() {
           </MapContainer>
         </div>
         <div className="flex items-center gap-4 px-5 py-3 border-t text-[10px] font-semibold" style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}>
-          <span>KOLs / Creators</span>
+          <span>{mapTab === "creator" ? "KOLs / Creators" : "Media Channels"}</span>
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#93c5fd] inline-block" /> 150+</span>
             <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#60a5fa] inline-block" /> 50 - 149</span>
             <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#3b82f6] inline-block" /> 20 - 49</span>
             <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#1e3a5f] inline-block" /> &lt; 20</span>
           </div>
+        </div>
+      </div>
+
+      {/* Platform Features */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-[15px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            Platform Features
+          </h3>
+          <Link to="/service-hub/marketplace" className="text-xs font-semibold text-blue-400 hover:underline">View All</Link>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          {PLATFORM_FEATURES.map((feat) => {
+            const Icon = feat.icon;
+            return (
+              <Link key={feat.title} to={feat.link.startsWith('/service-hub') ? feat.link : `/service-hub${feat.link}`}>
+                <div className="rounded-xl border border-white/[0.06] p-4 flex flex-col items-center text-center gap-2 hover:border-white/15 transition-all cursor-pointer group"
+                  style={{ background: "rgba(15,23,42,0.6)" }}>
+                  <div className={`w-12 h-12 ${feat.bg} border ${feat.border} rounded-xl flex items-center justify-center`}>
+                    <Icon className={`w-6 h-6 ${feat.color}`} />
+                  </div>
+                  <p className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>{feat.title}</p>
+                  <p className="text-[11px] leading-snug" style={{ color: "var(--ch-text-muted)" }}>{feat.desc}</p>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </div>
 

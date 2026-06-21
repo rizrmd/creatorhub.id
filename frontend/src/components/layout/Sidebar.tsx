@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { NavLink, Link, useLocation } from "react-router-dom";
 import {
-  Store, Megaphone, BarChart3, Radio,
+  Store, Megaphone, FolderKanban, Radio,
   MessageSquare, CreditCard, Settings, HelpCircle,
-  Rocket, Briefcase, Coins,
+  Rocket, Briefcase, Coins, Network,
   Lightbulb, User, Home, Mail, Database, FolderOpen, Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -16,8 +16,8 @@ import { useSidebar } from "@/contexts/SidebarContext";
 import { useKreatorStatsOptional } from "@/context/KreatorDataContext";
 
 const brandNavItems = [
-  { to: "/service-hub",                icon: Home,            label: "Service Hub" },
-  { to: "/service-hub/analytics",      icon: BarChart3,       label: "Projects" },
+  { to: "/service-hub",                icon: Network,         label: "Service Hub" },
+  { to: "/service-hub/analytics",      icon: FolderKanban,    label: "Projects" },
   { to: "/service-hub/marketplace",    icon: Store,           label: "Marketplace" },
   { to: "/service-hub/campaigns",      icon: Megaphone,       label: "Campaigns" },
   { to: "/service-hub/boost-ads",      icon: Rocket,          label: "Boost Ads" },
