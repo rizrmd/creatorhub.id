@@ -133,6 +133,41 @@
 .animate-fade-in  { animation: fade-in .2s ease-out; }
 .animate-slide-in { animation: slide-in .18s ease-out; }
 
+/* Typing cursor blink */
+@keyframes typing-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.animate-typing-cursor { animation: typing-cursor 0.8s step-end infinite; }
+
+/* Line appear animation */
+@keyframes line-appear {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.animate-line-appear { animation: line-appear 0.25s ease-out forwards; }
+
+/* Panel slide in */
+@keyframes panel-slide-in {
+  from { max-width: 0; opacity: 0; }
+  to { max-width: 380px; opacity: 1; }
+}
+.animate-panel-slide-in { animation: panel-slide-in 0.35s ease-out forwards; }
+
+/* Panel slide out */
+@keyframes panel-slide-out {
+  from { max-width: 380px; opacity: 1; }
+  to { max-width: 0; opacity: 0; }
+}
+.animate-panel-slide-out { animation: panel-slide-out 0.25s ease-in forwards; }
+
+/* Province highlight pulse */
+@keyframes province-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(249,115,22,0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(249,115,22,0); }
+}
+.animate-province-pulse { animation: province-pulse 1.2s ease-in-out infinite; }
+
 /* Leaflet dark mode overrides */
 .leaflet-container {
   background: #070B14;
