@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
-  Users, ArrowLeft, Star,
+  Users, ArrowLeft,
   Megaphone, Newspaper, Podcast, Radio,
   Send,
 } from "lucide-react";
@@ -222,7 +222,7 @@ function mapGeoJSONProvince(geoName: string): string {
 }
 
 /* ---------- Main Component ---------- */
-export default function Dashboard() {
+export default function ServiceHub() {
   const [province, setProvince] = useState("all");
   const [geoJsonData, setGeoJsonData] = useState<GeoJSON.FeatureCollection | null>(null);
   const [mapKey] = useState(0);
@@ -329,70 +329,70 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Creator Coverage Dashboard + Right Sidebar */}
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-5">
-        {/* Main: Map + Table */}
-        <div className="space-y-5">
-          {/* Map Section */}
-          <div className="rounded-xl border flex flex-col" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-            <div className="flex flex-wrap items-center justify-between gap-2 px-5 pt-4 pb-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
-              <h3 className="text-[15px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                Creator Coverage Service Hub
-              </h3>
-              <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
-                  <span>Low</span>
-                  <div className="flex gap-0.5">
-                    {["#1e3a5f", "#1d4ed8", "#3b82f6", "#60a5fa", "#93c5fd"].map((c) => (
-                      <span key={c} className="inline-block w-3.5 h-2.5 rounded-sm" style={{ background: c }} />
-                    ))}
-                  </div>
-                  <span>High</span>
-                </div>
-                <select
-                  value={province}
-                  onChange={(e) => setProvince(e.target.value)}
-                  className="text-[12px] font-semibold border rounded-lg px-3 py-1.5 outline-none"
-                  style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)", background: "var(--ch-surface)" }}
-                >
-                  <option value="all">Indonesia</option>
-                  {PROVINCES.map((p) => (
-                    <option key={p.name} value={p.name}>{p.name}</option>
-                  ))}
-                </select>
+      {/* Map Section — full width */}
+      <div className="rounded-xl border flex flex-col" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+        <div className="flex flex-wrap items-center justify-between gap-2 px-5 pt-4 pb-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
+          <h3 className="text-[15px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            Creator & Media Coverage
+          </h3>
+          <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
+              <span>Low</span>
+              <div className="flex gap-0.5">
+                {["#1e3a5f", "#1d4ed8", "#3b82f6", "#60a5fa", "#93c5fd"].map((c) => (
+                  <span key={c} className="inline-block w-3.5 h-2.5 rounded-sm" style={{ background: c }} />
+                ))}
               </div>
+              <span>High</span>
             </div>
-            <div className="relative min-h-[380px]">
-              <MapContainer
-                key={mapKey}
-                center={[-2.5, 118.0]}
-                zoom={5}
-                zoomControl={true}
-                className="w-full h-full absolute inset-0 z-0"
-                scrollWheelZoom={true}
-              >
-                <TileLayer
-                  attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-                  url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                />
-                <MapController
-                  selectedProvince={province}
-                  geoJsonData={geoJsonData}
-                  onProvinceClick={handleProvinceClick}
-                />
-              </MapContainer>
-            </div>
-            <div className="flex items-center gap-4 px-5 py-3 border-t text-[10px] font-semibold" style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}>
-              <span>KOLs / Creators</span>
-              <div className="flex items-center gap-3">
-                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#93c5fd] inline-block" /> 150+</span>
-                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#60a5fa] inline-block" /> 50 - 149</span>
-                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#3b82f6] inline-block" /> 20 - 49</span>
-                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#1e3a5f] inline-block" /> &lt; 20</span>
-              </div>
-            </div>
+            <select
+              value={province}
+              onChange={(e) => setProvince(e.target.value)}
+              className="text-[12px] font-semibold border rounded-lg px-3 py-1.5 outline-none"
+              style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)", background: "var(--ch-surface)" }}
+            >
+              <option value="all">Indonesia</option>
+              {PROVINCES.map((p) => (
+                <option key={p.name} value={p.name}>{p.name}</option>
+              ))}
+            </select>
           </div>
+        </div>
+        <div className="relative min-h-[380px]">
+          <MapContainer
+            key={mapKey}
+            center={[-2.5, 118.0]}
+            zoom={5}
+            zoomControl={true}
+            className="w-full h-full absolute inset-0 z-0"
+            scrollWheelZoom={true}
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            />
+            <MapController
+              selectedProvince={province}
+              geoJsonData={geoJsonData}
+              onProvinceClick={handleProvinceClick}
+            />
+          </MapContainer>
+        </div>
+        <div className="flex items-center gap-4 px-5 py-3 border-t text-[10px] font-semibold" style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}>
+          <span>KOLs / Creators</span>
+          <div className="flex items-center gap-3">
+            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#93c5fd] inline-block" /> 150+</span>
+            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#60a5fa] inline-block" /> 50 - 149</span>
+            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#3b82f6] inline-block" /> 20 - 49</span>
+            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#1e3a5f] inline-block" /> &lt; 20</span>
+          </div>
+        </div>
+      </div>
 
+      {/* Table + Right Sidebar */}
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-5">
+        {/* Main: Table */}
+        <div className="space-y-5">
           {/* Creators by Province Table */}
           <div className="rounded-xl border" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
             <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
@@ -472,25 +472,6 @@ export default function Dashboard() {
 
         {/* Right Sidebar */}
         <div className="space-y-4">
-          {/* User Profile Card */}
-          <div className="rounded-xl border p-4" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-lg font-bold shrink-0">
-                Y
-              </div>
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>Yael Amari</span>
-                  <Badge variant="success" className="text-[9px] px-1 py-0">✓</Badge>
-                </div>
-                <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>Brand Partner</p>
-                <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-600">
-                  <Star className="w-2.5 h-2.5" /> Premium
-                </span>
-              </div>
-            </div>
-          </div>
-
           {/* Campaign Calendar */}
           <div className="rounded-xl border p-4" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
             <div className="flex items-center justify-between mb-3">

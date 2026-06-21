@@ -4,7 +4,7 @@ import { BrandRoute, KreatorRoute } from "@/components/RoleRoute";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
-import Dashboard from "@/pages/Dashboard";
+import ServiceHub from "@/pages/ServiceHub";
 import Marketplace from "@/pages/Marketplace";
 import Campaigns from "@/pages/Campaigns";
 import CampaignDetail from "@/pages/CampaignDetail";
@@ -49,7 +49,7 @@ export default function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<BrandRoute><Dashboard /></BrandRoute>} />
+          <Route index element={<BrandRoute><ServiceHub /></BrandRoute>} />
           <Route path="search" element={<BrandRoute><BrandSearch /></BrandRoute>} />
           <Route path="marketplace" element={<BrandRoute><Marketplace /></BrandRoute>} />
           <Route path="homeless-media" element={<BrandRoute><HomelessMedia /></BrandRoute>} />

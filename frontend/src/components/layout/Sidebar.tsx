@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, Link, useLocation } from "react-router-dom";
 import {
   Store, Megaphone, BarChart3, Radio,
   MessageSquare, CreditCard, Settings, HelpCircle,
@@ -104,8 +104,9 @@ export default function Sidebar() {
       >
 
         {/* Logo */}
-        <div
-          className="flex items-center shrink-0 overflow-hidden"
+        <Link
+          to="/service-hub"
+          className="flex items-center shrink-0 overflow-hidden no-underline"
           style={{ padding: effectiveCollapsed ? "12px" : "16px" }}
         >
           <div className={cn("flex items-center gap-2", effectiveCollapsed ? "justify-center" : "")}>
@@ -119,7 +120,7 @@ export default function Sidebar() {
               <span className="text-base font-extrabold tracking-tight" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>CreatorHub.ID</span>
             )}
           </div>
-        </div>
+        </Link>
 
         {/* Creator workspace pill */}
         {effectiveRole === "kreator" && !effectiveCollapsed && (
