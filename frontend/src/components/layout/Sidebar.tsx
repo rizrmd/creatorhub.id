@@ -5,6 +5,7 @@ import {
   MessageSquare, CreditCard, Settings, HelpCircle,
   Rocket, Briefcase, Coins, Network,
   Lightbulb, User, Home, Mail, Database, FolderOpen, Sparkles,
+  LayoutDashboard,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -16,6 +17,7 @@ import { useSidebar } from "@/contexts/SidebarContext";
 import { useKreatorStatsOptional } from "@/context/KreatorDataContext";
 
 const brandNavItems = [
+  { to: "/dashboard",                    icon: LayoutDashboard, label: "Dashboard" },
   { to: "/dashboard/service-hub",        icon: Network,         label: "Service Hub" },
   { to: "/dashboard/projects",           icon: FolderKanban,    label: "Projects" },
   { to: "/dashboard/marketplace",        icon: Store,           label: "Marketplace" },
@@ -103,7 +105,7 @@ export default function Sidebar() {
 
         {/* Logo */}
         <Link
-          to="/dashboard/service-hub"
+          to="/dashboard"
           className="flex items-center shrink-0 overflow-hidden no-underline"
           style={{ padding: effectiveCollapsed ? "12px" : "16px" }}
         >
@@ -143,7 +145,7 @@ export default function Sidebar() {
             <NavLink
               key={to}
               to={to}
-              end={to === "/dashboard/service-hub" || to === "/dashboard/kreator/home"}
+              end={to === "/dashboard" || to === "/dashboard/kreator/home"}
               title={effectiveCollapsed ? label : undefined}
               className={({ isActive }) =>
                 cn(
