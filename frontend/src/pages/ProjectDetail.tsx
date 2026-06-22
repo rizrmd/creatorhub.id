@@ -1,11 +1,12 @@
 import { useState, Fragment } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-  Briefcase, ChevronRight,
-  Eye, FolderOpen,
-  Instagram, Youtube, ChevronDown,
-  Layers, GitBranch,
+  Briefcase, ChevronRight, Calendar,
+  Eye, FileText, BarChart3, FolderOpen,
+  Clock, Instagram, Youtube, ChevronDown,
+  Users, Layers, GitBranch,
 } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 const PROJECTS_DATA: Record<string, {
   id: string;
@@ -123,16 +124,17 @@ const PLATFORM_ICONS: Record<string, string> = {
   youtube: "YouTube",
 };
 
-const TABS = [
-  { value: "overview", label: "Overview", icon: Eye },
-  { value: "workstream", label: "Workstream", icon: GitBranch },
-  { value: "skema", label: "Skema Glorifikasi, Kampanye & Edukasi", icon: Layers },
+const OVERVIEW_SUB_TABS = [
+  { value: "workstream", label: "Workstream", icon: GitBranch, color: "#6366F1" },
+  { value: "skema", label: "Skema Glorifikasi, Kampanye & Edukasi", icon: Layers, color: "#10B981" },
+  { value: "target-kpi", label: "Target & KPI", icon: FolderOpen, color: "#06B6D4" },
 ] as const;
 
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
+  const [activeSubTab, setActiveSubTab] = useState("workstream");
 
   const project = PROJECTS_DATA[id || ""];
 
@@ -218,123 +220,168 @@ export default function ProjectDetail() {
         <img src={project.logo} alt={project.name} className="hidden lg:block absolute right-0 bottom-0 h-full max-h-80 w-auto object-contain object-right" style={{ filter: "brightness(0.9)" }} onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
       </div>
 
-      {/* Vertical Tabs Layout */}
-      <div className="flex gap-0 rounded-xl overflow-hidden border" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", minHeight: "520px" }}>
-        {/* Sidebar Tab Navigation */}
-        <div className="w-[220px] shrink-0 border-r p-3 space-y-1" style={{ borderColor: "var(--ch-border)", background: "var(--ch-bg)" }}>
-          <p className="text-[10px] font-bold uppercase tracking-widest px-3 pt-1 pb-2" style={{ color: "var(--ch-text-muted)" }}>
-            Navigation
-          </p>
-          {TABS.map((tab) => {
-            const isActive = activeTab === tab.value;
-            return (
-              <button
-                key={tab.value}
-                onClick={() => setActiveTab(tab.value)}
-                className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left transition-all relative"
-                style={{
-                  background: isActive ? "rgba(249,115,22,0.08)" : "transparent",
-                  color: isActive ? "#F97316" : "var(--ch-text-muted)",
-                }}
-              >
-                {isActive && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-orange-500" />
-                )}
-                <tab.icon
-                  className="w-4 h-4 shrink-0"
-                  style={{ color: isActive ? "#F97316" : "var(--ch-text-muted)" }}
-                />
-                <span className="text-[13px] font-semibold leading-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                  {tab.label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+      {/* Horizontal Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList variant="line" className="border-b w-full justify-start gap-0">
+          {[
+            { value: "overview", label: "Overview", icon: Eye },
+            { value: "content-plan", label: "Content Plan", icon: Calendar },
+            { value: "influencers", label: "Influencers", icon: Users },
+            { value: "deliverables", label: "Deliverables", icon: FileText },
+            { value: "analytics", label: "Analytics", icon: BarChart3 },
+            { value: "files", label: "Files & Assets", icon: FolderOpen },
+            { value: "activity", label: "Activity Log", icon: Clock },
+          ].map((tab) => (
+            <TabsTrigger
+              key={tab.value}
+              value={tab.value}
+              className={`text-[13px] font-bold px-3 py-1.5 rounded-lg transition-all ${
+                activeTab === tab.value
+                  ? "bg-orange-500 text-white shadow-md shadow-orange-500/20"
+                  : "text-white/50 hover:text-white/80"
+              }`}
+              style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+            >
+              <tab.icon className="w-4 h-4 mr-1.5" />
+              {tab.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
 
-        {/* Tab Content */}
-        <div className="flex-1 p-6 overflow-auto">
-          {/* Overview Tab */}
-          {activeTab === "overview" && project.kpi && (
-            <div className="rounded-xl border overflow-hidden" style={{ background: "var(--ch-bg)", borderColor: "var(--ch-border)" }}>
-              <div className="flex">
-                <div className="w-10 shrink-0 flex flex-col items-center justify-center py-4" style={{ background: "rgba(6,182,212,0.08)", borderRight: "2px solid rgba(6,182,212,0.3)" }}>
-                  <FolderOpen className="w-5 h-5 mb-2" style={{ color: "#06B6D4" }} />
-                  <span className="text-[10px] font-bold tracking-widest" style={{ color: "#06B6D4", writingMode: "vertical-lr", transform: "rotate(180deg)" }}>Target & KPI</span>
+        {/* Overview Tab — with 3 vertical sub-tabs */}
+        <TabsContent value="overview" className="mt-6">
+          <div className="flex rounded-xl overflow-hidden border" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", minHeight: "480px" }}>
+            {/* Vertical Sub-Tab Sidebar */}
+            <div className="w-12 shrink-0 flex flex-col border-r" style={{ borderColor: "var(--ch-border)", background: "var(--ch-bg)" }}>
+              {OVERVIEW_SUB_TABS.map((sub) => {
+                const isActive = activeSubTab === sub.value;
+                return (
+                  <button
+                    key={sub.value}
+                    onClick={() => setActiveSubTab(sub.value)}
+                    className="flex-1 flex items-center justify-center relative transition-all"
+                    style={{
+                      background: isActive ? `${sub.color}12` : "transparent",
+                    }}
+                  >
+                    {isActive && (
+                      <span
+                        className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full"
+                        style={{ background: sub.color }}
+                      />
+                    )}
+                    <span
+                      className="text-[10px] font-bold tracking-widest select-none"
+                      style={{
+                        writingMode: "vertical-lr",
+                        transform: "rotate(180deg)",
+                        color: isActive ? sub.color : "var(--ch-text-muted)",
+                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      }}
+                    >
+                      {sub.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Sub-Tab Content */}
+            <div className="flex-1 p-5 overflow-auto">
+              {/* Workstream */}
+              {activeSubTab === "workstream" && (
+                <div className="rounded-xl overflow-hidden border" style={{ borderColor: "var(--ch-border)" }}>
+                  <img
+                    src="/workstream.jpg"
+                    alt="Workstream — Strategy Roadmap Dashboard"
+                    className="w-full h-auto"
+                    style={{ background: "#fff" }}
+                  />
                 </div>
+              )}
 
-                <div className="flex-1 overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
-                        <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Lapisan</th>
-                        <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-center" style={{ color: "var(--ch-text-muted)" }}>Keterlibatan Akun</th>
-                        <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Jenis Postingan</th>
-                        <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-center" style={{ color: "var(--ch-text-muted)" }}>Target Total Konten / Hari</th>
-                        <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-center" style={{ color: "var(--ch-text-muted)" }}>Target Total Konten / Bulan (30 Hari)</th>
-                        <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-center" style={{ color: "var(--ch-text-muted)" }}>Target ER / Konten</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {project.kpi.sections.map((section) => (
-                        <Fragment key={section.name}>
-                          <tr>
-                            <td colSpan={6} className="px-4 py-2 text-[13px] font-bold" style={{ color: "#06B6D4", borderLeft: "3px solid #06B6D4" }}>
-                              {section.name}
-                            </td>
+              {/* Skema Glorifikasi */}
+              {activeSubTab === "skema" && (
+                <div className="rounded-xl overflow-hidden border" style={{ borderColor: "var(--ch-border)" }}>
+                  <img
+                    src="/skema-glorifikasi.jpg"
+                    alt="Skema Glorifikasi, Kampanye & Edukasi"
+                    className="w-full h-auto"
+                    style={{ background: "#fff" }}
+                  />
+                </div>
+              )}
+
+              {/* Target & KPI */}
+              {activeSubTab === "target-kpi" && project.kpi && (
+                <div className="rounded-xl border overflow-hidden" style={{ background: "var(--ch-bg)", borderColor: "var(--ch-border)" }}>
+                  <div className="flex">
+                    <div className="w-10 shrink-0 flex flex-col items-center justify-center py-4" style={{ background: "rgba(6,182,212,0.08)", borderRight: "2px solid rgba(6,182,212,0.3)" }}>
+                      <FolderOpen className="w-5 h-5 mb-2" style={{ color: "#06B6D4" }} />
+                      <span className="text-[10px] font-bold tracking-widest" style={{ color: "#06B6D4", writingMode: "vertical-lr", transform: "rotate(180deg)" }}>Target & KPI</span>
+                    </div>
+
+                    <div className="flex-1 overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
+                            <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Lapisan</th>
+                            <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-center" style={{ color: "var(--ch-text-muted)" }}>Keterlibatan Akun</th>
+                            <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Jenis Postingan</th>
+                            <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-center" style={{ color: "var(--ch-text-muted)" }}>Target Total Konten / Hari</th>
+                            <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-center" style={{ color: "var(--ch-text-muted)" }}>Target Total Konten / Bulan (30 Hari)</th>
+                            <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-center" style={{ color: "var(--ch-text-muted)" }}>Target ER / Konten</th>
                           </tr>
-                          {section.rows.map((row, ri) => (
-                            <tr key={ri} className="border-b" style={{ borderColor: "var(--ch-border)" }}>
-                              <td className="px-4 py-2.5 text-[12px] font-medium" style={{ color: "var(--ch-text)" }}>{row.platform}</td>
-                              <td className="px-4 py-2.5 text-[12px] font-semibold text-center" style={{ color: "var(--ch-text)" }}>{row.akun}</td>
-                              <td className="px-4 py-2.5 text-[11px] leading-relaxed" style={{ color: "var(--ch-text-muted)" }}>{row.jenisPostingan}</td>
-                              <td className="px-4 py-2.5 text-[12px] font-semibold text-center" style={{ color: "var(--ch-text)" }}>{row.kontenPerHari}</td>
-                              <td className="px-4 py-2.5 text-[12px] font-semibold text-center" style={{ color: "var(--ch-text)" }}>{row.kontenPerBulan.toLocaleString("id-ID")}</td>
-                              <td className="px-4 py-2.5 text-[12px] font-semibold text-center" style={{ color: "var(--ch-text)" }}>{row.targetER}</td>
-                            </tr>
+                        </thead>
+                        <tbody>
+                          {project.kpi.sections.map((section) => (
+                            <Fragment key={section.name}>
+                              <tr>
+                                <td colSpan={6} className="px-4 py-2 text-[13px] font-bold" style={{ color: "#06B6D4", borderLeft: "3px solid #06B6D4" }}>
+                                  {section.name}
+                                </td>
+                              </tr>
+                              {section.rows.map((row, ri) => (
+                                <tr key={ri} className="border-b" style={{ borderColor: "var(--ch-border)" }}>
+                                  <td className="px-4 py-2.5 text-[12px] font-medium" style={{ color: "var(--ch-text)" }}>{row.platform}</td>
+                                  <td className="px-4 py-2.5 text-[12px] font-semibold text-center" style={{ color: "var(--ch-text)" }}>{row.akun}</td>
+                                  <td className="px-4 py-2.5 text-[11px] leading-relaxed" style={{ color: "var(--ch-text-muted)" }}>{row.jenisPostingan}</td>
+                                  <td className="px-4 py-2.5 text-[12px] font-semibold text-center" style={{ color: "var(--ch-text)" }}>{row.kontenPerHari}</td>
+                                  <td className="px-4 py-2.5 text-[12px] font-semibold text-center" style={{ color: "var(--ch-text)" }}>{row.kontenPerBulan.toLocaleString("id-ID")}</td>
+                                  <td className="px-4 py-2.5 text-[12px] font-semibold text-center" style={{ color: "var(--ch-text)" }}>{row.targetER}</td>
+                                </tr>
+                              ))}
+                            </Fragment>
                           ))}
-                        </Fragment>
-                      ))}
-                      <tr className="font-bold" style={{ background: "rgba(59,130,246,0.1)" }}>
-                        <td className="px-4 py-3 text-[13px]" style={{ color: "#3B82F6" }}>Total</td>
-                        <td className="px-4 py-3 text-[13px] text-center" style={{ color: "#3B82F6" }}>{project.kpi.totalAkun} Akun</td>
-                        <td className="px-4 py-3"></td>
-                        <td className="px-4 py-3 text-[13px] text-center" style={{ color: "#3B82F6" }}>{project.kpi.totalKontenHari} Konten</td>
-                        <td className="px-4 py-3 text-[13px] text-center" style={{ color: "#3B82F6" }}>{project.kpi.totalKontenBulan.toLocaleString("id-ID")} Konten</td>
-                        <td className="px-4 py-3 text-[13px] text-center" style={{ color: "#3B82F6" }}>{project.kpi.totalER}</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                          <tr className="font-bold" style={{ background: "rgba(59,130,246,0.1)" }}>
+                            <td className="px-4 py-3 text-[13px]" style={{ color: "#3B82F6" }}>Total</td>
+                            <td className="px-4 py-3 text-[13px] text-center" style={{ color: "#3B82F6" }}>{project.kpi.totalAkun} Akun</td>
+                            <td className="px-4 py-3"></td>
+                            <td className="px-4 py-3 text-[13px] text-center" style={{ color: "#3B82F6" }}>{project.kpi.totalKontenHari} Konten</td>
+                            <td className="px-4 py-3 text-[13px] text-center" style={{ color: "#3B82F6" }}>{project.kpi.totalKontenBulan.toLocaleString("id-ID")} Konten</td>
+                            <td className="px-4 py-3 text-[13px] text-center" style={{ color: "#3B82F6" }}>{project.kpi.totalER}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
-          )}
+          </div>
+        </TabsContent>
 
-          {/* Workstream Tab */}
-          {activeTab === "workstream" && (
-            <div className="rounded-xl overflow-hidden border" style={{ borderColor: "var(--ch-border)" }}>
-              <img
-                src="/workstream.jpg"
-                alt="Workstream — Strategy Roadmap Dashboard"
-                className="w-full h-auto"
-                style={{ background: "#fff" }}
-              />
+        {/* Placeholder tabs */}
+        {["content-plan", "influencers", "deliverables", "analytics", "files", "activity"].map((tab) => (
+          <TabsContent key={tab} value={tab} className="mt-6">
+            <div className="rounded-xl border p-12 text-center" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
+              <Briefcase className="w-10 h-10 mx-auto mb-3 opacity-30" style={{ color: "var(--ch-text-muted)" }} />
+              <p className="text-[14px] font-semibold" style={{ color: "var(--ch-text)" }}>{tab.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</p>
+              <p className="text-[12px] mt-1" style={{ color: "var(--ch-text-muted)" }}>Coming soon</p>
             </div>
-          )}
-
-          {/* Skema Glorifikasi Tab */}
-          {activeTab === "skema" && (
-            <div className="rounded-xl overflow-hidden border" style={{ borderColor: "var(--ch-border)" }}>
-              <img
-                src="/skema-glorifikasi.jpg"
-                alt="Skema Glorifikasi, Kampanye & Edukasi"
-                className="w-full h-auto"
-                style={{ background: "#fff" }}
-              />
-            </div>
-          )}
-        </div>
-      </div>
+          </TabsContent>
+        ))}
+      </Tabs>
     </div>
   );
 }
