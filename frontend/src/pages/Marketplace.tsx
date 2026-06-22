@@ -1620,11 +1620,10 @@ export default function Marketplace() {
             />
           </div>
 
-          <Select value={filters.category ?? "all"} onValueChange={(v) => setFilters((f) => ({ ...f, category: v === "all" ? undefined : v, page: 1 }))}>
-            <SelectTrigger className="w-full sm:w-36"><SelectValue placeholder="Category" /></SelectTrigger>
+          <Select value={followersVal} onValueChange={applyFollowers}>
+            <SelectTrigger className="w-full sm:w-36"><SelectValue placeholder="All Tiers" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              {CATEGORIES.map((c) => <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>)}
+              {FOLLOWERS_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
             </SelectContent>
           </Select>
 
@@ -1647,11 +1646,6 @@ export default function Marketplace() {
 
         {/* Filters row 2 */}
         <div className="px-3 sm:px-4 py-2 bg-[#0B1120] flex flex-wrap items-center gap-2">
-          <Select value={followersVal} onValueChange={applyFollowers}>
-            <SelectTrigger className="w-full sm:w-40"><SelectValue placeholder="Creator Tier" /></SelectTrigger>
-            <SelectContent>{FOLLOWERS_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
-          </Select>
-
           <Select value={engagementVal} onValueChange={applyEngagement}>
             <SelectTrigger className="w-full sm:w-36"><SelectValue placeholder="Engagement" /></SelectTrigger>
             <SelectContent>{ENGAGEMENT_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>

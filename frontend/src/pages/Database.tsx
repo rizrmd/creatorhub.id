@@ -532,6 +532,7 @@ export default function DatabasePage() {
                     <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
                       <th className="text-left px-5 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>No</th>
                       <th className="text-left px-4 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Nama Media</th>
+                      <th className="text-left px-4 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Platform</th>
                       <th className="text-left px-4 py-3 text-[11px] font-semibold hidden sm:table-cell" style={{ color: "var(--ch-text-muted)" }}>Wilayah</th>
                       <th className="text-right px-4 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Followers</th>
                       <th className="text-right px-4 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Link</th>
@@ -543,6 +544,12 @@ export default function DatabasePage() {
                         <td className="px-5 py-2.5 text-[12px]" style={{ color: "var(--ch-text-muted)" }}>{idx + 1}</td>
                         <td className="px-4 py-2.5">
                           <span className="text-[13px] font-semibold" style={{ color: "var(--ch-text)" }}>{m.name}</span>
+                        </td>
+                        <td className="px-4 py-2.5">
+                          <span className="flex items-center gap-1.5 text-[12px] font-medium" style={{ color: "#E1306C" }}>
+                            <Instagram className="w-3.5 h-3.5" style={{ color: "#E1306C" }} />
+                            Instagram
+                          </span>
                         </td>
                         <td className="px-4 py-2.5 hidden sm:table-cell">
                           <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>{m.region}</span>
