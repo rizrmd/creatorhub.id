@@ -67,17 +67,19 @@ func main() {
 		// Public: auth endpoints
 		r.Post("/auth/login", authHandler.Login)
 
+		// Public: marketplace browsing (no auth required)
+		r.Route("/creators", func(r chi.Router) {
+			r.Get("/", creatorHandler.List)
+			r.Get("/stats", creatorHandler.Stats)
+			r.Get("/{id}", creatorHandler.GetByID)
+		})
+
 		// Protected: all other API routes require a valid JWT
 		r.Group(func(r chi.Router) {
 			r.Use(authmw.RequireAuth)
 
-			r.Route("/creators", func(r chi.Router) {
-				r.Get("/", creatorHandler.List)
-				r.Get("/stats", creatorHandler.Stats)
-				r.Post("/scrape", creatorHandler.ScrapeSocial)
-				r.Post("/", creatorHandler.Create)
-				r.Get("/{id}", creatorHandler.GetByID)
-			})
+			r.Post("/creators/scrape", creatorHandler.ScrapeSocial)
+			r.Post("/creators", creatorHandler.Create)
 			r.Route("/campaigns", func(r chi.Router) {
 				r.Get("/", campaignHandler.List)
 				r.Post("/", campaignHandler.Create)
