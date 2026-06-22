@@ -538,9 +538,9 @@ export default function DatabasePage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filtered.map((m) => (
-                      <tr key={`${m.region}-${m.no}-${m.name}`} className="border-b transition-colors hover:bg-slate-50" style={{ borderColor: "var(--ch-border)" }}>
-                        <td className="px-5 py-2.5 text-[12px]" style={{ color: "var(--ch-text-muted)" }}>{m.no}</td>
+                    {filtered.map((m, idx) => (
+                      <tr key={`${m.region}-${m.name}`} className="border-b transition-colors hover:bg-white/5" style={{ borderColor: "var(--ch-border)" }}>
+                        <td className="px-5 py-2.5 text-[12px]" style={{ color: "var(--ch-text-muted)" }}>{idx + 1}</td>
                         <td className="px-4 py-2.5">
                           <span className="text-[13px] font-semibold" style={{ color: "var(--ch-text)" }}>{m.name}</span>
                         </td>

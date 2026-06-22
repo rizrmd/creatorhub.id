@@ -172,7 +172,7 @@ export default function Sidebar() {
                       <span className="flex-1 text-[13px] font-semibold leading-none">{label}</span>
                       {badge !== undefined && !isActive && (
                         <span className="min-w-[22px] h-5 rounded-full text-[10.5px] font-bold flex items-center justify-center px-1.5"
-                          style={{ background: "var(--ch-orange-100)", color: "#C2410C" }}>
+                          style={{ background: "var(--ch-orange)", color: "#FFFFFF" }}>
                           {badge}
                         </span>
                       )}

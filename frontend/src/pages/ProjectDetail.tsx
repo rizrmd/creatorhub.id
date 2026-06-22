@@ -4,9 +4,8 @@ import {
   Briefcase, ChevronRight, Calendar,
   Eye, FileText, BarChart3, FolderOpen,
   Clock, ChevronDown,
-  Users,
-  Target, Heart, Star, Shield, Gauge,
-  Cpu, Settings, ArrowDown,
+  Users, Instagram, Music, Youtube,
+  Shield, Gauge, Cpu, Settings, ArrowDown,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
@@ -124,18 +123,6 @@ const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   ongoing: { bg: "#F59E0B", text: "#000000" },
 };
 
-const PLATFORM_ICONS: Record<string, string> = {
-  instagram: "Instagram",
-  tiktok: "TikTok",
-  youtube: "YouTube",
-};
-
-const PLATFORM_LOGOS: Record<string, string> = {
-  instagram: "/logo-instagram.png",
-  tiktok: "/logo-tiktok.png",
-  youtube: "/logo-youtube.png",
-};
-
 const OVERVIEW_SUB_TABS = [
   { value: "workstream", label: "Workstream" },
   { value: "skema", label: "Skema Glorifikasi" },
@@ -236,10 +223,10 @@ export default function ProjectDetail() {
             <p className="text-[12px] text-white/50 max-w-xl leading-relaxed mt-2">{project.brief}</p>
             <div className="flex items-center gap-3 mt-3">
               <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Target Platform:</span>
-              <div className="flex items-center gap-2 bg-white/5 rounded-lg px-2.5 py-1.5 border border-white/10">
-                {project.platforms.map((p) => (
-                  <img key={p} src={PLATFORM_LOGOS[p]} alt={PLATFORM_ICONS[p]} className="h-5 w-auto object-contain" style={{ filter: "brightness(1.2) contrast(1.1)" }} />
-                ))}
+              <div className="flex items-center gap-3 bg-white/5 rounded-lg px-3 py-1.5 border border-white/10">
+                <span className="flex items-center gap-1.5"><Instagram className="w-4 h-4" style={{ color: "#E1306C" }} /><span className="text-[11px] font-semibold" style={{ color: "#E2E8F0" }}>Instagram</span></span>
+                <span className="flex items-center gap-1.5"><Music className="w-4 h-4" style={{ color: "#00F2EA" }} /><span className="text-[11px] font-semibold" style={{ color: "#E2E8F0" }}>TikTok</span></span>
+                <span className="flex items-center gap-1.5"><Youtube className="w-4 h-4" style={{ color: "#FF0000" }} /><span className="text-[11px] font-semibold" style={{ color: "#E2E8F0" }}>YouTube</span></span>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-x-6 gap-y-3 mt-4 pt-3 max-w-md">
@@ -314,87 +301,120 @@ export default function ProjectDetail() {
 
               {/* ═══ WORKSTREAM DASHBOARD ═══ */}
               {activeSubTab === "workstream" && (
-                <div className="space-y-5">
+                <div className="space-y-4">
                   <h2 className="text-[16px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Strategy Roadmap Dashboard</h2>
 
                   {/* Theme — Vision / Mission / Values */}
-                  <div className="rounded-xl border p-5 space-y-4" style={{ background: "var(--ch-bg)", borderColor: "var(--ch-border)" }}>
-                    <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#F97316" }}>Theme</p>
-                    <div className="space-y-3">
-                      <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: "rgba(59,130,246,0.1)" }}><Star className="w-4 h-4" style={{ color: "#3B82F6" }} /></div>
-                        <div>
-                          <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "#3B82F6" }}>Why — Vision</p>
-                          <p className="text-[12px] leading-relaxed mt-0.5" style={{ color: "var(--ch-text)" }}>{WORKSTREAM_THEME.vision}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: "rgba(16,185,129,0.1)" }}><Target className="w-4 h-4" style={{ color: "#10B981" }} /></div>
-                        <div>
-                          <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "#10B981" }}>What — Mission / Purpose</p>
-                          <p className="text-[12px] leading-relaxed mt-0.5" style={{ color: "var(--ch-text)" }}>{WORKSTREAM_THEME.mission}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: "rgba(139,92,246,0.1)" }}><Heart className="w-4 h-4" style={{ color: "#8B5CF6" }} /></div>
-                        <div>
-                          <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "#8B5CF6" }}>Values</p>
-                          <div className="flex flex-wrap gap-1.5 mt-1">
-                            {WORKSTREAM_THEME.values.map((v) => (
-                              <span key={v} className="text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "rgba(139,92,246,0.1)", color: "#8B5CF6" }}>{v}</span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                  <div className="rounded-xl border overflow-hidden" style={{ background: "var(--ch-bg)", borderColor: "var(--ch-border)" }}>
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
+                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider w-28" style={{ color: "var(--ch-text-muted)" }}>Theme</th>
+                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Details</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
+                          <td className="px-4 py-3 font-bold text-[12px]" style={{ color: "#3B82F6", borderLeft: "3px solid #3B82F6" }}>Vision</td>
+                          <td className="px-4 py-3 text-[12px] leading-relaxed" style={{ color: "var(--ch-text)" }}>{WORKSTREAM_THEME.vision}</td>
+                        </tr>
+                        <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
+                          <td className="px-4 py-3 font-bold text-[12px]" style={{ color: "#10B981", borderLeft: "3px solid #10B981" }}>Mission</td>
+                          <td className="px-4 py-3 text-[12px] leading-relaxed" style={{ color: "var(--ch-text)" }}>{WORKSTREAM_THEME.mission}</td>
+                        </tr>
+                        <tr>
+                          <td className="px-4 py-3 font-bold text-[12px]" style={{ color: "#8B5CF6", borderLeft: "3px solid #8B5CF6" }}>Values</td>
+                          <td className="px-4 py-3">
+                            <div className="flex flex-wrap gap-1.5">
+                              {WORKSTREAM_THEME.values.map((v) => (
+                                <span key={v} className="text-[11px] font-semibold px-2 py-0.5 rounded-full border" style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}>{v}</span>
+                              ))}
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
 
-                  {/* Priorities — 4 cards */}
-                  <div className="rounded-xl border p-5" style={{ background: "var(--ch-bg)", borderColor: "var(--ch-border)" }}>
-                    <p className="text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: "#F97316" }}>Priorities</p>
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                      {WORKSTREAM_PRIORITIES.map((p) => (
-                        <div key={p.label} className="rounded-lg p-3 border text-center" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
-                          <p.icon className="w-5 h-5 mx-auto mb-2" style={{ color: p.color }} />
-                          <p className="text-[12px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{p.label}</p>
-                          <p className="text-[10px] mt-0.5" style={{ color: "var(--ch-text-muted)" }}>{p.sub}</p>
-                        </div>
-                      ))}
-                    </div>
-                    <p className="text-[11px] text-center mt-3 italic" style={{ color: "var(--ch-text-muted)" }}>"Summary of goals vs issues/challenges"</p>
+                  {/* Priorities — simple table */}
+                  <div className="rounded-xl border overflow-hidden" style={{ background: "var(--ch-bg)", borderColor: "var(--ch-border)" }}>
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
+                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider w-28" style={{ color: "var(--ch-text-muted)" }}>Priorities</th>
+                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-center" style={{ color: "var(--ch-text-muted)" }}>Strategic</th>
+                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-center" style={{ color: "var(--ch-text-muted)" }}>Measurable</th>
+                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-center" style={{ color: "var(--ch-text-muted)" }}>Algorithmic</th>
+                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-center" style={{ color: "var(--ch-text-muted)" }}>Operational</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td className="px-4 py-3 text-[11px] font-bold" style={{ color: "var(--ch-text-muted)" }}>Focus</td>
+                          {WORKSTREAM_PRIORITIES.map((p) => (
+                            <td key={p.label} className="px-4 py-3 text-[11px] text-center" style={{ color: "var(--ch-text-muted)" }}>{p.sub}</td>
+                          ))}
+                        </tr>
+                      </tbody>
+                    </table>
+                    <p className="text-[11px] text-center pb-3 italic" style={{ color: "var(--ch-text-muted)" }}>"Summary of goals vs issues/challenges"</p>
                   </div>
 
-                  {/* Strategic Initiatives — 4 cards */}
-                  <div className="rounded-xl border p-5" style={{ background: "var(--ch-bg)", borderColor: "var(--ch-border)" }}>
-                    <p className="text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: "#F97316" }}>Strategic Options & Initiatives</p>
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                      {WORKSTREAM_INITIATIVES.map((ini) => (
-                        <div key={ini.label} className="rounded-lg p-3 border-t-2" style={{ borderColor: ini.color, background: "var(--ch-surface)" }}>
-                          <p className="text-[12px] font-bold mb-2" style={{ color: ini.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{ini.label}</p>
-                          <ul className="space-y-1">
-                            {ini.items.map((item, i) => (
-                              <li key={i} className="text-[10px] leading-relaxed" style={{ color: "var(--ch-text-muted)" }}>• {item}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      ))}
-                    </div>
+                  {/* Strategic Initiatives — simple table */}
+                  <div className="rounded-xl border overflow-hidden" style={{ background: "var(--ch-bg)", borderColor: "var(--ch-border)" }}>
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
+                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider w-28" style={{ color: "var(--ch-text-muted)" }}>Initiatives</th>
+                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider" style={{ color: "#3B82F6" }}>Proactive</th>
+                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider" style={{ color: "#10B981" }}>Collaborative</th>
+                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider" style={{ color: "#8B5CF6" }}>Educative</th>
+                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider" style={{ color: "#F97316" }}>Responsive</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td className="px-4 py-3 text-[11px] font-bold" style={{ color: "var(--ch-text-muted)" }}>Actions</td>
+                          {WORKSTREAM_INITIATIVES.map((ini) => (
+                            <td key={ini.label} className="px-3 py-3">
+                              <ul className="space-y-1">
+                                {ini.items.map((item, i) => (
+                                  <li key={i} className="text-[10px] leading-relaxed" style={{ color: "var(--ch-text-muted)" }}>• {item}</li>
+                                ))}
+                              </ul>
+                            </td>
+                          ))}
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
 
                   {/* Tactical Activities — stat cards */}
-                  <div className="rounded-xl border p-5" style={{ background: "var(--ch-bg)", borderColor: "var(--ch-border)" }}>
-                    <p className="text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: "#F97316" }}>Tactical & Executional Activities</p>
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                      {WORKSTREAM_TACTICAL.map((t) => (
-                        <div key={t.label} className="rounded-lg p-4 border text-center" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
-                          <p className="text-[28px] font-extrabold leading-none" style={{ color: t.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{t.value}</p>
-                          <p className="text-[11px] font-semibold mt-1.5" style={{ color: "var(--ch-text)" }}>{t.label}</p>
-                          {t.sub && <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{t.sub}</p>}
-                        </div>
-                      ))}
-                    </div>
-                    <div className="mt-3 rounded-lg p-3 border text-center" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
-                      <p className="text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Dashboard real-time analytics: reach, ER, sentiment</p>
+                  <div className="rounded-xl border overflow-hidden" style={{ background: "var(--ch-bg)", borderColor: "var(--ch-border)" }}>
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
+                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider w-28" style={{ color: "var(--ch-text-muted)" }}>Tactical</th>
+                          {WORKSTREAM_TACTICAL.map((t) => (
+                            <th key={t.label} className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-center" style={{ color: "var(--ch-text-muted)" }}>{t.label}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td className="px-4 py-3 text-[11px] font-bold" style={{ color: "var(--ch-text-muted)" }}>Count</td>
+                          {WORKSTREAM_TACTICAL.map((t) => (
+                            <td key={t.label} className="px-4 py-3 text-center">
+                              <span className="text-[22px] font-extrabold" style={{ color: t.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{t.value}</span>
+                            </td>
+                          ))}
+                        </tr>
+                      </tbody>
+                    </table>
+                    <div className="px-4 pb-3">
+                      <div className="rounded-lg p-2 border text-center" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
+                        <p className="text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Dashboard real-time analytics: reach, ER, sentiment</p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -413,7 +433,7 @@ export default function ProjectDetail() {
                       <div className="rounded-lg p-4 border text-center" style={{ borderColor: "rgba(59,130,246,0.3)", background: "rgba(59,130,246,0.05)" }}>
                         <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#3B82F6" }}>Micro Influencer</p>
                         <p className="text-[28px] font-extrabold leading-none mt-1" style={{ color: "#3B82F6", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{SKEMA_CLIPPERS.micro.count}</p>
-                        <p className="text-[11px] mt-1 font-semibold" style={{ color: "var(--ch-text)" }}>Akun</p>
+                        <p className="text-[11px] mt-1 font-bold" style={{ color: "#3B82F6" }}>Akun Dedicated</p>
                         <div className="flex items-center justify-center gap-2 mt-1">
                           <span className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{SKEMA_CLIPPERS.micro.ig} Akun Instagram</span>
                           <span className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>·</span>
@@ -424,7 +444,7 @@ export default function ProjectDetail() {
                       <div className="rounded-lg p-4 border text-center" style={{ borderColor: "rgba(16,185,129,0.3)", background: "rgba(16,185,129,0.05)" }}>
                         <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#10B981" }}>Nano Influencer</p>
                         <p className="text-[28px] font-extrabold leading-none mt-1" style={{ color: "#10B981", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{SKEMA_CLIPPERS.nano.count}</p>
-                        <p className="text-[11px] mt-1 font-semibold" style={{ color: "var(--ch-text)" }}>Akun</p>
+                        <p className="text-[11px] mt-1 font-bold" style={{ color: "#10B981" }}>Akun Clippers</p>
                         <div className="flex items-center justify-center gap-2 mt-1">
                           <span className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{SKEMA_CLIPPERS.nano.ig} Akun Instagram</span>
                           <span className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>·</span>
@@ -433,35 +453,54 @@ export default function ProjectDetail() {
                         <p className="text-[10px] font-semibold mt-1" style={{ color: "#10B981" }}>{SKEMA_CLIPPERS.nano.followers} Followers</p>
                       </div>
                     </div>
+
+                    {/* Arrows down + labels */}
+                    <div className="grid grid-cols-2 gap-3 mt-3">
+                      <div className="flex flex-col items-center">
+                        <ArrowDown className="w-5 h-5" style={{ color: "#3B82F6" }} />
+                        <div className="rounded-lg px-3 py-2 border text-center mt-1 w-full" style={{ borderColor: "rgba(59,130,246,0.3)", background: "rgba(59,130,246,0.05)" }}>
+                          <p className="text-[10px] font-semibold" style={{ color: "#3B82F6" }}>Glorifikasi konten oleh akun dedicated</p>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <ArrowDown className="w-5 h-5" style={{ color: "#10B981" }} />
+                        <div className="rounded-lg px-3 py-2 border text-center mt-1 w-full" style={{ borderColor: "rgba(16,185,129,0.3)", background: "rgba(16,185,129,0.05)" }}>
+                          <p className="text-[10px] font-semibold" style={{ color: "#10B981" }}>Adaptasi konten oleh clippers</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Arrow Down — Clippers to Official Accounts */}
                   <div className="flex justify-center"><ArrowDown className="w-5 h-5" style={{ color: "var(--ch-text-muted)" }} /></div>
 
-                  {/* Tier 2 — OFFICIAL ACCOUNTS */}
+                  {/* Tier 2 — OFFICIAL ACCOUNTS (3 boxes) */}
                   <div className="rounded-xl border p-5" style={{ background: "var(--ch-bg)", borderColor: "var(--ch-border)" }}>
                     <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "#F97316" }}>Official Accounts</p>
-                    <div className="flex items-center justify-center">
-                      <div className="rounded-lg px-6 py-3 border-2 text-center" style={{ borderColor: "#F97316", background: "rgba(249,115,22,0.08)" }}>
-                        <p className="text-[14px] font-extrabold" style={{ color: "#F97316", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Kementerian UMKM</p>
+                    <div className="flex items-center justify-center gap-3">
+                      <div className="rounded-lg px-4 py-3 border text-center" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
+                        <p className="text-[12px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Menteri UMKM</p>
+                      </div>
+                      <div className="rounded-lg px-5 py-3 border-2 text-center" style={{ borderColor: "#F97316", background: "rgba(249,115,22,0.08)" }}>
+                        <p className="text-[13px] font-extrabold" style={{ color: "#F97316", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Kementerian UMKM</p>
+                      </div>
+                      <div className="rounded-lg px-4 py-3 border text-center" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
+                        <p className="text-[12px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Wakil Menteri UMKM</p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Arrow Up + Left/Right — Shelter & Amplifier to Official Accounts */}
+                  {/* Arrow Up + label */}
                   <div className="flex items-center gap-4">
-                    {/* Shelter side — arrows up */}
                     <div className="flex-1 flex flex-col items-center gap-1">
                       <svg width="40" height="30" viewBox="0 0 40 30">
                         <line x1="20" y1="30" x2="20" y2="5" stroke="#F97316" strokeWidth="2" />
                         <polygon points="15,5 20,0 25,5" fill="#F97316" />
                       </svg>
                     </div>
-                    {/* Center label */}
                     <div className="shrink-0 text-center">
                       <p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Likes, Comments, Shares, Mentions</p>
                     </div>
-                    {/* Amplifier side — arrows up */}
                     <div className="flex-1 flex flex-col items-center gap-1">
                       <svg width="40" height="30" viewBox="0 0 40 30">
                         <line x1="20" y1="30" x2="20" y2="5" stroke="#F97316" strokeWidth="2" />
@@ -470,62 +509,61 @@ export default function ProjectDetail() {
                     </div>
                   </div>
 
-                  {/* Tier 3 — Shelter + Amplifier side by side */}
-                  <div className="grid grid-cols-[1fr_40px_1fr] gap-0 items-start">
-
-                    {/* Shelter column */}
-                    <div className="rounded-xl border overflow-hidden" style={{ background: "var(--ch-bg)", borderColor: "var(--ch-border)" }}>
-                      <p className="text-[10px] font-bold uppercase tracking-widest px-4 pt-4 pb-2" style={{ color: "#F97316" }}>Shelter Accounts</p>
-                      <div className="space-y-2 px-3 pb-3">
-                        {SKEMA_SHELTERS.map((s) => (
-                          <div key={s.platform} className="rounded-lg border p-3" style={{ borderColor: `${s.color}40`, background: `${s.color}08` }}>
-                            <div className="flex items-center gap-2 mb-1.5">
-                              <img src={PLATFORM_LOGOS[s.platform.toLowerCase()]} alt={s.platform} className="h-3.5 w-auto" />
-                              <p className="text-[11px] font-extrabold" style={{ color: s.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{s.platform}</p>
+                  {/* Tier 3 — Shelter + Amplifier per platform */}
+                  <div className="rounded-xl border overflow-hidden" style={{ background: "var(--ch-bg)", borderColor: "var(--ch-border)" }}>
+                    <p className="text-[10px] font-bold uppercase tracking-widest px-4 pt-4 pb-2" style={{ color: "#F97316" }}>Content Distribution</p>
+                    <div className="space-y-0">
+                      {SKEMA_SHELTERS.map((s) => {
+                        const amp = SKEMA_AMPLIFIERS.find((a) => a.platform === s.platform)!;
+                        return (
+                          <div key={s.platform} className="grid grid-cols-[1fr_50px_1fr] items-center border-t" style={{ borderColor: "var(--ch-border)" }}>
+                            {/* Shelter */}
+                            <div className="p-3">
+                              <div className="rounded-lg border p-3" style={{ borderColor: `${s.color}40`, background: `${s.color}08` }}>
+                                <div className="flex items-center gap-2 mb-1.5">
+                                  {s.platform === "Instagram" && <Instagram className="w-3.5 h-3.5" style={{ color: s.color }} />}
+                                  {s.platform === "TikTok" && <Music className="w-3.5 h-3.5" style={{ color: s.color }} />}
+                                  {s.platform === "YouTube" && <Youtube className="w-3.5 h-3.5" style={{ color: s.color }} />}
+                                  <p className="text-[11px] font-extrabold" style={{ color: s.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Shelter {s.platform}</p>
+                                </div>
+                                {s.type && <p className="text-[9px] font-bold uppercase" style={{ color: s.color }}>{s.type}</p>}
+                                <p className="text-[12px] font-bold" style={{ color: "var(--ch-text)" }}>{s.followers} Followers</p>
+                                <ul className="mt-1 space-y-0.5">
+                                  {s.kanal.map((k) => (
+                                    <li key={k} className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>• {k}</li>
+                                  ))}
+                                </ul>
+                              </div>
                             </div>
-                            {s.type && <p className="text-[9px] font-bold uppercase" style={{ color: s.color }}>{s.type}</p>}
-                            <p className="text-[12px] font-bold" style={{ color: "var(--ch-text)" }}>{s.followers} Followers</p>
-                            <ul className="mt-1 space-y-0.5">
-                              {s.kanal.map((k) => (
-                                <li key={k} className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>• {k}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
 
-                    {/* Center arrows — amplifier to shelter */}
-                    <div className="flex flex-col items-center justify-center h-full py-6">
-                      {SKEMA_AMPLIFIERS.map((a, i) => (
-                        <svg key={a.platform} width="40" height="50" viewBox="0 0 40 50">
-                          <line x1="5" y1="25" x2="35" y2="25" stroke={a.color} strokeWidth="2" />
-                          <polygon points="5,20 0,25 5,30" fill={a.color} />
-                          <line x1="20" y1={i * 50 + 40} x2="20" y2={i * 50 + 30} stroke="transparent" strokeWidth="1" />
-                        </svg>
-                      ))}
-                    </div>
-
-                    {/* Amplifier column — wrapped in one frame */}
-                    <div className="rounded-xl border overflow-hidden" style={{ background: "var(--ch-bg)", borderColor: "var(--ch-border)" }}>
-                      <p className="text-[10px] font-bold uppercase tracking-widest px-4 pt-4 pb-2" style={{ color: "#F97316" }}>Amplifier Accounts</p>
-                      <div className="space-y-2 px-3 pb-3">
-                        {SKEMA_AMPLIFIERS.map((a) => (
-                          <div key={a.platform} className="rounded-lg border p-3 text-center" style={{ borderColor: `${a.color}40`, background: `${a.color}08` }}>
-                            <div className="flex items-center justify-center gap-2 mb-1">
-                              <img src={PLATFORM_LOGOS[a.platform.toLowerCase()]} alt={a.platform} className="h-3.5 w-auto" />
-                              <p className="text-[11px] font-extrabold" style={{ color: a.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{a.platform}</p>
+                            {/* Arrow — colored per platform */}
+                            <div className="flex items-center justify-center">
+                              <svg width="50" height="30" viewBox="0 0 50 30">
+                                <line x1="10" y1="15" x2="40" y2="15" stroke={s.color} strokeWidth="2" />
+                                <polygon points="40,10 50,15 40,20" fill={s.color} />
+                              </svg>
                             </div>
-                            <p className="text-[22px] font-extrabold leading-none" style={{ color: a.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{a.count}</p>
-                            <p className="text-[10px] font-semibold mt-0.5" style={{ color: "var(--ch-text-muted)" }}>Akun Amplifier</p>
-                            <p className="text-[9px]" style={{ color: "var(--ch-text-muted)" }}>(100 – 1.000 Followers)</p>
+
+                            {/* Amplifier */}
+                            <div className="p-3">
+                              <div className="rounded-lg border p-3 text-center" style={{ borderColor: `${amp.color}40`, background: `${amp.color}08` }}>
+                                <div className="flex items-center justify-center gap-2 mb-1">
+                                  {amp.platform === "Instagram" && <Instagram className="w-3.5 h-3.5" style={{ color: amp.color }} />}
+                                  {amp.platform === "TikTok" && <Music className="w-3.5 h-3.5" style={{ color: amp.color }} />}
+                                  {amp.platform === "YouTube" && <Youtube className="w-3.5 h-3.5" style={{ color: amp.color }} />}
+                                  <p className="text-[11px] font-extrabold" style={{ color: amp.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Amplifier {amp.platform}</p>
+                                </div>
+                                <p className="text-[22px] font-extrabold leading-none" style={{ color: amp.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{amp.count}</p>
+                                <p className="text-[10px] font-semibold mt-0.5" style={{ color: "var(--ch-text-muted)" }}>Akun Amplifier</p>
+                                <p className="text-[9px]" style={{ color: "var(--ch-text-muted)" }}>(100 – 1.000 Followers)</p>
+                              </div>
+                            </div>
                           </div>
-                        ))}
-                      </div>
+                        );
+                      })}
                     </div>
+                    <p className="text-[10px] text-center py-3 italic border-t" style={{ color: "var(--ch-text-muted)", borderColor: "var(--ch-border)" }}>Likes, Comments, Shares, Mentions</p>
                   </div>
-
-                  <p className="text-[10px] text-center italic" style={{ color: "var(--ch-text-muted)" }}>Likes, Comments, Shares, Mentions</p>
                 </div>
               )}
 

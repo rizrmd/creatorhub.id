@@ -226,7 +226,7 @@ export default function ServiceHub() {
   const [province, setProvince] = useState("all");
   const [geoJsonData, setGeoJsonData] = useState<GeoJSON.FeatureCollection | null>(null);
   const [mapKey] = useState(0);
-  const [mapTab, setMapTab] = useState<"creator" | "homeless">("creator");
+  const [mapTab, setMapTab] = useState<"creator" | "homeless" | "podcast">("creator");
 
   useEffect(() => {
     fetch("/indonesia-38-provinces.geojson")
@@ -316,7 +316,7 @@ export default function ServiceHub() {
               }`}
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
             >
-              Content Creator Coverage in Indonesia
+              Content Creators
             </button>
             <button
               onClick={() => setMapTab("homeless")}
@@ -327,19 +327,21 @@ export default function ServiceHub() {
               }`}
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
             >
-              Homeless Media Coverage in Indonesia
+              Homeless Media
+            </button>
+            <button
+              onClick={() => setMapTab("podcast")}
+              className={`text-[13px] font-bold px-3 py-1.5 rounded-lg transition-all ${
+                mapTab === "podcast"
+                  ? "bg-orange-500 text-white shadow-md shadow-orange-500/20"
+                  : "text-white/50 hover:text-white/80"
+              }`}
+              style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+            >
+              Podcast Facilities
             </button>
           </div>
           <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
-              <span>Low</span>
-              <div className="flex gap-0.5">
-                {["#1e3a5f", "#1d4ed8", "#3b82f6", "#60a5fa", "#93c5fd"].map((c) => (
-                  <span key={c} className="inline-block w-3.5 h-2.5 rounded-sm" style={{ background: c }} />
-                ))}
-              </div>
-              <span>High</span>
-            </div>
             <select
               value={province}
               onChange={(e) => setProvince(e.target.value)}
@@ -372,14 +374,32 @@ export default function ServiceHub() {
               onProvinceClick={handleProvinceClick}
             />
           </MapContainer>
+          {/* Density legend inside map */}
+          <div className="absolute bottom-3 left-3 z-[1000] flex items-center gap-2 px-3 py-1.5 rounded-lg" style={{ background: "rgba(15,23,42,0.85)", border: "1px solid rgba(255,255,255,0.1)" }}>
+            <span className="text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Density</span>
+            <div className="flex gap-0.5">
+              {["#1e3a5f", "#1d4ed8", "#3b82f6", "#60a5fa", "#93c5fd"].map((c) => (
+                <span key={c} className="inline-block w-3.5 h-2.5 rounded-sm" style={{ background: c }} />
+              ))}
+            </div>
+            <span className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>Low → High</span>
+          </div>
         </div>
-        <div className="flex items-center gap-4 px-5 py-3 border-t text-[10px] font-semibold" style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}>
-          <span>{mapTab === "creator" ? "KOLs / Creators" : "Media Channels"}</span>
-          <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#93c5fd] inline-block" /> 150+</span>
-            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#60a5fa] inline-block" /> 50 - 149</span>
-            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#3b82f6] inline-block" /> 20 - 49</span>
-            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#1e3a5f] inline-block" /> &lt; 20</span>
+        <div className="flex flex-wrap items-center gap-6 px-5 py-3 border-t text-[11px]" style={{ borderColor: "var(--ch-border)" }}>
+          <div className="flex items-center gap-2">
+            <Users className="w-4 h-4" style={{ color: "#3B82F6" }} />
+            <span className="font-bold" style={{ color: "var(--ch-text)" }}>1.000 Content Creators</span>
+            <span style={{ color: "var(--ch-text-muted)" }}>tersedia di seluruh Indonesia</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Newspaper className="w-4 h-4" style={{ color: "#F97316" }} />
+            <span className="font-bold" style={{ color: "var(--ch-text)" }}>226 Homeless Media</span>
+            <span style={{ color: "var(--ch-text-muted)" }}>siap amplifikasi narasi & kampanye</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Radio className="w-4 h-4" style={{ color: "#8B5CF6" }} />
+            <span className="font-bold" style={{ color: "var(--ch-text)" }}>58 Shelter Accounts</span>
+            <span style={{ color: "var(--ch-text-muted)" }}>kanal utama publikasi</span>
           </div>
         </div>
       </div>
@@ -442,10 +462,10 @@ export default function ServiceHub() {
                     {leftHalf.map((p, i) => (
                       <tr
                         key={p.name}
-                        className="cursor-pointer hover:bg-slate-50"
+                        className="cursor-pointer hover:bg-white/5"
                         style={{
                           borderBottom: "1px solid var(--ch-border)",
-                          background: province === p.name ? "#EFF6FF" : "transparent",
+                          background: province === p.name ? "rgba(249,115,22,0.08)" : "transparent",
                         }}
                         onClick={() => handleProvinceClick(p.name)}
                       >
@@ -469,10 +489,10 @@ export default function ServiceHub() {
                     {rightHalf.map((p, i) => (
                       <tr
                         key={p.name}
-                        className="cursor-pointer hover:bg-slate-50"
+                        className="cursor-pointer hover:bg-white/5"
                         style={{
                           borderBottom: "1px solid var(--ch-border)",
-                          background: province === p.name ? "#EFF6FF" : "transparent",
+                          background: province === p.name ? "rgba(249,115,22,0.08)" : "transparent",
                         }}
                         onClick={() => handleProvinceClick(p.name)}
                       >
