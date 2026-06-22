@@ -1,14 +1,12 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import {
   Database, Search,
   ExternalLink, MapPin, Users, Globe,
   Video, Building2, Globe2,
-  ChevronDown, ChevronRight, Save, Loader2,
-  Instagram, Youtube,
+  Instagram,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { mediaNetworkApi, type MediaGroup, type MediaOutlet } from "@/lib/api";
 
 type MediaEntry = {
   no: number;
@@ -263,6 +261,78 @@ const allMedia: MediaEntry[] = [
 
 const regions = ["Semua", "DKI Jakarta", "Jabodetabek", "Regional", "Jawa Barat", "Jawa Tengah", "Jawa Timur", "Sumatra", "Sulawesi", "Indonesia Timur", "Kalimantan", "Bali"];
 
+interface IdnMedia {
+  rank: number;
+  name: string;
+  rate: number;
+  url: string;
+}
+
+const IDN_MEDIA_DATA: IdnMedia[] = [
+  { rank: 1, name: "Detik.com", rate: 6500000000, url: "https://detik.com" },
+  { rank: 2, name: "Tribunnews.com", rate: 3500000000, url: "https://tribunnews.com" },
+  { rank: 3, name: "Kompas.com", rate: 7000000000, url: "https://kompas.com" },
+  { rank: 4, name: "Cnnindonesia.com", rate: 7500000000, url: "https://cnnindonesia.com" },
+  { rank: 5, name: "Grid.id", rate: 6500000000, url: "https://grid.id" },
+  { rank: 6, name: "Suara.com", rate: 4500000000, url: "https://suara.com" },
+  { rank: 7, name: "Liputan6.com", rate: 5000000000, url: "https://liputan6.com" },
+  { rank: 8, name: "CNBCIndonesia.com", rate: 7500000000, url: "https://cnbcindonesia.com" },
+  { rank: 9, name: "Pikiran-rakyat.com", rate: 3500000000, url: "https://pikiran-rakyat.com" },
+  { rank: 10, name: "Merdeka.com", rate: 3500000000, url: "https://merdeka.com" },
+  { rank: 11, name: "Kumparan.com", rate: 3500000000, url: "https://kumparan.com" },
+  { rank: 12, name: "Liputan6.com", rate: 3500000000, url: "https://liputan6.com" },
+  { rank: 13, name: "CNBCIndonesia.com", rate: 7000000000, url: "https://cnbcindonesia.com" },
+  { rank: 14, name: "Sindonews.com", rate: 4500000000, url: "https://sindonews.com" },
+  { rank: 15, name: "IDNTimes.com", rate: 6000000000, url: "https://idntimes.com" },
+  { rank: 16, name: "Okezone.com", rate: 5500000000, url: "https://okezone.com" },
+  { rank: 17, name: "Viva.co.id", rate: 5000000000, url: "https://viva.co.id" },
+  { rank: 18, name: "Tempo.co", rate: 5000000000, url: "https://tempo.co" },
+  { rank: 19, name: "Kontan.co.id", rate: 6000000000, url: "https://kontan.co.id" },
+  { rank: 20, name: "Republika.co.id", rate: 3500000000, url: "https://republika.co.id" },
+  { rank: 21, name: "Kompas.tv", rate: 5500000000, url: "https://kompas.tv" },
+  { rank: 22, name: "Jpnn.com", rate: 3000000000, url: "https://jpnn.com" },
+  { rank: 23, name: "Bisnis.com", rate: 6500000000, url: "https://bisnis.com" },
+  { rank: 24, name: "Tirto.id", rate: 3500000000, url: "https://tirto.id" },
+  { rank: 25, name: "Disway.id", rate: 3000000000, url: "https://disway.id" },
+  { rank: 26, name: "Inews.id", rate: 4500000000, url: "https://inews.id" },
+  { rank: 27, name: "Jawapos.com", rate: 4000000000, url: "https://jawapos.com" },
+  { rank: 28, name: "Katadata.co.id", rate: 3800000000, url: "https://katadata.co.id" },
+  { rank: 29, name: "Suaramerdeka.com", rate: 2000000000, url: "https://suaramerdeka.com" },
+  { rank: 30, name: "Antaranews.com", rate: 5000000000, url: "https://antaranews.com" },
+  { rank: 31, name: "Tvonenews.com", rate: 7000000000, url: "https://tvonenews.com" },
+  { rank: 32, name: "Wartaekonomi.co.id", rate: 2500000000, url: "https://wartaekonomi.co.id" },
+  { rank: 33, name: "Mediaindonesia.com", rate: 3500000000, url: "https://mediaindonesia.com" },
+  { rank: 34, name: "Hops.id", rate: 5000000000, url: "https://hops.id" },
+  { rank: 35, name: "Medcom.id", rate: 3500000000, url: "https://medcom.id" },
+  { rank: 36, name: "Beritasatu.com", rate: 3500000000, url: "https://beritasatu.com" },
+  { rank: 37, name: "RMOL.id", rate: 2000000000, url: "https://rmol.id" },
+  { rank: 38, name: "Investor.id", rate: 3500000000, url: "https://investor.id" },
+  { rank: 39, name: "VOI.id", rate: 3000000000, url: "https://voi.id" },
+  { rank: 40, name: "Akurat.co", rate: 1500000000, url: "https://akurat.co" },
+  { rank: 41, name: "IDXChannel.com", rate: 4000000000, url: "https://idxchannel.com" },
+  { rank: 42, name: "Antvklik.com", rate: 6000000000, url: "https://antvklik.com" },
+  { rank: 43, name: "Poskota.co.id", rate: 2000000000, url: "https://poskota.co.id" },
+  { rank: 44, name: "FortuneIDN.com", rate: 7000000000, url: "https://fortuneidn.com" },
+  { rank: 45, name: "Tagar.id", rate: 1500000000, url: "https://tagar.id" },
+  { rank: 46, name: "Metrotvnews.com", rate: 2500000000, url: "https://metrotvnews.com" },
+  { rank: 47, name: "Harianterbit.com", rate: 2000000000, url: "https://harianterbit.com" },
+  { rank: 48, name: "Gatra.com", rate: 2500000000, url: "https://gatra.com" },
+  { rank: 49, name: "RM.id", rate: 2000000000, url: "https://rm.id" },
+  { rank: 50, name: "JakartaDaily.id", rate: 1500000000, url: "https://indonesia.jakartadaily.id" },
+];
+
+function formatRate(n: number): string {
+  if (n >= 1_000_000_000) return `Rp ${(n / 1_000_000_000).toFixed(1)}M`;
+  if (n >= 1_000_000) return `Rp ${(n / 1_000_000).toFixed(0)}jt`;
+  return `Rp ${n.toLocaleString("id-ID")}`;
+}
+
+function getRateColor(rate: number): { bg: string; text: string } {
+  if (rate >= 6_000_000_000) return { bg: "rgba(16,185,129,0.1)", text: "#10B981" };
+  if (rate >= 3_500_000_000) return { bg: "rgba(245,158,11,0.1)", text: "#F59E0B" };
+  return { bg: "rgba(148,163,184,0.1)", text: "#94A3B8" };
+}
+
 function parseFollowers(f: string): number {
   const clean = f.replace(/[+K\s]/g, "").toLowerCase();
   if (clean.includes("juta") || clean.includes("m")) {
@@ -274,125 +344,11 @@ function parseFollowers(f: string): number {
   return parseFloat(clean) || 0;
 }
 
-// Social media link builder
-function socialUrl(platform: string, handle: string | null): string | null {
-  if (!handle) return null;
-  const h = handle.replace(/^@/, "");
-  switch (platform) {
-    case "instagram": return `https://instagram.com/${h}`;
-    case "facebook": return `https://facebook.com/${h}`;
-    case "tiktok": return `https://tiktok.com/@${h}`;
-    case "youtube": return `https://youtube.com/@${h}`;
-    case "twitter": return `https://x.com/${h}`;
-    case "threads": return `https://threads.net/@${h}`;
-    default: return null;
-  }
-}
-
 export default function DatabasePage() {
   const [activeTab, setActiveTab] = useState("creators");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("Semua");
-
-  // Media Network state
-  const [groups, setGroups] = useState<MediaGroup[]>([]);
-  const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
-  const [outlets, setOutlets] = useState<MediaOutlet[]>([]);
-  const [outletsLoading, setOutletsLoading] = useState(false);
-  const [networkSearch, setNetworkSearch] = useState("");
-  const [searchActive, setSearchActive] = useState(false);
-  const [editedOutlets, setEditedOutlets] = useState<Map<number, Partial<MediaOutlet>>>(new Map());
-  const [saving, setSaving] = useState(false);
-  const [groupsLoading, setGroupsLoading] = useState(false);
-
-  // Fetch groups on tab change
-  useEffect(() => {
-    if (activeTab === "idn-network" && groups.length === 0) {
-      setGroupsLoading(true);
-      mediaNetworkApi.listGroups()
-        .then(setGroups)
-        .catch(console.error)
-        .finally(() => setGroupsLoading(false));
-    }
-  }, [activeTab, groups.length]);
-
-  // Fetch outlets when group is expanded
-  const toggleGroup = useCallback(async (groupId: string) => {
-    if (expandedGroup === groupId) {
-      setExpandedGroup(null);
-      setOutlets([]);
-      return;
-    }
-    setExpandedGroup(groupId);
-    setOutletsLoading(true);
-    try {
-      const data = await mediaNetworkApi.listOutlets(groupId);
-      setOutlets(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setOutletsLoading(false);
-    }
-  }, [expandedGroup]);
-
-  // Handle field edit
-  const handleEdit = useCallback((outletId: number, field: keyof MediaOutlet, value: string | boolean | number) => {
-    setEditedOutlets(prev => {
-      const next = new Map(prev);
-      const existing = next.get(outletId) || {};
-      next.set(outletId, { ...existing, [field]: value });
-      return next;
-    });
-  }, []);
-
-  // Save changed outlets
-  const handleSave = useCallback(async () => {
-    if (editedOutlets.size === 0) return;
-    setSaving(true);
-    try {
-      const toUpdate = Array.from(editedOutlets.entries()).map(([id, changes]) => ({
-        id,
-        ...changes,
-      }));
-      await mediaNetworkApi.bulkUpdate(toUpdate);
-      setEditedOutlets(new Map());
-      // Refresh outlets
-      if (expandedGroup) {
-        const data = await mediaNetworkApi.listOutlets(expandedGroup);
-        setOutlets(data);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setSaving(false);
-    }
-  }, [editedOutlets, expandedGroup]);
-
-  // Search across all outlets
-  const handleNetworkSearch = useCallback(async () => {
-    if (!networkSearch.trim()) {
-      clearNetworkSearch();
-      return;
-    }
-    setOutletsLoading(true);
-    setSearchActive(true);
-    setExpandedGroup(null);
-    try {
-      const data = await mediaNetworkApi.searchOutlets(networkSearch);
-      setOutlets(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setOutletsLoading(false);
-    }
-  }, [networkSearch]);
-
-  const clearNetworkSearch = useCallback(() => {
-    setNetworkSearch("");
-    setSearchActive(false);
-    setExpandedGroup(null);
-    setOutlets([]);
-  }, []);
+  const [idnSearch, setIdnSearch] = useState("");
 
   const filtered = allMedia.filter((m) => {
     const matchesSearch =
@@ -588,8 +544,8 @@ export default function DatabasePage() {
                   <Building2 className="w-5 h-5" style={{ color: "var(--ch-primary)" }} />
                 </div>
                 <div>
-                  <p className="text-[20px] font-bold" style={{ color: "var(--ch-text)" }}>{groups.length}</p>
-                  <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>Media Groups</p>
+                  <p className="text-[20px] font-bold" style={{ color: "var(--ch-text)" }}>{IDN_MEDIA_DATA.length}</p>
+                  <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>Media Nasional</p>
                 </div>
               </CardContent>
             </Card>
@@ -600,9 +556,9 @@ export default function DatabasePage() {
                 </div>
                 <div>
                   <p className="text-[20px] font-bold" style={{ color: "var(--ch-text)" }}>
-                    {groups.reduce((sum, g) => sum + g.outletCount, 0).toLocaleString()}
+                    {formatRate(Math.round(IDN_MEDIA_DATA.reduce((sum, m) => sum + m.rate, 0) / IDN_MEDIA_DATA.length))}
                   </p>
-                  <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>Total Outlets</p>
+                  <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>Rate Rata-rata</p>
                 </div>
               </CardContent>
             </Card>
@@ -612,403 +568,74 @@ export default function DatabasePage() {
                   <Database className="w-5 h-5" style={{ color: "#D97706" }} />
                 </div>
                 <div>
-                  <p className="text-[20px] font-bold" style={{ color: "var(--ch-text)" }}>{editedOutlets.size}</p>
-                  <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>Unsaved Changes</p>
+                  <p className="text-[20px] font-bold" style={{ color: "var(--ch-text)" }}>{IDN_MEDIA_DATA.filter((m) => m.rate >= 6_000_000_000).length}</p>
+                  <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>Premium (6M+)</p>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Search + Save */}
+          {/* Search */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <div className="relative flex-1 max-w-sm w-full">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--ch-text-muted)" }} />
               <input
                 type="text"
-                placeholder="Search media groups or outlets..."
-                value={networkSearch}
-                onChange={(e) => setNetworkSearch(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleNetworkSearch()}
+                placeholder="Cari media nasional..."
+                value={idnSearch}
+                onChange={(e) => setIdnSearch(e.target.value)}
                 className="w-full pl-9 pr-3 py-2 text-[13px] rounded-lg border"
                 style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)", background: "var(--ch-surface)" }}
               />
             </div>
-            {editedOutlets.size > 0 && (
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="flex items-center gap-2 px-3 py-1.5 text-[12px] font-semibold rounded-lg text-white transition-colors"
-                style={{ background: saving ? "#94A3B8" : "#F97316", boxShadow: saving ? "none" : "0 2px 8px rgba(249,115,22,0.25)" }}
-              >
-                {saving ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Save className="w-4 h-4" />
-                )}
-                Save All ({editedOutlets.size})
-              </button>
-            )}
           </div>
 
-          {/* Search Results or Groups List */}
-          {searchActive ? (
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <p className="text-[14px] font-semibold" style={{ color: "var(--ch-text)" }}>
-                  Search results for "{networkSearch}" — {outlets.length} found
-                </p>
-                <button
-                  onClick={clearNetworkSearch}
-                  className="text-[12px] font-semibold px-3 py-1 rounded-lg transition-colors"
-                  style={{ background: "rgba(249,115,22,0.1)", color: "#F97316" }}
-                >
-                  Clear search
-                </button>
+          {/* Table */}
+          <Card>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
+                      <th className="text-left px-5 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Rank</th>
+                      <th className="text-left px-4 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Media Nasional</th>
+                      <th className="text-right px-4 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Rate Backlink (IDR)</th>
+                      <th className="text-center px-4 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Tier</th>
+                      <th className="text-right px-4 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Link</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {IDN_MEDIA_DATA.filter((m) =>
+                      m.name.toLowerCase().includes(idnSearch.toLowerCase())
+                    ).map((m, idx) => {
+                      const rc = getRateColor(m.rate);
+                      return (
+                        <tr key={`${m.rank}-${m.name}`} className="border-b transition-colors hover:bg-white/5" style={{ borderColor: "var(--ch-border)" }}>
+                          <td className="px-5 py-2.5 text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>{idx + 1}</td>
+                          <td className="px-4 py-2.5">
+                            <span className="text-[13px] font-semibold" style={{ color: "var(--ch-text)" }}>{m.name}</span>
+                          </td>
+                          <td className="px-4 py-2.5 text-right">
+                            <span className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>{formatRate(m.rate)}</span>
+                          </td>
+                          <td className="px-4 py-2.5 text-center">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: rc.bg, color: rc.text }}>
+                              {m.rate >= 6_000_000_000 ? "Premium" : m.rate >= 3_500_000_000 ? "Standard" : "Basic"}
+                            </span>
+                          </td>
+                          <td className="px-4 py-2.5 text-right">
+                            <a href={m.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[12px] font-semibold" style={{ color: "var(--ch-primary)" }}>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
-              {outletsLoading ? (
-                <Card>
-                  <CardContent className="py-12 text-center">
-                    <Loader2 className="w-8 h-8 mx-auto mb-3 animate-spin" style={{ color: "var(--ch-primary)" }} />
-                    <p className="text-[14px]" style={{ color: "var(--ch-text-muted)" }}>Searching...</p>
-                  </CardContent>
-                </Card>
-              ) : outlets.length === 0 ? (
-                <Card>
-                  <CardContent className="py-12 text-center">
-                    <Search className="w-10 h-10 mx-auto mb-3" style={{ color: "var(--ch-text-soft)" }} />
-                    <p className="text-[14px] font-semibold" style={{ color: "var(--ch-text)" }}>No results found</p>
-                    <p className="text-[12px] mt-1" style={{ color: "var(--ch-text-muted)" }}>Try a different search term</p>
-                  </CardContent>
-                </Card>
-              ) : (
-                <Card>
-                  <CardContent className="p-0">
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead>
-                          <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
-                            <th className="text-left px-4 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Name</th>
-                            <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Group</th>
-                            <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Agency Price</th>
-                            <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Rate Card</th>
-                            <th className="text-center px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>GNews</th>
-                            <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Instagram</th>
-                            <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>TikTok</th>
-                            <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>YouTube</th>
-                            <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Genre</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {outlets.map((outlet) => {
-                            const edited = editedOutlets.get(outlet.id);
-                            const displayHarga = edited?.hargaAgency ?? outlet.hargaAgency;
-                            const displayRate = edited?.hargaRateCard ?? outlet.hargaRateCard;
-                            const displayIg = edited?.instagramHandle ?? outlet.instagramHandle;
-                            const displayTiktok = edited?.tiktokHandle ?? outlet.tiktokHandle;
-                            const displayYoutube = edited?.youtubeHandle ?? outlet.youtubeHandle;
-                            const displayGenre = edited?.genre ?? outlet.genre;
-
-                            return (
-                              <tr key={outlet.id} className="border-b transition-colors hover:bg-slate-50/50" style={{ borderColor: "var(--ch-border)" }}>
-                                <td className="px-4 py-2">
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-[13px] font-semibold" style={{ color: "var(--ch-text)" }}>{outlet.name}</span>
-                                    {outlet.url && (
-                                      <a href={outlet.url} target="_blank" rel="noopener noreferrer" className="text-[10px]" style={{ color: "var(--ch-primary)" }}>
-                                        <ExternalLink className="w-3 h-3" />
-                                      </a>
-                                    )}
-                                  </div>
-                                </td>
-                                <td className="px-3 py-2">
-                                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>
-                                    {outlet.groupName || "—"}
-                                  </span>
-                                </td>
-                                <td className="px-3 py-2">
-                                  <input
-                                    type="text"
-                                    value={displayHarga || ""}
-                                    onChange={(e) => handleEdit(outlet.id, "hargaAgency", e.target.value)}
-                                    placeholder="—"
-                                    className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
-                                    style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
-                                  />
-                                </td>
-                                <td className="px-3 py-2">
-                                  <input
-                                    type="text"
-                                    value={displayRate || ""}
-                                    onChange={(e) => handleEdit(outlet.id, "hargaRateCard", e.target.value)}
-                                    placeholder="—"
-                                    className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
-                                    style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
-                                  />
-                                </td>
-                                <td className="px-3 py-2 text-center">
-                                  <input
-                                    type="checkbox"
-                                    checked={edited?.googleNews ?? outlet.googleNews}
-                                    onChange={(e) => handleEdit(outlet.id, "googleNews", e.target.checked)}
-                                    className="w-4 h-4 rounded"
-                                  />
-                                </td>
-                                <td className="px-3 py-2">
-                                  <div className="flex items-center gap-1.5">
-                                    <Instagram className="w-3.5 h-3.5 shrink-0" style={{ color: "#E1306C" }} />
-                                    <input
-                                      type="text"
-                                      value={displayIg || ""}
-                                      onChange={(e) => handleEdit(outlet.id, "instagramHandle", e.target.value)}
-                                      placeholder="@handle"
-                                      className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
-                                      style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
-                                    />
-                                    {displayIg && (
-                                      <a href={socialUrl("instagram", displayIg) || "#"} target="_blank" rel="noopener noreferrer">
-                                        <ExternalLink className="w-3 h-3" style={{ color: "var(--ch-primary)" }} />
-                                      </a>
-                                    )}
-                                  </div>
-                                </td>
-                                <td className="px-3 py-2">
-                                  <div className="flex items-center gap-1.5">
-                                    <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="currentColor" style={{ color: "#00F2EA" }}>
-                                      <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 0010.86 4.48V13.2a8.16 8.16 0 005.58 2.18v-3.45a4.85 4.85 0 01-3.59-1.62V6.69h3.59z" />
-                                    </svg>
-                                    <input
-                                      type="text"
-                                      value={displayTiktok || ""}
-                                      onChange={(e) => handleEdit(outlet.id, "tiktokHandle", e.target.value)}
-                                      placeholder="@handle"
-                                      className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
-                                      style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
-                                    />
-                                    {displayTiktok && (
-                                      <a href={socialUrl("tiktok", displayTiktok) || "#"} target="_blank" rel="noopener noreferrer">
-                                        <ExternalLink className="w-3 h-3" style={{ color: "var(--ch-primary)" }} />
-                                      </a>
-                                    )}
-                                  </div>
-                                </td>
-                                <td className="px-3 py-2">
-                                  <div className="flex items-center gap-1.5">
-                                    <Youtube className="w-3.5 h-3.5 shrink-0" style={{ color: "#FF0000" }} />
-                                    <input
-                                      type="text"
-                                      value={displayYoutube || ""}
-                                      onChange={(e) => handleEdit(outlet.id, "youtubeHandle", e.target.value)}
-                                      placeholder="@handle"
-                                      className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
-                                      style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
-                                    />
-                                    {displayYoutube && (
-                                      <a href={socialUrl("youtube", displayYoutube) || "#"} target="_blank" rel="noopener noreferrer">
-                                        <ExternalLink className="w-3 h-3" style={{ color: "var(--ch-primary)" }} />
-                                      </a>
-                                    )}
-                                  </div>
-                                </td>
-                                <td className="px-3 py-2">
-                                  <input
-                                    type="text"
-                                    value={displayGenre || ""}
-                                    onChange={(e) => handleEdit(outlet.id, "genre", e.target.value)}
-                                    placeholder="—"
-                                    className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
-                                    style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
-                                  />
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-          ) : groupsLoading ? (
-            <Card>
-              <CardContent className="py-12 text-center">
-                <Loader2 className="w-8 h-8 mx-auto mb-3 animate-spin" style={{ color: "var(--ch-primary)" }} />
-                <p className="text-[14px]" style={{ color: "var(--ch-text-muted)" }}>Loading media groups...</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-2">
-              {groups.map((group) => (
-                <Card key={group.id}>
-                  <button
-                    onClick={() => toggleGroup(group.id)}
-                    className="w-full flex items-center gap-3 p-4 text-left transition-colors hover:bg-slate-50"
-                  >
-                    {expandedGroup === group.id ? (
-                      <ChevronDown className="w-4 h-4 shrink-0" style={{ color: "var(--ch-text-muted)" }} />
-                    ) : (
-                      <ChevronRight className="w-4 h-4 shrink-0" style={{ color: "var(--ch-text-muted)" }} />
-                    )}
-                    <Building2 className="w-4 h-4 shrink-0" style={{ color: "var(--ch-primary)" }} />
-                    <span className="text-[14px] font-semibold flex-1" style={{ color: "var(--ch-text)" }}>
-                      {group.name}
-                    </span>
-                    <span className="text-[12px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>
-                      {group.outletCount} outlets
-                    </span>
-                  </button>
-
-                  {expandedGroup === group.id && (
-                    <div className="border-t" style={{ borderColor: "var(--ch-border)" }}>
-                      {outletsLoading ? (
-                        <div className="py-8 text-center">
-                          <Loader2 className="w-6 h-6 mx-auto mb-2 animate-spin" style={{ color: "var(--ch-primary)" }} />
-                          <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>Loading outlets...</p>
-                        </div>
-                      ) : (
-                        <div className="overflow-x-auto">
-                          <table className="w-full">
-                            <thead>
-                              <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
-                                <th className="text-left px-4 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Name</th>
-                                <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Agency Price</th>
-                                <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Rate Card</th>
-                                <th className="text-center px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>GNews</th>
-                                <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Instagram</th>
-                                <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>TikTok</th>
-                                <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>YouTube</th>
-                                <th className="text-left px-3 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Genre</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {outlets.map((outlet) => {
-                                const edited = editedOutlets.get(outlet.id);
-                                const displayHarga = edited?.hargaAgency ?? outlet.hargaAgency;
-                                const displayRate = edited?.hargaRateCard ?? outlet.hargaRateCard;
-                                const displayIg = edited?.instagramHandle ?? outlet.instagramHandle;
-                                const displayTiktok = edited?.tiktokHandle ?? outlet.tiktokHandle;
-                                const displayYoutube = edited?.youtubeHandle ?? outlet.youtubeHandle;
-                                const displayGenre = edited?.genre ?? outlet.genre;
-
-                                return (
-                                  <tr key={outlet.id} className="border-b transition-colors hover:bg-slate-50/50" style={{ borderColor: "var(--ch-border)" }}>
-                                    <td className="px-4 py-2">
-                                      <div className="flex items-center gap-2">
-                                        <span className="text-[13px] font-semibold" style={{ color: "var(--ch-text)" }}>{outlet.name}</span>
-                                        {outlet.url && (
-                                          <a href={outlet.url} target="_blank" rel="noopener noreferrer" className="text-[10px]" style={{ color: "var(--ch-primary)" }}>
-                                            <ExternalLink className="w-3 h-3" />
-                                          </a>
-                                        )}
-                                      </div>
-                                    </td>
-                                    <td className="px-3 py-2">
-                                      <input
-                                        type="text"
-                                        value={displayHarga || ""}
-                                        onChange={(e) => handleEdit(outlet.id, "hargaAgency", e.target.value)}
-                                        placeholder="—"
-                                        className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
-                                        style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
-                                      />
-                                    </td>
-                                    <td className="px-3 py-2">
-                                      <input
-                                        type="text"
-                                        value={displayRate || ""}
-                                        onChange={(e) => handleEdit(outlet.id, "hargaRateCard", e.target.value)}
-                                        placeholder="—"
-                                        className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
-                                        style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
-                                      />
-                                    </td>
-                                    <td className="px-3 py-2 text-center">
-                                      <input
-                                        type="checkbox"
-                                        checked={edited?.googleNews ?? outlet.googleNews}
-                                        onChange={(e) => handleEdit(outlet.id, "googleNews", e.target.checked)}
-                                        className="w-4 h-4 rounded"
-                                      />
-                                    </td>
-                                    <td className="px-3 py-2">
-                                      <div className="flex items-center gap-1.5">
-                                        <Instagram className="w-3.5 h-3.5 shrink-0" style={{ color: "#E1306C" }} />
-                                        <input
-                                          type="text"
-                                          value={displayIg || ""}
-                                          onChange={(e) => handleEdit(outlet.id, "instagramHandle", e.target.value)}
-                                          placeholder="@handle"
-                                          className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
-                                          style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
-                                        />
-                                        {displayIg && (
-                                          <a href={socialUrl("instagram", displayIg) || "#"} target="_blank" rel="noopener noreferrer">
-                                            <ExternalLink className="w-3 h-3" style={{ color: "var(--ch-primary)" }} />
-                                          </a>
-                                        )}
-                                      </div>
-                                    </td>
-                                    <td className="px-3 py-2">
-                                      <div className="flex items-center gap-1.5">
-                                        <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="currentColor" style={{ color: "#00F2EA" }}>
-                                          <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 0010.86 4.48V13.2a8.16 8.16 0 005.58 2.18v-3.45a4.85 4.85 0 01-3.59-1.62V6.69h3.59z" />
-                                        </svg>
-                                        <input
-                                          type="text"
-                                          value={displayTiktok || ""}
-                                          onChange={(e) => handleEdit(outlet.id, "tiktokHandle", e.target.value)}
-                                          placeholder="@handle"
-                                          className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
-                                          style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
-                                        />
-                                        {displayTiktok && (
-                                          <a href={socialUrl("tiktok", displayTiktok) || "#"} target="_blank" rel="noopener noreferrer">
-                                            <ExternalLink className="w-3 h-3" style={{ color: "var(--ch-primary)" }} />
-                                          </a>
-                                        )}
-                                      </div>
-                                    </td>
-                                    <td className="px-3 py-2">
-                                      <div className="flex items-center gap-1.5">
-                                        <Youtube className="w-3.5 h-3.5 shrink-0" style={{ color: "#FF0000" }} />
-                                        <input
-                                          type="text"
-                                          value={displayYoutube || ""}
-                                          onChange={(e) => handleEdit(outlet.id, "youtubeHandle", e.target.value)}
-                                          placeholder="@handle"
-                                          className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
-                                          style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
-                                        />
-                                        {displayYoutube && (
-                                          <a href={socialUrl("youtube", displayYoutube) || "#"} target="_blank" rel="noopener noreferrer">
-                                            <ExternalLink className="w-3 h-3" style={{ color: "var(--ch-primary)" }} />
-                                          </a>
-                                        )}
-                                      </div>
-                                    </td>
-                                    <td className="px-3 py-2">
-                                      <input
-                                        type="text"
-                                        value={displayGenre || ""}
-                                        onChange={(e) => handleEdit(outlet.id, "genre", e.target.value)}
-                                        placeholder="—"
-                                        className="w-24 text-[12px] px-2 py-1 rounded border bg-transparent"
-                                        style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
-                                      />
-                                    </td>
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </Card>
-              ))}
-            </div>
-          )}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="intl-outlets" className="mt-4">

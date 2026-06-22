@@ -19,11 +19,11 @@ const projects = [
   {
     id: "kemenkop-umkm",
     name: "Kementrian UMKM",
-    project: "Gerakan UMKM Go Digital",
+    project: "Amplifikasi Narasi & Edukasi UMKM oleh Influencers & Clippers",
     brief:
-      "Program transformasi digital untuk UMKM Indonesia melalui konten tutorial, workshop virtual, dan kampanye kesadaran digitalisasi usaha kecil menengah di seluruh provinsi.",
+      "Amplifikasi Narasi, Edukasi Program untuk Meningkatkan Engagement Akun Sosial Media Kementerian UMKM dan Menjangkau Berbagai Komunitas Pengguna Sosial Media",
     status: "active" as const,
-    timeline: "Feb - Jun 2026",
+    timeline: "21 Apr – 31 Dec 2026",
     deliverables: "50 Reels, 20 Carousel, 8 Video Tutorial",
     hue: 142,
     logo: "/client-logos/kementrian-umkm.png",
