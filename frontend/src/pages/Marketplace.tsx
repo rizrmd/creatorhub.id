@@ -1424,7 +1424,7 @@ export default function Marketplace() {
           <Button variant="outline" size="sm" onClick={resetFilters} className="gap-1.5">
             <RotateCcw className="w-3.5 h-3.5" /> Reset
           </Button>
-          <Button variant="outline" size="sm" onClick={() => setShowAddCreator(true)} className="gap-1.5">
+          <Button size="sm" onClick={() => setShowAddCreator(true)} className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white">
             <UserPlus className="w-3.5 h-3.5" /> Add Creator
           </Button>
           <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => setShowAdvanced(true)}>
