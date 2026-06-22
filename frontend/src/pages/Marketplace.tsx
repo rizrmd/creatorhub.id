@@ -27,7 +27,7 @@ function formatBudget(n: number): string {
   return `Rp ${n}`;
 }
 
-const CATEGORIES = ["lifestyle", "travel", "beauty", "tech", "food", "sports"];
+const CATEGORIES = ["lifestyle", "travel", "beauty", "tech", "food", "sports", "social issues", "education", "environment", "animals", "business", "mental health", "entertainment"];
 const CITIES = ["Jakarta", "Bandung", "Surabaya", "Bali", "Yogyakarta", "Medan", "Makassar"];
 const PLATFORMS = ["instagram", "tiktok", "youtube", "facebook", "x", "linkedin"];
 
@@ -63,6 +63,13 @@ const CATEGORY_COLORS: Record<string, string> = {
   tech: "bg-slate-500/20 text-slate-300",
   food: "bg-orange-500/20 text-orange-300",
   sports: "bg-green-500/20 text-green-300",
+  "social issues": "bg-red-500/20 text-red-300",
+  education: "bg-indigo-500/20 text-indigo-300",
+  environment: "bg-emerald-500/20 text-emerald-300",
+  animals: "bg-amber-500/20 text-amber-300",
+  business: "bg-cyan-500/20 text-cyan-300",
+  "mental health": "bg-violet-500/20 text-violet-300",
+  entertainment: "bg-fuchsia-500/20 text-fuchsia-300",
 };
 
 const platformIcon = (p: string) => {
