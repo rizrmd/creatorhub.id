@@ -1363,7 +1363,7 @@ export default function Marketplace() {
         {/* Filters row 2 */}
         <div className="px-3 sm:px-4 py-2 bg-[#0B1120] flex flex-wrap items-center gap-2">
           <Select value={followersVal} onValueChange={applyFollowers}>
-            <SelectTrigger className="w-full sm:w-40"><SelectValue placeholder="Followers" /></SelectTrigger>
+            <SelectTrigger className="w-full sm:w-40"><SelectValue placeholder="Creator Tier" /></SelectTrigger>
             <SelectContent>{FOLLOWERS_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
           </Select>
 
