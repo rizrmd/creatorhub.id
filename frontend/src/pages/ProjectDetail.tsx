@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
   Briefcase, ChevronRight, Calendar,
   Eye, FileText, BarChart3, FolderOpen,
-  Clock, Instagram, Youtube, ChevronDown,
+  Clock, ChevronDown,
   Users,
   Target, Heart, Star, Shield, Gauge,
   Cpu, Settings, ArrowDown,
@@ -130,6 +130,12 @@ const PLATFORM_ICONS: Record<string, string> = {
   youtube: "YouTube",
 };
 
+const PLATFORM_LOGOS: Record<string, string> = {
+  instagram: "/logo-instagram.png",
+  tiktok: "/logo-tiktok.png",
+  youtube: "/logo-youtube.png",
+};
+
 const OVERVIEW_SUB_TABS = [
   { value: "workstream", label: "Workstream" },
   { value: "skema", label: "Skema Glorifikasi" },
@@ -172,31 +178,16 @@ const SKEMA_CLIPPERS = {
   nano: { count: 40, ig: 20, tiktok: 20, followers: "1K – <10K" },
 };
 
-const SKEMA_DISTRIBUTION = [
-  {
-    platform: "Instagram",
-    color: "#E1306C",
-    shelter: { name: "Makro Akun News", followers: "300K+", type: "Shelter Account" },
-    kanal: ["Nasional Megapolitan", "Pertanian & Kelautan", "Citizen Journalism", "Video Series"],
-    contentType: "Infographic, Video Post, Reels",
-    amplifier: 150,
-  },
-  {
-    platform: "TikTok",
-    color: "#00F2EA",
-    shelter: { name: "Makro Akun Entertainment", followers: "450K+", type: "Shelter Account" },
-    kanal: ["Artist & Music", "Art & Culture", "Video Series"],
-    contentType: "Video TikTok (VT), Infographic",
-    amplifier: 150,
-  },
-  {
-    platform: "YouTube",
-    color: "#FF0000",
-    shelter: { name: "Video Edukasi Makro Akun", followers: "500K", type: "Sport Tourism & SME" },
-    kanal: ["Sport", "Tourism", "Environment", "UMKM", "Video Series"],
-    contentType: "Video, YouTube Shorts",
-    amplifier: 150,
-  },
+const SKEMA_SHELTERS = [
+  { platform: "Instagram", color: "#E1306C", followers: "100K+", type: "Akun Makro", kanal: ["Homeless Media", "Citizen Journalism"] },
+  { platform: "TikTok", color: "#00F2EA", followers: "450K+", kanal: ["Berita terkait UMKM", "Kementerian UMKM"] },
+  { platform: "YouTube", color: "#FF0000", followers: "500K+", kanal: ["Berita terkait UMKM"] },
+];
+
+const SKEMA_AMPLIFIERS = [
+  { platform: "Instagram", color: "#E1306C", count: 150 },
+  { platform: "TikTok", color: "#00F2EA", count: 150 },
+  { platform: "YouTube", color: "#FF0000", count: 150 },
 ];
 
 /* ═══════════════════════════════ COMPONENT ═══════════════════════════════ */
@@ -244,13 +235,9 @@ export default function ProjectDetail() {
             </h1>
             <p className="text-[12px] text-white/50 max-w-xl leading-relaxed mt-2">{project.brief}</p>
             <div className="flex items-center gap-3 mt-3">
+              <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Target Platform:</span>
               {project.platforms.map((p) => (
-                <span key={p} className="flex items-center gap-1.5 text-[11px] font-semibold text-white/60">
-                  {p === "instagram" && <Instagram className="w-3.5 h-3.5" />}
-                  {p === "tiktok" && <span className="text-[12px]">♪</span>}
-                  {p === "youtube" && <Youtube className="w-3.5 h-3.5" />}
-                  {PLATFORM_ICONS[p]}
-                </span>
+                <img key={p} src={PLATFORM_LOGOS[p]} alt={PLATFORM_ICONS[p]} className="h-4 w-auto" />
               ))}
             </div>
             <div className="grid grid-cols-2 gap-x-6 gap-y-3 mt-4 pt-3 max-w-md">
@@ -424,76 +411,119 @@ export default function ProjectDetail() {
                       <div className="rounded-lg p-4 border text-center" style={{ borderColor: "rgba(59,130,246,0.3)", background: "rgba(59,130,246,0.05)" }}>
                         <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#3B82F6" }}>Micro Influencer</p>
                         <p className="text-[28px] font-extrabold leading-none mt-1" style={{ color: "#3B82F6", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{SKEMA_CLIPPERS.micro.count}</p>
-                        <p className="text-[11px] mt-1" style={{ color: "var(--ch-text-muted)" }}>Akun ({SKEMA_CLIPPERS.micro.ig} IG, {SKEMA_CLIPPERS.micro.tiktok} TikTok)</p>
-                        <p className="text-[10px] font-semibold mt-0.5" style={{ color: "#3B82F6" }}>{SKEMA_CLIPPERS.micro.followers} Followers</p>
+                        <p className="text-[11px] mt-1 font-semibold" style={{ color: "var(--ch-text)" }}>Akun</p>
+                        <div className="flex items-center justify-center gap-2 mt-1">
+                          <span className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{SKEMA_CLIPPERS.micro.ig} Akun Instagram</span>
+                          <span className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>·</span>
+                          <span className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{SKEMA_CLIPPERS.micro.tiktok} Akun TikTok</span>
+                        </div>
+                        <p className="text-[10px] font-semibold mt-1" style={{ color: "#3B82F6" }}>{SKEMA_CLIPPERS.micro.followers} Followers</p>
                       </div>
                       <div className="rounded-lg p-4 border text-center" style={{ borderColor: "rgba(16,185,129,0.3)", background: "rgba(16,185,129,0.05)" }}>
                         <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#10B981" }}>Nano Influencer</p>
                         <p className="text-[28px] font-extrabold leading-none mt-1" style={{ color: "#10B981", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{SKEMA_CLIPPERS.nano.count}</p>
-                        <p className="text-[11px] mt-1" style={{ color: "var(--ch-text-muted)" }}>Akun ({SKEMA_CLIPPERS.nano.ig} IG, {SKEMA_CLIPPERS.nano.tiktok} TikTok)</p>
-                        <p className="text-[10px] font-semibold mt-0.5" style={{ color: "#10B981" }}>{SKEMA_CLIPPERS.nano.followers} Followers</p>
+                        <p className="text-[11px] mt-1 font-semibold" style={{ color: "var(--ch-text)" }}>Akun</p>
+                        <div className="flex items-center justify-center gap-2 mt-1">
+                          <span className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{SKEMA_CLIPPERS.nano.ig} Akun Instagram</span>
+                          <span className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>·</span>
+                          <span className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{SKEMA_CLIPPERS.nano.tiktok} Akun TikTok</span>
+                        </div>
+                        <p className="text-[10px] font-semibold mt-1" style={{ color: "#10B981" }}>{SKEMA_CLIPPERS.nano.followers} Followers</p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Arrow Down */}
+                  {/* Arrow Down — Clippers to Official Accounts */}
                   <div className="flex justify-center"><ArrowDown className="w-5 h-5" style={{ color: "var(--ch-text-muted)" }} /></div>
 
-                  {/* Tier 2 — Authority */}
+                  {/* Tier 2 — OFFICIAL ACCOUNTS */}
                   <div className="rounded-xl border p-5" style={{ background: "var(--ch-bg)", borderColor: "var(--ch-border)" }}>
-                    <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "#F97316" }}>Authority</p>
-                    <div className="flex items-center justify-center gap-3">
-                      <div className="rounded-lg px-4 py-3 border text-center" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
-                        <p className="text-[12px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Menteri UMKM</p>
-                      </div>
-                      <div className="rounded-lg px-5 py-3 border-2 text-center" style={{ borderColor: "#F97316", background: "rgba(249,115,22,0.08)" }}>
-                        <p className="text-[13px] font-extrabold" style={{ color: "#F97316", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Kementerian UMKM</p>
-                      </div>
-                      <div className="rounded-lg px-4 py-3 border text-center" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
-                        <p className="text-[12px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Wakil Menteri UMKM</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "#F97316" }}>Official Accounts</p>
+                    <div className="flex items-center justify-center">
+                      <div className="rounded-lg px-6 py-3 border-2 text-center" style={{ borderColor: "#F97316", background: "rgba(249,115,22,0.08)" }}>
+                        <p className="text-[14px] font-extrabold" style={{ color: "#F97316", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Kementerian UMKM</p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Arrow Down */}
-                  <div className="flex justify-center"><ArrowDown className="w-5 h-5" style={{ color: "var(--ch-text-muted)" }} /></div>
+                  {/* Arrow Up + Left/Right — Shelter & Amplifier to Official Accounts */}
+                  <div className="flex items-center gap-4">
+                    {/* Shelter side — arrows up */}
+                    <div className="flex-1 flex flex-col items-center gap-1">
+                      <svg width="40" height="30" viewBox="0 0 40 30">
+                        <line x1="20" y1="30" x2="20" y2="5" stroke="#F97316" strokeWidth="2" />
+                        <polygon points="15,5 20,0 25,5" fill="#F97316" />
+                      </svg>
+                    </div>
+                    {/* Center label */}
+                    <div className="shrink-0 text-center">
+                      <p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Likes, Comments, Shares, Mentions</p>
+                    </div>
+                    {/* Amplifier side — arrows up */}
+                    <div className="flex-1 flex flex-col items-center gap-1">
+                      <svg width="40" height="30" viewBox="0 0 40 30">
+                        <line x1="20" y1="30" x2="20" y2="5" stroke="#F97316" strokeWidth="2" />
+                        <polygon points="15,5 20,0 25,5" fill="#F97316" />
+                      </svg>
+                    </div>
+                  </div>
 
-                  {/* Tier 3 — Distribution */}
-                  <div className="rounded-xl border p-5" style={{ background: "var(--ch-bg)", borderColor: "var(--ch-border)" }}>
-                    <p className="text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: "#F97316" }}>Content Distribution</p>
-                    <div className="grid grid-cols-3 gap-3">
-                      {SKEMA_DISTRIBUTION.map((col) => (
-                        <div key={col.platform} className="rounded-lg border overflow-hidden" style={{ borderColor: "var(--ch-border)" }}>
-                          {/* Platform Header */}
-                          <div className="px-3 py-2 text-center" style={{ background: `${col.color}15` }}>
-                            <p className="text-[12px] font-extrabold" style={{ color: col.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{col.platform}</p>
-                            <p className="text-[9px]" style={{ color: "var(--ch-text-muted)" }}>{col.contentType}</p>
-                          </div>
-                          {/* Shelter */}
-                          <div className="px-3 py-2 border-b" style={{ borderColor: "var(--ch-border)" }}>
-                            <p className="text-[9px] font-bold uppercase" style={{ color: col.color }}>{col.shelter.type}</p>
-                            <p className="text-[11px] font-bold" style={{ color: "var(--ch-text)" }}>{col.shelter.name}</p>
-                            <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{col.shelter.followers} Followers</p>
-                          </div>
-                          {/* Kanals */}
-                          <div className="px-3 py-2 border-b" style={{ borderColor: "var(--ch-border)" }}>
-                            <ul className="space-y-0.5">
-                              {col.kanal.map((k) => (
+                  {/* Tier 3 — Shelter + Amplifier side by side */}
+                  <div className="grid grid-cols-[1fr_40px_1fr] gap-0 items-start">
+
+                    {/* Shelter column */}
+                    <div className="rounded-xl border overflow-hidden" style={{ background: "var(--ch-bg)", borderColor: "var(--ch-border)" }}>
+                      <p className="text-[10px] font-bold uppercase tracking-widest px-4 pt-4 pb-2" style={{ color: "#F97316" }}>Shelter Accounts</p>
+                      <div className="space-y-2 px-3 pb-3">
+                        {SKEMA_SHELTERS.map((s) => (
+                          <div key={s.platform} className="rounded-lg border p-3" style={{ borderColor: `${s.color}40`, background: `${s.color}08` }}>
+                            <div className="flex items-center gap-2 mb-1.5">
+                              <img src={PLATFORM_LOGOS[s.platform.toLowerCase()]} alt={s.platform} className="h-3.5 w-auto" />
+                              <p className="text-[11px] font-extrabold" style={{ color: s.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{s.platform}</p>
+                            </div>
+                            {s.type && <p className="text-[9px] font-bold uppercase" style={{ color: s.color }}>{s.type}</p>}
+                            <p className="text-[12px] font-bold" style={{ color: "var(--ch-text)" }}>{s.followers} Followers</p>
+                            <ul className="mt-1 space-y-0.5">
+                              {s.kanal.map((k) => (
                                 <li key={k} className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>• {k}</li>
                               ))}
                             </ul>
                           </div>
-                          {/* Amplifier */}
-                          <div className="px-3 py-2 text-center" style={{ background: `${col.color}08` }}>
-                            <p className="text-[20px] font-extrabold leading-none" style={{ color: col.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{col.amplifier}</p>
-                            <p className="text-[9px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Akun Amplifier</p>
-                            <p className="text-[9px]" style={{ color: "var(--ch-text-muted)" }}>(100 – 1.000 Followers)</p>
-                          </div>
-                        </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Center arrows — amplifier to shelter */}
+                    <div className="flex flex-col items-center justify-center h-full py-6">
+                      {SKEMA_AMPLIFIERS.map((a, i) => (
+                        <svg key={a.platform} width="40" height="50" viewBox="0 0 40 50">
+                          <line x1="5" y1="25" x2="35" y2="25" stroke={a.color} strokeWidth="2" />
+                          <polygon points="5,20 0,25 5,30" fill={a.color} />
+                          <line x1="20" y1={i * 50 + 40} x2="20" y2={i * 50 + 30} stroke="transparent" strokeWidth="1" />
+                        </svg>
                       ))}
                     </div>
-                    <p className="text-[10px] text-center mt-3 italic" style={{ color: "var(--ch-text-muted)" }}>Likes, Comments, Shares, Mentions</p>
+
+                    {/* Amplifier column — wrapped in one frame */}
+                    <div className="rounded-xl border overflow-hidden" style={{ background: "var(--ch-bg)", borderColor: "var(--ch-border)" }}>
+                      <p className="text-[10px] font-bold uppercase tracking-widest px-4 pt-4 pb-2" style={{ color: "#F97316" }}>Amplifier Accounts</p>
+                      <div className="space-y-2 px-3 pb-3">
+                        {SKEMA_AMPLIFIERS.map((a) => (
+                          <div key={a.platform} className="rounded-lg border p-3 text-center" style={{ borderColor: `${a.color}40`, background: `${a.color}08` }}>
+                            <div className="flex items-center justify-center gap-2 mb-1">
+                              <img src={PLATFORM_LOGOS[a.platform.toLowerCase()]} alt={a.platform} className="h-3.5 w-auto" />
+                              <p className="text-[11px] font-extrabold" style={{ color: a.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{a.platform}</p>
+                            </div>
+                            <p className="text-[22px] font-extrabold leading-none" style={{ color: a.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{a.count}</p>
+                            <p className="text-[10px] font-semibold mt-0.5" style={{ color: "var(--ch-text-muted)" }}>Akun Amplifier</p>
+                            <p className="text-[9px]" style={{ color: "var(--ch-text-muted)" }}>(100 – 1.000 Followers)</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
+
+                  <p className="text-[10px] text-center italic" style={{ color: "var(--ch-text-muted)" }}>Likes, Comments, Shares, Mentions</p>
                 </div>
               )}
 
