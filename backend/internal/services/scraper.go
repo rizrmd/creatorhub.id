@@ -65,7 +65,8 @@ func doHTTPGet(url string, extraHeaders map[string]string) ([]byte, int, error) 
 	req.Header.Set("User-Agent", chromeUA)
 	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8")
 	req.Header.Set("Accept-Language", "en-US,en;q=0.9,id;q=0.8")
-	req.Header.Set("Accept-Encoding", "gzip, deflate, br")
+	// Do NOT set Accept-Encoding manually — Go's transport auto-decompresses gzip/deflate.
+	// Manually setting it disables auto-decompression, causing us to read raw compressed bytes.
 	req.Header.Set("Cache-Control", "no-cache")
 	req.Header.Set("Sec-Fetch-Dest", "document")
 	req.Header.Set("Sec-Fetch-Mode", "navigate")
