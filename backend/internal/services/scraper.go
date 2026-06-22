@@ -712,9 +712,17 @@ func scrapeTwitterSyndication(handle string) *ScrapeResult {
 	}
 
 	var followers int64
-	re = regexp.MustCompile(`(\d[\d,]*\.?\d*[KMBkmb]?)\s*Followers`)
+	// Try JSON format first: "followers_count":240400886
+	re = regexp.MustCompile(`"followers_count":\s*(\d+)`)
 	if m := re.FindStringSubmatch(html); len(m) > 1 {
-		followers = parseFollowerCount(m[1])
+		followers, _ = strconv.ParseInt(m[1], 10, 64)
+	}
+	// Fallback: text format "240M Followers"
+	if followers == 0 {
+		re = regexp.MustCompile(`([\d,.]+[KMBkmb]?)\s*Followers`)
+		if m := re.FindStringSubmatch(html); len(m) > 1 {
+			followers = parseFollowerCount(m[1])
+		}
 	}
 
 	name := handle
