@@ -236,9 +236,11 @@ export default function ProjectDetail() {
             <p className="text-[12px] text-white/50 max-w-xl leading-relaxed mt-2">{project.brief}</p>
             <div className="flex items-center gap-3 mt-3">
               <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Target Platform:</span>
-              {project.platforms.map((p) => (
-                <img key={p} src={PLATFORM_LOGOS[p]} alt={PLATFORM_ICONS[p]} className="h-4 w-auto" />
-              ))}
+              <div className="flex items-center gap-2 bg-white/5 rounded-lg px-2.5 py-1.5 border border-white/10">
+                {project.platforms.map((p) => (
+                  <img key={p} src={PLATFORM_LOGOS[p]} alt={PLATFORM_ICONS[p]} className="h-5 w-auto object-contain" style={{ filter: "brightness(1.2) contrast(1.1)" }} />
+                ))}
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-x-6 gap-y-3 mt-4 pt-3 max-w-md">
               <div>
@@ -281,7 +283,7 @@ export default function ProjectDetail() {
             { value: "files", label: "Files & Assets", icon: FolderOpen },
             { value: "activity", label: "Activity Log", icon: Clock },
           ].map((tab) => (
-            <TabsTrigger key={tab.value} value={tab.value} className={`text-[13px] font-bold px-3 py-1.5 rounded-lg transition-all ${activeTab === tab.value ? "bg-orange-500 text-white shadow-md shadow-orange-500/20" : "text-white/50 hover:text-white/80"}`} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            <TabsTrigger key={tab.value} value={tab.value} className={`text-[13px] font-bold px-3 py-1.5 rounded-lg transition-all ${activeTab === tab.value ? "bg-orange-500 text-white shadow-md shadow-orange-500/20" : "text-[#94A3B8] hover:text-white/80"}`} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
               <tab.icon className="w-4 h-4 mr-1.5" />
               {tab.label}
             </TabsTrigger>
@@ -293,13 +295,13 @@ export default function ProjectDetail() {
           <div className="flex rounded-xl overflow-hidden border" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", minHeight: "480px" }}>
 
             {/* Vertical Sub-Tab Sidebar */}
-            <div className="w-12 shrink-0 flex flex-col border-r" style={{ borderColor: "var(--ch-border)", background: "var(--ch-bg)" }}>
+            <div className="w-14 shrink-0 flex flex-col border-r" style={{ borderColor: "var(--ch-border)", background: "var(--ch-bg)" }}>
               {OVERVIEW_SUB_TABS.map((sub) => {
                 const isActive = activeSubTab === sub.value;
                 return (
                   <button key={sub.value} onClick={() => setActiveSubTab(sub.value)} className={`flex-1 flex items-center justify-center relative transition-all ${isActive ? "bg-orange-500/10" : "hover:bg-white/5"}`}>
                     {isActive && <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full bg-orange-500" />}
-                    <span className="text-[10px] font-bold tracking-widest select-none" style={{ writingMode: "vertical-lr", transform: "rotate(180deg)", color: isActive ? "#F97316" : "var(--ch-text-muted)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                    <span className="text-[11px] font-bold tracking-widest select-none" style={{ writingMode: "vertical-lr", transform: "rotate(180deg)", color: isActive ? "#F97316" : "#E2E8F0", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                       {sub.label}
                     </span>
                   </button>
