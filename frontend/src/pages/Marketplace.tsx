@@ -33,10 +33,11 @@ const PLATFORMS = ["instagram", "tiktok", "youtube", "facebook", "x", "linkedin"
 
 const FOLLOWERS_OPTIONS = [
   { label: "All", value: "all" },
-  { label: "< 300K", value: "0-300000" },
-  { label: "300K – 500K", value: "300000-500000" },
-  { label: "500K – 700K", value: "500000-700000" },
-  { label: "700K+", value: "700000-0" },
+  { label: "Mega (1M+)", value: "1000000-0" },
+  { label: "Makro (100K–1M)", value: "100000-1000000" },
+  { label: "Mikro (10K–100K)", value: "10000-100000" },
+  { label: "Nano (1K–10K)", value: "1000-10000" },
+  { label: "Amplifier (<1K)", value: "0-1000" },
 ];
 
 const ENGAGEMENT_OPTIONS = [
@@ -681,6 +682,52 @@ const ADD_PLATFORMS = [
   )},
 ];
 
+function parseSocialUrl(url: string): { platform: string; handle: string } | null {
+  const trimmed = url.trim();
+  try {
+    const u = new URL(trimmed.startsWith("http") ? trimmed : `https://${trimmed}`);
+    const host = u.hostname.replace(/^www\./, "");
+    const path = u.pathname.replace(/^\/+|\/+$/g, "");
+
+    if (host === "instagram.com" && path) {
+      const handle = path.split("/")[0];
+      if (handle && !["p", "reel", "stories", "explore", "accounts", "direct"].includes(handle)) {
+        return { platform: "instagram", handle };
+      }
+    }
+    if (host === "tiktok.com") {
+      const handle = path.startsWith("@") ? path.split("/")[0].slice(1) : path.split("/")[0];
+      if (handle) return { platform: "tiktok", handle };
+    }
+    if (host === "youtube.com" || host === "m.youtube.com") {
+      if (path.startsWith("@")) return { platform: "youtube", handle: path.split("/")[0].slice(1) };
+      const chMatch = path.match(/^channel\/([^/]+)/);
+      if (chMatch) return { platform: "youtube", handle: chMatch[1] };
+      const userMatch = path.match(/^user\/([^/]+)/);
+      if (userMatch) return { platform: "youtube", handle: userMatch[1] };
+    }
+    if (host === "x.com" || host === "twitter.com") {
+      const handle = path.split("/")[0];
+      if (handle && !["home", "explore", "search", "notifications", "messages", "settings"].includes(handle)) {
+        return { platform: "x", handle };
+      }
+    }
+    if (host === "facebook.com" || host === "m.facebook.com") {
+      const handle = path.split("/")[0];
+      if (handle && !["login", "register", "groups", "pages", "events", "marketplace"].includes(handle)) {
+        return { platform: "facebook", handle };
+      }
+    }
+    if (host === "threads.net") {
+      const handle = path.startsWith("@") ? path.split("/")[0].slice(1) : path.split("/")[0];
+      if (handle) return { platform: "threads", handle };
+    }
+  } catch {
+    // not a valid URL, try as bare handle
+  }
+  return null;
+}
+
 function AddCreatorDialog({ open, onOpenChange, onCreated }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -693,6 +740,62 @@ function AddCreatorDialog({ open, onOpenChange, onCreated }: {
   const [platforms, setPlatforms] = useState<PlatformInput[]>([]);
   const [scraping, setScraping] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
+  const [urlInput, setUrlInput] = useState("");
+
+  const handleUrlSubmit = async () => {
+    const parsed = parseSocialUrl(urlInput);
+    if (!parsed) {
+      toast.error("Link tidak valid atau platform tidak dikenali");
+      return;
+    }
+
+    const { platform: platformId, handle } = parsed;
+
+    // ensure platform is toggled on
+    setPlatforms((prev) => {
+      const exists = prev.find((p) => p.platform === platformId);
+      if (exists) {
+        return prev.map((p) => (p.platform === platformId ? { ...p, handle } : p));
+      }
+      return [...prev, { platform: platformId, handle, profilePictureUrl: "", followers: 0 }];
+    });
+
+    setUrlInput("");
+    toast.success(`Detected ${platformId} — fetching data...`);
+
+    // scrape after a tick so state is updated
+    setTimeout(async () => {
+      setScraping(platformId);
+      try {
+        const result: ScrapeResponse = await creatorsApi.scrapeSocial({
+          platform: platformId,
+          handle,
+        });
+
+        setPlatforms((prev) =>
+          prev.map((p) =>
+            p.platform === platformId
+              ? {
+                  ...p,
+                  profilePictureUrl: result.profilePictureUrl || p.profilePictureUrl,
+                  followers: result.followerCount || p.followers,
+                }
+              : p
+          )
+        );
+
+        if (result.success) {
+          toast.success(`${platformId} data fetched successfully`);
+        } else {
+          toast.error(result.error || `Failed to fetch ${platformId} data`);
+        }
+      } catch {
+        toast.error(`Failed to fetch ${platformId} data`);
+      } finally {
+        setScraping(null);
+      }
+    }, 50);
+  };
 
   const togglePlatform = (platformId: string) => {
     setPlatforms((prev) => {
@@ -873,6 +976,29 @@ function AddCreatorDialog({ open, onOpenChange, onCreated }: {
             <label className="text-sm font-medium flex items-center gap-2" style={{ color: "var(--ch-text)" }}>
               <Link2 className="w-4 h-4" /> Social Media Links
             </label>
+
+            <div className="flex items-center gap-2">
+              <Input
+                placeholder="Paste link Instagram, TikTok, YouTube, dll..."
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleUrlSubmit();
+                  }
+                }}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                className="shrink-0"
+                disabled={!urlInput.trim()}
+                onClick={handleUrlSubmit}
+              >
+                Detect
+              </Button>
+            </div>
 
             <div className="space-y-2">
               {ADD_PLATFORMS.map((platformDef) => {
