@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -225,19 +226,27 @@ func scrapeYouTubeHTML(handle string) *ScrapeResult {
 // --- TikTok ---
 
 func scrapeTikTok(handle string) *ScrapeResult {
-	// Method 1: oEmbed API (reliable)
+	// Method 1: TikHub API (third-party, most reliable from datacenter IPs)
+	if apiKey := os.Getenv("TIKHUB_API_KEY"); apiKey != "" {
+		result := scrapeTikTokTikHub(handle, apiKey)
+		if result.Success && result.FollowerCount > 0 {
+			return result
+		}
+	}
+
+	// Method 2: oEmbed API
 	oembedResult := scrapeTikTokOEmbed(handle)
 	if oembedResult.Success && oembedResult.FollowerCount > 0 {
 		return oembedResult
 	}
 
-	// Method 2: TikTok web API
+	// Method 3: TikTok web API
 	apiResult := scrapeTikTokAPI(handle)
 	if apiResult.Success && apiResult.FollowerCount > 0 {
 		return apiResult
 	}
 
-	// Method 3: HTML page scraping
+	// Method 4: HTML page scraping
 	htmlResult := scrapeTikTokHTML(handle)
 
 	// Merge best results
@@ -273,10 +282,76 @@ func scrapeTikTok(handle string) *ScrapeResult {
 	}
 
 	if !result.Success {
-		result.Error = "could not fetch TikTok data"
+		result.Error = "TikTok blocks server requests (datacenter IP). Set TIKHUB_API_KEY env var or enter data manually."
 	}
 
 	return result
+}
+
+func scrapeTikTokTikHub(handle, apiKey string) *ScrapeResult {
+	url := fmt.Sprintf("https://api.tikhub.io/api/v1/tiktok/web/fetch_user_profile?uniqueId=%s", handle)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return &ScrapeResult{Success: false}
+	}
+	req.Header.Set("Authorization", "Bearer "+apiKey)
+	req.Header.Set("Accept", "application/json")
+
+	resp, err := httpClient.Do(req)
+	if err != nil || resp.StatusCode != 200 {
+		return &ScrapeResult{Success: false}
+	}
+	defer resp.Body.Close()
+	body, _ := io.ReadAll(resp.Body)
+
+	var tikhubResp struct {
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+		Data    struct {
+			UserInfo struct {
+				User struct {
+					Nickname     string `json:"nickname"`
+					AvatarLarger string `json:"avatarLarger"`
+					Signature    string `json:"signature"`
+					UniqueID     string `json:"uniqueId"`
+				} `json:"user"`
+				Stats struct {
+					FollowerCount  int64 `json:"followerCount"`
+					FollowingCount int64 `json:"followingCount"`
+					HeartCount     int64 `json:"heartCount"`
+					VideoCount     int64 `json:"videoCount"`
+				} `json:"stats"`
+			} `json:"userInfo"`
+		} `json:"data"`
+	}
+
+	if err := json.Unmarshal(body, &tikhubResp); err != nil {
+		return &ScrapeResult{Success: false}
+	}
+	if tikhubResp.Code != 200 && tikhubResp.Code != 0 {
+		return &ScrapeResult{Success: false}
+	}
+
+	user := tikhubResp.Data.UserInfo
+	picURL := user.User.AvatarLarger
+	if strings.HasPrefix(picURL, "//") {
+		picURL = "https:" + picURL
+	}
+
+	name := user.User.Nickname
+	if name == "" {
+		name = handle
+	}
+
+	return &ScrapeResult{
+		ProfilePictureURL: picURL,
+		FollowerCount:     user.Stats.FollowerCount,
+		FollowingCount:    user.Stats.FollowingCount,
+		LikesCount:        user.Stats.HeartCount,
+		Bio:               user.User.Signature,
+		DisplayName:       name,
+		Success:           picURL != "" || user.Stats.FollowerCount > 0,
+	}
 }
 
 func scrapeTikTokOEmbed(handle string) *ScrapeResult {

@@ -1,6 +1,6 @@
 ﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Briefcase, Clock, CheckCircle2, Loader2, User } from "lucide-react";
+import { Briefcase, Clock, CheckCircle2, Loader2, User, Plus } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 const projects = [
@@ -168,7 +168,7 @@ export default function Analytics() {
   return (
     <div className="p-4 md:p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1
             className="text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]"
@@ -183,6 +183,13 @@ export default function Analytics() {
             Portofolio proyek kampanye digital dan pipeline klien kami.
           </p>
         </div>
+        <button
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold text-white shrink-0"
+          style={{ background: "var(--ch-primary)" }}
+        >
+          <Plus style={{ width: 13, height: 13 }} />
+          {activeTab === "leads" ? "New Lead" : "New Project"}
+        </button>
       </div>
 
       {/* Tabs */}
@@ -190,14 +197,24 @@ export default function Analytics() {
         <TabsList variant="line" className="border-b w-full justify-start gap-0">
           <TabsTrigger
             value="projects"
-            className="text-[14px] font-semibold px-4 py-2 rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--ch-primary)] data-[state=active]:text-[var(--ch-primary)] data-[state=active]:shadow-none"
+            className={`text-[13px] font-bold px-3 py-1.5 rounded-lg transition-all ${
+              activeTab === "projects"
+                ? "bg-orange-500 text-white shadow-md shadow-orange-500/20"
+                : "text-white/50 hover:text-white/80"
+            }`}
+            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
           >
             <Briefcase className="w-4 h-4 mr-1.5" />
             Projects
           </TabsTrigger>
           <TabsTrigger
             value="leads"
-            className="text-[14px] font-semibold px-4 py-2 rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--ch-primary)] data-[state=active]:text-[var(--ch-primary)] data-[state=active]:shadow-none"
+            className={`text-[13px] font-bold px-3 py-1.5 rounded-lg transition-all ${
+              activeTab === "leads"
+                ? "bg-orange-500 text-white shadow-md shadow-orange-500/20"
+                : "text-white/50 hover:text-white/80"
+            }`}
+            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
           >
             <User className="w-4 h-4 mr-1.5" />
             Leads
@@ -216,7 +233,7 @@ export default function Analytics() {
                   onClick={() => navigate(`/dashboard/projects/${p.id}`)}
                   className="rounded-[14px] border overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
                   style={{
-                    background: "#FFFFFF",
+                    background: "var(--ch-surface)",
                     borderColor: "var(--ch-border)",
                     boxShadow: "var(--ch-shadow-sm)",
                   }}
@@ -307,7 +324,7 @@ export default function Analytics() {
                   key={l.id}
                   className="rounded-[14px] border overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
                   style={{
-                    background: "#FFFFFF",
+                    background: "var(--ch-surface)",
                     borderColor: "var(--ch-border)",
                     boxShadow: "var(--ch-shadow-sm)",
                   }}

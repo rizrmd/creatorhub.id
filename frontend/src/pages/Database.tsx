@@ -630,8 +630,8 @@ export default function DatabasePage() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex items-center gap-2 px-4 py-2 text-[13px] font-semibold rounded-lg text-white transition-colors"
-                style={{ background: saving ? "#94A3B8" : "var(--ch-primary)" }}
+                className="flex items-center gap-2 px-3 py-1.5 text-[12px] font-semibold rounded-lg text-white transition-colors"
+                style={{ background: saving ? "#94A3B8" : "#F97316", boxShadow: saving ? "none" : "0 2px 8px rgba(249,115,22,0.25)" }}
               >
                 {saving ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -652,8 +652,8 @@ export default function DatabasePage() {
                 </p>
                 <button
                   onClick={clearNetworkSearch}
-                  className="text-[12px] font-semibold px-3 py-1 rounded-lg border transition-colors hover:bg-slate-50"
-                  style={{ borderColor: "var(--ch-border)", color: "var(--ch-primary)" }}
+                  className="text-[12px] font-semibold px-3 py-1 rounded-lg transition-colors"
+                  style={{ background: "rgba(249,115,22,0.1)", color: "#F97316" }}
                 >
                   Clear search
                 </button>
