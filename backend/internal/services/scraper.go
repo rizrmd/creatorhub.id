@@ -20,20 +20,17 @@ type ScrapeResult struct {
 }
 
 var httpClient = &http.Client{
-	Timeout: 15 * time.Second,
+	Timeout: 20 * time.Second,
 	CheckRedirect: func(req *http.Request, via []*http.Request) error {
-		if len(via) >= 5 {
+		if len(via) >= 8 {
 			return fmt.Errorf("too many redirects")
 		}
 		return nil
 	},
 }
 
-var defaultHeaders = map[string]string{
-	"Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-	"Accept-Language": "en-US,en;q=0.9",
-	"Cache-Control":   "no-cache",
-}
+var chromeUA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+var mobileUA = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1"
 
 func ScrapeSocial(platform, handle string) *ScrapeResult {
 	handle = strings.TrimPrefix(handle, "@")
@@ -62,10 +59,16 @@ func doHTTPGet(url string, extraHeaders map[string]string) ([]byte, int, error) 
 	if err != nil {
 		return nil, 0, err
 	}
-	for k, v := range defaultHeaders {
-		req.Header.Set(k, v)
-	}
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36")
+	req.Header.Set("User-Agent", chromeUA)
+	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8")
+	req.Header.Set("Accept-Language", "en-US,en;q=0.9,id;q=0.8")
+	req.Header.Set("Accept-Encoding", "gzip, deflate, br")
+	req.Header.Set("Cache-Control", "no-cache")
+	req.Header.Set("Sec-Fetch-Dest", "document")
+	req.Header.Set("Sec-Fetch-Mode", "navigate")
+	req.Header.Set("Sec-Fetch-Site", "none")
+	req.Header.Set("Sec-Fetch-User", "?1")
+	req.Header.Set("Upgrade-Insecure-Requests", "1")
 	for k, v := range extraHeaders {
 		req.Header.Set(k, v)
 	}
@@ -84,8 +87,81 @@ func doHTTPGet(url string, extraHeaders map[string]string) ([]byte, int, error) 
 // --- YouTube ---
 
 func scrapeYouTube(handle string) *ScrapeResult {
+	// Method 1: oEmbed API (reliable for name + pic)
+	oembedResult := scrapeYouTubeOEmbed(handle)
+
+	// Method 2: HTML page scraping for follower count
+	htmlResult := scrapeYouTubeHTML(handle)
+
+	// Merge results: oembed for name/pic, html for followers
+	result := &ScrapeResult{
+		Success: oembedResult.Success || htmlResult.Success,
+	}
+
+	if oembedResult.Success {
+		result.DisplayName = oembedResult.DisplayName
+		result.ProfilePictureURL = oembedResult.ProfilePictureURL
+	}
+	if htmlResult.Success {
+		if result.ProfilePictureURL == "" {
+			result.ProfilePictureURL = htmlResult.ProfilePictureURL
+		}
+		if result.DisplayName == "" || result.DisplayName == handle {
+			result.DisplayName = htmlResult.DisplayName
+		}
+		result.FollowerCount = htmlResult.FollowerCount
+	}
+
+	if result.DisplayName == "" {
+		result.DisplayName = handle
+	}
+
+	if !result.Success {
+		result.Error = "could not fetch YouTube data"
+	}
+
+	return result
+}
+
+func scrapeYouTubeOEmbed(handle string) *ScrapeResult {
+	url := fmt.Sprintf("https://www.youtube.com/oembed?url=https://www.youtube.com/@%s&format=json", handle)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return &ScrapeResult{Success: false}
+	}
+	req.Header.Set("User-Agent", chromeUA)
+	resp, err := httpClient.Do(req)
+	if err != nil || resp.StatusCode != 200 {
+		return &ScrapeResult{Success: false}
+	}
+	defer resp.Body.Close()
+	body, _ := io.ReadAll(resp.Body)
+
+	var oembed struct {
+		Title   string `json:"title"`
+		IconURL string `json:"icon_url"`
+	}
+	if err := json.Unmarshal(body, &oembed); err != nil {
+		return &ScrapeResult{Success: false}
+	}
+
+	picURL := oembed.IconURL
+	if strings.HasPrefix(picURL, "//") {
+		picURL = "https:" + picURL
+	}
+
+	return &ScrapeResult{
+		ProfilePictureURL: picURL,
+		DisplayName:       oembed.Title,
+		Success:           true,
+	}
+}
+
+func scrapeYouTubeHTML(handle string) *ScrapeResult {
 	url := fmt.Sprintf("https://www.youtube.com/@%s", handle)
-	body, status, err := doHTTPGet(url, nil)
+	body, status, err := doHTTPGet(url, map[string]string{
+		"Referer": "https://www.youtube.com/",
+	})
 	if err != nil {
 		return &ScrapeResult{Success: false, Error: err.Error()}
 	}
@@ -95,40 +171,41 @@ func scrapeYouTube(handle string) *ScrapeResult {
 
 	html := string(body)
 
-	// Extract profile picture from og:image meta tag
 	picURL := extractMetaContent(html, "og:image")
+	name := extractMetaContent(html, "og:title")
+	if name == "" {
+		name = handle
+	}
 
-	// Extract subscriber count from meta description or page content
 	var followers int64
 
-	// Try meta description first: "Subscribe to X subscribers"
+	// Pattern 1: meta description "Subscribe to X subscribers"
 	desc := extractMetaContent(html, "description")
 	if desc != "" {
-		re := regexp.MustCompile(`(\d[\d,]*\.?\d*[KMBkmb]?)\s*subscrib`)
+		re := regexp.MustCompile(`([\d,]+\.?\d*[KMB]?)\s*subscrib`)
 		if m := re.FindStringSubmatch(desc); len(m) > 1 {
 			followers = parseFollowerCount(m[1])
 		}
 	}
 
-	// Try page content: "X subscribers"
+	// Pattern 2: subscriberCountText simpleText
 	if followers == 0 {
-		re := regexp.MustCompile(`"subscriberCountText":\s*\{[^}]*"simpleText":\s*"([\d,.KMBkmb ]+)"`)
-		if m := re.FindStringSubmatch(html); len(m) > 1 {
-			followers = parseFollowerCount(strings.TrimSpace(m[1]))
+		patterns := []string{
+			`"subscriberCountText":\s*\{[^}]*"simpleText":\s*"([\d,.KMBkmb ]+)"`,
+			`"subscriberCount":\s*"?(\d+)"?`,
+			`"subscriberCountText":\{"accessibility":\{"accessibilityData":\{"label":"([\d,.KMBkmb ]+)"`,
+			`([\d,.]+[KMBkmb])\s*subscribers`,
+			`"subscriberCountText":\s*\{"runs":\[\{"text":"([\d,.KMBkmb ]+)"`,
 		}
-	}
-
-	// Try another pattern
-	if followers == 0 {
-		re := regexp.MustCompile(`"subscriberCount":\s*"?(\d+)"?`)
-		if m := re.FindStringSubmatch(html); len(m) > 1 {
-			followers, _ = strconv.ParseInt(m[1], 10, 64)
+		for _, pat := range patterns {
+			re := regexp.MustCompile(pat)
+			if m := re.FindStringSubmatch(html); len(m) > 1 {
+				followers = parseFollowerCount(strings.TrimSpace(m[1]))
+				if followers > 0 {
+					break
+				}
+			}
 		}
-	}
-
-	name := extractMetaContent(html, "og:title")
-	if name == "" {
-		name = handle
 	}
 
 	return &ScrapeResult{
@@ -142,41 +219,194 @@ func scrapeYouTube(handle string) *ScrapeResult {
 // --- TikTok ---
 
 func scrapeTikTok(handle string) *ScrapeResult {
-	url := fmt.Sprintf("https://www.tiktok.com/@%s", handle)
+	// Method 1: oEmbed API (reliable)
+	oembedResult := scrapeTikTokOEmbed(handle)
+	if oembedResult.Success && oembedResult.FollowerCount > 0 {
+		return oembedResult
+	}
+
+	// Method 2: TikTok web API
+	apiResult := scrapeTikTokAPI(handle)
+	if apiResult.Success && apiResult.FollowerCount > 0 {
+		return apiResult
+	}
+
+	// Method 3: HTML page scraping
+	htmlResult := scrapeTikTokHTML(handle)
+
+	// Merge best results
+	result := &ScrapeResult{Success: oembedResult.Success || apiResult.Success || htmlResult.Success}
+
+	if apiResult.Success {
+		result.DisplayName = apiResult.DisplayName
+		result.ProfilePictureURL = apiResult.ProfilePictureURL
+		result.FollowerCount = apiResult.FollowerCount
+	}
+	if oembedResult.Success {
+		if result.DisplayName == "" || result.DisplayName == handle {
+			result.DisplayName = oembedResult.DisplayName
+		}
+		if result.ProfilePictureURL == "" {
+			result.ProfilePictureURL = oembedResult.ProfilePictureURL
+		}
+	}
+	if htmlResult.Success {
+		if result.ProfilePictureURL == "" {
+			result.ProfilePictureURL = htmlResult.ProfilePictureURL
+		}
+		if result.FollowerCount == 0 {
+			result.FollowerCount = htmlResult.FollowerCount
+		}
+		if result.DisplayName == "" || result.DisplayName == handle {
+			result.DisplayName = htmlResult.DisplayName
+		}
+	}
+
+	if result.DisplayName == "" {
+		result.DisplayName = handle
+	}
+
+	if !result.Success {
+		result.Error = "could not fetch TikTok data"
+	}
+
+	return result
+}
+
+func scrapeTikTokOEmbed(handle string) *ScrapeResult {
+	tiktokURL := fmt.Sprintf("https://www.tiktok.com/@%s", handle)
+	url := fmt.Sprintf("https://www.tiktok.com/oembed?url=%s", tiktokURL)
 	body, status, err := doHTTPGet(url, map[string]string{
 		"Referer": "https://www.tiktok.com/",
 	})
-	if err != nil {
-		return &ScrapeResult{Success: false, Error: err.Error()}
-	}
-	if status != 200 {
-		return &ScrapeResult{Success: false, Error: fmt.Sprintf("HTTP %d", status)}
+	if err != nil || status != 200 {
+		return &ScrapeResult{Success: false}
 	}
 
-	html := string(body)
-
-	// Try to extract SIGI_STATE JSON
-	re := regexp.MustCompile(`<script id="__UNIVERSAL_DATA_FOR_REHYDRATION__"[^>]*>(.*?)</script>`)
-	if m := re.FindStringSubmatch(html); len(m) > 1 {
-		return parseTikTokJSON(m[1], handle)
+	var oembed struct {
+		Title       string `json:"title"`
+		AuthorName  string `json:"author_name"`
+		AuthorURL   string `json:"author_url"`
+		ThumbnailURL string `json:"thumbnail_url"`
+	}
+	if err := json.Unmarshal(body, &oembed); err != nil {
+		return &ScrapeResult{Success: false}
 	}
 
-	// Try SIGI_STATE
-	re = regexp.MustCompile(`<script id="SIGI_STATE"[^>]*>(.*?)</script>`)
-	if m := re.FindStringSubmatch(html); len(m) > 1 {
-		return parseTikTokJSON(m[1], handle)
+	picURL := oembed.ThumbnailURL
+	if strings.HasPrefix(picURL, "//") {
+		picURL = "https:" + picURL
 	}
 
-	// Fallback: try meta tags
-	picURL := extractMetaContent(html, "og:image")
-	name := extractMetaContent(html, "og:title")
+	name := oembed.AuthorName
 	if name == "" {
 		name = handle
 	}
 
 	return &ScrapeResult{
 		ProfilePictureURL: picURL,
-		FollowerCount:     0,
+		DisplayName:       name,
+		Success:           picURL != "",
+	}
+}
+
+func scrapeTikTokAPI(handle string) *ScrapeResult {
+	url := fmt.Sprintf("https://www.tiktok.com/api/user/detail/?uniqueId=%s", handle)
+	body, status, err := doHTTPGet(url, map[string]string{
+		"Referer":          fmt.Sprintf("https://www.tiktok.com/@%s", handle),
+		"Accept":           "application/json, text/plain, */*",
+	})
+	if err != nil || status != 200 {
+		return &ScrapeResult{Success: false}
+	}
+
+	var resp struct {
+		UserInfo struct {
+			User struct {
+				Nickname   string `json:"nickname"`
+				AvatarLarger string `json:"avatarLarger"`
+			} `json:"user"`
+			Stats struct {
+				FollowerCount int64 `json:"followerCount"`
+			} `json:"stats"`
+		} `json:"userInfo"`
+	}
+	if err := json.Unmarshal(body, &resp); err != nil {
+		return &ScrapeResult{Success: false}
+	}
+
+	picURL := resp.UserInfo.User.AvatarLarger
+	if strings.HasPrefix(picURL, "//") {
+		picURL = "https:" + picURL
+	}
+
+	name := resp.UserInfo.User.Nickname
+	if name == "" {
+		name = handle
+	}
+
+	return &ScrapeResult{
+		ProfilePictureURL: picURL,
+		FollowerCount:     resp.UserInfo.Stats.FollowerCount,
+		DisplayName:       name,
+		Success:           picURL != "" || resp.UserInfo.Stats.FollowerCount > 0,
+	}
+}
+
+func scrapeTikTokHTML(handle string) *ScrapeResult {
+	url := fmt.Sprintf("https://www.tiktok.com/@%s", handle)
+	body, status, err := doHTTPGet(url, map[string]string{
+		"Referer": "https://www.tiktok.com/",
+	})
+	if err != nil || status != 200 {
+		return &ScrapeResult{Success: false}
+	}
+
+	html := string(body)
+
+	// Try UNIVERSAL_DATA
+	re := regexp.MustCompile(`<script id="__UNIVERSAL_DATA_FOR_REHYDRATION__"[^>]*>(.*?)</script>`)
+	if m := re.FindStringSubmatch(html); len(m) > 1 {
+		if r := parseTikTokJSON(m[1], handle); r.Success {
+			return r
+		}
+	}
+
+	// Try SIGI_STATE
+	re = regexp.MustCompile(`<script id="SIGI_STATE"[^>]*>(.*?)</script>`)
+	if m := re.FindStringSubmatch(html); len(m) > 1 {
+		if r := parseTikTokJSON(m[1], handle); r.Success {
+			return r
+		}
+	}
+
+	// Try meta tags
+	picURL := extractMetaContent(html, "og:image")
+	name := extractMetaContent(html, "og:title")
+	if name == "" {
+		name = handle
+	}
+
+	// Try to extract follower count from page text
+	var followers int64
+	followerPatterns := []string{
+		`"followerCount":\s*(\d+)`,
+		`(\d[\d,.]*[KMBkmb]?)\s*[Ff]ollowers`,
+		`"stats":\{[^}]*"followerCount":\s*(\d+)`,
+	}
+	for _, pat := range followerPatterns {
+		re = regexp.MustCompile(pat)
+		if m := re.FindStringSubmatch(html); len(m) > 1 {
+			followers = parseFollowerCount(strings.TrimSpace(m[1]))
+			if followers > 0 {
+				break
+			}
+		}
+	}
+
+	return &ScrapeResult{
+		ProfilePictureURL: picURL,
+		FollowerCount:     followers,
 		DisplayName:       name,
 		Success:           picURL != "",
 		Error:             func() string { if picURL == "" { return "could not extract profile data" }; return "" }(),
@@ -189,8 +419,7 @@ func parseTikTokJSON(jsonStr string, handle string) *ScrapeResult {
 		return &ScrapeResult{Success: false, Error: "failed to parse TikTok data"}
 	}
 
-	// Navigate the JSON structure to find user info
-	// Universal data format: __DEFAULT_SCOPE__ -> webapp.user-detail -> userInfo
+	// Universal data format
 	if defaultScope, ok := data["__DEFAULT_SCOPE__"].(map[string]interface{}); ok {
 		if userDetail, ok := defaultScope["webapp.user-detail"].(map[string]interface{}); ok {
 			if userInfo, ok := userDetail["userInfo"].(map[string]interface{}); ok {
@@ -199,7 +428,7 @@ func parseTikTokJSON(jsonStr string, handle string) *ScrapeResult {
 		}
 	}
 
-	// SIGI_STATE format: UserModule -> users -> uniqueId
+	// SIGI_STATE format
 	if userModule, ok := data["UserModule"].(map[string]interface{}); ok {
 		if users, ok := userModule["users"].(map[string]interface{}); ok {
 			if userData, ok := users[handle].(map[string]interface{}); ok {
@@ -208,17 +437,20 @@ func parseTikTokJSON(jsonStr string, handle string) *ScrapeResult {
 		}
 	}
 
-	return &ScrapeResult{Success: false, Error: "could not find user data in TikTok response"}
+	return &ScrapeResult{Success: false, Error: "could not find user data"}
 }
 
 func extractTikTokUser(userInfo map[string]interface{}, handle string) *ScrapeResult {
 	result := &ScrapeResult{Success: true, DisplayName: handle}
 
 	if user, ok := userInfo["user"].(map[string]interface{}); ok {
-		if avatar, ok := user["avatarLarger"].(string); ok {
-			result.ProfilePictureURL = avatar
-		} else if avatar, ok := user["avatarMedium"].(string); ok {
-			result.ProfilePictureURL = avatar
+		for _, key := range []string{"avatarLarger", "avatarMedium", "avatarThumb"} {
+			if val, exists := user[key]; exists {
+				if avatar, ok := val.(string); ok && avatar != "" {
+					result.ProfilePictureURL = avatar
+					break
+				}
+			}
 		}
 		if nickname, ok := user["nickname"].(string); ok && nickname != "" {
 			result.DisplayName = nickname
@@ -226,8 +458,8 @@ func extractTikTokUser(userInfo map[string]interface{}, handle string) *ScrapeRe
 	}
 
 	if stats, ok := userInfo["stats"].(map[string]interface{}); ok {
-		if followerCount, ok := stats["followerCount"].(float64); ok {
-			result.FollowerCount = int64(followerCount)
+		if fc, ok := stats["followerCount"].(float64); ok {
+			result.FollowerCount = int64(fc)
 		}
 	}
 
@@ -244,7 +476,7 @@ func extractTikTokUser(userInfo map[string]interface{}, handle string) *ScrapeRe
 func scrapeInstagram(handle string) *ScrapeResult {
 	url := fmt.Sprintf("https://i.instagram.com/api/v1/users/web_profile_info/?username=%s", handle)
 	body, status, err := doHTTPGet(url, map[string]string{
-		"X-IG-App-ID": "936619743392459",
+		"X-IG-App-ID":     "936619743392459",
 		"X-Requested-With": "XMLHttpRequest",
 		"Referer":          fmt.Sprintf("https://www.instagram.com/%s/", handle),
 	})
@@ -252,7 +484,8 @@ func scrapeInstagram(handle string) *ScrapeResult {
 		return &ScrapeResult{Success: false, Error: err.Error()}
 	}
 	if status == 401 || status == 403 {
-		return &ScrapeResult{Success: false, Error: "Instagram blocked the request (login required or rate limited)"}
+		// Try alternative method
+		return scrapeInstagramHTML(handle)
 	}
 	if status != 200 {
 		return &ScrapeResult{Success: false, Error: fmt.Sprintf("HTTP %d", status)}
@@ -261,9 +494,9 @@ func scrapeInstagram(handle string) *ScrapeResult {
 	var resp struct {
 		Data struct {
 			User struct {
-				Full_name  string `json:"full_name"`
+				Full_name        string `json:"full_name"`
 				Profile_pic_url_hd string `json:"profile_pic_url_hd"`
-				Profile_pic_url    string `json:"profile_pic_url"`
+				Profile_pic_url  string `json:"profile_pic_url"`
 				Edge_followed_by struct {
 					Count int64 `json:"count"`
 				} `json:"edge_followed_by"`
@@ -298,86 +531,76 @@ func scrapeInstagram(handle string) *ScrapeResult {
 	}
 }
 
-// --- Twitter/X ---
-
-func scrapeTwitter(handle string) *ScrapeResult {
-	// Try nitter instances first
-	nitterInstances := []string{
-		"https://nitter.privacydev.net",
-		"https://nitter.poast.org",
-		"https://nitter.woodland.cafe",
-	}
-
-	for _, instance := range nitterInstances {
-		result := scrapeTwitterFromNitter(instance, handle)
-		if result.Success {
-			return result
-		}
-	}
-
-	// Fallback: try syndication endpoint
-	result := scrapeTwitterSyndication(handle)
-	if result.Success {
-		return result
-	}
-
-	return &ScrapeResult{
-		Success: false,
-		Error:   "could not fetch Twitter/X data (all methods failed)",
-	}
-}
-
-func scrapeTwitterFromNitter(instance, handle string) *ScrapeResult {
-	url := fmt.Sprintf("%s/%s", instance, handle)
-	body, status, err := doHTTPGet(url, nil)
+func scrapeInstagramHTML(handle string) *ScrapeResult {
+	url := fmt.Sprintf("https://www.instagram.com/%s/", handle)
+	body, status, err := doHTTPGet(url, map[string]string{
+		"Referer": "https://www.instagram.com/",
+	})
 	if err != nil || status != 200 {
-		return &ScrapeResult{Success: false}
+		return &ScrapeResult{Success: false, Error: "Instagram blocked the request"}
 	}
 
 	html := string(body)
-
-	// Extract profile picture
-	picURL := ""
-	re := regexp.MustCompile(`class="avatar-large"[^>]*src="([^"]+)"`)
-	if m := re.FindStringSubmatch(html); len(m) > 1 {
-		picURL = m[1]
-		if !strings.HasPrefix(picURL, "http") {
-			picURL = instance + picURL
-		}
+	picURL := extractMetaContent(html, "og:image")
+	name := extractMetaContent(html, "og:title")
+	if name == "" {
+		name = handle
 	}
 
-	// Extract follower count
 	var followers int64
-	re = regexp.MustCompile(`class="profile-stat[^"]*"[^>]*>\s*<[^>]*>(\d[\d,]*\.?\d*[KMBkmb]?)\s*<[^>]*>\s*Followers`)
+	re := regexp.MustCompile(`"edge_followed_by":\{"count":\s*(\d+)`)
 	if m := re.FindStringSubmatch(html); len(m) > 1 {
-		followers = parseFollowerCount(m[1])
-	}
-
-	// Alternative follower pattern
-	if followers == 0 {
-		re = regexp.MustCompile(`(\d[\d,]*\.?\d*[KMBkmb]?)\s*Followers`)
-		if m := re.FindStringSubmatch(html); len(m) > 1 {
-			followers = parseFollowerCount(m[1])
-		}
-	}
-
-	// Extract display name
-	name := handle
-	re = regexp.MustCompile(`class="profile-card-fullname"[^>]*>([^<]+)`)
-	if m := re.FindStringSubmatch(html); len(m) > 1 {
-		name = strings.TrimSpace(m[1])
-	}
-
-	if picURL == "" {
-		return &ScrapeResult{Success: false}
+		followers, _ = strconv.ParseInt(m[1], 10, 64)
 	}
 
 	return &ScrapeResult{
 		ProfilePictureURL: picURL,
 		FollowerCount:     followers,
 		DisplayName:       name,
-		Success:           true,
+		Success:           picURL != "",
 	}
+}
+
+// --- Twitter/X ---
+
+func scrapeTwitter(handle string) *ScrapeResult {
+	// Method 1: syndication endpoint
+	result := scrapeTwitterSyndication(handle)
+	if result.Success && result.FollowerCount > 0 {
+		return result
+	}
+
+	// Method 2: Fallback to HTML
+	htmlResult := scrapeTwitterHTML(handle)
+
+	// Merge
+	final := &ScrapeResult{Success: result.Success || htmlResult.Success}
+	if result.Success {
+		final.DisplayName = result.DisplayName
+		final.ProfilePictureURL = result.ProfilePictureURL
+		final.FollowerCount = result.FollowerCount
+	}
+	if htmlResult.Success {
+		if final.ProfilePictureURL == "" {
+			final.ProfilePictureURL = htmlResult.ProfilePictureURL
+		}
+		if final.FollowerCount == 0 {
+			final.FollowerCount = htmlResult.FollowerCount
+		}
+		if final.DisplayName == "" || final.DisplayName == handle {
+			final.DisplayName = htmlResult.DisplayName
+		}
+	}
+
+	if final.DisplayName == "" {
+		final.DisplayName = handle
+	}
+
+	if !final.Success {
+		final.Error = "could not fetch Twitter/X data"
+	}
+
+	return final
 }
 
 func scrapeTwitterSyndication(handle string) *ScrapeResult {
@@ -391,14 +614,12 @@ func scrapeTwitterSyndication(handle string) *ScrapeResult {
 
 	html := string(body)
 
-	// Extract profile picture from meta or img tags
 	picURL := ""
 	re := regexp.MustCompile(`src="(https?://pbs\.twimg\.com/profile_images/[^"]+)"`)
 	if m := re.FindStringSubmatch(html); len(m) > 1 {
 		picURL = m[1]
 	}
 
-	// Extract follower count
 	var followers int64
 	re = regexp.MustCompile(`(\d[\d,]*\.?\d*[KMBkmb]?)\s*Followers`)
 	if m := re.FindStringSubmatch(html); len(m) > 1 {
@@ -411,15 +632,52 @@ func scrapeTwitterSyndication(handle string) *ScrapeResult {
 		name = strings.TrimSpace(m[1])
 	}
 
-	if picURL == "" {
+	return &ScrapeResult{
+		ProfilePictureURL: picURL,
+		FollowerCount:     followers,
+		DisplayName:       name,
+		Success:           picURL != "",
+	}
+}
+
+func scrapeTwitterHTML(handle string) *ScrapeResult {
+	url := fmt.Sprintf("https://x.com/%s", handle)
+	body, status, err := doHTTPGet(url, map[string]string{
+		"Referer": "https://x.com/",
+	})
+	if err != nil || status != 200 {
 		return &ScrapeResult{Success: false}
+	}
+
+	html := string(body)
+
+	picURL := extractMetaContent(html, "og:image")
+	name := extractMetaContent(html, "og:title")
+	if name == "" {
+		name = handle
+	}
+
+	var followers int64
+	followerPatterns := []string{
+		`"followers_count":\s*(\d+)`,
+		`"Followers"</span>[^<]*<[^>]*>([\d,.]+[KMBkmb]?)`,
+		`([\d,.]+[KMBkmb]?)\s*Followers`,
+	}
+	for _, pat := range followerPatterns {
+		re := regexp.MustCompile(pat)
+		if m := re.FindStringSubmatch(html); len(m) > 1 {
+			followers = parseFollowerCount(strings.TrimSpace(m[1]))
+			if followers > 0 {
+				break
+			}
+		}
 	}
 
 	return &ScrapeResult{
 		ProfilePictureURL: picURL,
 		FollowerCount:     followers,
 		DisplayName:       name,
-		Success:           true,
+		Success:           picURL != "",
 	}
 }
 
@@ -443,11 +701,20 @@ func scrapeFacebook(handle string) *ScrapeResult {
 		name = handle
 	}
 
-	// Facebook follower count is harder to extract from HTML
 	var followers int64
-	re := regexp.MustCompile(`"follower_count":\s*(\d+)`)
-	if m := re.FindStringSubmatch(html); len(m) > 1 {
-		followers, _ = strconv.ParseInt(m[1], 10, 64)
+	followerPatterns := []string{
+		`"follower_count":\s*(\d+)`,
+		`([\d,.]+[KMBkmb]?)\s*followers`,
+		`"count":\s*(\d+)[^}]*"label":\s*"Followers"`,
+	}
+	for _, pat := range followerPatterns {
+		re := regexp.MustCompile(pat)
+		if m := re.FindStringSubmatch(html); len(m) > 1 {
+			followers = parseFollowerCount(strings.TrimSpace(m[1]))
+			if followers > 0 {
+				break
+			}
+		}
 	}
 
 	if picURL == "" {
@@ -482,18 +749,18 @@ func scrapeThreads(handle string) *ScrapeResult {
 		name = handle
 	}
 
-	// Try to extract follower count from page content
 	var followers int64
-	re := regexp.MustCompile(`"follower_count":\s*(\d+)`)
-	if m := re.FindStringSubmatch(html); len(m) > 1 {
-		followers, _ = strconv.ParseInt(m[1], 10, 64)
+	followerPatterns := []string{
+		`"follower_count":\s*(\d+)`,
+		`([\d,.]+[KMBkmb]?)\s*followers`,
 	}
-
-	// Alternative: "X followers" text
-	if followers == 0 {
-		re = regexp.MustCompile(`(\d[\d,]*\.?\d*[KMBkmb]?)\s*followers`)
+	for _, pat := range followerPatterns {
+		re := regexp.MustCompile(pat)
 		if m := re.FindStringSubmatch(html); len(m) > 1 {
-			followers = parseFollowerCount(m[1])
+			followers = parseFollowerCount(strings.TrimSpace(m[1]))
+			if followers > 0 {
+				break
+			}
 		}
 	}
 
@@ -512,18 +779,17 @@ func scrapeThreads(handle string) *ScrapeResult {
 // --- Helpers ---
 
 func extractMetaContent(html, property string) string {
-	re := regexp.MustCompile(fmt.Sprintf(`<meta[^>]+property="%s"[^>]+content="([^"]*)"`, property))
-	if m := re.FindStringSubmatch(html); len(m) > 1 {
-		return m[1]
+	patterns := []string{
+		fmt.Sprintf(`<meta[^>]+property="%s"[^>]+content="([^"]*)"`, property),
+		fmt.Sprintf(`<meta[^>]+content="([^"]*)"[^>]+property="%s"`, property),
+		fmt.Sprintf(`<meta[^>]+name="%s"[^>]+content="([^"]*)"`, property),
+		fmt.Sprintf(`<meta[^>]+content="([^"]*)"[^>]+name="%s"`, property),
 	}
-	re = regexp.MustCompile(fmt.Sprintf(`<meta[^>]+content="([^"]*)"[^>]+property="%s"`, property))
-	if m := re.FindStringSubmatch(html); len(m) > 1 {
-		return m[1]
-	}
-	// Also try name attribute
-	re = regexp.MustCompile(fmt.Sprintf(`<meta[^>]+name="%s"[^>]+content="([^"]*)"`, property))
-	if m := re.FindStringSubmatch(html); len(m) > 1 {
-		return m[1]
+	for _, pat := range patterns {
+		re := regexp.MustCompile(pat)
+		if m := re.FindStringSubmatch(html); len(m) > 1 {
+			return m[1]
+		}
 	}
 	return ""
 }
