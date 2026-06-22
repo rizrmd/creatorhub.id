@@ -155,6 +155,9 @@ export interface ScrapeRequest {
 export interface ScrapeResponse {
   profilePictureUrl: string;
   followerCount: number;
+  followingCount?: number;
+  likesCount?: number;
+  bio?: string;
   displayName: string;
   success: boolean;
   error?: string;
@@ -165,6 +168,9 @@ export interface PlatformInput {
   handle: string;
   profilePictureUrl: string;
   followers: number;
+  following?: number;
+  likes?: number;
+  bio?: string;
 }
 
 export interface CreateCreatorRequest {

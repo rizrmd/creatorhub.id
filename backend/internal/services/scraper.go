@@ -14,6 +14,9 @@ import (
 type ScrapeResult struct {
 	ProfilePictureURL string `json:"profilePictureUrl"`
 	FollowerCount     int64  `json:"followerCount"`
+	FollowingCount    int64  `json:"followingCount,omitempty"`
+	LikesCount        int64  `json:"likesCount,omitempty"`
+	Bio               string `json:"bio,omitempty"`
 	DisplayName       string `json:"displayName"`
 	Success           bool   `json:"success"`
 	Error             string `json:"error,omitempty"`
@@ -177,13 +180,14 @@ func scrapeYouTubeHTML(handle string) *ScrapeResult {
 		name = handle
 	}
 
+	bio := extractMetaContent(html, "description")
+
 	var followers int64
 
 	// Pattern 1: meta description "Subscribe to X subscribers"
-	desc := extractMetaContent(html, "description")
-	if desc != "" {
+	if bio != "" {
 		re := regexp.MustCompile(`([\d,]+\.?\d*[KMB]?)\s*subscrib`)
-		if m := re.FindStringSubmatch(desc); len(m) > 1 {
+		if m := re.FindStringSubmatch(bio); len(m) > 1 {
 			followers = parseFollowerCount(m[1])
 		}
 	}
@@ -211,6 +215,7 @@ func scrapeYouTubeHTML(handle string) *ScrapeResult {
 	return &ScrapeResult{
 		ProfilePictureURL: picURL,
 		FollowerCount:     followers,
+		Bio:               bio,
 		DisplayName:       name,
 		Success:           true,
 	}
@@ -364,53 +369,47 @@ func scrapeTikTokHTML(handle string) *ScrapeResult {
 
 	html := string(body)
 
-	// Try UNIVERSAL_DATA
-	re := regexp.MustCompile(`<script id="__UNIVERSAL_DATA_FOR_REHYDRATION__"[^>]*>(.*?)</script>`)
-	if m := re.FindStringSubmatch(html); len(m) > 1 {
-		if r := parseTikTokJSON(m[1], handle); r.Success {
-			return r
-		}
+	// Extract data via regex from raw HTML — avoids JSON duplicate key issues
+	result := &ScrapeResult{DisplayName: handle}
+
+	// Profile picture: "avatarLarger":"https://..."
+	if m := regexp.MustCompile(`"avatarLarger":\s*"([^"]+)"`).FindStringSubmatch(html); len(m) > 1 {
+		result.ProfilePictureURL = m[1]
 	}
 
-	// Try SIGI_STATE
-	re = regexp.MustCompile(`<script id="SIGI_STATE"[^>]*>(.*?)</script>`)
-	if m := re.FindStringSubmatch(html); len(m) > 1 {
-		if r := parseTikTokJSON(m[1], handle); r.Success {
-			return r
-		}
+	// Display name: "nickname":"..."
+	if m := regexp.MustCompile(`"nickname":\s*"([^"]+)"`).FindStringSubmatch(html); len(m) > 1 {
+		result.DisplayName = m[1]
 	}
 
-	// Try meta tags
-	picURL := extractMetaContent(html, "og:image")
-	name := extractMetaContent(html, "og:title")
-	if name == "" {
-		name = handle
+	// Followers
+	if m := regexp.MustCompile(`"followerCount":\s*(\d+)`).FindStringSubmatch(html); len(m) > 1 {
+		result.FollowerCount, _ = strconv.ParseInt(m[1], 10, 64)
 	}
 
-	// Try to extract follower count from page text
-	var followers int64
-	followerPatterns := []string{
-		`"followerCount":\s*(\d+)`,
-		`(\d[\d,.]*[KMBkmb]?)\s*[Ff]ollowers`,
-		`"stats":\{[^}]*"followerCount":\s*(\d+)`,
-	}
-	for _, pat := range followerPatterns {
-		re = regexp.MustCompile(pat)
-		if m := re.FindStringSubmatch(html); len(m) > 1 {
-			followers = parseFollowerCount(strings.TrimSpace(m[1]))
-			if followers > 0 {
-				break
-			}
-		}
+	// Following
+	if m := regexp.MustCompile(`"followingCount":\s*(\d+)`).FindStringSubmatch(html); len(m) > 1 {
+		result.FollowingCount, _ = strconv.ParseInt(m[1], 10, 64)
 	}
 
-	return &ScrapeResult{
-		ProfilePictureURL: picURL,
-		FollowerCount:     followers,
-		DisplayName:       name,
-		Success:           picURL != "",
-		Error:             func() string { if picURL == "" { return "could not extract profile data" }; return "" }(),
+	// Likes (heartCount)
+	if m := regexp.MustCompile(`"heartCount":\s*(\d+)`).FindStringSubmatch(html); len(m) > 1 {
+		result.LikesCount, _ = strconv.ParseInt(m[1], 10, 64)
+	} else if m := regexp.MustCompile(`"heart":\s*(\d+)`).FindStringSubmatch(html); len(m) > 1 {
+		result.LikesCount, _ = strconv.ParseInt(m[1], 10, 64)
 	}
+
+	// Bio: "signature":"..."
+	if m := regexp.MustCompile(`"signature":\s*"([^"]*)"`).FindStringSubmatch(html); len(m) > 1 {
+		result.Bio = strings.ReplaceAll(m[1], `\n`, "\n")
+	}
+
+	result.Success = result.ProfilePictureURL != "" || result.FollowerCount > 0
+	if !result.Success {
+		result.Error = "could not extract profile data"
+	}
+
+	return result
 }
 
 func parseTikTokJSON(jsonStr string, handle string) *ScrapeResult {
@@ -495,11 +494,15 @@ func scrapeInstagram(handle string) *ScrapeResult {
 		Data struct {
 			User struct {
 				Full_name        string `json:"full_name"`
+				Biography        string `json:"biography"`
 				Profile_pic_url_hd string `json:"profile_pic_url_hd"`
 				Profile_pic_url  string `json:"profile_pic_url"`
 				Edge_followed_by struct {
 					Count int64 `json:"count"`
 				} `json:"edge_followed_by"`
+				Edge_follow      struct {
+					Count int64 `json:"count"`
+				} `json:"edge_follow"`
 			} `json:"user"`
 		} `json:"data"`
 	}
@@ -526,6 +529,8 @@ func scrapeInstagram(handle string) *ScrapeResult {
 	return &ScrapeResult{
 		ProfilePictureURL: picURL,
 		FollowerCount:     user.Edge_followed_by.Count,
+		FollowingCount:    user.Edge_follow.Count,
+		Bio:               user.Biography,
 		DisplayName:       name,
 		Success:           true,
 	}
@@ -547,15 +552,25 @@ func scrapeInstagramHTML(handle string) *ScrapeResult {
 		name = handle
 	}
 
+	bio := extractMetaContent(html, "description")
+
 	var followers int64
 	re := regexp.MustCompile(`"edge_followed_by":\{"count":\s*(\d+)`)
 	if m := re.FindStringSubmatch(html); len(m) > 1 {
 		followers, _ = strconv.ParseInt(m[1], 10, 64)
 	}
 
+	var following int64
+	re = regexp.MustCompile(`"edge_follow":\{"count":\s*(\d+)`)
+	if m := re.FindStringSubmatch(html); len(m) > 1 {
+		following, _ = strconv.ParseInt(m[1], 10, 64)
+	}
+
 	return &ScrapeResult{
 		ProfilePictureURL: picURL,
 		FollowerCount:     followers,
+		FollowingCount:    following,
+		Bio:               bio,
 		DisplayName:       name,
 		Success:           picURL != "",
 	}

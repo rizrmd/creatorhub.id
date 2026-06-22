@@ -786,10 +786,21 @@ function AddCreatorDialog({ open, onOpenChange, onCreated }: {
                   ...p,
                   profilePictureUrl: result.profilePictureUrl || p.profilePictureUrl,
                   followers: result.followerCount || p.followers,
+                  following: result.followingCount || p.following,
+                  likes: result.likesCount || p.likes,
+                  bio: result.bio || p.bio,
                 }
               : p
           )
         );
+
+        // Auto-fill creator bio and name from scraped data
+        if (result.bio && !bio.trim()) {
+          setBio(result.bio);
+        }
+        if (result.displayName && result.displayName !== handle && !name.trim()) {
+          setName(result.displayName);
+        }
 
         if (result.success) {
           toast.success(`${platformId} data fetched successfully`);
@@ -838,10 +849,22 @@ function AddCreatorDialog({ open, onOpenChange, onCreated }: {
                 ...p,
                 profilePictureUrl: result.profilePictureUrl || p.profilePictureUrl,
                 followers: result.followerCount || p.followers,
+                following: result.followingCount || p.following,
+                likes: result.likesCount || p.likes,
+                bio: result.bio || p.bio,
               }
             : p
         )
       );
+
+      // Auto-fill creator bio from first scraped platform
+      if (result.bio && !bio.trim()) {
+        setBio(result.bio);
+      }
+      // Auto-fill creator name from displayName
+      if (result.displayName && result.displayName !== platformId && !name.trim()) {
+        setName(result.displayName);
+      }
 
       if (result.success) {
         toast.success(`${platformId} data fetched successfully`);
@@ -1043,8 +1066,10 @@ function AddCreatorDialog({ open, onOpenChange, onCreated }: {
                         />
                       )}
                       {platformData && platformData.followers > 0 && (
-                        <span className="text-xs" style={{ color: "var(--ch-text-muted)" }}>
-                          {formatFollowers(platformData.followers)}
+                        <span className="text-xs flex items-center gap-2" style={{ color: "var(--ch-text-muted)" }}>
+                          <span>{formatFollowers(platformData.followers)} followers</span>
+                          {platformData.following ? <span>· {formatFollowers(platformData.following)} following</span> : null}
+                          {platformData.likes ? <span>· {formatFollowers(platformData.likes)} likes</span> : null}
                         </span>
                       )}
                     </div>
