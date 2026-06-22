@@ -10,6 +10,7 @@ import Marketplace from "@/pages/Marketplace";
 import Campaigns from "@/pages/Campaigns";
 import CampaignDetail from "@/pages/CampaignDetail";
 import Analytics from "@/pages/Analytics";
+import ProjectDetail from "@/pages/ProjectDetail";
 import MediaMonitoring from "@/pages/MediaMonitoring";
 import Messages from "@/pages/Messages";
 import Payments from "@/pages/Payments";
@@ -58,6 +59,7 @@ export default function App() {
           <Route path="campaigns" element={<BrandRoute><Campaigns /></BrandRoute>} />
           <Route path="campaigns/:id" element={<BrandRoute><CampaignDetail /></BrandRoute>} />
           <Route path="projects" element={<BrandRoute><Analytics /></BrandRoute>} />
+          <Route path="projects/:id" element={<BrandRoute><ProjectDetail /></BrandRoute>} />
           <Route path="boost-ads" element={<BrandRoute><BoostAds /></BrandRoute>} />
           <Route path="database" element={<BrandRoute><DatabasePage /></BrandRoute>} />
           <Route path="content-hub" element={<BrandRoute><ContentHub /></BrandRoute>} />

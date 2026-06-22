@@ -748,6 +748,7 @@ function AddCreatorDialog({ open, onOpenChange, onCreated }: {
   const [scraping, setScraping] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [urlInput, setUrlInput] = useState("");
+  const [profileUrl, setProfileUrl] = useState("");
 
   const handleUrlSubmit = async () => {
     const parsed = parseSocialUrl(urlInput);
@@ -831,6 +832,12 @@ function AddCreatorDialog({ open, onOpenChange, onCreated }: {
     );
   };
 
+  const updatePlatformField = (platformId: string, field: string, value: string | number) => {
+    setPlatforms((prev) =>
+      prev.map((p) => (p.platform === platformId ? { ...p, [field]: value } : p))
+    );
+  };
+
   const scrapePlatform = async (platformId: string) => {
     const platform = platforms.find((p) => p.platform === platformId);
     if (!platform?.handle) return;
@@ -883,9 +890,8 @@ function AddCreatorDialog({ open, onOpenChange, onCreated }: {
 
     setCreating(true);
     try {
-      // Use the first platform's profile picture as the main image
-      const firstWithPic = platforms.find((p) => p.profilePictureUrl);
-      const imageUrl = firstWithPic?.profilePictureUrl || "";
+      // Use profileUrl as main image, fallback to first platform's profile picture
+      const imageUrl = profileUrl || platforms.find((p) => p.profilePictureUrl)?.profilePictureUrl || "";
 
       await creatorsApi.create({
         name: name.trim(),
@@ -913,9 +919,10 @@ function AddCreatorDialog({ open, onOpenChange, onCreated }: {
     setCategory("lifestyle");
     setCity("Jakarta");
     setPlatforms([]);
+    setProfileUrl("");
   };
 
-  const firstProfilePic = platforms.find((p) => p.profilePictureUrl)?.profilePictureUrl;
+  const firstProfilePic = profileUrl || platforms.find((p) => p.profilePictureUrl)?.profilePictureUrl;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -985,6 +992,23 @@ function AddCreatorDialog({ open, onOpenChange, onCreated }: {
               value={bio}
               onChange={(e) => setBio(e.target.value)}
             />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium" style={{ color: "var(--ch-text)" }}>
+              Foto Profil URL
+            </label>
+            <div className="flex items-center gap-2">
+              <Input
+                placeholder="https://... (URL foto profil)"
+                value={profileUrl}
+                onChange={(e) => setProfileUrl(e.target.value)}
+                className="flex-1"
+              />
+              {profileUrl && (
+                <img src={profileUrl} alt="" className="w-10 h-10 rounded-full object-cover shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+              )}
+            </div>
           </div>
 
           <div className="space-y-1.5">
@@ -1075,25 +1099,70 @@ function AddCreatorDialog({ open, onOpenChange, onCreated }: {
                     </div>
 
                     {isActive && (
-                      <div className="mt-3 flex items-center gap-2">
-                        <Input
-                          placeholder={`@${platformDef.label.toLowerCase()} handle`}
-                          value={platformData?.handle || ""}
-                          onChange={(e) => updatePlatformHandle(platformDef.id, e.target.value)}
-                          className="flex-1"
-                        />
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => scrapePlatform(platformDef.id)}
-                          disabled={!platformData?.handle || scraping === platformDef.id}
-                        >
-                          {scraping === platformDef.id ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            "Fetch"
+                      <div className="mt-3 space-y-2">
+                        {/* Handle + Fetch button */}
+                        <div className="flex items-center gap-2">
+                          <Input
+                            placeholder={`@${platformDef.label.toLowerCase()} handle`}
+                            value={platformData?.handle || ""}
+                            onChange={(e) => updatePlatformHandle(platformDef.id, e.target.value)}
+                            className="flex-1"
+                          />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => scrapePlatform(platformDef.id)}
+                            disabled={!platformData?.handle || scraping === platformDef.id}
+                          >
+                            {scraping === platformDef.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              "Fetch"
+                            )}
+                          </Button>
+                        </div>
+
+                        {/* Profile Picture URL */}
+                        <div className="flex items-center gap-2">
+                          <Input
+                            placeholder="Foto profil URL"
+                            value={platformData?.profilePictureUrl || ""}
+                            onChange={(e) => updatePlatformField(platformDef.id, "profilePictureUrl", e.target.value)}
+                            className="flex-1"
+                          />
+                          {platformData?.profilePictureUrl && (
+                            <img src={platformData.profilePictureUrl} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
                           )}
-                        </Button>
+                        </div>
+
+                        {/* Followers / Following / Likes */}
+                        <div className="grid grid-cols-3 gap-2">
+                          <Input
+                            type="number"
+                            placeholder="Followers"
+                            value={platformData?.followers || ""}
+                            onChange={(e) => updatePlatformField(platformDef.id, "followers", parseInt(e.target.value) || 0)}
+                          />
+                          <Input
+                            type="number"
+                            placeholder="Following"
+                            value={platformData?.following || ""}
+                            onChange={(e) => updatePlatformField(platformDef.id, "following", parseInt(e.target.value) || 0)}
+                          />
+                          <Input
+                            type="number"
+                            placeholder="Likes"
+                            value={platformData?.likes || ""}
+                            onChange={(e) => updatePlatformField(platformDef.id, "likes", parseInt(e.target.value) || 0)}
+                          />
+                        </div>
+
+                        {/* Bio */}
+                        <Input
+                          placeholder="Bio (opsional)"
+                          value={platformData?.bio || ""}
+                          onChange={(e) => updatePlatformField(platformDef.id, "bio", e.target.value)}
+                        />
                       </div>
                     )}
                   </div>
