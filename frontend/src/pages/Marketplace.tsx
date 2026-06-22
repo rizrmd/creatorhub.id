@@ -1198,6 +1198,190 @@ function parseRange(val: string): { min?: number; max?: number } {
   return { min: a || undefined, max: b || undefined };
 }
 
+/* ─── Homeless Media Seed Data ─── */
+
+interface HomelessMedia {
+  id: string;
+  name: string;
+  handle: string;
+  platform: string;
+  followers: string;
+  region: string;
+  category: string;
+  engagementRate: string;
+  price: string;
+  verified: boolean;
+  hue: number;
+}
+
+const HOMELESS_MEDIA_DATA: HomelessMedia[] = [
+  { id: "hm1", name: "Jakarta Keras", handle: "jakarta.keras", platform: "instagram", followers: "5.8M", region: "DKI Jakarta", category: "News", engagementRate: "3.2", price: "Rp 15.000.000", verified: true, hue: 210 },
+  { id: "hm2", name: "Jakarta Zone", handle: "jakartazoone", platform: "instagram", followers: "3M", region: "DKI Jakarta", category: "Lifestyle", engagementRate: "4.1", price: "Rp 12.000.000", verified: true, hue: 200 },
+  { id: "hm3", name: "Info Depok", handle: "infodepok_id", platform: "instagram", followers: "893K", region: "Jabodetabek", category: "News", engagementRate: "5.2", price: "Rp 8.000.000", verified: true, hue: 180 },
+  { id: "hm4", name: "Lambe Turah", handle: "lambe_turah", platform: "instagram", followers: "12.8M", region: "Regional", category: "Entertainment", engagementRate: "2.8", price: "Rp 25.000.000", verified: true, hue: 220 },
+  { id: "hm5", name: "City Of Bandung", handle: "cityofbdg", platform: "instagram", followers: "157K", region: "Jawa Barat", category: "Travel", engagementRate: "6.1", price: "Rp 4.000.000", verified: false, hue: 150 },
+  { id: "hm6", name: "Ini Surabaya", handle: "ini_surabaya", platform: "instagram", followers: "529K", region: "Jawa Timur", category: "News", engagementRate: "4.5", price: "Rp 6.000.000", verified: true, hue: 240 },
+  { id: "hm7", name: "Makasar Info", handle: "omsottamks", platform: "instagram", followers: "400K", region: "Sulawesi", category: "News", engagementRate: "3.9", price: "Rp 5.500.000", verified: true, hue: 260 },
+  { id: "hm8", name: "Info Banjarmasin", handle: "info_kejadian_banjarmasin", platform: "instagram", followers: "346K", region: "Kalimantan", category: "News", engagementRate: "5.0", price: "Rp 5.000.000", verified: false, hue: 130 },
+  { id: "hm9", name: "Palembang Info", handle: "palembanginfo", platform: "instagram", followers: "298K", region: "Sumatra", category: "News", engagementRate: "4.3", price: "Rp 4.500.000", verified: false, hue: 100 },
+  { id: "hm10", name: "Tabanan Update", handle: "tabanan_update", platform: "instagram", followers: "178K", region: "Bali", category: "Travel", engagementRate: "5.8", price: "Rp 3.500.000", verified: false, hue: 50 },
+];
+
+const HM_REGIONS = ["Semua", "DKI Jakarta", "Jabodetabek", "Regional", "Jawa Barat", "Jawa Tengah", "Jawa Timur", "Sumatra", "Sulawesi", "Kalimantan", "Bali"];
+
+function HomelessMediaTab() {
+  const [search, setSearch] = useState("");
+  const [regionFilter, setRegionFilter] = useState("Semua");
+
+  const filtered = HOMELESS_MEDIA_DATA.filter((m) => {
+    const matchSearch = m.name.toLowerCase().includes(search.toLowerCase()) || m.handle.toLowerCase().includes(search.toLowerCase());
+    const matchRegion = regionFilter === "Semua" || m.region === regionFilter;
+    return matchSearch && matchRegion;
+  });
+
+  const totalFollowers = HOMELESS_MEDIA_DATA.reduce((sum, m) => {
+    const f = m.followers.replace(/[+MmKk\s]/g, "").toLowerCase();
+    if (f.includes("m")) return sum + parseFloat(f) * 1000000;
+    if (f.includes("k")) return sum + parseFloat(f) * 1000;
+    return sum + parseFloat(f) || 0;
+  }, 0);
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Stats */}
+      <div className="px-3 pt-2.5 pb-2 border-b border-white/5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-1.5">
+          <div className="rounded-xl p-3 flex items-center gap-3" style={{ background: "var(--ch-surface)" }}>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(249,115,22,0.1)" }}>
+              <Megaphone className="w-5 h-5" style={{ color: "#F97316" }} />
+            </div>
+            <div>
+              <p className="text-[18px] font-bold" style={{ color: "var(--ch-text)" }}>{HOMELESS_MEDIA_DATA.length}</p>
+              <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>Total Media</p>
+            </div>
+          </div>
+          <div className="rounded-xl p-3 flex items-center gap-3" style={{ background: "var(--ch-surface)" }}>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(16,185,129,0.1)" }}>
+              <Users className="w-5 h-5" style={{ color: "#10B981" }} />
+            </div>
+            <div>
+              <p className="text-[18px] font-bold" style={{ color: "var(--ch-text)" }}>{(totalFollowers / 1000000).toFixed(1)}M</p>
+              <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>Total Followers</p>
+            </div>
+          </div>
+          <div className="rounded-xl p-3 flex items-center gap-3" style={{ background: "var(--ch-surface)" }}>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(59,130,246,0.1)" }}>
+              <MapPin className="w-5 h-5" style={{ color: "#3B82F6" }} />
+            </div>
+            <div>
+              <p className="text-[18px] font-bold" style={{ color: "var(--ch-text)" }}>{new Set(HOMELESS_MEDIA_DATA.map(m => m.region)).size}</p>
+              <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>Regions</p>
+            </div>
+          </div>
+          <div className="rounded-xl p-3 flex items-center gap-3" style={{ background: "var(--ch-surface)" }}>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(139,92,246,0.1)" }}>
+              <TrendingUp className="w-5 h-5" style={{ color: "#8B5CF6" }} />
+            </div>
+            <div>
+              <p className="text-[18px] font-bold" style={{ color: "var(--ch-text)" }}>4.5%</p>
+              <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>Avg ER</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="px-3 sm:px-4 pt-3 pb-0 bg-[#0B1120] flex flex-wrap items-center gap-2">
+        <div className="relative w-full sm:flex-1 sm:min-w-48">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Find Homeless Media..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-9 pr-3 py-2 text-[13px] rounded-lg border"
+            style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)", background: "var(--ch-surface)" }}
+          />
+        </div>
+        <select
+          value={regionFilter}
+          onChange={(e) => setRegionFilter(e.target.value)}
+          className="px-3 py-2 text-[13px] font-semibold rounded-lg border cursor-pointer"
+          style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)", background: "var(--ch-surface)" }}
+        >
+          {HM_REGIONS.map((r) => <option key={r} value={r}>{r}</option>)}
+        </select>
+      </div>
+
+      {/* Card Grid */}
+      <div className="flex-1 overflow-auto p-3 sm:p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3">
+          {filtered.map((m) => {
+            const gradientBg = `hsl(${m.hue}, 55%, 45%)`;
+            return (
+              <div
+                key={m.id}
+                className="rounded-[14px] overflow-hidden border transition-all cursor-pointer"
+                style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; (e.currentTarget as HTMLElement).style.boxShadow = "var(--ch-shadow-md)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLElement).style.boxShadow = "var(--ch-shadow-sm)"; }}
+              >
+                {/* Photo header */}
+                <div className="relative w-full h-[140px] overflow-hidden" style={{ background: gradientBg }}>
+                  <div className="absolute inset-0 flex items-center justify-center text-4xl font-bold text-white/30 select-none">
+                    {m.name[0]}
+                  </div>
+                  {m.verified && (
+                    <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500 text-white">
+                      <CheckCircle className="w-3 h-3" /> Verified
+                    </div>
+                  )}
+                  <div className="absolute top-2 right-2">
+                    <button className="p-1.5 rounded-full bg-black/30 hover:bg-black/50 transition-colors">
+                      <Heart className="w-3.5 h-3.5 text-white/70" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="p-3">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <p className="text-[13px] font-semibold truncate" style={{ color: "var(--ch-text)" }}>{m.name}</p>
+                  </div>
+                  <p className="text-[11px] mb-2" style={{ color: "var(--ch-text-muted)" }}>@{m.handle}</p>
+
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <span className="px-1.5 py-0.5 rounded-full text-[10px] font-medium" style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>{m.category}</span>
+                    <span className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{m.region}</span>
+                  </div>
+
+                  <div className="flex items-center gap-3 text-[11px] mb-2" style={{ color: "var(--ch-text-muted)" }}>
+                    <span className="font-semibold">{m.followers} followers</span>
+                    <span className="font-semibold">{m.engagementRate}% ER</span>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t" style={{ borderColor: "var(--ch-border)" }}>
+                    <span className="text-[12px] font-bold" style={{ color: "var(--ch-text)" }}>{m.price}</span>
+                    <button className="px-3 py-1.5 rounded-lg text-[11px] font-bold" style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)", border: "1.5px solid var(--ch-primary-100)" }}>
+                      View Details
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        {filtered.length === 0 && (
+          <div className="text-center py-12 text-slate-500">
+            <Megaphone className="w-10 h-10 mx-auto mb-3 opacity-30" />
+            <p className="text-sm font-medium">Tidak ada media ditemukan</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Marketplace() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -1597,6 +1781,8 @@ export default function Marketplace() {
           )}
         </div>
           </>
+        ) : activeTab === "homeless" ? (
+          <HomelessMediaTab />
         ) : (
           <div className="flex flex-col items-center justify-center py-24 text-slate-500">
             <Megaphone className="w-12 h-12 mb-3 opacity-40" />

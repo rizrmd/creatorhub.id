@@ -270,7 +270,15 @@ export default function ProjectDetail() {
             { value: "files", label: "Files & Assets", icon: FolderOpen },
             { value: "activity", label: "Activity Log", icon: Clock },
           ].map((tab) => (
-            <TabsTrigger key={tab.value} value={tab.value} className={`text-[13px] font-bold px-3 py-1.5 rounded-lg transition-all ${activeTab === tab.value ? "bg-orange-500 text-white shadow-md shadow-orange-500/20" : "text-[#94A3B8] hover:text-white/80"}`} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            <TabsTrigger key={tab.value} value={tab.value}
+              className="text-[13px] font-bold px-3 py-1.5 rounded-lg transition-all after:!opacity-0"
+              style={{
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                background: activeTab === tab.value ? "#F97316" : undefined,
+                color: activeTab === tab.value ? "#FFFFFF" : "#94A3B8",
+                boxShadow: activeTab === tab.value ? "0 4px 14px rgba(249,115,22,.35)" : undefined,
+              }}
+            >
               <tab.icon className="w-4 h-4 mr-1.5" />
               {tab.label}
             </TabsTrigger>
@@ -494,8 +502,8 @@ export default function ProjectDetail() {
                   <div className="flex items-center gap-4">
                     <div className="flex-1 flex flex-col items-center gap-1">
                       <svg width="40" height="30" viewBox="0 0 40 30">
-                        <line x1="20" y1="30" x2="20" y2="5" stroke="#F97316" strokeWidth="2" />
-                        <polygon points="15,5 20,0 25,5" fill="#F97316" />
+                        <line x1="20" y1="30" x2="20" y2="5" stroke="#F97316" strokeWidth="3" />
+                        <polygon points="14,6 20,0 26,6" fill="#F97316" />
                       </svg>
                     </div>
                     <div className="shrink-0 text-center">
@@ -503,8 +511,8 @@ export default function ProjectDetail() {
                     </div>
                     <div className="flex-1 flex flex-col items-center gap-1">
                       <svg width="40" height="30" viewBox="0 0 40 30">
-                        <line x1="20" y1="30" x2="20" y2="5" stroke="#F97316" strokeWidth="2" />
-                        <polygon points="15,5 20,0 25,5" fill="#F97316" />
+                        <line x1="20" y1="30" x2="20" y2="5" stroke="#F97316" strokeWidth="3" />
+                        <polygon points="14,6 20,0 26,6" fill="#F97316" />
                       </svg>
                     </div>
                   </div>
@@ -536,11 +544,11 @@ export default function ProjectDetail() {
                               </div>
                             </div>
 
-                            {/* Arrow — colored per platform */}
+                            {/* Arrow — from Amplifier to Shelter (right → left) */}
                             <div className="flex items-center justify-center">
                               <svg width="50" height="30" viewBox="0 0 50 30">
-                                <line x1="10" y1="15" x2="40" y2="15" stroke={s.color} strokeWidth="2" />
-                                <polygon points="40,10 50,15 40,20" fill={s.color} />
+                                <line x1="40" y1="15" x2="10" y2="15" stroke={s.color} strokeWidth="2" />
+                                <polygon points="10,10 0,15 10,20" fill={s.color} />
                               </svg>
                             </div>
 
