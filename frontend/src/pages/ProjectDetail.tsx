@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-  Briefcase, ChevronRight, Calendar, DollarSign, User, Building2,
-  TrendingUp, Eye, FileText, BarChart3, FolderOpen,
-  Clock, CheckCircle2, Instagram, Youtube, ChevronDown,
-  Activity, Layers, Users
+  Briefcase, ChevronRight, Calendar,
+  Eye, FileText, BarChart3, FolderOpen,
+  Clock, Instagram, Youtube, ChevronDown,
+  Users
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
@@ -39,6 +39,23 @@ const PROJECTS_DATA: Record<string, {
     date: string;
     items: { title: string; platform: string; icon: string; status: string }[];
   }[];
+  kpi: {
+    sections: {
+      name: string;
+      rows: {
+        platform: string;
+        akun: number;
+        jenisPostingan: string;
+        kontenPerHari: number;
+        kontenPerBulan: number;
+        targetER: string;
+      }[];
+    }[];
+    totalAkun: number;
+    totalKontenHari: number;
+    totalKontenBulan: number;
+    totalER: string;
+  };
 }> = {
   "kemenkop-umkm": {
     id: "kemenkop-umkm",
@@ -49,11 +66,11 @@ const PROJECTS_DATA: Record<string, {
     timeline: "12 Jun - 30 Sep 2025",
     deliverables: "50 Reels, 20 Carousel, 8 Video Tutorial",
     client: "Kementerian UMKM",
-    projectManager: "Sapar Alfaris",
+    projectManager: "Irfan Fitriansyah",
     budget: "Rp 350.000.000",
     budgetSpent: "Rp 255.500.000",
     hue: 142,
-    logo: "/client-logos/kementrian-umkm.png",
+    logo: "/client-logos/maman-abdurrahman.png",
     platforms: ["instagram", "tiktok", "youtube"],
     stats: {
       totalContent: 128,
@@ -73,6 +90,36 @@ const PROJECTS_DATA: Record<string, {
       { day: "Thu", date: "25 Jun", items: [{ title: "IG Story Q&A Session", platform: "instagram", icon: "ig", status: "Draft" }] },
       { day: "Fri", date: "26 Jun", items: [{ title: "TikTok Live Diskusi UMKM", platform: "tiktok", icon: "tt", status: "Planned" }] },
     ],
+    kpi: {
+      sections: [
+        {
+          name: "Shelter Accounts",
+          rows: [
+            { platform: "TikTok (450k+)", akun: 1, jenisPostingan: "Membuat Video Series, Narasi utama, distribusi berita & narasi kebijakan", kontenPerHari: 1, kontenPerBulan: 30, targetER: "1%+" },
+            { platform: "Instagram (100k+)", akun: 1, jenisPostingan: "", kontenPerHari: 1, kontenPerBulan: 30, targetER: "1%+" },
+            { platform: "YouTube (450k+)", akun: 1, jenisPostingan: "", kontenPerHari: 1, kontenPerBulan: 30, targetER: "1%+" },
+          ],
+        },
+        {
+          name: "Micro Influencer",
+          rows: [
+            { platform: "Tiktok (10k+)", akun: 10, jenisPostingan: "Mengomentari program Kementerian UMKM, konten edukasi UMKM, polling, video kreatif dan dinamika sektor UMKM", kontenPerHari: 10, kontenPerBulan: 300, targetER: "1%+" },
+            { platform: "Instagram (10k+)", akun: 5, jenisPostingan: "", kontenPerHari: 5, kontenPerBulan: 150, targetER: "1%+" },
+          ],
+        },
+        {
+          name: "Nano Influencer",
+          rows: [
+            { platform: "Tiktok (1k+)", akun: 20, jenisPostingan: "Komentar warga net dalam bentuk video terkait program Kementerian UMKM, repost konten, mention akun, engage dengan akun Kementerian dan Micro dan Nano", kontenPerHari: 20, kontenPerBulan: 600, targetER: "1%+" },
+            { platform: "Instagram (1k+)", akun: 20, jenisPostingan: "", kontenPerHari: 20, kontenPerBulan: 600, targetER: "1%+" },
+          ],
+        },
+      ],
+      totalAkun: 58,
+      totalKontenHari: 58,
+      totalKontenBulan: 1740,
+      totalER: "1%+",
+    },
   },
 };
 
@@ -81,14 +128,6 @@ const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   completed: { bg: "#2563EB", text: "#FFFFFF" },
   draft: { bg: "#94A3B8", text: "#FFFFFF" },
   ongoing: { bg: "#F59E0B", text: "#000000" },
-};
-
-const PLAN_STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  Published: { bg: "#16A34A", text: "#FFFFFF" },
-  Scheduled: { bg: "#2563EB", text: "#FFFFFF" },
-  "In Progress": { bg: "#F59E0B", text: "#000000" },
-  Draft: { bg: "#94A3B8", text: "#FFFFFF" },
-  Planned: { bg: "#A855F7", text: "#FFFFFF" },
 };
 
 const PLATFORM_ICONS: Record<string, string> = {
@@ -128,18 +167,10 @@ export default function ProjectDetail() {
       </div>
 
       {/* Hero Banner */}
-      <div className="rounded-xl overflow-hidden" style={{ background: "linear-gradient(135deg, #0F172A 0%, #1E293B 100%)" }}>
-        <div className="flex flex-col lg:flex-row">
-          {/* Left: Logo */}
-          <div className="w-full lg:w-56 h-48 lg:h-auto flex items-center justify-center shrink-0 p-6" style={{ background: "rgba(255,255,255,0.03)" }}>
-            <div className="w-32 h-32 rounded-xl flex items-center justify-center" style={{ background: "rgba(255,255,255,0.08)" }}>
-              <img src={project.logo} alt={project.name} className="w-24 h-24 object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-              <span className="text-[11px] font-bold text-white/40 absolute">LOGO</span>
-            </div>
-          </div>
-
+      <div className="rounded-xl overflow-hidden relative" style={{ background: "linear-gradient(135deg, #0F172A 0%, #1E293B 100%)" }}>
+        <div className="flex flex-col lg:flex-row relative">
           {/* Center: Info */}
-          <div className="flex-1 p-6 lg:p-8 space-y-4">
+          <div className="flex-1 p-6 lg:p-8 lg:pr-72 relative z-10">
             <span
               className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full"
               style={{ background: statusStyle.bg, color: statusStyle.text }}
@@ -147,66 +178,54 @@ export default function ProjectDetail() {
               {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
             </span>
 
-            <h1 className="text-[22px] lg:text-[26px] font-extrabold text-white leading-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            <h1 className="text-[20px] lg:text-[24px] font-extrabold text-white leading-tight mt-3" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
               {project.project}
             </h1>
 
-            <p className="text-[13px] text-white/60 max-w-2xl leading-relaxed">
+            <p className="text-[12px] text-white/50 max-w-xl leading-relaxed mt-2">
               {project.brief}
             </p>
 
-            <div className="flex items-center gap-3 pt-1">
+            <div className="flex items-center gap-3 mt-3">
               {project.platforms.map((p) => (
-                <span key={p} className="flex items-center gap-1.5 text-[12px] font-semibold text-white/70">
-                  {p === "instagram" && <Instagram className="w-4 h-4" />}
-                  {p === "tiktok" && <span className="text-[13px]">♪</span>}
-                  {p === "youtube" && <Youtube className="w-4 h-4" />}
+                <span key={p} className="flex items-center gap-1.5 text-[11px] font-semibold text-white/60">
+                  {p === "instagram" && <Instagram className="w-3.5 h-3.5" />}
+                  {p === "tiktok" && <span className="text-[12px]">♪</span>}
+                  {p === "youtube" && <Youtube className="w-3.5 h-3.5" />}
                   {PLATFORM_ICONS[p]}
                 </span>
               ))}
             </div>
+
+            <div className="grid grid-cols-2 gap-x-6 gap-y-3 mt-4 pt-3 max-w-md">
+              <div>
+                <p className="text-[10px] text-white/30 uppercase tracking-wider mb-0.5">Client</p>
+                <p className="text-[13px] text-white font-medium">{project.client}</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-white/30 uppercase tracking-wider mb-0.5">Project Manager</p>
+                <p className="text-[13px] text-white font-medium">{project.projectManager}</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-white/30 uppercase tracking-wider mb-0.5">Timeline</p>
+                <p className="text-[13px] text-white font-medium">{project.timeline}</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-white/30 uppercase tracking-wider mb-0.5">Budget</p>
+                <p className="text-[13px] text-white font-medium">{project.budget}</p>
+              </div>
+            </div>
           </div>
 
-          {/* Right: Meta + Actions */}
-          <div className="w-full lg:w-64 p-6 lg:pl-0 space-y-4 shrink-0">
-            <div className="flex justify-end">
-              <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold text-white/70 border border-white/10 hover:bg-white/5 transition-colors">
-                Project Actions <ChevronDown className="w-3.5 h-3.5" />
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-white/40 shrink-0" />
-                <div>
-                  <p className="text-[10px] text-white/40 uppercase tracking-wider">Client</p>
-                  <p className="text-[13px] text-white font-medium">{project.client}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <User className="w-4 h-4 text-white/40 shrink-0" />
-                <div>
-                  <p className="text-[10px] text-white/40 uppercase tracking-wider">Project Manager</p>
-                  <p className="text-[13px] text-white font-medium">{project.projectManager}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-white/40 shrink-0" />
-                <div>
-                  <p className="text-[10px] text-white/40 uppercase tracking-wider">Timeline</p>
-                  <p className="text-[13px] text-white font-medium">{project.timeline}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <DollarSign className="w-4 h-4 text-white/40 shrink-0" />
-                <div>
-                  <p className="text-[10px] text-white/40 uppercase tracking-wider">Budget</p>
-                  <p className="text-[13px] text-white font-medium">{project.budget}</p>
-                </div>
-              </div>
-            </div>
+          {/* Right: Actions */}
+          <div className="absolute top-6 right-6 z-20">
+            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold text-white/70 border border-white/10 hover:bg-white/5 transition-colors">
+              Project Actions <ChevronDown className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
+        {/* Photo overlay - right side, full height */}
+        <img src={project.logo} alt={project.name} className="hidden lg:block absolute right-0 bottom-0 h-full max-h-80 w-auto object-contain object-right" style={{ filter: "brightness(0.9)" }} onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
       </div>
 
       {/* Tabs */}
@@ -239,121 +258,68 @@ export default function ProjectDetail() {
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="mt-6 space-y-6">
-          {/* Stats Row */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <StatCard icon={Layers} iconBg="#EEF2FF" iconColor="#6366F1" label="Total Content" value={String(project.stats.totalContent)} change={project.stats.totalContentChange} />
-            <StatCard icon={Eye} iconBg="#FFF7ED" iconColor="#F97316" label="Total Reach" value={project.stats.totalReach} change={project.stats.totalReachChange} />
-            <StatCard icon={TrendingUp} iconBg="#F0FDF4" iconColor="#22C55E" label="Engagement Rate" value={project.stats.engagementRate} change={project.stats.engagementChange} />
-            <StatCard icon={CheckCircle2} iconBg="#FFF7ED" iconColor="#F97316" label="Completed" value={`${project.stats.completedPct}%`} progress={project.stats.completedPct} />
-            <StatCard icon={DollarSign} iconBg="#FEF3C7" iconColor="#D97706" label="Remaining Budget" value={project.stats.remainingBudget} change={project.stats.remainingBudgetPct} />
-          </div>
+          {/* Target & KPI - full width */}
 
-          {/* Content Plan + Performance Trend */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Content Plan Overview */}
-            <div className="rounded-xl border p-5 space-y-4" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-              <div className="flex items-center justify-between">
-                <h3 className="text-[15px] font-bold flex items-center gap-2" style={{ color: "var(--ch-text)" }}>
-                  <Calendar className="w-4 h-4" /> Content Plan Overview
-                </h3>
-                <button className="text-[12px] font-semibold px-3 py-1 rounded-lg border" style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}>
-                  View Full Calendar
-                </button>
-              </div>
+          {/* Target & KPI */}
+          {project.kpi && (
+            <div className="rounded-xl border overflow-hidden" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
+              <div className="flex">
+                {/* Left label */}
+                <div className="w-10 shrink-0 flex flex-col items-center justify-center py-4" style={{ background: "rgba(6,182,212,0.08)", borderRight: "2px solid rgba(6,182,212,0.3)" }}>
+                  <FolderOpen className="w-5 h-5 mb-2" style={{ color: "#06B6D4" }} />
+                  <span className="text-[10px] font-bold tracking-widest" style={{ color: "#06B6D4", writingMode: "vertical-lr", transform: "rotate(180deg)" }}>Target & KPI</span>
+                </div>
 
-              <div className="grid grid-cols-5 gap-2">
-                {project.contentPlan.map((day) => (
-                  <div key={day.day} className="space-y-2">
-                    <p className="text-[11px] font-bold text-center" style={{ color: "var(--ch-text-muted)" }}>{day.day}</p>
-                    <p className="text-[10px] text-center" style={{ color: "var(--ch-text-muted)" }}>{day.date}</p>
-                    {day.items.map((item, i) => {
-                      const planStatus = PLAN_STATUS_COLORS[item.status] || PLAN_STATUS_COLORS.Draft;
-                      return (
-                        <div key={i} className="rounded-lg p-2 space-y-1.5 border" style={{ borderColor: "var(--ch-border)", background: "var(--ch-bg)" }}>
-                          <p className="text-[10px] font-medium leading-tight" style={{ color: "var(--ch-text)" }}>{item.title}</p>
-                          <div className="flex items-center gap-1">
-                            {item.platform === "instagram" && <Instagram className="w-3 h-3 text-pink-500" />}
-                            {item.platform === "tiktok" && <span className="text-[10px]">♪</span>}
-                            {item.platform === "youtube" && <Youtube className="w-3 h-3 text-red-500" />}
-                          </div>
-                          <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: planStatus.bg, color: planStatus.text }}>
-                            {item.status}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex items-center gap-4 pt-2 border-t" style={{ borderColor: "var(--ch-border)" }}>
-                {Object.entries(PLAN_STATUS_COLORS).map(([label, colors]) => (
-                  <span key={label} className="flex items-center gap-1.5 text-[10px] font-medium" style={{ color: "var(--ch-text-muted)" }}>
-                    <span className="w-2 h-2 rounded-full" style={{ background: colors.bg }} />
-                    {label}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Performance Trend */}
-            <div className="rounded-xl border p-5 space-y-4" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-              <div className="flex items-center justify-between">
-                <h3 className="text-[15px] font-bold flex items-center gap-2" style={{ color: "var(--ch-text)" }}>
-                  <Activity className="w-4 h-4" /> Performance Trend
-                </h3>
-                <span className="text-[11px] font-semibold px-2.5 py-1 rounded-lg border" style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}>
-                  Last 30 Days
-                </span>
-              </div>
-
-              {/* Chart Placeholder */}
-              <div className="relative h-48 rounded-lg overflow-hidden" style={{ background: "var(--ch-bg)" }}>
-                <svg viewBox="0 0 500 200" className="w-full h-full">
-                  {/* Grid lines */}
-                  {[0, 1, 2, 3, 4].map((i) => (
-                    <line key={i} x1="40" y1={20 + i * 40} x2="480" y2={20 + i * 40} stroke="var(--ch-border)" strokeWidth="0.5" />
-                  ))}
-                  {/* Y-axis labels */}
-                  {["3M", "2M", "1M", "0"].map((label, i) => (
-                    <text key={label} x="35" y={24 + i * 40} textAnchor="end" fill="var(--ch-text-muted)" fontSize="9">{label}</text>
-                  ))}
-                  {/* Reach line (blue) */}
-                  <polyline
-                    fill="none" stroke="#3B82F6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                    points="60,140 120,120 180,130 240,100 300,80 360,60 420,50 460,40"
-                  />
-                  <circle cx="460" cy="40" r="4" fill="#3B82F6" />
-                  {/* Engagement line (orange) */}
-                  <polyline
-                    fill="none" stroke="#F97316" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                    points="60,150 120,145 180,140 240,135 300,120 360,110 420,100 460,95"
-                  />
-                  <circle cx="460" cy="95" r="4" fill="#F97316" />
-                  {/* X-axis labels */}
-                  {["24 May", "31 May", "7 Jun", "14 Jun", "21 Jun"].map((label, i) => (
-                    <text key={label} x={60 + i * 100} y="195" textAnchor="middle" fill="var(--ch-text-muted)" fontSize="9">{label}</text>
-                  ))}
-                </svg>
-                {/* Tooltip */}
-                <div className="absolute top-8 right-4 rounded-lg p-2 border text-[10px] space-y-0.5" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-                  <p className="font-bold" style={{ color: "var(--ch-text)" }}>21 Jun 2025</p>
-                  <p style={{ color: "#3B82F6" }}>Reach: 2.45M</p>
-                  <p style={{ color: "#F97316" }}>Engagement: 8.76%</p>
+                {/* Table */}
+                <div className="flex-1 overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
+                        <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Lapisan</th>
+                        <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-center" style={{ color: "var(--ch-text-muted)" }}>Keterlibatan Akun</th>
+                        <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Jenis Postingan</th>
+                        <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-center" style={{ color: "var(--ch-text-muted)" }}>Target Total Konten / Hari</th>
+                        <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-center" style={{ color: "var(--ch-text-muted)" }}>Target Total Konten / Bulan (30 Hari)</th>
+                        <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-center" style={{ color: "var(--ch-text-muted)" }}>Target ER / Konten</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {project.kpi.sections.map((section) => (
+                        <Fragment key={section.name}>
+                          {/* Section header */}
+                          <tr>
+                            <td colSpan={6} className="px-4 py-2 text-[13px] font-bold" style={{ color: "#06B6D4", borderLeft: "3px solid #06B6D4" }}>
+                              {section.name}
+                            </td>
+                          </tr>
+                          {/* Rows */}
+                          {section.rows.map((row, ri) => (
+                            <tr key={ri} className="border-b" style={{ borderColor: "var(--ch-border)" }}>
+                              <td className="px-4 py-2.5 text-[12px] font-medium" style={{ color: "var(--ch-text)" }}>{row.platform}</td>
+                              <td className="px-4 py-2.5 text-[12px] font-semibold text-center" style={{ color: "var(--ch-text)" }}>{row.akun}</td>
+                              <td className="px-4 py-2.5 text-[11px] leading-relaxed" style={{ color: "var(--ch-text-muted)" }}>{row.jenisPostingan}</td>
+                              <td className="px-4 py-2.5 text-[12px] font-semibold text-center" style={{ color: "var(--ch-text)" }}>{row.kontenPerHari}</td>
+                              <td className="px-4 py-2.5 text-[12px] font-semibold text-center" style={{ color: "var(--ch-text)" }}>{row.kontenPerBulan.toLocaleString("id-ID")}</td>
+                              <td className="px-4 py-2.5 text-[12px] font-semibold text-center" style={{ color: "var(--ch-text)" }}>{row.targetER}</td>
+                            </tr>
+                          ))}
+                        </Fragment>
+                      ))}
+                      {/* Total row */}
+                      <tr className="font-bold" style={{ background: "rgba(59,130,246,0.1)" }}>
+                        <td className="px-4 py-3 text-[13px]" style={{ color: "#3B82F6" }}>Total</td>
+                        <td className="px-4 py-3 text-[13px] text-center" style={{ color: "#3B82F6" }}>{project.kpi.totalAkun} Akun</td>
+                        <td className="px-4 py-3"></td>
+                        <td className="px-4 py-3 text-[13px] text-center" style={{ color: "#3B82F6" }}>{project.kpi.totalKontenHari} Konten</td>
+                        <td className="px-4 py-3 text-[13px] text-center" style={{ color: "#3B82F6" }}>{project.kpi.totalKontenBulan.toLocaleString("id-ID")} Konten</td>
+                        <td className="px-4 py-3 text-[13px] text-center" style={{ color: "#3B82F6" }}>{project.kpi.totalER}</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
-
-              {/* Legend */}
-              <div className="flex items-center gap-4">
-                <span className="flex items-center gap-1.5 text-[10px] font-medium" style={{ color: "var(--ch-text-muted)" }}>
-                  <span className="w-2 h-2 rounded-full" style={{ background: "#3B82F6" }} /> Reach
-                </span>
-                <span className="flex items-center gap-1.5 text-[10px] font-medium" style={{ color: "var(--ch-text-muted)" }}>
-                  <span className="w-2 h-2 rounded-full" style={{ background: "#F97316" }} /> Engagement
-                </span>
-              </div>
             </div>
-          </div>
+          )}
         </TabsContent>
 
         {/* Placeholder tabs */}
@@ -367,40 +333,6 @@ export default function ProjectDetail() {
           </TabsContent>
         ))}
       </Tabs>
-    </div>
-  );
-}
-
-function StatCard({ icon: Icon, iconBg, iconColor, label, value, change, progress }: {
-  icon: React.ElementType;
-  iconBg: string;
-  iconColor: string;
-  label: string;
-  value: string;
-  change?: string;
-  progress?: number;
-}) {
-  return (
-    <div className="rounded-xl border p-4 space-y-3" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-      <div className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: iconBg }}>
-          <Icon className="w-4 h-4" style={{ color: iconColor }} />
-        </div>
-        <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>{label}</p>
-      </div>
-      <p className="text-[22px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-        {value}
-      </p>
-      {change && (
-        <p className="text-[11px] font-medium" style={{ color: "#22C55E" }}>{change}</p>
-      )}
-      {progress !== undefined && (
-        <div className="space-y-1">
-          <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: "var(--ch-border)" }}>
-            <div className="h-full rounded-full" style={{ width: `${progress}%`, background: "#F97316" }} />
-          </div>
-        </div>
-      )}
     </div>
   );
 }
