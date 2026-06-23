@@ -553,23 +553,26 @@ export default function MediaMonitoring() {
 
         {/* Tab: Analysis */}
         <TabsContent value="analysis" className="mt-5">
-          {/* Horizontal Sub-Tabs */}
-          <div className="flex items-center gap-1.5 pb-4 overflow-x-auto" style={{ borderBottom: "1px solid var(--ch-border)" }}>
-            {analysisTabs.map((tab) => {
-              const isActive = analysisTab === tab.value;
-              const TabIcon = tab.icon;
-              return (
-                <button key={tab.value} onClick={() => setAnalysisTab(tab.value)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold rounded-full transition-all duration-150 whitespace-nowrap shrink-0"
-                  style={isActive ? { background: "var(--ch-orange)", color: "white", boxShadow: "0 2px 8px rgba(249,115,22,.35)" } : { color: "var(--ch-text-muted)", border: "1px solid var(--ch-border)" }}>
-                  <TabIcon className="w-3 h-3" />{tab.label}
-                </button>
-              );
-            })}
-          </div>
+          <div className="flex rounded-xl overflow-hidden min-h-[600px]" style={cardStyle}>
+            {/* Vertical Sub-Tab Sidebar */}
+            <div className="w-14 shrink-0 flex flex-col" style={{ background: "var(--ch-bg)", borderRight: "1px solid var(--ch-border)" }}>
+              {analysisTabs.map((tab) => {
+                const isActive = analysisTab === tab.value;
+                const TabIcon = tab.icon;
+                return (
+                  <button key={tab.value} onClick={() => setAnalysisTab(tab.value)}
+                    className="flex-1 flex items-center justify-center relative transition-all group"
+                    style={isActive ? { background: "rgba(249,115,22,.1)" } : {}}
+                    title={tab.label}>
+                    {isActive && <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full" style={{ background: "var(--ch-orange)" }} />}
+                    <TabIcon className="w-4 h-4 transition-colors" style={{ color: isActive ? "var(--ch-orange)" : "var(--ch-text-muted)" }} />
+                  </button>
+                );
+              })}
+            </div>
 
-          {/* Content Area */}
-          <div className="p-6 min-w-0 overflow-y-auto">
+            {/* Content Area */}
+            <div className="flex-1 p-6 min-w-0 overflow-y-auto">
 
               {/* Summary */}
               {analysisTab === "summary" && (
@@ -1001,6 +1004,7 @@ export default function MediaMonitoring() {
               )}
 
             </div>
+          </div>
         </TabsContent>
 
         {/* Placeholder tabs: Heatmap, Reports, Projects */}
