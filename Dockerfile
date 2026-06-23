@@ -22,7 +22,7 @@ RUN npm run build
 # =============================================
 # Stage 2: Go backend build
 # =============================================
-FROM golang:1.22-alpine AS backend-builder
+FROM golang:1.25-alpine AS backend-builder
 WORKDIR /app/backend
 
 RUN apk add --no-cache git ca-certificates
