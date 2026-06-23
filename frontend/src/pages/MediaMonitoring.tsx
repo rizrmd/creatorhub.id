@@ -222,6 +222,7 @@ export default function MediaMonitoring() {
   const [excKeywords, setExcKeywords] = useState(excludeKeywords);
   const [currentPage, setCurrentPage] = useState(1);
   const [analysisTab, setAnalysisTab] = useState("summary");
+  const [clusterTab, setClusterTab] = useState("issue1");
   const perPage = 5;
   const totalPages = Math.ceil(mentions.length / perPage);
   const paginatedMentions = mentions.slice((currentPage - 1) * perPage, currentPage * perPage);
@@ -237,9 +238,13 @@ export default function MediaMonitoring() {
     { value: "setup", icon: Settings, label: "Setup" },
     { value: "mentions", icon: MessageSquare, label: "Mentions" },
     { value: "analysis", icon: BarChart3, label: "Analysis" },
+    { value: "clusters", icon: Layers, label: "Conversation Issue Clusters" },
     { value: "heatmap", icon: Flame, label: "Topical Heatmap" },
     { value: "reports", icon: FileText, label: "Reports" },
     { value: "projects", icon: BarChart3, label: "Projects" },
+    { value: "sources", icon: Radio, label: "Top Exposure Sources" },
+    { value: "influencers", icon: Users, label: "Last 30-Day Influencers" },
+    { value: "wordcloud", icon: PieChart, label: "Wordcloud" },
   ];
 
   const analysisTabs = [
@@ -247,16 +252,15 @@ export default function MediaMonitoring() {
     { value: "dataset", icon: FileText, label: "Dataset" },
     { value: "landscape", icon: Globe, label: "Conversation Landscape" },
     { value: "sentiment", icon: TrendingUp, label: "General vs Substantive Sentiment" },
-    { value: "clusters", icon: Layers, label: "Issue Clusters" },
-    { value: "issue1", icon: Search, label: "Issue: Traffic Congestion" },
-    { value: "issue2", icon: Search, label: "Issue: Flooding" },
-    { value: "issue3", icon: Search, label: "Issue: Protests" },
     { value: "sentiment-heatmap", icon: Flame, label: "Sentiment Heatmap per Issue" },
     { value: "social-heatmap", icon: Clock, label: "Social Conversation Heatmap" },
     { value: "risk-map", icon: Shield, label: "Public Issue Risk Map" },
-    { value: "sources", icon: Radio, label: "Top Exposure Sources" },
-    { value: "influencers", icon: Users, label: "Last 30-Day Influencers" },
-    { value: "wordcloud", icon: PieChart, label: "Wordcloud" },
+  ];
+
+  const clusterTabs = [
+    { value: "issue1", icon: Search, label: "Issue Analysis I" },
+    { value: "issue2", icon: Search, label: "Issue Analysis II" },
+    { value: "issue3", icon: Search, label: "Issue Analysis III" },
   ];
 
   return (
@@ -737,71 +741,6 @@ export default function MediaMonitoring() {
                 </div>
               )}
 
-              {/* Issue Clusters */}
-              {analysisTab === "clusters" && (
-                <div className="space-y-6">
-                  <h2 className="text-[18px] font-bold" style={labelStyle}>Conversation Issue Clusters</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {[
-                      { name: "Infrastructure", color: "#3B82F6", issues: ["Traffic Congestion", "Transportation"], total: 1240, topPlatform: "X (Twitter)" },
-                      { name: "Environment", color: "#22C55E", issues: ["Flooding", "Fires", "Drainage"], total: 890, topPlatform: "YouTube" },
-                      { name: "Social Unrest", color: "#EF4444", issues: ["Protests", "Riots", "Civil Dispute"], total: 670, topPlatform: "TikTok" },
-                      { name: "Public Safety", color: "#F59E0B", issues: ["Accidents", "Traffic Incidents"], total: 450, topPlatform: "Instagram" },
-                    ].map((c) => (
-                      <div key={c.name} className="rounded-xl p-5" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${c.color}20` }}>
-                            <Layers className="w-5 h-5" style={{ color: c.color }} />
-                          </div>
-                          <div>
-                            <p className="text-[14px] font-bold" style={labelStyle}>{c.name}</p>
-                            <p className="text-[11px]" style={mutedStyle}>{c.total} mentions · Top: {c.topPlatform}</p>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap gap-1.5">
-                          {c.issues.map((i) => (
-                            <span key={i} className="px-2 py-0.5 rounded-full text-[10px] font-semibold" style={{ background: `${c.color}20`, color: c.color, border: `1px solid ${c.color}40` }}>{i}</span>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Issue Analysis 1-3 */}
-              {["issue1", "issue2", "issue3"].map((issueKey, idx) => analysisTab === issueKey && (
-                <div key={issueKey} className="space-y-6">
-                  <h2 className="text-[18px] font-bold" style={labelStyle}>{["Issue Analysis: Traffic Congestion", "Issue Analysis: Flooding", "Issue Analysis: Protests & Civil Unrest"][idx]}</h2>
-                  <div className="grid grid-cols-3 gap-4">
-                    {[
-                      { label: "Total Mentions", value: ["890", "650", "420"][idx] },
-                      { label: "Sentiment Score", value: ["-0.62", "-0.71", "-0.58"][idx] },
-                      { label: "Top Platform", value: ["X (Twitter)", "YouTube", "TikTok"][idx] },
-                    ].map((s) => (
-                      <div key={s.label} className="rounded-xl p-4" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
-                        <p className="text-[11px]" style={mutedStyle}>{s.label}</p>
-                        <p className="text-[20px] font-bold mt-1" style={labelStyle}>{s.value}</p>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="rounded-xl p-5" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
-                    <h3 className="text-[14px] font-bold mb-3" style={labelStyle}>Top Posts</h3>
-                    <div className="space-y-3">
-                      {mentions.filter((m) => m.aiTopic === ["Traffic", "Flooding", "Protests"][idx] || m.aiTopic === ["Kemacetan", "Banjir", "Demo"][idx] || m.aiTopic === ["Traffic Update", "Banjir Rob", "Protes Warga"][idx]).slice(0, 3).map((m) => (
-                        <div key={m.id} className="flex items-start gap-3 p-3 rounded-lg" style={{ background: "var(--ch-surface)" }}>
-                          <span className="w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-bold text-white shrink-0" style={{ background: m.platformColor }}>{m.platformIcon}</span>
-                          <div className="min-w-0">
-                            <p className="text-[12px] font-semibold" style={labelStyle}>{m.username} <span className="font-normal" style={mutedStyle}>· {m.time}</span></p>
-                            <p className="text-[12px] mt-0.5 truncate" style={mutedStyle}>{m.content}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ))}
-
               {/* Sentiment Heatmap per Issue */}
               {analysisTab === "sentiment-heatmap" && (
                 <div className="space-y-6">
@@ -895,136 +834,204 @@ export default function MediaMonitoring() {
                 </div>
               )}
 
-              {/* Top Exposure Sources */}
-              {analysisTab === "sources" && (
-                <div className="space-y-6">
-                  <h2 className="text-[18px] font-bold" style={labelStyle}>Top Exposure Sources</h2>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Tab: Conversation Issue Clusters */}
+        <TabsContent value="clusters" className="mt-5">
+          <div className="flex rounded-xl overflow-hidden min-h-[500px]" style={cardStyle}>
+            <div className="w-14 shrink-0 flex flex-col" style={{ background: "var(--ch-bg)", borderRight: "1px solid var(--ch-border)" }}>
+              {clusterTabs.map((tab) => {
+                const isActive = clusterTab === tab.value;
+                const TabIcon = tab.icon;
+                return (
+                  <button key={tab.value} onClick={() => setClusterTab(tab.value)}
+                    className="flex-1 flex items-center justify-center relative transition-all"
+                    style={isActive ? { background: "rgba(249,115,22,.1)" } : {}}
+                    title={tab.label}>
+                    {isActive && <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full" style={{ background: "var(--ch-orange)" }} />}
+                    <TabIcon className="w-4 h-4 transition-colors" style={{ color: isActive ? "var(--ch-orange)" : "var(--ch-text-muted)" }} />
+                  </button>
+                );
+              })}
+            </div>
+            <div className="flex-1 p-6 min-w-0 overflow-y-auto">
+              {["issue1", "issue2", "issue3"].map((issueKey, idx) => clusterTab === issueKey && (
+                <div key={issueKey} className="space-y-6">
+                  <h2 className="text-[18px] font-bold" style={labelStyle}>{["Issue Analysis I: Traffic Congestion", "Issue Analysis II: Flooding", "Issue Analysis III: Protests & Civil Unrest"][idx]}</h2>
+                  <div className="grid grid-cols-3 gap-4">
+                    {[
+                      { label: "Total Mentions", value: ["890", "650", "420"][idx] },
+                      { label: "Sentiment Score", value: ["-0.62", "-0.71", "-0.58"][idx] },
+                      { label: "Top Platform", value: ["X (Twitter)", "YouTube", "TikTok"][idx] },
+                    ].map((s) => (
+                      <div key={s.label} className="rounded-xl p-4" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                        <p className="text-[11px]" style={mutedStyle}>{s.label}</p>
+                        <p className="text-[20px] font-bold mt-1" style={labelStyle}>{s.value}</p>
+                      </div>
+                    ))}
+                  </div>
                   <div className="rounded-xl p-5" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                    <h3 className="text-[14px] font-bold mb-3" style={labelStyle}>Top Posts</h3>
                     <div className="space-y-3">
-                      {[
-                        { name: "Kompas TV", platform: "YouTube", reach: "12.1M", engagement: "4.2%", sentiment: "Negative", color: "#FF0000" },
-                        { name: "@infojakarta", platform: "X", reach: "5.4M", engagement: "3.8%", sentiment: "Negative", color: "#000" },
-                        { name: "MetroJakarta TV", platform: "YouTube", reach: "4.8M", engagement: "3.1%", sentiment: "Neutral", color: "#FF0000" },
-                        { name: "CNN Indonesia", platform: "YouTube", reach: "4.2M", engagement: "2.9%", sentiment: "Negative", color: "#FF0000" },
-                        { name: "@lambe_turah", platform: "Instagram", reach: "3.5M", engagement: "5.2%", sentiment: "Negative", color: "#E1306C" },
-                        { name: "TVOne News", platform: "YouTube", reach: "3.1M", engagement: "2.7%", sentiment: "Negative", color: "#FF0000" },
-                        { name: "@jaksel.info", platform: "Instagram", reach: "2.8M", engagement: "4.1%", sentiment: "Negative", color: "#E1306C" },
-                        { name: "@jakartakini", platform: "TikTok", reach: "2.4M", engagement: "6.8%", sentiment: "Negative", color: "#000" },
-                      ].map((s, i) => (
-                        <div key={s.name} className="flex items-center gap-3 p-3 rounded-lg" style={{ background: "var(--ch-surface)" }}>
-                          <span className="text-[14px] font-bold w-6 text-center" style={mutedStyle}>{i + 1}</span>
-                          <span className="w-6 h-6 rounded-full flex items-center justify-center text-[7px] font-bold text-white shrink-0" style={{ background: s.color }}>{s.platform[0]}</span>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-[13px] font-semibold" style={labelStyle}>{s.name}</p>
-                            <p className="text-[11px]" style={mutedStyle}>{s.platform}</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-[13px] font-bold" style={labelStyle}>{s.reach}</p>
-                            <p className="text-[10px]" style={mutedStyle}>{s.engagement} engagement</p>
+                      {mentions.filter((m) => m.aiTopic === ["Traffic", "Flooding", "Protests"][idx] || m.aiTopic === ["Kemacetan", "Banjir", "Demo"][idx] || m.aiTopic === ["Traffic Update", "Banjir Rob", "Protes Warga"][idx]).slice(0, 3).map((m) => (
+                        <div key={m.id} className="flex items-start gap-3 p-3 rounded-lg" style={{ background: "var(--ch-surface)" }}>
+                          <span className="w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-bold text-white shrink-0" style={{ background: m.platformColor }}>{m.platformIcon}</span>
+                          <div className="min-w-0">
+                            <p className="text-[12px] font-semibold" style={labelStyle}>{m.username} <span className="font-normal" style={mutedStyle}>· {m.time}</span></p>
+                            <p className="text-[12px] mt-0.5 truncate" style={mutedStyle}>{m.content}</p>
                           </div>
                         </div>
                       ))}
                     </div>
                   </div>
                 </div>
-              )}
-
-              {/* Last 30-Day Influencers */}
-              {analysisTab === "influencers" && (
-                <div className="space-y-6">
-                  <h2 className="text-[18px] font-bold" style={labelStyle}>Last 30-Day Influencers</h2>
-                  <div className="rounded-xl overflow-hidden" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
-                    <table className="w-full text-[12px]">
-                      <thead>
-                        <tr style={{ borderBottom: "1px solid var(--ch-border)" }}>
-                          {["Influencer", "Platform", "Followers", "Mentions", "Reach", "Sentiment"].map((h) => (
-                            <th key={h} className="px-4 py-3 text-left font-semibold" style={{ color: "var(--ch-text-muted)" }}>{h}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {[
-                          { name: "Kompas TV", platform: "YouTube", followers: "5.4M", mentions: 25, reach: "12.1M", sentiment: "Negative" },
-                          { name: "@infojakarta", platform: "X", followers: "1.2M", mentions: 45, reach: "5.4M", sentiment: "Negative" },
-                          { name: "MetroJakarta TV", platform: "YouTube", followers: "2.1M", mentions: 32, reach: "4.8M", sentiment: "Neutral" },
-                          { name: "@lambe_turah", platform: "Instagram", followers: "3.8M", mentions: 18, reach: "3.5M", sentiment: "Negative" },
-                          { name: "@jaksel.info", platform: "Instagram", followers: "890K", mentions: 38, reach: "2.8M", sentiment: "Negative" },
-                          { name: "@jakartakini", platform: "TikTok", followers: "650K", mentions: 22, reach: "2.4M", sentiment: "Negative" },
-                        ].map((inf) => (
-                          <tr key={inf.name} className="hover:bg-white/5 transition-colors" style={{ borderBottom: "1px solid var(--ch-border)" }}>
-                            <td className="px-4 py-2.5 font-semibold" style={labelStyle}>{inf.name}</td>
-                            <td className="px-4 py-2.5" style={mutedStyle}>{inf.platform}</td>
-                            <td className="px-4 py-2.5" style={labelStyle}>{inf.followers}</td>
-                            <td className="px-4 py-2.5 font-semibold" style={labelStyle}>{inf.mentions}</td>
-                            <td className="px-4 py-2.5 font-bold" style={labelStyle}>{inf.reach}</td>
-                            <td className="px-4 py-2.5">
-                              <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold"
-                                style={inf.sentiment === "Negative" ? { background: "#450A0A", color: "#FCA5A5" } : { background: "#1E293B", color: "#CBD5E1" }}>
-                                {inf.sentiment}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-
-              {/* Wordcloud */}
-              {analysisTab === "wordcloud" && (
-                <div className="space-y-6">
-                  <h2 className="text-[18px] font-bold" style={labelStyle}>Wordcloud</h2>
-                  <div className="rounded-xl p-8" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
-                    <div className="flex flex-wrap items-center justify-center gap-3">
-                      {[
-                        { word: "Jakarta", weight: 100 }, { word: "Macet", weight: 88 },
-                        { word: "Banjir", weight: 82 }, { word: "Transportasi", weight: 68 },
-                        { word: "Demo", weight: 62 }, { word: "Protes", weight: 55 },
-                        { word: "Kebakaran", weight: 50 }, { word: "Kecelakaan", weight: 45 },
-                        { word: "Kerusuhan", weight: 42 }, { word: "Cilandak", weight: 38 },
-                        { word: "Tebet", weight: 35 }, { word: "Kuningan", weight: 32 },
-                        { word: "Hujan", weight: 30 }, { word: "Banjir Rob", weight: 28 },
-                        { word: "Flyover", weight: 25 }, { word: "Drainase", weight: 22 },
-                        { word: "Contraflow", weight: 20 }, { word: "Evakuasi", weight: 18 },
-                        { word: "Lalu Lintas", weight: 40 }, { word: "Warga", weight: 36 },
-                      ].map((w) => (
-                        <span key={w.word} className="font-bold transition-all hover:scale-110 cursor-default"
-                          style={{
-                            fontSize: `${Math.max(12, w.weight * 0.22)}px`,
-                            color: w.weight > 70 ? "var(--ch-orange)" : w.weight > 40 ? "var(--ch-text)" : "var(--ch-text-muted)",
-                            opacity: Math.max(0.5, w.weight / 100),
-                          }}>
-                          {w.word}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
+              ))}
             </div>
           </div>
         </TabsContent>
 
-        {/* Placeholder tabs: Heatmap, Reports, Projects */}
-        {(["heatmap", "reports", "projects"] as const).map((tab) => {
-          const icons = { heatmap: Flame, reports: FileText, projects: BarChart3 };
-          const titles = { heatmap: "Topical Heatmap", reports: "Reports", projects: "Projects" };
-          const descs = { heatmap: "Visualize trending topics across platforms.", reports: "Generate monitoring reports automatically.", projects: "Manage and track your monitoring projects." };
-          const Icon = icons[tab];
-          return (
-            <TabsContent key={tab} value={tab} className="mt-5">
-              <div className="flex items-center justify-center py-20">
-                <div className="text-center space-y-2">
-                  <Icon className="w-12 h-12 mx-auto" style={{ color: "var(--ch-border-strong)" }} />
-                  <p className="text-[14px] font-semibold" style={labelStyle}>{titles[tab]}</p>
-                  <p className="text-[12px]" style={mutedStyle}>Coming soon — {descs[tab]}</p>
-                </div>
+        {/* Tab: Topical Heatmap */}
+        <TabsContent value="heatmap" className="mt-5">
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center space-y-2">
+              <Flame className="w-12 h-12 mx-auto" style={{ color: "var(--ch-border-strong)" }} />
+              <p className="text-[14px] font-semibold" style={labelStyle}>Topical Heatmap</p>
+              <p className="text-[12px]" style={mutedStyle}>Coming soon — visualize trending topics across platforms.</p>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Tab: Reports */}
+        <TabsContent value="reports" className="mt-5">
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center space-y-2">
+              <FileText className="w-12 h-12 mx-auto" style={{ color: "var(--ch-border-strong)" }} />
+              <p className="text-[14px] font-semibold" style={labelStyle}>Reports</p>
+              <p className="text-[12px]" style={mutedStyle}>Coming soon — generate monitoring reports automatically.</p>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Tab: Projects */}
+        <TabsContent value="projects" className="mt-5">
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center space-y-2">
+              <BarChart3 className="w-12 h-12 mx-auto" style={{ color: "var(--ch-border-strong)" }} />
+              <p className="text-[14px] font-semibold" style={labelStyle}>Projects</p>
+              <p className="text-[12px]" style={mutedStyle}>Coming soon — manage and track your monitoring projects.</p>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Tab: Top Exposure Sources */}
+        <TabsContent value="sources" className="mt-5">
+          <div className="space-y-6">
+            <h2 className="text-[18px] font-bold" style={labelStyle}>Top Exposure Sources</h2>
+            <div className="rounded-xl p-5" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+              <div className="space-y-3">
+                {[
+                  { name: "Kompas TV", platform: "YouTube", reach: "12.1M", engagement: "4.2%", sentiment: "Negative", color: "#FF0000" },
+                  { name: "@infojakarta", platform: "X", reach: "5.4M", engagement: "3.8%", sentiment: "Negative", color: "#000" },
+                  { name: "MetroJakarta TV", platform: "YouTube", reach: "4.8M", engagement: "3.1%", sentiment: "Neutral", color: "#FF0000" },
+                  { name: "CNN Indonesia", platform: "YouTube", reach: "4.2M", engagement: "2.9%", sentiment: "Negative", color: "#FF0000" },
+                  { name: "@lambe_turah", platform: "Instagram", reach: "3.5M", engagement: "5.2%", sentiment: "Negative", color: "#E1306C" },
+                  { name: "TVOne News", platform: "YouTube", reach: "3.1M", engagement: "2.7%", sentiment: "Negative", color: "#FF0000" },
+                  { name: "@jaksel.info", platform: "Instagram", reach: "2.8M", engagement: "4.1%", sentiment: "Negative", color: "#E1306C" },
+                  { name: "@jakartakini", platform: "TikTok", reach: "2.4M", engagement: "6.8%", sentiment: "Negative", color: "#000" },
+                ].map((s, i) => (
+                  <div key={s.name} className="flex items-center gap-3 p-3 rounded-lg" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                    <span className="text-[14px] font-bold w-6 text-center" style={mutedStyle}>{i + 1}</span>
+                    <span className="w-6 h-6 rounded-full flex items-center justify-center text-[7px] font-bold text-white shrink-0" style={{ background: s.color }}>{s.platform[0]}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[13px] font-semibold" style={labelStyle}>{s.name}</p>
+                      <p className="text-[11px]" style={mutedStyle}>{s.platform}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[13px] font-bold" style={labelStyle}>{s.reach}</p>
+                      <p className="text-[10px]" style={mutedStyle}>{s.engagement} engagement</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </TabsContent>
-          );
-        })}
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Tab: Last 30-Day Influencers */}
+        <TabsContent value="influencers" className="mt-5">
+          <div className="space-y-6">
+            <h2 className="text-[18px] font-bold" style={labelStyle}>Last 30-Day Influencers</h2>
+            <div className="rounded-xl overflow-hidden" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+              <table className="w-full text-[12px]">
+                <thead>
+                  <tr style={{ borderBottom: "1px solid var(--ch-border)" }}>
+                    {["Influencer", "Platform", "Followers", "Mentions", "Reach", "Sentiment"].map((h) => (
+                      <th key={h} className="px-4 py-3 text-left font-semibold" style={{ color: "var(--ch-text-muted)" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { name: "Kompas TV", platform: "YouTube", followers: "5.4M", mentions: 25, reach: "12.1M", sentiment: "Negative" },
+                    { name: "@infojakarta", platform: "X", followers: "1.2M", mentions: 45, reach: "5.4M", sentiment: "Negative" },
+                    { name: "MetroJakarta TV", platform: "YouTube", followers: "2.1M", mentions: 32, reach: "4.8M", sentiment: "Neutral" },
+                    { name: "@lambe_turah", platform: "Instagram", followers: "3.8M", mentions: 18, reach: "3.5M", sentiment: "Negative" },
+                    { name: "@jaksel.info", platform: "Instagram", followers: "890K", mentions: 38, reach: "2.8M", sentiment: "Negative" },
+                    { name: "@jakartakini", platform: "TikTok", followers: "650K", mentions: 22, reach: "2.4M", sentiment: "Negative" },
+                  ].map((inf) => (
+                    <tr key={inf.name} className="hover:bg-white/5 transition-colors" style={{ borderBottom: "1px solid var(--ch-border)" }}>
+                      <td className="px-4 py-2.5 font-semibold" style={labelStyle}>{inf.name}</td>
+                      <td className="px-4 py-2.5" style={mutedStyle}>{inf.platform}</td>
+                      <td className="px-4 py-2.5" style={labelStyle}>{inf.followers}</td>
+                      <td className="px-4 py-2.5 font-semibold" style={labelStyle}>{inf.mentions}</td>
+                      <td className="px-4 py-2.5 font-bold" style={labelStyle}>{inf.reach}</td>
+                      <td className="px-4 py-2.5">
+                        <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold"
+                          style={inf.sentiment === "Negative" ? { background: "#450A0A", color: "#FCA5A5" } : { background: "#1E293B", color: "#CBD5E1" }}>
+                          {inf.sentiment}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Tab: Wordcloud */}
+        <TabsContent value="wordcloud" className="mt-5">
+          <div className="space-y-6">
+            <h2 className="text-[18px] font-bold" style={labelStyle}>Wordcloud</h2>
+            <div className="rounded-xl p-8" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                {[
+                  { word: "Jakarta", weight: 100 }, { word: "Macet", weight: 88 },
+                  { word: "Banjir", weight: 82 }, { word: "Transportasi", weight: 68 },
+                  { word: "Demo", weight: 62 }, { word: "Protes", weight: 55 },
+                  { word: "Kebakaran", weight: 50 }, { word: "Kecelakaan", weight: 45 },
+                  { word: "Kerusuhan", weight: 42 }, { word: "Cilandak", weight: 38 },
+                  { word: "Tebet", weight: 35 }, { word: "Kuningan", weight: 32 },
+                  { word: "Hujan", weight: 30 }, { word: "Banjir Rob", weight: 28 },
+                  { word: "Flyover", weight: 25 }, { word: "Drainase", weight: 22 },
+                  { word: "Contraflow", weight: 20 }, { word: "Evakuasi", weight: 18 },
+                  { word: "Lalu Lintas", weight: 40 }, { word: "Warga", weight: 36 },
+                ].map((w) => (
+                  <span key={w.word} className="font-bold transition-all hover:scale-110 cursor-default"
+                    style={{
+                      fontSize: `${Math.max(12, w.weight * 0.22)}px`,
+                      color: w.weight > 70 ? "var(--ch-orange)" : w.weight > 40 ? "var(--ch-text)" : "var(--ch-text-muted)",
+                      opacity: Math.max(0.5, w.weight / 100),
+                    }}>
+                    {w.word}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </TabsContent>
       </Tabs>
     </div>
   );
