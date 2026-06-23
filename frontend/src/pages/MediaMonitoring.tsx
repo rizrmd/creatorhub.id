@@ -1,10 +1,11 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   Settings, MessageSquare, BarChart3, Flame, FileText,
   Search, X, ChevronDown, ExternalLink,
   Heart, MessageCircle, Eye, Share2, Play,
   CheckCircle, Info, Edit3,
-  Sparkles,
+  Sparkles, Globe, TrendingUp, Layers, Shield, Radio, Users, Download,
+  PieChart, Clock,
 } from "lucide-react";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 
@@ -220,6 +221,7 @@ export default function MediaMonitoring() {
   const [incKeywords, setIncKeywords] = useState(includeKeywords);
   const [excKeywords, setExcKeywords] = useState(excludeKeywords);
   const [currentPage, setCurrentPage] = useState(1);
+  const [analysisTab, setAnalysisTab] = useState("summary");
   const perPage = 5;
   const totalPages = Math.ceil(mentions.length / perPage);
   const paginatedMentions = mentions.slice((currentPage - 1) * perPage, currentPage * perPage);
@@ -238,6 +240,23 @@ export default function MediaMonitoring() {
     { value: "heatmap", icon: Flame, label: "Topical Heatmap" },
     { value: "reports", icon: FileText, label: "Reports" },
     { value: "projects", icon: BarChart3, label: "Projects" },
+  ];
+
+  const analysisTabs = [
+    { value: "summary", icon: BarChart3, label: "Summary" },
+    { value: "dataset", icon: FileText, label: "Dataset" },
+    { value: "landscape", icon: Globe, label: "Conversation Landscape" },
+    { value: "sentiment", icon: TrendingUp, label: "General vs Substantive Sentiment" },
+    { value: "clusters", icon: Layers, label: "Issue Clusters" },
+    { value: "issue1", icon: Search, label: "Issue: Traffic Congestion" },
+    { value: "issue2", icon: Search, label: "Issue: Flooding" },
+    { value: "issue3", icon: Search, label: "Issue: Protests" },
+    { value: "sentiment-heatmap", icon: Flame, label: "Sentiment Heatmap per Issue" },
+    { value: "social-heatmap", icon: Clock, label: "Social Conversation Heatmap" },
+    { value: "risk-map", icon: Shield, label: "Public Issue Risk Map" },
+    { value: "sources", icon: Radio, label: "Top Exposure Sources" },
+    { value: "influencers", icon: Users, label: "Last 30-Day Influencers" },
+    { value: "wordcloud", icon: PieChart, label: "Wordcloud" },
   ];
 
   return (
@@ -532,11 +551,467 @@ export default function MediaMonitoring() {
           </div>
         </TabsContent>
 
-        {/* Placeholder tabs */}
-        {(["analysis", "heatmap", "reports", "projects"] as const).map((tab) => {
-          const icons = { analysis: BarChart3, heatmap: Flame, reports: FileText, projects: BarChart3 };
-          const titles = { analysis: "Analysis Dashboard", heatmap: "Topical Heatmap", reports: "Reports", projects: "Projects" };
-          const descs = { analysis: "Deeper insights into your monitoring data.", heatmap: "Visualize trending topics across platforms.", reports: "Generate monitoring reports automatically.", projects: "Manage and track your monitoring projects." };
+        {/* Tab: Analysis */}
+        <TabsContent value="analysis" className="mt-5">
+          <div className="flex rounded-xl overflow-hidden min-h-[600px]" style={cardStyle}>
+            {/* Sub-Tab Sidebar */}
+            <div className="w-56 shrink-0 flex flex-col overflow-y-auto" style={{ background: "var(--ch-bg)", borderRight: "1px solid var(--ch-border)" }}>
+              {analysisTabs.map((tab) => {
+                const isActive = analysisTab === tab.value;
+                const TabIcon = tab.icon;
+                return (
+                  <button key={tab.value} onClick={() => setAnalysisTab(tab.value)}
+                    className="flex items-center gap-2.5 px-4 py-2.5 text-[12px] font-semibold transition-all relative text-left"
+                    style={isActive ? { background: "rgba(249,115,22,.1)", color: "var(--ch-orange)" } : { color: "var(--ch-text-muted)" }}>
+                    {isActive && <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full" style={{ background: "var(--ch-orange)" }} />}
+                    <TabIcon className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">{tab.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Content Area */}
+            <div className="flex-1 p-6 min-w-0 overflow-y-auto">
+
+              {/* Summary */}
+              {analysisTab === "summary" && (
+                <div className="space-y-6">
+                  <h2 className="text-[18px] font-bold" style={labelStyle}>Monitoring Summary</h2>
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[
+                      { label: "Total Mentions", value: "2,450", change: "+14.2%", icon: MessageCircle, color: "#3B82F6" },
+                      { label: "Positive Sentiment", value: "34%", change: "+2.1%", icon: TrendingUp, color: "#22C55E" },
+                      { label: "Negative Sentiment", value: "52%", change: "-1.8%", icon: TrendingUp, color: "#EF4444" },
+                      { label: "Top Issue", value: "Traffic", change: "890 mentions", icon: Flame, color: "#F97316" },
+                    ].map((m) => (
+                      <div key={m.label} className="rounded-xl p-4" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${m.color}20` }}>
+                            <m.icon className="w-4 h-4" style={{ color: m.color }} />
+                          </div>
+                          <span className="text-[11px] font-medium" style={mutedStyle}>{m.label}</span>
+                        </div>
+                        <p className="text-[22px] font-bold" style={labelStyle}>{m.value}</p>
+                        <p className="text-[11px] mt-0.5" style={{ color: m.color }}>{m.change}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="rounded-xl p-5" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                    <h3 className="text-[14px] font-bold mb-4" style={labelStyle}>Mention Trend (Last 7 Days)</h3>
+                    <div className="flex items-end gap-2 h-40">
+                      {[180, 320, 250, 410, 380, 520, 390].map((h, i) => (
+                        <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                          <div className="w-full rounded-t-md transition-all" style={{ height: `${(h / 520) * 100}%`, background: i === 5 ? "var(--ch-orange)" : "var(--ch-border)" }} />
+                          <span className="text-[10px]" style={mutedStyle}>{["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][i]}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div className="rounded-xl p-5" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                      <h3 className="text-[14px] font-bold mb-3" style={labelStyle}>Sentiment Distribution</h3>
+                      <div className="space-y-2">
+                        {[{ label: "Negative", pct: 52, color: "#EF4444" }, { label: "Positive", pct: 34, color: "#22C55E" }, { label: "Neutral", pct: 14, color: "#94A3B8" }].map((s) => (
+                          <div key={s.label} className="flex items-center gap-3">
+                            <span className="text-[12px] w-16" style={mutedStyle}>{s.label}</span>
+                            <div className="flex-1 h-6 rounded-full overflow-hidden" style={{ background: "var(--ch-border)" }}>
+                              <div className="h-full rounded-full" style={{ width: `${s.pct}%`, background: s.color }} />
+                            </div>
+                            <span className="text-[12px] font-semibold w-10 text-right" style={labelStyle}>{s.pct}%</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="rounded-xl p-5" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                      <h3 className="text-[14px] font-bold mb-3" style={labelStyle}>Top Issues</h3>
+                      <div className="space-y-2">
+                        {[{ issue: "Traffic Congestion", count: 890, pct: 36 }, { issue: "Flooding", count: 650, pct: 27 }, { issue: "Protests", count: 420, pct: 17 }, { issue: "Fires", count: 310, pct: 13 }, { issue: "Accidents", count: 180, pct: 7 }].map((t) => (
+                          <div key={t.issue} className="flex items-center gap-3">
+                            <span className="text-[12px] flex-1" style={labelStyle}>{t.issue}</span>
+                            <span className="text-[11px]" style={mutedStyle}>{t.count}</span>
+                            <div className="w-20 h-4 rounded-full overflow-hidden" style={{ background: "var(--ch-border)" }}>
+                              <div className="h-full rounded-full" style={{ width: `${t.pct}%`, background: "var(--ch-orange)" }} />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Dataset */}
+              {analysisTab === "dataset" && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-[18px] font-bold" style={labelStyle}>Dataset</h2>
+                    <button className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold rounded-lg" style={{ border: "1px solid var(--ch-border)", color: "var(--ch-text-muted)" }}>
+                      <Download className="w-3.5 h-3.5" /> Export CSV
+                    </button>
+                  </div>
+                  <div className="rounded-xl overflow-hidden" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-[12px]">
+                        <thead>
+                          <tr style={{ borderBottom: "1px solid var(--ch-border)" }}>
+                            {["Platform", "Username", "Content", "Sentiment", "Topic", "Location"].map((h) => (
+                              <th key={h} className="px-4 py-3 text-left font-semibold" style={{ color: "var(--ch-text-muted)" }}>{h}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {mentions.map((m) => (
+                            <tr key={m.id} className="hover:bg-white/5 transition-colors" style={{ borderBottom: "1px solid var(--ch-border)" }}>
+                              <td className="px-4 py-2.5"><span className="w-6 h-6 rounded-full inline-flex items-center justify-center text-[8px] font-bold text-white" style={{ background: m.platformColor }}>{m.platformIcon}</span></td>
+                              <td className="px-4 py-2.5 font-semibold" style={labelStyle}>{m.username}</td>
+                              <td className="px-4 py-2.5 max-w-[300px] truncate" style={mutedStyle}>{m.content}</td>
+                              <td className="px-4 py-2.5">
+                                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold"
+                                  style={m.aiSentiment === "Negative" ? { background: "#450A0A", color: "#FCA5A5" } : m.aiSentiment === "Positive" ? { background: "#14532D", color: "#4ADE80" } : { background: "#1E293B", color: "#CBD5E1" }}>
+                                  {m.aiSentiment}
+                                </span>
+                              </td>
+                              <td className="px-4 py-2.5" style={labelStyle}>{m.aiTopic}</td>
+                              <td className="px-4 py-2.5" style={mutedStyle}>{m.aiLocation}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Conversation Landscape */}
+              {analysisTab === "landscape" && (
+                <div className="space-y-6">
+                  <h2 className="text-[18px] font-bold" style={labelStyle}>Conversation Landscape</h2>
+                  <div className="rounded-xl p-6" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                    <div className="grid grid-cols-3 gap-4">
+                      {[
+                        { name: "Traffic Congestion", size: "w-40 h-40", color: "#F97316", mentions: 890, sentiment: "Mostly Negative" },
+                        { name: "Flooding", size: "w-32 h-32", color: "#3B82F6", mentions: 650, sentiment: "Mostly Negative" },
+                        { name: "Protests", size: "w-28 h-28", color: "#EF4444", mentions: 420, sentiment: "Negative" },
+                        { name: "Fires", size: "w-24 h-24", color: "#F59E0B", mentions: 310, sentiment: "Neutral" },
+                        { name: "Accidents", size: "w-20 h-20", color: "#8B5CF6", mentions: 180, sentiment: "Negative" },
+                      ].map((b) => (
+                        <div key={b.name} className="flex flex-col items-center gap-2">
+                          <div className={`${b.size} rounded-full flex flex-col items-center justify-center text-white`} style={{ background: `${b.color}30`, border: `2px solid ${b.color}` }}>
+                            <span className="text-[16px] font-bold">{b.mentions}</span>
+                            <span className="text-[10px]">mentions</span>
+                          </div>
+                          <span className="text-[12px] font-semibold text-center" style={labelStyle}>{b.name}</span>
+                          <span className="text-[10px]" style={mutedStyle}>{b.sentiment}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* General vs Substantive Sentiment */}
+              {analysisTab === "sentiment" && (
+                <div className="space-y-6">
+                  <h2 className="text-[18px] font-bold" style={labelStyle}>General vs Substantive Sentiment</h2>
+                  <div className="rounded-xl p-6" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                    <div className="flex items-center gap-4 mb-4">
+                      <span className="flex items-center gap-1.5 text-[11px]" style={mutedStyle}><span className="w-3 h-3 rounded" style={{ background: "#64748B" }} /> General Sentiment</span>
+                      <span className="flex items-center gap-1.5 text-[11px]" style={mutedStyle}><span className="w-3 h-3 rounded" style={{ background: "var(--ch-orange)" }} /> Substantive Sentiment</span>
+                    </div>
+                    <div className="space-y-4">
+                      {[{ issue: "Traffic Congestion", general: 65, substantive: 82 }, { issue: "Flooding", general: 45, substantive: 78 }, { issue: "Protests", general: 30, substantive: 88 }, { issue: "Fires", general: 20, substantive: 65 }, { issue: "Accidents", general: 35, substantive: 72 }].map((s) => (
+                        <div key={s.issue} className="space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[12px] font-semibold" style={labelStyle}>{s.issue}</span>
+                            <span className="text-[11px]" style={mutedStyle}>General: {s.general}% · Substantive: {s.substantive}%</span>
+                          </div>
+                          <div className="flex gap-1 h-5">
+                            <div className="rounded" style={{ width: `${s.general}%`, background: "#64748B" }} />
+                            <div className="rounded" style={{ width: `${s.substantive}%`, background: "var(--ch-orange)" }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Issue Clusters */}
+              {analysisTab === "clusters" && (
+                <div className="space-y-6">
+                  <h2 className="text-[18px] font-bold" style={labelStyle}>Conversation Issue Clusters</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {[
+                      { name: "Infrastructure", color: "#3B82F6", issues: ["Traffic Congestion", "Transportation"], total: 1240, topPlatform: "X (Twitter)" },
+                      { name: "Environment", color: "#22C55E", issues: ["Flooding", "Fires", "Drainage"], total: 890, topPlatform: "YouTube" },
+                      { name: "Social Unrest", color: "#EF4444", issues: ["Protests", "Riots", "Civil Dispute"], total: 670, topPlatform: "TikTok" },
+                      { name: "Public Safety", color: "#F59E0B", issues: ["Accidents", "Traffic Incidents"], total: 450, topPlatform: "Instagram" },
+                    ].map((c) => (
+                      <div key={c.name} className="rounded-xl p-5" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${c.color}20` }}>
+                            <Layers className="w-5 h-5" style={{ color: c.color }} />
+                          </div>
+                          <div>
+                            <p className="text-[14px] font-bold" style={labelStyle}>{c.name}</p>
+                            <p className="text-[11px]" style={mutedStyle}>{c.total} mentions · Top: {c.topPlatform}</p>
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {c.issues.map((i) => (
+                            <span key={i} className="px-2 py-0.5 rounded-full text-[10px] font-semibold" style={{ background: `${c.color}20`, color: c.color, border: `1px solid ${c.color}40` }}>{i}</span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Issue Analysis 1-3 */}
+              {["issue1", "issue2", "issue3"].map((issueKey, idx) => analysisTab === issueKey && (
+                <div key={issueKey} className="space-y-6">
+                  <h2 className="text-[18px] font-bold" style={labelStyle}>{["Issue Analysis: Traffic Congestion", "Issue Analysis: Flooding", "Issue Analysis: Protests & Civil Unrest"][idx]}</h2>
+                  <div className="grid grid-cols-3 gap-4">
+                    {[
+                      { label: "Total Mentions", value: ["890", "650", "420"][idx] },
+                      { label: "Sentiment Score", value: ["-0.62", "-0.71", "-0.58"][idx] },
+                      { label: "Top Platform", value: ["X (Twitter)", "YouTube", "TikTok"][idx] },
+                    ].map((s) => (
+                      <div key={s.label} className="rounded-xl p-4" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                        <p className="text-[11px]" style={mutedStyle}>{s.label}</p>
+                        <p className="text-[20px] font-bold mt-1" style={labelStyle}>{s.value}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="rounded-xl p-5" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                    <h3 className="text-[14px] font-bold mb-3" style={labelStyle}>Top Posts</h3>
+                    <div className="space-y-3">
+                      {mentions.filter((m) => m.aiTopic === ["Traffic", "Flooding", "Protests"][idx] || m.aiTopic === ["Kemacetan", "Banjir", "Demo"][idx] || m.aiTopic === ["Traffic Update", "Banjir Rob", "Protes Warga"][idx]).slice(0, 3).map((m) => (
+                        <div key={m.id} className="flex items-start gap-3 p-3 rounded-lg" style={{ background: "var(--ch-surface)" }}>
+                          <span className="w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-bold text-white shrink-0" style={{ background: m.platformColor }}>{m.platformIcon}</span>
+                          <div className="min-w-0">
+                            <p className="text-[12px] font-semibold" style={labelStyle}>{m.username} <span className="font-normal" style={mutedStyle}>· {m.time}</span></p>
+                            <p className="text-[12px] mt-0.5 truncate" style={mutedStyle}>{m.content}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Sentiment Heatmap per Issue */}
+              {analysisTab === "sentiment-heatmap" && (
+                <div className="space-y-6">
+                  <h2 className="text-[18px] font-bold" style={labelStyle}>Sentiment Heatmap per Issue</h2>
+                  <div className="rounded-xl p-6" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                    <div className="grid grid-cols-4 gap-2 text-[11px]">
+                      <div />
+                      <div className="text-center font-semibold py-2" style={{ color: "#22C55E" }}>Positive</div>
+                      <div className="text-center font-semibold py-2" style={{ color: "#94A3B8" }}>Neutral</div>
+                      <div className="text-center font-semibold py-2" style={{ color: "#EF4444" }}>Negative</div>
+                      {[
+                        { issue: "Traffic", pos: 15, neu: 25, neg: 60 },
+                        { issue: "Flooding", pos: 10, neu: 20, neg: 70 },
+                        { issue: "Protests", pos: 8, neu: 15, neg: 77 },
+                        { issue: "Fires", pos: 5, neu: 30, neg: 65 },
+                        { issue: "Accidents", pos: 12, neu: 22, neg: 66 },
+                      ].map((r) => (
+                        <React.Fragment key={r.issue}>
+                          <div className="flex items-center font-semibold py-3" style={labelStyle}>{r.issue}</div>
+                          <div className="flex items-center justify-center py-3 rounded-lg font-bold" style={{ background: `rgba(34,197,94,${r.pos / 100})`, color: r.pos > 30 ? "white" : "#4ADE80" }}>{r.pos}%</div>
+                          <div className="flex items-center justify-center py-3 rounded-lg font-bold" style={{ background: `rgba(148,163,184,${r.neu / 100})`, color: r.neu > 30 ? "white" : "#CBD5E1" }}>{r.neu}%</div>
+                          <div className="flex items-center justify-center py-3 rounded-lg font-bold" style={{ background: `rgba(239,68,68,${r.neg / 100})`, color: r.neg > 30 ? "white" : "#FCA5A5" }}>{r.neg}%</div>
+                        </React.Fragment>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Social Conversation Heatmap */}
+              {analysisTab === "social-heatmap" && (
+                <div className="space-y-6">
+                  <h2 className="text-[18px] font-bold" style={labelStyle}>Social Conversation Heatmap</h2>
+                  <div className="rounded-xl p-6" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                    <div className="grid grid-cols-8 gap-1 text-[10px]">
+                      <div />
+                      {["06:00", "09:00", "12:00", "15:00", "18:00", "21:00", "00:00"].map((h) => (
+                        <div key={h} className="text-center py-1" style={mutedStyle}>{h}</div>
+                      ))}
+                      {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
+                        <React.Fragment key={day}>
+                          <div className="flex items-center font-semibold" style={labelStyle}>{day}</div>
+                          {[30, 75, 45, 60, 90, 40, 25, 15].map((v, i) => (
+                            <div key={i} className="h-8 rounded flex items-center justify-center text-[9px] font-bold"
+                              style={{ background: `rgba(249,115,22,${v / 100})`, color: v > 50 ? "white" : "var(--ch-text-muted)" }}>
+                              {v}
+                            </div>
+                          ))}
+                        </React.Fragment>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Risk Map */}
+              {analysisTab === "risk-map" && (
+                <div className="space-y-6">
+                  <h2 className="text-[18px] font-bold" style={labelStyle}>Public Issue Risk Map</h2>
+                  <div className="rounded-xl p-6" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                    <div className="relative h-80 border-l border-b" style={{ borderColor: "var(--ch-border)" }}>
+                      <div className="absolute top-0 left-0 right-0 text-center text-[10px] font-semibold pb-1" style={mutedStyle}>Urgency →</div>
+                      <div className="absolute bottom-0 left-0 top-0 flex items-center" style={{ writingMode: "vertical-lr", transform: "rotate(180deg)" }}>
+                        <span className="text-[10px] font-semibold" style={mutedStyle}>← Severity</span>
+                      </div>
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full">
+                        <div className="absolute top-0 left-0 w-1/2 h-1/2 rounded-tl-lg" style={{ background: "rgba(249,115,22,.05)" }} />
+                        <div className="absolute top-0 right-0 w-1/2 h-1/2 rounded-tr-lg" style={{ background: "rgba(239,68,68,.08)" }} />
+                        <div className="absolute bottom-0 left-0 w-1/2 h-1/2 rounded-bl-lg" style={{ background: "rgba(34,197,94,.05)" }} />
+                        <div className="absolute bottom-0 right-0 w-1/2 h-1/2 rounded-br-lg" style={{ background: "rgba(249,115,22,.08)" }} />
+                      </div>
+                      {[
+                        { name: "Traffic", x: 80, y: 25, color: "#F97316" },
+                        { name: "Flooding", x: 65, y: 15, color: "#3B82F6" },
+                        { name: "Protests", x: 55, y: 10, color: "#EF4444" },
+                        { name: "Fires", x: 45, y: 18, color: "#F59E0B" },
+                        { name: "Accidents", x: 70, y: 35, color: "#8B5CF6" },
+                      ].map((p) => (
+                        <div key={p.name} className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-0.5" style={{ left: `${p.x}%`, bottom: `${p.y}%` }}>
+                          <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: p.color, boxShadow: `0 0 12px ${p.color}60` }} />
+                          <span className="text-[10px] font-semibold whitespace-nowrap" style={labelStyle}>{p.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-4 mt-4 pt-3" style={{ borderTop: "1px solid var(--ch-border)" }}>
+                      <span className="text-[10px] flex items-center gap-1" style={mutedStyle}><span className="w-2.5 h-2.5 rounded-full" style={{ background: "#22C55E" }} /> Low Risk</span>
+                      <span className="text-[10px] flex items-center gap-1" style={mutedStyle}><span className="w-2.5 h-2.5 rounded-full" style={{ background: "#F97316" }} /> Monitor</span>
+                      <span className="text-[10px] flex items-center gap-1" style={mutedStyle}><span className="w-2.5 h-2.5 rounded-full" style={{ background: "#EF4444" }} /> High Risk</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Top Exposure Sources */}
+              {analysisTab === "sources" && (
+                <div className="space-y-6">
+                  <h2 className="text-[18px] font-bold" style={labelStyle}>Top Exposure Sources</h2>
+                  <div className="rounded-xl p-5" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                    <div className="space-y-3">
+                      {[
+                        { name: "Kompas TV", platform: "YouTube", reach: "12.1M", engagement: "4.2%", sentiment: "Negative", color: "#FF0000" },
+                        { name: "@infojakarta", platform: "X", reach: "5.4M", engagement: "3.8%", sentiment: "Negative", color: "#000" },
+                        { name: "MetroJakarta TV", platform: "YouTube", reach: "4.8M", engagement: "3.1%", sentiment: "Neutral", color: "#FF0000" },
+                        { name: "CNN Indonesia", platform: "YouTube", reach: "4.2M", engagement: "2.9%", sentiment: "Negative", color: "#FF0000" },
+                        { name: "@lambe_turah", platform: "Instagram", reach: "3.5M", engagement: "5.2%", sentiment: "Negative", color: "#E1306C" },
+                        { name: "TVOne News", platform: "YouTube", reach: "3.1M", engagement: "2.7%", sentiment: "Negative", color: "#FF0000" },
+                        { name: "@jaksel.info", platform: "Instagram", reach: "2.8M", engagement: "4.1%", sentiment: "Negative", color: "#E1306C" },
+                        { name: "@jakartakini", platform: "TikTok", reach: "2.4M", engagement: "6.8%", sentiment: "Negative", color: "#000" },
+                      ].map((s, i) => (
+                        <div key={s.name} className="flex items-center gap-3 p-3 rounded-lg" style={{ background: "var(--ch-surface)" }}>
+                          <span className="text-[14px] font-bold w-6 text-center" style={mutedStyle}>{i + 1}</span>
+                          <span className="w-6 h-6 rounded-full flex items-center justify-center text-[7px] font-bold text-white shrink-0" style={{ background: s.color }}>{s.platform[0]}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[13px] font-semibold" style={labelStyle}>{s.name}</p>
+                            <p className="text-[11px]" style={mutedStyle}>{s.platform}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-[13px] font-bold" style={labelStyle}>{s.reach}</p>
+                            <p className="text-[10px]" style={mutedStyle}>{s.engagement} engagement</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Last 30-Day Influencers */}
+              {analysisTab === "influencers" && (
+                <div className="space-y-6">
+                  <h2 className="text-[18px] font-bold" style={labelStyle}>Last 30-Day Influencers</h2>
+                  <div className="rounded-xl overflow-hidden" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                    <table className="w-full text-[12px]">
+                      <thead>
+                        <tr style={{ borderBottom: "1px solid var(--ch-border)" }}>
+                          {["Influencer", "Platform", "Followers", "Mentions", "Reach", "Sentiment"].map((h) => (
+                            <th key={h} className="px-4 py-3 text-left font-semibold" style={{ color: "var(--ch-text-muted)" }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[
+                          { name: "Kompas TV", platform: "YouTube", followers: "5.4M", mentions: 25, reach: "12.1M", sentiment: "Negative" },
+                          { name: "@infojakarta", platform: "X", followers: "1.2M", mentions: 45, reach: "5.4M", sentiment: "Negative" },
+                          { name: "MetroJakarta TV", platform: "YouTube", followers: "2.1M", mentions: 32, reach: "4.8M", sentiment: "Neutral" },
+                          { name: "@lambe_turah", platform: "Instagram", followers: "3.8M", mentions: 18, reach: "3.5M", sentiment: "Negative" },
+                          { name: "@jaksel.info", platform: "Instagram", followers: "890K", mentions: 38, reach: "2.8M", sentiment: "Negative" },
+                          { name: "@jakartakini", platform: "TikTok", followers: "650K", mentions: 22, reach: "2.4M", sentiment: "Negative" },
+                        ].map((inf) => (
+                          <tr key={inf.name} className="hover:bg-white/5 transition-colors" style={{ borderBottom: "1px solid var(--ch-border)" }}>
+                            <td className="px-4 py-2.5 font-semibold" style={labelStyle}>{inf.name}</td>
+                            <td className="px-4 py-2.5" style={mutedStyle}>{inf.platform}</td>
+                            <td className="px-4 py-2.5" style={labelStyle}>{inf.followers}</td>
+                            <td className="px-4 py-2.5 font-semibold" style={labelStyle}>{inf.mentions}</td>
+                            <td className="px-4 py-2.5 font-bold" style={labelStyle}>{inf.reach}</td>
+                            <td className="px-4 py-2.5">
+                              <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold"
+                                style={inf.sentiment === "Negative" ? { background: "#450A0A", color: "#FCA5A5" } : { background: "#1E293B", color: "#CBD5E1" }}>
+                                {inf.sentiment}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Wordcloud */}
+              {analysisTab === "wordcloud" && (
+                <div className="space-y-6">
+                  <h2 className="text-[18px] font-bold" style={labelStyle}>Wordcloud</h2>
+                  <div className="rounded-xl p-8" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                    <div className="flex flex-wrap items-center justify-center gap-3">
+                      {[
+                        { word: "Jakarta", weight: 100 }, { word: "Macet", weight: 88 },
+                        { word: "Banjir", weight: 82 }, { word: "Transportasi", weight: 68 },
+                        { word: "Demo", weight: 62 }, { word: "Protes", weight: 55 },
+                        { word: "Kebakaran", weight: 50 }, { word: "Kecelakaan", weight: 45 },
+                        { word: "Kerusuhan", weight: 42 }, { word: "Cilandak", weight: 38 },
+                        { word: "Tebet", weight: 35 }, { word: "Kuningan", weight: 32 },
+                        { word: "Hujan", weight: 30 }, { word: "Banjir Rob", weight: 28 },
+                        { word: "Flyover", weight: 25 }, { word: "Drainase", weight: 22 },
+                        { word: "Contraflow", weight: 20 }, { word: "Evakuasi", weight: 18 },
+                        { word: "Lalu Lintas", weight: 40 }, { word: "Warga", weight: 36 },
+                      ].map((w) => (
+                        <span key={w.word} className="font-bold transition-all hover:scale-110 cursor-default"
+                          style={{
+                            fontSize: `${Math.max(12, w.weight * 0.22)}px`,
+                            color: w.weight > 70 ? "var(--ch-orange)" : w.weight > 40 ? "var(--ch-text)" : "var(--ch-text-muted)",
+                            opacity: Math.max(0.5, w.weight / 100),
+                          }}>
+                          {w.word}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Placeholder tabs: Heatmap, Reports, Projects */}
+        {(["heatmap", "reports", "projects"] as const).map((tab) => {
+          const icons = { heatmap: Flame, reports: FileText, projects: BarChart3 };
+          const titles = { heatmap: "Topical Heatmap", reports: "Reports", projects: "Projects" };
+          const descs = { heatmap: "Visualize trending topics across platforms.", reports: "Generate monitoring reports automatically.", projects: "Manage and track your monitoring projects." };
           const Icon = icons[tab];
           return (
             <TabsContent key={tab} value={tab} className="mt-5">
