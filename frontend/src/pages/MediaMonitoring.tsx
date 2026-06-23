@@ -795,37 +795,7 @@ export default function MediaMonitoring() {
                     </div>
                   </div>
 
-                  {/* Data Table */}
-                  <div className="rounded-xl overflow-hidden" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-[12px]">
-                        <thead>
-                          <tr style={{ borderBottom: "1px solid var(--ch-border)" }}>
-                            {["Platform", "Username", "Content", "Sentiment", "Topic", "Location"].map((h) => (
-                              <th key={h} className="px-4 py-3 text-left font-semibold" style={{ color: "var(--ch-text-muted)" }}>{h}</th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {mentions.map((m) => (
-                            <tr key={m.id} className="hover:bg-white/5 transition-colors" style={{ borderBottom: "1px solid var(--ch-border)" }}>
-                              <td className="px-4 py-2.5"><span className="w-6 h-6 rounded-full inline-flex items-center justify-center text-[8px] font-bold text-white" style={{ background: m.platformColor }}>{m.platformIcon}</span></td>
-                              <td className="px-4 py-2.5 font-semibold" style={labelStyle}>{m.username}</td>
-                              <td className="px-4 py-2.5 max-w-[300px] truncate" style={mutedStyle}>{m.content}</td>
-                              <td className="px-4 py-2.5">
-                                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold"
-                                  style={m.aiSentiment === "Negative" ? { background: "#450A0A", color: "#FCA5A5" } : m.aiSentiment === "Positive" ? { background: "#14532D", color: "#4ADE80" } : { background: "#1E293B", color: "#CBD5E1" }}>
-                                  {m.aiSentiment}
-                                </span>
-                              </td>
-                              <td className="px-4 py-2.5" style={labelStyle}>{m.aiTopic}</td>
-                              <td className="px-4 py-2.5" style={mutedStyle}>{m.aiLocation}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
+
                 </div>
               )}
 
