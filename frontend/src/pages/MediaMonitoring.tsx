@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import {
   Settings, MessageSquare, BarChart3, Flame, FileText,
-  Search, X, ChevronDown,
+  Search, X, ChevronDown, ExternalLink,
   Heart, MessageCircle, Eye, Share2, Play,
   CheckCircle, Info, Edit3,
   Sparkles, Globe, TrendingUp, Layers, Shield, Radio, Users, Download,
@@ -238,7 +238,7 @@ export default function MediaMonitoring() {
     { value: "setup", icon: Settings, label: "Setup" },
     { value: "mentions", icon: MessageSquare, label: "Mentions" },
     { value: "analysis", icon: BarChart3, label: "Analysis" },
-    { value: "clusters", icon: Layers, label: "Conversation Issue Clusters" },
+    { value: "clusters", icon: Layers, label: "Issue Clusters" },
     { value: "heatmap", icon: Flame, label: "Topical Heatmap" },
     { value: "reports", icon: FileText, label: "Reports" },
     { value: "sources", icon: Radio, label: "Top Sources" },
@@ -264,11 +264,22 @@ export default function MediaMonitoring() {
 
   return (
     <div className="p-4 md:p-6" style={{ background: "var(--ch-bg)" }}>
-      <div className="mb-4">
-        <h1 className="text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-          Media Monitoring
-        </h1>
-        <p className="text-[14px] mt-1" style={mutedStyle}>Pantau percakapan publik secara real-time di berbagai platform.</p>
+      <div className="mb-4 flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            Media Monitoring
+          </h1>
+          <p className="text-[14px] mt-1" style={mutedStyle}>Pantau percakapan publik secara real-time di berbagai platform.</p>
+        </div>
+        <div className="flex items-center gap-3 shrink-0">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold" style={{ background: "rgba(255,255,255,.12)", border: "1px solid rgba(255,255,255,.2)", color: "var(--ch-text)" }}>
+            <span className="w-2 h-2 rounded-full" style={{ background: "var(--ch-orange)" }} />
+            Project: Jakarta
+          </span>
+          <button className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold rounded-lg transition-colors" style={{ border: "1px solid var(--ch-border)", color: "var(--ch-text-muted)" }}>
+            <ExternalLink className="w-3.5 h-3.5" />Other Projects
+          </button>
+        </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -281,9 +292,9 @@ export default function MediaMonitoring() {
               <button key={tab.value} onClick={() => setActiveTab(tab.value)}
                 className="flex items-center gap-1.5 px-4 py-2 text-[12px] font-semibold rounded-lg transition-all duration-150 whitespace-nowrap shrink-0"
                 style={isActive ? {
-                  background: "linear-gradient(135deg, #16A34A, #22C55E)",
+                  background: "linear-gradient(135deg, #EA580C, #F97316)",
                   color: "white",
-                  boxShadow: "0 2px 8px rgba(34,197,94,.3)",
+                  boxShadow: "0 2px 8px rgba(249,115,22,.3)",
                 } : {
                   color: "var(--ch-text-muted)",
                   background: "var(--ch-surface)",
@@ -568,7 +579,7 @@ export default function MediaMonitoring() {
                 return (
                   <button key={tab.value} onClick={() => setAnalysisTab(tab.value)}
                     className="flex-1 flex items-center justify-center relative transition-all rounded-lg"
-                    style={isActive ? { background: "linear-gradient(135deg, #16A34A, #22C55E)", boxShadow: "0 2px 6px rgba(34,197,94,.3)" } : { color: "var(--ch-text-muted)" }}
+                    style={isActive ? { background: "linear-gradient(135deg, #EA580C, #F97316)", boxShadow: "0 2px 6px rgba(249,115,22,.3)" } : { color: "var(--ch-text-muted)" }}
                     title={tab.label}>
                     <TabIcon className="w-4 h-4 transition-colors" style={{ color: isActive ? "white" : "var(--ch-text-muted)" }} />
                   </button>
@@ -846,24 +857,31 @@ export default function MediaMonitoring() {
           </div>
         </TabsContent>
 
-        {/* Tab: Conversation Issue Clusters */}
+        {/* Tab: Issue Clusters */}
         <TabsContent value="clusters" className="mt-5">
-          <div className="flex rounded-xl overflow-hidden min-h-[500px]" style={cardStyle}>
-            <div className="w-14 shrink-0 flex flex-col gap-1 p-1" style={{ background: "var(--ch-bg)", borderRight: "1px solid var(--ch-border)" }}>
+          <div className="space-y-5">
+            <div className="flex items-center gap-2">
               {clusterTabs.map((tab) => {
                 const isActive = clusterTab === tab.value;
                 const TabIcon = tab.icon;
                 return (
                   <button key={tab.value} onClick={() => setClusterTab(tab.value)}
-                    className="flex-1 flex items-center justify-center relative transition-all rounded-lg"
-                    style={isActive ? { background: "linear-gradient(135deg, #16A34A, #22C55E)", boxShadow: "0 2px 6px rgba(34,197,94,.3)" } : { color: "var(--ch-text-muted)" }}
-                    title={tab.label}>
-                    <TabIcon className="w-4 h-4 transition-colors" style={{ color: isActive ? "white" : "var(--ch-text-muted)" }} />
+                    className="flex items-center gap-1.5 px-4 py-2 text-[12px] font-semibold rounded-lg transition-all duration-150"
+                    style={isActive ? {
+                      background: "linear-gradient(135deg, #EA580C, #F97316)",
+                      color: "white",
+                      boxShadow: "0 2px 8px rgba(249,115,22,.3)",
+                    } : {
+                      color: "var(--ch-text-muted)",
+                      background: "var(--ch-surface)",
+                      border: "1px solid var(--ch-border)",
+                    }}>
+                    <TabIcon className="w-3.5 h-3.5" />{tab.label}
                   </button>
                 );
               })}
             </div>
-            <div className="flex-1 p-6 min-w-0 overflow-y-auto">
+            <div className="rounded-xl p-6 min-h-[400px]" style={cardStyle}>
               {["issue1", "issue2", "issue3"].map((issueKey, idx) => clusterTab === issueKey && (
                 <div key={issueKey} className="space-y-6">
                   <h2 className="text-[18px] font-bold" style={labelStyle}>{["Issue Analysis I: Traffic Congestion", "Issue Analysis II: Flooding", "Issue Analysis III: Protests & Civil Unrest"][idx]}</h2>
