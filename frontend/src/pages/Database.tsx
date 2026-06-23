@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback, Fragment } from "react";
 import {
   Database, Search,
   ExternalLink, MapPin, Users, Globe,
   Video, Building2, Globe2,
-  Instagram,
+  Instagram, Check, ChevronDown, ChevronRight,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { mediaNetworkApi, type MediaGroup, type MediaOutlet } from "@/lib/api";
 
 type MediaEntry = {
   no: number;
@@ -261,76 +262,14 @@ const allMedia: MediaEntry[] = [
 
 const regions = ["Semua", "DKI Jakarta", "Jabodetabek", "Regional", "Jawa Barat", "Jawa Tengah", "Jawa Timur", "Sumatra", "Sulawesi", "Indonesia Timur", "Kalimantan", "Bali"];
 
-interface IdnMedia {
-  rank: number;
-  name: string;
-  rate: number;
-  url: string;
-}
-
-const IDN_MEDIA_DATA: IdnMedia[] = [
-  { rank: 1, name: "Detik.com", rate: 6500000000, url: "https://detik.com" },
-  { rank: 2, name: "Tribunnews.com", rate: 3500000000, url: "https://tribunnews.com" },
-  { rank: 3, name: "Kompas.com", rate: 7000000000, url: "https://kompas.com" },
-  { rank: 4, name: "Cnnindonesia.com", rate: 7500000000, url: "https://cnnindonesia.com" },
-  { rank: 5, name: "Grid.id", rate: 6500000000, url: "https://grid.id" },
-  { rank: 6, name: "Suara.com", rate: 4500000000, url: "https://suara.com" },
-  { rank: 7, name: "Liputan6.com", rate: 5000000000, url: "https://liputan6.com" },
-  { rank: 8, name: "CNBCIndonesia.com", rate: 7500000000, url: "https://cnbcindonesia.com" },
-  { rank: 9, name: "Pikiran-rakyat.com", rate: 3500000000, url: "https://pikiran-rakyat.com" },
-  { rank: 10, name: "Merdeka.com", rate: 3500000000, url: "https://merdeka.com" },
-  { rank: 11, name: "Kumparan.com", rate: 3500000000, url: "https://kumparan.com" },
-  { rank: 12, name: "Liputan6.com", rate: 3500000000, url: "https://liputan6.com" },
-  { rank: 13, name: "CNBCIndonesia.com", rate: 7000000000, url: "https://cnbcindonesia.com" },
-  { rank: 14, name: "Sindonews.com", rate: 4500000000, url: "https://sindonews.com" },
-  { rank: 15, name: "IDNTimes.com", rate: 6000000000, url: "https://idntimes.com" },
-  { rank: 16, name: "Okezone.com", rate: 5500000000, url: "https://okezone.com" },
-  { rank: 17, name: "Viva.co.id", rate: 5000000000, url: "https://viva.co.id" },
-  { rank: 18, name: "Tempo.co", rate: 5000000000, url: "https://tempo.co" },
-  { rank: 19, name: "Kontan.co.id", rate: 6000000000, url: "https://kontan.co.id" },
-  { rank: 20, name: "Republika.co.id", rate: 3500000000, url: "https://republika.co.id" },
-  { rank: 21, name: "Kompas.tv", rate: 5500000000, url: "https://kompas.tv" },
-  { rank: 22, name: "Jpnn.com", rate: 3000000000, url: "https://jpnn.com" },
-  { rank: 23, name: "Bisnis.com", rate: 6500000000, url: "https://bisnis.com" },
-  { rank: 24, name: "Tirto.id", rate: 3500000000, url: "https://tirto.id" },
-  { rank: 25, name: "Disway.id", rate: 3000000000, url: "https://disway.id" },
-  { rank: 26, name: "Inews.id", rate: 4500000000, url: "https://inews.id" },
-  { rank: 27, name: "Jawapos.com", rate: 4000000000, url: "https://jawapos.com" },
-  { rank: 28, name: "Katadata.co.id", rate: 3800000000, url: "https://katadata.co.id" },
-  { rank: 29, name: "Suaramerdeka.com", rate: 2000000000, url: "https://suaramerdeka.com" },
-  { rank: 30, name: "Antaranews.com", rate: 5000000000, url: "https://antaranews.com" },
-  { rank: 31, name: "Tvonenews.com", rate: 7000000000, url: "https://tvonenews.com" },
-  { rank: 32, name: "Wartaekonomi.co.id", rate: 2500000000, url: "https://wartaekonomi.co.id" },
-  { rank: 33, name: "Mediaindonesia.com", rate: 3500000000, url: "https://mediaindonesia.com" },
-  { rank: 34, name: "Hops.id", rate: 5000000000, url: "https://hops.id" },
-  { rank: 35, name: "Medcom.id", rate: 3500000000, url: "https://medcom.id" },
-  { rank: 36, name: "Beritasatu.com", rate: 3500000000, url: "https://beritasatu.com" },
-  { rank: 37, name: "RMOL.id", rate: 2000000000, url: "https://rmol.id" },
-  { rank: 38, name: "Investor.id", rate: 3500000000, url: "https://investor.id" },
-  { rank: 39, name: "VOI.id", rate: 3000000000, url: "https://voi.id" },
-  { rank: 40, name: "Akurat.co", rate: 1500000000, url: "https://akurat.co" },
-  { rank: 41, name: "IDXChannel.com", rate: 4000000000, url: "https://idxchannel.com" },
-  { rank: 42, name: "Antvklik.com", rate: 6000000000, url: "https://antvklik.com" },
-  { rank: 43, name: "Poskota.co.id", rate: 2000000000, url: "https://poskota.co.id" },
-  { rank: 44, name: "FortuneIDN.com", rate: 7000000000, url: "https://fortuneidn.com" },
-  { rank: 45, name: "Tagar.id", rate: 1500000000, url: "https://tagar.id" },
-  { rank: 46, name: "Metrotvnews.com", rate: 2500000000, url: "https://metrotvnews.com" },
-  { rank: 47, name: "Harianterbit.com", rate: 2000000000, url: "https://harianterbit.com" },
-  { rank: 48, name: "Gatra.com", rate: 2500000000, url: "https://gatra.com" },
-  { rank: 49, name: "RM.id", rate: 2000000000, url: "https://rm.id" },
-  { rank: 50, name: "JakartaDaily.id", rate: 1500000000, url: "https://indonesia.jakartadaily.id" },
-];
-
-function formatRate(n: number): string {
-  if (n >= 1_000_000_000) return `Rp ${(n / 1_000_000_000).toFixed(1)}M`;
-  if (n >= 1_000_000) return `Rp ${(n / 1_000_000).toFixed(0)}jt`;
-  return `Rp ${n.toLocaleString("id-ID")}`;
-}
-
-function getRateColor(rate: number): { bg: string; text: string } {
-  if (rate >= 6_000_000_000) return { bg: "rgba(16,185,129,0.1)", text: "#10B981" };
-  if (rate >= 3_500_000_000) return { bg: "rgba(245,158,11,0.1)", text: "#F59E0B" };
-  return { bg: "rgba(148,163,184,0.1)", text: "#94A3B8" };
+function socialPill(handle: string | null, followers: string | null, color: string) {
+  if (!handle) return <span className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>-</span>;
+  return (
+    <div className="flex flex-col">
+      <span className="text-[11px] font-semibold" style={{ color }}>{handle}</span>
+      {followers && <span className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{followers}</span>}
+    </div>
+  );
 }
 
 function parseFollowers(f: string): number {
@@ -344,11 +283,170 @@ function parseFollowers(f: string): number {
   return parseFloat(clean) || 0;
 }
 
+const INTL_OUTLETS_DATA = [
+  { no: 1, media: "The Strait Times", platform: "Online", package: "Branded Content", targets: "65m avg monthly page views", benefits: "4 Weeks", details: "Max 1,000 words advertorial with 3-4 images. Content produced by The Strait Times.", priceUSD: "$11,500" },
+  { no: 2, media: "Washington Post", platform: "Print", package: "1.5 Page Advertorial", targets: "Circulation 173,156", benefits: "4 Weeks", details: "Native article created by WaPo. Client must supply background copy and imagery.", priceUSD: "$46,000" },
+  { no: 3, media: "TIME", platform: "Print (APAC)", package: "Single Page Spread", targets: "APAC Circulation 64,633", benefits: "4 Weeks", details: "Content supplied by client with light editing from TIME.", priceUSD: "$23,000" },
+  { no: 3, media: "TIME", platform: "Print (APAC+EMEA)", package: "Single Page Spread", targets: "APAC + EMEA Circulation 153,826", benefits: "4 Weeks", details: "Content supplied by client with light editing from TIME.", priceUSD: "$46,000" },
+  { no: 3, media: "TIME", platform: "Print (Global)", package: "Single Page Spread", targets: "Global Circulation 1,373,390", benefits: "4 Weeks", details: "Content supplied by client with light editing from TIME.", priceUSD: "$69,000" },
+  { no: 4, media: "Wall Street Journal", platform: "Print", package: "Quarter Page", targets: "Circulation 730,000", benefits: "Quarter Page", details: "Client-supplied material. Refer to Ads Spec for detailed size.", priceUSD: "$56,877" },
+  { no: 4, media: "Wall Street Journal", platform: "Print", package: "Half Page", targets: "Circulation 730,000", benefits: "Half Page", details: "Client-supplied material.", priceUSD: "$113,754" },
+  { no: 4, media: "Wall Street Journal", platform: "Print", package: "Full Page", targets: "Circulation 730,000", benefits: "Full Page", details: "Client-supplied material.", priceUSD: "$227,507" },
+  { no: 4, media: "WSJ Magazine", platform: "Print (Magazine)", package: "Full Page", targets: "WSJ Magazine readership", benefits: "Full Page", details: "Client-supplied material for WSJ Magazine.", priceUSD: "$235,350" },
+  { no: 5, media: "Reuters / Reuters Plus", platform: "Digital", package: "Video + Article", targets: "4 Weeks", benefits: "800 words", details: "Video 60s with production. Article + social cut promoted through Reuters Plus.", priceUSD: "$138,000" },
+  { no: 5, media: "Reuters / Reuters Plus", platform: "Digital", package: "Article Only", targets: "4 Weeks", benefits: "Article only", details: "Client-supplied or written by media. Includes production and promotion.", priceUSD: "$84,000" },
+  { no: 6, media: "Bloomberg", platform: "Digital", package: "Native Content", targets: "Bloomberg audience", benefits: "600-800 words", details: "Minimal Spending $96,000. All native with production, imagery and licensing.", priceUSD: "$96,000" },
+  { no: 7, media: "AP News", platform: "Digital", package: "Article + Social", targets: "3 weeks", benefits: "Unlimited words", details: "Client supplied content. Social amplification included.", priceUSD: "$17,500" },
+  { no: 8, media: "Fortune (US)", platform: "Digital", package: "1x Syndicated Article", targets: "5 weeks", benefits: "Client-supplied content", details: "Global targeting. Social amplification. Native touts on Fortune.com.", priceUSD: "$29,000" },
+  { no: 8, media: "Fortune (US)", platform: "Digital", package: "5x Syndicated Articles", targets: "5 weeks", benefits: "5 articles", details: "Global targeting. 100% SOV display banners.", priceUSD: "$86,300" },
+  { no: 8, media: "Fortune (US)", platform: "Digital", package: "1x Original Content", targets: "5-7 weeks", benefits: "Fortune Brand Studio write-up", details: "Long form article by Fortune Brand Studio. 6-8 weeks campaign.", priceUSD: "$35,000" },
+  { no: 8, media: "Fortune (US)", platform: "Digital", package: "5x Original Content", targets: "5-7 weeks", benefits: "5 articles by Fortune Brand Studio", details: "5 original content articles. Global targeting.", priceUSD: "$173,000" },
+  { no: 9, media: "Forbes", platform: "Digital", package: "Digital Advertorial", targets: "Forbes global audience", benefits: "Min. spend USD 100k+", details: "Digital Advertorial. Min. spend USD 100,000+.", priceUSD: "$100,000" },
+  { no: 10, media: "Times of India", platform: "Digital", package: "Advertorial", targets: "50,000 views", benefits: "3-4 pictures, 1 YouTube embed", details: "Client supplied content. Cannot publish on weekend.", priceUSD: "$4,100" },
+  { no: 11, media: "The Economic Times", platform: "Digital", package: "Advertorial", targets: "3,000 views", benefits: "3-4 pictures, 1 YouTube embed", details: "Client supplied content. Cannot publish on weekend.", priceUSD: "$2,200" },
+  { no: 12, media: "Times Now News", platform: "Digital", package: "Advertorial", targets: "30,000 views", benefits: "800 words, 3-4 pictures", details: "Client supplied content. Cannot publish on weekend.", priceUSD: "$4,100" },
+  { no: 13, media: "ET Now", platform: "Digital", package: "Advertorial", targets: "30,000 views", benefits: "800 words, 3-4 pictures", details: "Client supplied content. Cannot publish on weekend.", priceUSD: "$3,600" },
+  { no: 14, media: "Forbes Middle East", platform: "Online", package: "Article + Print", targets: "19.2M avg annual pageviews", benefits: "500 word limit", details: "1 Online Article + 1x full page print. Social media (IG, Twitter, FB, LinkedIn).", priceUSD: "$29,000" },
+  { no: 14, media: "Forbes Middle East", platform: "Online", package: "Video Interview", targets: "19.2M avg annual pageviews", benefits: "Video 3-5 min + print + social", details: "Video interview Q&A. Full page advertorial. Boosting included.", priceUSD: "$57,500" },
+  { no: 14, media: "Forbes Middle East", platform: "Print", package: "Inside Full-Page", targets: "Forbes ME print readership", benefits: "Full-page advertorial", details: "Content provided by the client.", priceUSD: "$29,000" },
+  { no: 15, media: "Japan Times", platform: "Print & Digital", package: "1 Page (Color)", targets: "Japan Times readership", benefits: "1 Page Full Color", details: "1 advertorial Full Color.", priceUSD: "$49,000" },
+  { no: 15, media: "Japan Times", platform: "Print & Digital", package: "1 Page (B&W)", targets: "Japan Times readership", benefits: "1 Page B&W", details: "1 Advertorial B&W.", priceUSD: "$32,600" },
+  { no: 15, media: "Japan Times", platform: "Digital", package: "1800 Words", targets: "Japan Times online audience", benefits: "1800 words, max 3 images", details: "1 Advertorial, 1800 words, max 3 images.", priceUSD: "$32,600" },
+  { no: 16, media: "Asahi Shimbun", platform: "Print", package: "1 Page (B&W)", targets: "Asahi Shimbun readership", benefits: "1 Page B&W", details: "B&W advertorial.", priceUSD: "$250,000" },
+  { no: 16, media: "Asahi Shimbun", platform: "Print", package: "1 Page (Color)", targets: "Asahi Shimbun readership", benefits: "1 Page Full Colour", details: "Full colour advertorial.", priceUSD: "$300,000" },
+  { no: 17, media: "Hong Kong Economic Times", platform: "Digital", package: "Native Ad", targets: "HKET homepage 100% entry for 3 days", benefits: "800-1,000 words", details: "HKET handles copywriting. 800-1,000 words. Client provides material.", priceUSD: "$5,000" },
+];
+
+function IntlOutletsTab() {
+  const [intlSearch, setIntlSearch] = useState("");
+  const filtered = INTL_OUTLETS_DATA.filter((m) =>
+    m.media.toLowerCase().includes(intlSearch.toLowerCase()) ||
+    m.platform.toLowerCase().includes(intlSearch.toLowerCase())
+  );
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Card>
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: "var(--ch-primary-50)" }}>
+              <Globe2 className="w-5 h-5" style={{ color: "var(--ch-primary)" }} />
+            </div>
+            <div>
+              <p className="text-[20px] font-bold" style={{ color: "var(--ch-text)" }}>{new Set(INTL_OUTLETS_DATA.map((m) => m.media)).size}</p>
+              <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>Media Internasional</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: "#DCFCE7" }}>
+              <Database className="w-5 h-5" style={{ color: "#16A34A" }} />
+            </div>
+            <div>
+              <p className="text-[20px] font-bold" style={{ color: "var(--ch-text)" }}>{INTL_OUTLETS_DATA.length}</p>
+              <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>Total Packages</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: "#FEF3C7" }}>
+              <Building2 className="w-5 h-5" style={{ color: "#D97706" }} />
+            </div>
+            <div>
+              <p className="text-[20px] font-bold" style={{ color: "var(--ch-text)" }}>{new Set(INTL_OUTLETS_DATA.map((m) => m.platform)).size}</p>
+              <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>Platforms</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+        <div className="relative flex-1 max-w-sm w-full">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--ch-text-muted)" }} />
+          <input type="text" placeholder="Cari media internasional..." value={intlSearch} onChange={(e) => setIntlSearch(e.target.value)}
+            className="w-full pl-9 pr-3 py-2 text-[13px] rounded-lg border" style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)", background: "var(--ch-surface)" }} />
+        </div>
+      </div>
+      <Card>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>No</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Media</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Platform</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Package</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Targets</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Benefits</th>
+                  <th className="text-left px-4 py-3 text-[11px] font-semibold min-w-[250px]" style={{ color: "var(--ch-text-muted)" }}>Details</th>
+                  <th className="text-right px-4 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Price (USD)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((m, idx) => {
+                  const prev = idx > 0 ? filtered[idx - 1] : null;
+                  const isNewMedia = !prev || prev.media !== m.media;
+                  return (
+                    <tr key={`${m.media}-${m.package}`} className="border-b transition-colors hover:bg-white/5" style={{ borderColor: "var(--ch-border)" }}>
+                      <td className="px-4 py-2.5 text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>{isNewMedia ? m.no : ""}</td>
+                      <td className="px-4 py-2.5"><span className="text-[13px] font-semibold" style={{ color: "var(--ch-text)" }}>{m.media}</span></td>
+                      <td className="px-4 py-2.5">
+                        <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{
+                          background: m.platform.toLowerCase().includes("digital") ? "rgba(59,130,246,0.1)" : m.platform.toLowerCase().includes("print") ? "rgba(249,115,22,0.1)" : "rgba(139,92,246,0.1)",
+                          color: m.platform.toLowerCase().includes("digital") ? "#3B82F6" : m.platform.toLowerCase().includes("print") ? "#F97316" : "#8B5CF6",
+                        }}>{m.platform}</span>
+                      </td>
+                      <td className="px-4 py-2.5"><span className="text-[12px] font-medium" style={{ color: "var(--ch-text)" }}>{m.package}</span></td>
+                      <td className="px-4 py-2.5"><span className="text-[11px] leading-relaxed" style={{ color: "var(--ch-text-muted)" }}>{m.targets}</span></td>
+                      <td className="px-4 py-2.5"><span className="text-[11px] leading-relaxed" style={{ color: "var(--ch-text-muted)" }}>{m.benefits}</span></td>
+                      <td className="px-4 py-2.5"><span className="text-[11px] leading-relaxed" style={{ color: "var(--ch-text-muted)" }}>{m.details}</span></td>
+                      <td className="px-4 py-2.5 text-right"><span className="text-[12px] font-bold" style={{ color: "var(--ch-text)" }}>{m.priceUSD}</span></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export default function DatabasePage() {
   const [activeTab, setActiveTab] = useState("creators");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("Semua");
   const [idnSearch, setIdnSearch] = useState("");
+
+  const [groups, setGroups] = useState<MediaGroup[]>([]);
+  const [expandedGroupId, setExpandedGroupId] = useState<string | null>(null);
+  const [groupOutlets, setGroupOutlets] = useState<Record<string, MediaOutlet[]>>({});
+  const [loadingGroups, setLoadingGroups] = useState(false);
+  const [loadingOutlets, setLoadingOutlets] = useState(false);
+
+  useEffect(() => {
+    if (activeTab !== "idn-network") return;
+    if (groups.length > 0) return;
+    setLoadingGroups(true);
+    mediaNetworkApi.listGroups().then(setGroups).catch(console.error).finally(() => setLoadingGroups(false));
+  }, [activeTab, groups.length]);
+
+  const toggleGroup = useCallback((groupId: string) => {
+    setExpandedGroupId((prev) => (prev === groupId ? null : groupId));
+  }, []);
+
+  useEffect(() => {
+    if (!expandedGroupId) return;
+    if (groupOutlets[expandedGroupId]) return;
+    setLoadingOutlets(true);
+    mediaNetworkApi.listOutlets(expandedGroupId)
+      .then((data) => setGroupOutlets((prev) => ({ ...prev, [expandedGroupId]: data })))
+      .catch(console.error)
+      .finally(() => setLoadingOutlets(false));
+  }, [expandedGroupId, groupOutlets]);
 
   const filtered = allMedia.filter((m) => {
     const matchesSearch =
@@ -544,8 +642,8 @@ export default function DatabasePage() {
                   <Building2 className="w-5 h-5" style={{ color: "var(--ch-primary)" }} />
                 </div>
                 <div>
-                  <p className="text-[20px] font-bold" style={{ color: "var(--ch-text)" }}>{IDN_MEDIA_DATA.length}</p>
-                  <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>Media Nasional</p>
+                  <p className="text-[20px] font-bold" style={{ color: "var(--ch-text)" }}>{groups.length}</p>
+                  <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>Media Groups</p>
                 </div>
               </CardContent>
             </Card>
@@ -556,9 +654,9 @@ export default function DatabasePage() {
                 </div>
                 <div>
                   <p className="text-[20px] font-bold" style={{ color: "var(--ch-text)" }}>
-                    {formatRate(Math.round(IDN_MEDIA_DATA.reduce((sum, m) => sum + m.rate, 0) / IDN_MEDIA_DATA.length))}
+                    {groups.reduce((sum, g) => sum + g.outletCount, 0)}
                   </p>
-                  <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>Rate Rata-rata</p>
+                  <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>Total Subdomains</p>
                 </div>
               </CardContent>
             </Card>
@@ -568,8 +666,10 @@ export default function DatabasePage() {
                   <Database className="w-5 h-5" style={{ color: "#D97706" }} />
                 </div>
                 <div>
-                  <p className="text-[20px] font-bold" style={{ color: "var(--ch-text)" }}>{IDN_MEDIA_DATA.filter((m) => m.rate >= 6_000_000_000).length}</p>
-                  <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>Premium (6M+)</p>
+                  <p className="text-[20px] font-bold" style={{ color: "var(--ch-text)" }}>
+                    {Object.values(groupOutlets).flat().filter((o) => o.googleNews).length}
+                  </p>
+                  <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>Google News Indexed</p>
                 </div>
               </CardContent>
             </Card>
@@ -581,7 +681,7 @@ export default function DatabasePage() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--ch-text-muted)" }} />
               <input
                 type="text"
-                placeholder="Cari media nasional..."
+                placeholder="Cari media group..."
                 value={idnSearch}
                 onChange={(e) => setIdnSearch(e.target.value)}
                 className="w-full pl-9 pr-3 py-2 text-[13px] rounded-lg border"
@@ -590,62 +690,133 @@ export default function DatabasePage() {
             </div>
           </div>
 
-          {/* Table */}
-          <Card>
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
-                      <th className="text-left px-5 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Rank</th>
-                      <th className="text-left px-4 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Media Nasional</th>
-                      <th className="text-right px-4 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Rate Backlink (IDR)</th>
-                      <th className="text-center px-4 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Tier</th>
-                      <th className="text-right px-4 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Link</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {IDN_MEDIA_DATA.filter((m) =>
-                      m.name.toLowerCase().includes(idnSearch.toLowerCase())
-                    ).map((m, idx) => {
-                      const rc = getRateColor(m.rate);
-                      return (
-                        <tr key={`${m.rank}-${m.name}`} className="border-b transition-colors hover:bg-white/5" style={{ borderColor: "var(--ch-border)" }}>
-                          <td className="px-5 py-2.5 text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>{idx + 1}</td>
-                          <td className="px-4 py-2.5">
-                            <span className="text-[13px] font-semibold" style={{ color: "var(--ch-text)" }}>{m.name}</span>
-                          </td>
-                          <td className="px-4 py-2.5 text-right">
-                            <span className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>{formatRate(m.rate)}</span>
-                          </td>
-                          <td className="px-4 py-2.5 text-center">
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: rc.bg, color: rc.text }}>
-                              {m.rate >= 6_000_000_000 ? "Premium" : m.rate >= 3_500_000_000 ? "Standard" : "Basic"}
-                            </span>
-                          </td>
-                          <td className="px-4 py-2.5 text-right">
-                            <a href={m.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[12px] font-semibold" style={{ color: "var(--ch-primary)" }}>
-                              <ExternalLink className="w-3 h-3" />
-                            </a>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Groups Table */}
+          {loadingGroups ? (
+            <Card><CardContent className="py-8 text-center text-[13px]" style={{ color: "var(--ch-text-muted)" }}>Loading media groups...</CardContent></Card>
+          ) : (
+            <Card>
+              <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
+                        <th className="text-left px-5 py-3 text-[11px] font-semibold w-8" style={{ color: "var(--ch-text-muted)" }}></th>
+                        <th className="text-left px-4 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Grup Media / Subdomain</th>
+                        <th className="text-center px-3 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Total Brand</th>
+                        <th className="text-left px-3 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Harga Agency</th>
+                        <th className="text-left px-3 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Harga Rate Card</th>
+                        <th className="text-center px-3 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Google News</th>
+                        <th className="text-left px-3 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Instagram</th>
+                        <th className="text-left px-3 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Facebook</th>
+                        <th className="text-left px-3 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Threads</th>
+                        <th className="text-left px-3 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>TikTok</th>
+                        <th className="text-left px-3 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Twitter</th>
+                        <th className="text-left px-3 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>YouTube</th>
+                        <th className="text-left px-3 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Genre</th>
+                        <th className="text-left px-3 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Keterangan</th>
+                        <th className="text-right px-4 py-3 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Link</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {groups
+                        .filter((g) => g.name.toLowerCase().includes(idnSearch.toLowerCase()))
+                        .map((group) => {
+                          const isExpanded = expandedGroupId === group.id;
+                          const outlets = groupOutlets[group.id] ?? [];
+                          return (
+                            <Fragment key={group.id}>
+                              <tr
+                                key={`group-${group.id}`}
+                                onClick={() => toggleGroup(group.id)}
+                                className="border-b transition-colors cursor-pointer hover:bg-white/5"
+                                style={{ borderColor: "var(--ch-border)" }}
+                              >
+                                <td className="px-5 py-3">
+                                  {isExpanded
+                                    ? <ChevronDown className="w-4 h-4" style={{ color: "var(--ch-primary)" }} />
+                                    : <ChevronRight className="w-4 h-4" style={{ color: "var(--ch-text-muted)" }} />
+                                  }
+                                </td>
+                                <td className="px-4 py-3">
+                                  <span className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>{group.name}</span>
+                                </td>
+                                <td className="px-3 py-3 text-center">
+                                  <span className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>{group.outletCount}</span>
+                                </td>
+                                <td className="px-3 py-3" colSpan={12}></td>
+                                <td className="px-4 py-3 text-right">
+                                  {outlets.length > 0 && outlets[0]?.url && (
+                                    <a href={outlets[0].url!} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[12px] font-semibold" style={{ color: "var(--ch-primary)" }}>
+                                      <ExternalLink className="w-3 h-3" />
+                                    </a>
+                                  )}
+                                </td>
+                              </tr>
+                              {isExpanded && (
+                                loadingOutlets && outlets.length === 0 ? (
+                                  <tr key={`loading-${group.id}`}>
+                                    <td colSpan={15} className="px-5 py-4 text-center text-[12px]" style={{ color: "var(--ch-text-muted)" }}>Loading outlets...</td>
+                                  </tr>
+                                ) : (
+                                  outlets.map((o) => (
+                                    <tr key={`outlet-${o.id}`} className="border-b transition-colors hover:bg-white/3" style={{ borderColor: "var(--ch-border)" }}>
+                                      <td className="px-5 py-2"></td>
+                                      <td className="px-4 py-2">
+                                        <span className="text-[12px] font-medium" style={{ color: o.isGroupHeader ? "var(--ch-text)" : "var(--ch-text-muted)" }}>{o.name}</span>
+                                      </td>
+                                      <td className="px-3 py-2 text-center">
+                                        <span className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>{o.totalBrands ?? "-"}</span>
+                                      </td>
+                                      <td className="px-3 py-2">
+                                        <span className="text-[11px] font-medium" style={{ color: "var(--ch-text)" }}>{o.hargaAgency ?? "-"}</span>
+                                      </td>
+                                      <td className="px-3 py-2">
+                                        <span className="text-[11px] font-medium" style={{ color: "var(--ch-text)" }}>{o.hargaRateCard ?? "-"}</span>
+                                      </td>
+                                      <td className="px-3 py-2 text-center">
+                                        {o.googleNews ? (
+                                          <Check className="w-4 h-4 mx-auto" style={{ color: "#10B981" }} />
+                                        ) : (
+                                          <span className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>-</span>
+                                        )}
+                                      </td>
+                                      <td className="px-3 py-2">{socialPill(o.instagramHandle, o.instagramFollowers, "#E1306C")}</td>
+                                      <td className="px-3 py-2">{socialPill(o.facebookHandle, o.facebookFollowers, "#1877F2")}</td>
+                                      <td className="px-3 py-2">{socialPill(o.threadsHandle, o.threadsFollowers, "#000")}</td>
+                                      <td className="px-3 py-2">{socialPill(o.tiktokHandle, o.tiktokFollowers, "#000")}</td>
+                                      <td className="px-3 py-2">{socialPill(o.twitterHandle, o.twitterFollowers, "#1DA1F2")}</td>
+                                      <td className="px-3 py-2">{socialPill(o.youtubeHandle, o.youtubeFollowers, "#FF0000")}</td>
+                                      <td className="px-3 py-2">
+                                        <span className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>{o.genre ?? "-"}</span>
+                                      </td>
+                                      <td className="px-3 py-2">
+                                        <span className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>{o.keterangan ?? "-"}</span>
+                                      </td>
+                                      <td className="px-4 py-2 text-right">
+                                        {o.url && (
+                                          <a href={o.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[11px] font-semibold" style={{ color: "var(--ch-primary)" }}>
+                                            <ExternalLink className="w-3 h-3" />
+                                          </a>
+                                        )}
+                                      </td>
+                                    </tr>
+                                  ))
+                                )
+                              )}
+                            </Fragment>
+                          );
+                        })}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
+        {/* ═══ INTERNATIONAL MEDIA OUTLETS ═══ */}
         <TabsContent value="intl-outlets" className="mt-4">
-          <Card>
-            <CardContent className="py-12 text-center">
-              <Globe2 className="w-10 h-10 mx-auto mb-3" style={{ color: "var(--ch-text-soft)" }} />
-              <p className="text-[14px] font-semibold" style={{ color: "var(--ch-text)" }}>International Media Outlets</p>
-              <p className="text-[12px] mt-1" style={{ color: "var(--ch-text-muted)" }}>Fitur ini akan segera tersedia.</p>
-            </CardContent>
-          </Card>
+          <IntlOutletsTab />
         </TabsContent>
       </Tabs>
     </div>

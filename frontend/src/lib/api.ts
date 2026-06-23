@@ -125,4 +125,40 @@ export const mediaNetworkApi = {
     api.put<{ updated: number }>("/media-outlets/bulk", { outlets }).then((r) => r.data),
 };
 
+export interface InstagramPost {
+  id: number;
+  shortcode: string;
+  account: string;
+  caption?: string;
+  mediaUrl?: string;
+  views: number;
+  likes: number;
+  comments: number;
+  isVideo: boolean;
+  postedAt?: string;
+  scrapedAt: string;
+}
+
+export interface InstagramScrapeResult {
+  success: boolean;
+  error?: string;
+  account: string;
+  displayName: string;
+  bio: string;
+  followers: number;
+  following: number;
+  posts: number;
+  profilePic: string;
+  data: InstagramPost[];
+}
+
+export const instagramPostsApi = {
+  scrape: (account: string) =>
+    api.post<InstagramScrapeResult>("/instagram-posts/scrape", { account }).then((r) => r.data),
+  list: (account: string) =>
+    api.get<InstagramPost[]>("/instagram-posts", { params: { account } }).then((r) => r.data),
+  clear: (account: string) =>
+    api.delete("/instagram-posts", { params: { account } }).then((r) => r.data),
+};
+
 export default api;

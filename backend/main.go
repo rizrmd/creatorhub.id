@@ -42,6 +42,7 @@ func main() {
 	messageRepo := repository.NewMessageRepository(db)
 	userRepo := repository.NewUserRepository(db)
 	mediaNetworkRepo := repository.NewMediaNetworkRepository(db)
+	instagramPostRepo := repository.NewInstagramPostRepository(db)
 
 	if err := ensureAdminUser(context.Background(), userRepo); err != nil {
 		log.Printf("warning: could not ensure admin user: %v", err)
@@ -52,6 +53,7 @@ func main() {
 	messageHandler := handlers.NewMessageHandler(messageRepo)
 	authHandler := handlers.NewAuthHandler(userRepo)
 	mediaNetworkHandler := handlers.NewMediaNetworkHandler(mediaNetworkRepo)
+	instagramPostHandler := handlers.NewInstagramPostHandler(instagramPostRepo)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -102,6 +104,11 @@ func main() {
 			r.Route("/media-outlets", func(r chi.Router) {
 				r.Get("/search", mediaNetworkHandler.SearchOutlets)
 				r.Put("/bulk", mediaNetworkHandler.BulkUpdate)
+			})
+			r.Route("/instagram-posts", func(r chi.Router) {
+				r.Post("/scrape", instagramPostHandler.ScrapeAccount)
+				r.Get("/", instagramPostHandler.ListPosts)
+				r.Delete("/", instagramPostHandler.ClearAccount)
 			})
 		})
 	})

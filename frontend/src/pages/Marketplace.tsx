@@ -3,7 +3,7 @@ import {
   Search, SlidersHorizontal, Star, CheckCircle, Award,
   Instagram, Youtube, Users, Megaphone, TrendingUp, Wallet,
   LayoutGrid, List, RotateCcw, X, Flame, MessageSquare, MapPin,
-  Heart, ArrowUpRight, User, Video, Building2, Globe2,
+  Heart, ArrowUpRight, User, Video, Building2,
   UserPlus, Loader2, Link2,
 } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -1382,6 +1382,70 @@ function HomelessMediaTab() {
   );
 }
 
+const IDN_MEDIA_DATA = [
+  { rank: 1, name: "Detik.com", rate: 6500000000, url: "https://detik.com" },
+  { rank: 2, name: "Tribunnews.com", rate: 3500000000, url: "https://tribunnews.com" },
+  { rank: 3, name: "Kompas.com", rate: 7000000000, url: "https://kompas.com" },
+  { rank: 4, name: "Cnnindonesia.com", rate: 7500000000, url: "https://cnnindonesia.com" },
+  { rank: 5, name: "Grid.id", rate: 6500000000, url: "https://grid.id" },
+  { rank: 6, name: "Suara.com", rate: 4500000000, url: "https://suara.com" },
+  { rank: 7, name: "Liputan6.com", rate: 5000000000, url: "https://liputan6.com" },
+  { rank: 8, name: "CNBCIndonesia.com", rate: 7500000000, url: "https://cnbcindonesia.com" },
+  { rank: 9, name: "Pikiran-rakyat.com", rate: 3500000000, url: "https://pikiran-rakyat.com" },
+  { rank: 10, name: "Merdeka.com", rate: 3500000000, url: "https://merdeka.com" },
+  { rank: 11, name: "Kumparan.com", rate: 3500000000, url: "https://kumparan.com" },
+  { rank: 12, name: "Liputan6.com", rate: 3500000000, url: "https://liputan6.com" },
+  { rank: 13, name: "CNBCIndonesia.com", rate: 7000000000, url: "https://cnbcindonesia.com" },
+  { rank: 14, name: "Sindonews.com", rate: 4500000000, url: "https://sindonews.com" },
+  { rank: 15, name: "IDNTimes.com", rate: 6000000000, url: "https://idntimes.com" },
+  { rank: 16, name: "Okezone.com", rate: 5500000000, url: "https://okezone.com" },
+  { rank: 17, name: "Viva.co.id", rate: 5000000000, url: "https://viva.co.id" },
+  { rank: 18, name: "Tempo.co", rate: 5000000000, url: "https://tempo.co" },
+  { rank: 19, name: "Kontan.co.id", rate: 6000000000, url: "https://kontan.co.id" },
+  { rank: 20, name: "Republika.co.id", rate: 3500000000, url: "https://republika.co.id" },
+  { rank: 21, name: "Kompas.tv", rate: 5500000000, url: "https://kompas.tv" },
+  { rank: 22, name: "Jpnn.com", rate: 3000000000, url: "https://jpnn.com" },
+  { rank: 23, name: "Bisnis.com", rate: 6500000000, url: "https://bisnis.com" },
+  { rank: 24, name: "Tirto.id", rate: 3500000000, url: "https://tirto.id" },
+  { rank: 25, name: "Disway.id", rate: 3000000000, url: "https://disway.id" },
+  { rank: 26, name: "Inews.id", rate: 4500000000, url: "https://inews.id" },
+  { rank: 27, name: "Jawapos.com", rate: 4000000000, url: "https://jawapos.com" },
+  { rank: 28, name: "Katadata.co.id", rate: 3800000000, url: "https://katadata.co.id" },
+  { rank: 29, name: "Suaramerdeka.com", rate: 2000000000, url: "https://suaramerdeka.com" },
+  { rank: 30, name: "Antaranews.com", rate: 5000000000, url: "https://antaranews.com" },
+  { rank: 31, name: "Tvonenews.com", rate: 7000000000, url: "https://tvonenews.com" },
+  { rank: 32, name: "Wartaekonomi.co.id", rate: 2500000000, url: "https://wartaekonomi.co.id" },
+  { rank: 33, name: "Mediaindonesia.com", rate: 3500000000, url: "https://mediaindonesia.com" },
+  { rank: 34, name: "Hops.id", rate: 5000000000, url: "https://hops.id" },
+  { rank: 35, name: "Medcom.id", rate: 3500000000, url: "https://medcom.id" },
+  { rank: 36, name: "Beritasatu.com", rate: 3500000000, url: "https://beritasatu.com" },
+  { rank: 37, name: "RMOL.id", rate: 2000000000, url: "https://rmol.id" },
+  { rank: 38, name: "Investor.id", rate: 3500000000, url: "https://investor.id" },
+  { rank: 39, name: "VOI.id", rate: 3000000000, url: "https://voi.id" },
+  { rank: 40, name: "Akurat.co", rate: 1500000000, url: "https://akurat.co" },
+  { rank: 41, name: "IDXChannel.com", rate: 4000000000, url: "https://idxchannel.com" },
+  { rank: 42, name: "Antvklik.com", rate: 6000000000, url: "https://antvklik.com" },
+  { rank: 43, name: "Poskota.co.id", rate: 2000000000, url: "https://poskota.co.id" },
+  { rank: 44, name: "FortuneIDN.com", rate: 7000000000, url: "https://fortuneidn.com" },
+  { rank: 45, name: "Tagar.id", rate: 1500000000, url: "https://tagar.id" },
+  { rank: 46, name: "Metrotvnews.com", rate: 2500000000, url: "https://metrotvnews.com" },
+  { rank: 47, name: "Harianterbit.com", rate: 2000000000, url: "https://harianterbit.com" },
+  { rank: 48, name: "Gatra.com", rate: 2500000000, url: "https://gatra.com" },
+  { rank: 49, name: "RM.id", rate: 2000000000, url: "https://rm.id" },
+  { rank: 50, name: "JakartaDaily.id", rate: 1500000000, url: "https://indonesia.jakartadaily.id" },
+];
+
+function formatIdnRate(n: number): string {
+  if (n >= 1_000_000_000) return `Rp ${(n / 1_000_000_000).toFixed(1)}M`;
+  return `Rp ${(n / 1_000_000).toLocaleString("id-ID")}jt`;
+}
+
+function getTierColor(rate: number) {
+  if (rate >= 6_000_000_000) return { bg: "rgba(16,185,129,0.15)", text: "#10B981" };
+  if (rate >= 3_500_000_000) return { bg: "rgba(245,158,11,0.15)", text: "#F59E0B" };
+  return { bg: "rgba(148,163,184,0.15)", text: "#94A3B8" };
+}
+
 export default function Marketplace() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -1553,13 +1617,17 @@ export default function Marketplace() {
   ) : null;
 
   const [activeTab, setActiveTab] = useState("creators");
+  const [idnSearch, setIdnSearch] = useState("");
+
+  useEffect(() => {
+    setIdnSearch("");
+  }, [activeTab]);
 
   const tabs = [
     { id: "creators", label: "Content Creators", icon: Users },
     { id: "homeless", label: "Homeless Media", icon: Megaphone },
     { id: "live-shopping", label: "Live Shopping & Podcast Providers", icon: Video },
     { id: "idn-network", label: "Indonesian Media Network", icon: Building2 },
-    { id: "intl-outlets", label: "International Media Outlets", icon: Globe2 },
   ];
 
   return (
@@ -1777,6 +1845,124 @@ export default function Marketplace() {
           </>
         ) : activeTab === "homeless" ? (
           <HomelessMediaTab />
+        ) : activeTab === "idn-network" ? (
+          <div className="p-3 sm:p-4 space-y-3">
+            {/* Stats */}
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+              <div className="rounded-xl border p-3" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
+                <p className="text-[20px] font-bold" style={{ color: "var(--ch-text)" }}>{IDN_MEDIA_DATA.length}</p>
+                <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>Media Nasional</p>
+              </div>
+              <div className="rounded-xl border p-3" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
+                <p className="text-[20px] font-bold" style={{ color: "var(--ch-text)" }}>
+                  Rp {(Math.round(IDN_MEDIA_DATA.reduce((s, m) => s + m.rate, 0) / IDN_MEDIA_DATA.length / 1_000_000_000 * 10) / 10).toFixed(1)}M
+                </p>
+                <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>Rate Rata-rata</p>
+              </div>
+              <div className="rounded-xl border p-3" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
+                <p className="text-[20px] font-bold" style={{ color: "var(--ch-text)" }}>{IDN_MEDIA_DATA.filter((m) => m.rate >= 6_000_000_000).length}</p>
+                <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>Premium (6M+)</p>
+              </div>
+            </div>
+
+            {/* Search */}
+            <div className="relative max-w-sm w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Input placeholder="Cari media nasional..." value={idnSearch} onChange={(e) => setIdnSearch(e.target.value)} className="pl-9" />
+            </div>
+
+            {/* Table */}
+            <div className="rounded-xl border overflow-hidden" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
+                      <th className="text-left px-4 py-2.5 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Rank</th>
+                      <th className="text-left px-4 py-2.5 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Media Nasional</th>
+                      <th className="text-right px-4 py-2.5 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Rate Backlink (IDR)</th>
+                      <th className="text-center px-4 py-2.5 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Tier</th>
+                      <th className="text-right px-4 py-2.5 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Link</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {IDN_MEDIA_DATA.filter((m) =>
+                      m.name.toLowerCase().includes(idnSearch.toLowerCase())
+                    ).map((m) => {
+                      const tc = getTierColor(m.rate);
+                      return (
+                        <tr key={`${m.rank}-${m.name}`} className="border-b last:border-b-0 hover:bg-white/3 transition-colors" style={{ borderColor: "var(--ch-border)" }}>
+                          <td className="px-4 py-2 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>{m.rank}</td>
+                          <td className="px-4 py-2">
+                            <span className="text-[13px] font-semibold" style={{ color: "var(--ch-text)" }}>{m.name}</span>
+                          </td>
+                          <td className="px-4 py-2 text-right">
+                            <span className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>{formatIdnRate(m.rate)}</span>
+                          </td>
+                          <td className="px-4 py-2 text-center">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: tc.bg, color: tc.text }}>
+                              {m.rate >= 6_000_000_000 ? "Premium" : m.rate >= 3_500_000_000 ? "Standard" : "Basic"}
+                            </span>
+                          </td>
+                          <td className="px-4 py-2 text-right">
+                            <a href={m.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[11px] font-semibold" style={{ color: "var(--ch-primary)" }}>
+                              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            </a>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        ) : activeTab === "live-shopping" ? (
+          <div className="p-3 sm:p-4 space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+              {[
+                { name: "Ria Ricis", handle: "@riaricis1795", platform: "TikTok", followers: "33.2M", category: "Entertainment", viewers: "12K live", img: "https://i.pravatar.cc/150?u=riaricis" },
+                { name: "Atta Halilintar", handle: "@attahalilintar", platform: "YouTube", followers: "17.8M", category: "Lifestyle", viewers: "8.5K live", img: "https://i.pravatar.cc/150?u=atta" },
+                { name: "Indy Barends", handle: "@indybarends", platform: "TikTok", followers: "8.1M", category: "Beauty", viewers: "15K live", img: "https://i.pravatar.cc/150?u=indy" },
+                { name: "Deddy Corbuzier", handle: "@mastercorbuzier", platform: "YouTube", followers: "21.5M", category: "Podcast", viewers: "25K live", img: "https://i.pravatar.cc/150?u=deddy" },
+                { name: "Bayu Skak", handle: "@bayuskak", platform: "YouTube", followers: "12.3M", category: "Comedy", viewers: "6K live", img: "https://i.pravatar.cc/150?u=bayu" },
+                { name: "Nissa Sabyan", handle: "@nissasabyan", platform: "Instagram", followers: "9.4M", category: "Music", viewers: "4.2K live", img: "https://i.pravatar.cc/150?u=nissa" },
+                { name: "Jerome Polin", handle: "@jeromepolin", platform: "TikTok", followers: "11.7M", category: "Education", viewers: "9K live", img: "https://i.pravatar.cc/150?u=jerome" },
+                { name: " Jess No Limit", handle: "@jessnolimit", platform: "YouTube", followers: "10.2M", category: "Gaming", viewers: "11K live", img: "https://i.pravatar.cc/150?u=jess" },
+                { name: "Reza Arap", handle: "@raffiahr", platform: "YouTube", followers: "14.6M", category: "Entertainment", viewers: "7K live", img: "https://i.pravatar.cc/150?u=reza" },
+                { name: "Tissa Biani", handle: "@tissabiani", platform: "TikTok", followers: "6.8M", category: "Fashion", viewers: "5.3K live", img: "https://i.pravatar.cc/150?u=tissa" },
+                { name: "Baim Wong", handle: "@baimwong", platform: "YouTube", followers: "15.1M", category: "Vlog", viewers: "3.8K live", img: "https://i.pravatar.cc/150?u=baim" },
+                { name: "Ayu Ting Ting", handle: "@aytingting_", platform: "Instagram", followers: "7.9M", category: "Music", viewers: "6.1K live", img: "https://i.pravatar.cc/150?u=ayu" },
+              ].map((p, i) => (
+                <div key={i} className="rounded-xl border overflow-hidden hover:ring-2 hover:ring-orange-500/50 transition-all cursor-pointer" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
+                  <div className="relative h-40 overflow-hidden">
+                    <img src={p.img} alt={p.name} className="w-full h-full object-cover" />
+                    <div className="absolute top-2 left-2">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-500 text-white flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" /> LIVE
+                      </span>
+                    </div>
+                    <div className="absolute top-2 right-2">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-black/60 text-white">{p.viewers}</span>
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
+                      <p className="text-white text-[13px] font-bold">{p.name}</p>
+                      <p className="text-white/70 text-[11px]">{p.handle}</p>
+                    </div>
+                  </div>
+                  <div className="p-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{
+                        background: p.platform === "YouTube" ? "rgba(255,0,0,0.1)" : p.platform === "TikTok" ? "rgba(0,0,0,0.1)" : "rgba(225,48,108,0.1)",
+                        color: p.platform === "YouTube" ? "#FF0000" : p.platform === "TikTok" ? "#000" : "#E1306C",
+                      }}>{p.platform}</span>
+                      <span className="text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>{p.followers} followers</span>
+                    </div>
+                    <span className="text-[10px] font-medium px-2 py-0.5 rounded-full" style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>{p.category}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-24 text-slate-500">
             <Megaphone className="w-12 h-12 mb-3 opacity-40" />
