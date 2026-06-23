@@ -4,7 +4,7 @@ import {
   Search, X, ChevronDown, ExternalLink,
   Heart, MessageCircle, Eye, Share2, Play,
   CheckCircle, Info, Edit3,
-  Plus, Sparkles,
+  Sparkles,
 } from "lucide-react";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 
@@ -105,6 +105,7 @@ export default function MediaMonitoring() {
     { value: "analysis", icon: BarChart3, label: "Analysis" },
     { value: "heatmap", icon: Flame, label: "Topical Heatmap" },
     { value: "reports", icon: FileText, label: "Reports" },
+    { value: "projects", icon: BarChart3, label: "Projects" },
   ];
 
   return (
@@ -162,34 +163,36 @@ export default function MediaMonitoring() {
                     </div>
                   </div>
 
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     <label className="text-[13px] font-semibold flex items-center gap-1.5" style={labelStyle}>Include <Info className="w-3.5 h-3.5" style={mutedStyle} /></label>
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
                       {incKeywords.map((kw) => (
                         <span key={kw} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[12px] font-medium" style={{ background: "#14532D", color: "#4ADE80", border: "1px solid #166534" }}>
                           {kw}<button onClick={() => removeIncludeKeyword(kw)} className="hover:text-green-300 ml-0.5"><X className="w-3 h-3" /></button>
                         </span>
                       ))}
-                      <div className="flex items-center gap-1.5">
-                        <input type="text" value={includeInput} onChange={(e) => setIncludeInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addIncludeKeyword()} placeholder="Add Keyword" className="w-28 px-2.5 py-1 text-[12px] rounded-full focus:outline-none focus:ring-1 focus:ring-orange-500" style={inputStyle} />
-                        <button onClick={addIncludeKeyword} className="w-6 h-6 rounded-full border-2 border-dashed flex items-center justify-center transition-colors hover:border-orange-500 hover:text-orange-500" style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}><Plus className="w-3 h-3" /></button>
-                      </div>
                     </div>
+                    <div className="flex items-center gap-2">
+                      <input type="text" value={includeInput} onChange={(e) => setIncludeInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addIncludeKeyword(); } }} placeholder="Type a keyword and press Add" className="flex-1 px-3 py-2 text-[13px] rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" style={inputStyle} />
+                      <button onClick={addIncludeKeyword} className="px-4 py-2 text-[12px] font-semibold rounded-lg text-white transition-colors hover:opacity-90" style={{ background: "var(--ch-orange)" }}>Add</button>
+                    </div>
+                    <p className="text-[11px]" style={mutedStyle}>Add one keyword then press comma before pressing Add.</p>
                   </div>
 
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     <label className="text-[13px] font-semibold" style={labelStyle}>Exclusion Keywords <span className="text-red-500">(Exclude)</span></label>
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
                       {excKeywords.map((kw) => (
                         <span key={kw} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[12px] font-medium" style={{ background: "#450A0A", color: "#FCA5A5", border: "1px solid #7F1D1D" }}>
                           {kw}<button onClick={() => removeExcludeKeyword(kw)} className="hover:text-red-300 ml-0.5"><X className="w-3 h-3" /></button>
                         </span>
                       ))}
-                      <div className="flex items-center gap-1.5">
-                        <input type="text" value={excludeInput} onChange={(e) => setExcludeInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addExcludeKeyword()} placeholder="Add Keyword" className="w-28 px-2.5 py-1 text-[12px] rounded-full focus:outline-none focus:ring-1 focus:ring-orange-500" style={inputStyle} />
-                        <button onClick={addExcludeKeyword} className="w-6 h-6 rounded-full border-2 border-dashed flex items-center justify-center transition-colors hover:border-orange-500 hover:text-orange-500" style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}><Plus className="w-3 h-3" /></button>
-                      </div>
                     </div>
+                    <div className="flex items-center gap-2">
+                      <input type="text" value={excludeInput} onChange={(e) => setExcludeInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addExcludeKeyword(); } }} placeholder="Type a keyword and press Add" className="flex-1 px-3 py-2 text-[13px] rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" style={inputStyle} />
+                      <button onClick={addExcludeKeyword} className="px-4 py-2 text-[12px] font-semibold rounded-lg text-white transition-colors hover:opacity-90" style={{ background: "var(--ch-orange)" }}>Add</button>
+                    </div>
+                    <p className="text-[11px]" style={mutedStyle}>Add one keyword then press comma before pressing Add.</p>
                   </div>
 
                   <div className="space-y-1.5">
@@ -272,13 +275,13 @@ export default function MediaMonitoring() {
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[12px] font-medium" style={mutedStyle}>Active Filters:</span>
+              <span className="text-[12px] font-medium" style={{ color: "var(--ch-text)" }}>Active Filters:</span>
               {["Project: Jakarta", "Date: May 16 – May 22, 2024", "All Platforms"].map((f) => (
-                <span key={f} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold" style={{ background: "rgba(249,115,22,.15)", color: "var(--ch-orange)", border: "1px solid rgba(249,115,22,.3)" }}>
+                <span key={f} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold text-white" style={{ background: "rgba(255,255,255,.12)", border: "1px solid rgba(255,255,255,.2)", boxShadow: "0 0 8px rgba(255,255,255,.08)" }}>
                   {f} <X className="w-3 h-3 cursor-pointer hover:opacity-70" />
                 </span>
               ))}
-              <button className="text-[12px] font-semibold ml-1 hover:underline" style={{ color: "var(--ch-orange)" }}>Clear all</button>
+              <button className="text-[12px] font-semibold ml-1 hover:underline text-white">Clear all</button>
             </div>
 
             <div className="space-y-4">
@@ -311,13 +314,19 @@ export default function MediaMonitoring() {
                       </div>
                       <div className="flex flex-wrap items-center gap-4 pt-3" style={{ borderTop: "1px solid var(--ch-border)" }}>
                         <span className="text-[11px] flex items-center gap-1.5" style={mutedStyle}>
-                          <Sparkles className="w-3 h-3 text-purple-400" /> AI Sentiment <span className="font-semibold" style={{ color: m.aiSentimentColor }}>{m.aiSentiment}</span>
+                          <Sparkles className="w-3 h-3 text-purple-400" /> AI Analysis
+                          <span className="font-semibold px-1.5 py-0.5 rounded-full text-[10px]"
+                            style={m.aiSentiment === "Negative" ? { background: "#450A0A", color: "#FCA5A5", border: "1px solid #7F1D1D" }
+                              : m.aiSentiment === "Positive" ? { background: "#14532D", color: "#4ADE80", border: "1px solid #166534" }
+                              : { background: "#1E293B", color: "#CBD5E1", border: "1px solid #334155" }}>
+                            {m.aiSentiment}
+                          </span>
                         </span>
                         <span className="text-[11px] flex items-center gap-1.5" style={mutedStyle}>
                           AI Topic <span className="w-2 h-2 rounded-full bg-blue-500" /> <span className="font-semibold" style={labelStyle}>{m.aiTopic}</span>
                         </span>
                         <span className="text-[11px] flex items-center gap-1.5" style={mutedStyle}>
-                          AI Location <span className="w-2 h-2 rounded-full bg-purple-500" /> <span className="font-semibold" style={labelStyle}>{m.aiLocation}</span>
+                          Detected Keyword Location <span className="w-2 h-2 rounded-full bg-purple-500" /> <span className="font-semibold" style={labelStyle}>{m.aiLocation}</span>
                         </span>
                       </div>
                     </div>
@@ -364,10 +373,10 @@ export default function MediaMonitoring() {
         </TabsContent>
 
         {/* Placeholder tabs */}
-        {(["analysis", "heatmap", "reports"] as const).map((tab) => {
-          const icons = { analysis: BarChart3, heatmap: Flame, reports: FileText };
-          const titles = { analysis: "Analysis Dashboard", heatmap: "Topical Heatmap", reports: "Reports" };
-          const descs = { analysis: "Deeper insights into your monitoring data.", heatmap: "Visualize trending topics across platforms.", reports: "Generate monitoring reports automatically." };
+        {(["analysis", "heatmap", "reports", "projects"] as const).map((tab) => {
+          const icons = { analysis: BarChart3, heatmap: Flame, reports: FileText, projects: BarChart3 };
+          const titles = { analysis: "Analysis Dashboard", heatmap: "Topical Heatmap", reports: "Reports", projects: "Projects" };
+          const descs = { analysis: "Deeper insights into your monitoring data.", heatmap: "Visualize trending topics across platforms.", reports: "Generate monitoring reports automatically.", projects: "Manage and track your monitoring projects." };
           const Icon = icons[tab];
           return (
             <TabsContent key={tab} value={tab} className="mt-5">
