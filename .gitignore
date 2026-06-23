@@ -28,3 +28,7 @@ npm-debug.log*
 # Environment
 .env
 .env.local
+
+# Large binaries
+*.exe
+*.msi
