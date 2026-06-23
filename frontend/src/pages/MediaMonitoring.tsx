@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import {
   Settings, MessageSquare, BarChart3, Flame, FileText,
-  Search, X, ChevronDown, ExternalLink,
+  Search, X, ChevronDown,
   Heart, MessageCircle, Eye, Share2, Play,
   CheckCircle, Info, Edit3,
   Sparkles, Globe, TrendingUp, Layers, Shield, Radio, Users, Download,
@@ -273,23 +273,26 @@ export default function MediaMonitoring() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         {/* Tab Header */}
-        <div className="flex items-center justify-between pb-3" style={{ borderBottom: "1px solid var(--ch-border)" }}>
-          <div className="flex items-center gap-2">
-            {tabItems.map((tab) => {
-              const isActive = activeTab === tab.value;
-              const TabIcon = tab.icon;
-              return (
-                <button key={tab.value} onClick={() => setActiveTab(tab.value)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-semibold rounded-full transition-all duration-150"
-                  style={isActive ? { background: "var(--ch-orange)", color: "white", boxShadow: "0 2px 8px rgba(249,115,22,.35)" } : { color: "var(--ch-text-muted)", border: "1px solid var(--ch-border)" }}>
-                  <TabIcon className="w-3.5 h-3.5" />{tab.label}
-                </button>
-              );
-            })}
-          </div>
-          <button className="flex items-center gap-1.5 text-[12px] font-semibold hover:underline px-4" style={{ color: "var(--ch-orange)" }}>
-            <ExternalLink className="w-3.5 h-3.5" />View Other Projects
-          </button>
+        <div className="flex items-center gap-2 pb-4 overflow-x-auto">
+          {tabItems.map((tab) => {
+            const isActive = activeTab === tab.value;
+            const TabIcon = tab.icon;
+            return (
+              <button key={tab.value} onClick={() => setActiveTab(tab.value)}
+                className="flex items-center gap-1.5 px-4 py-2 text-[12px] font-semibold rounded-lg transition-all duration-150 whitespace-nowrap shrink-0"
+                style={isActive ? {
+                  background: "linear-gradient(135deg, #16A34A, #22C55E)",
+                  color: "white",
+                  boxShadow: "0 2px 8px rgba(34,197,94,.3)",
+                } : {
+                  color: "var(--ch-text-muted)",
+                  background: "var(--ch-surface)",
+                  border: "1px solid var(--ch-border)",
+                }}>
+                <TabIcon className="w-3.5 h-3.5" />{tab.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Tab: Setup */}
@@ -558,17 +561,16 @@ export default function MediaMonitoring() {
         <TabsContent value="analysis" className="mt-5">
           <div className="flex rounded-xl overflow-hidden min-h-[600px]" style={cardStyle}>
             {/* Vertical Sub-Tab Sidebar */}
-            <div className="w-14 shrink-0 flex flex-col" style={{ background: "var(--ch-bg)", borderRight: "1px solid var(--ch-border)" }}>
+            <div className="w-14 shrink-0 flex flex-col gap-1 p-1" style={{ background: "var(--ch-bg)", borderRight: "1px solid var(--ch-border)" }}>
               {analysisTabs.map((tab) => {
                 const isActive = analysisTab === tab.value;
                 const TabIcon = tab.icon;
                 return (
                   <button key={tab.value} onClick={() => setAnalysisTab(tab.value)}
-                    className="flex-1 flex items-center justify-center relative transition-all group"
-                    style={isActive ? { background: "rgba(249,115,22,.1)" } : {}}
+                    className="flex-1 flex items-center justify-center relative transition-all rounded-lg"
+                    style={isActive ? { background: "linear-gradient(135deg, #16A34A, #22C55E)", boxShadow: "0 2px 6px rgba(34,197,94,.3)" } : { color: "var(--ch-text-muted)" }}
                     title={tab.label}>
-                    {isActive && <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full" style={{ background: "var(--ch-orange)" }} />}
-                    <TabIcon className="w-4 h-4 transition-colors" style={{ color: isActive ? "var(--ch-orange)" : "var(--ch-text-muted)" }} />
+                    <TabIcon className="w-4 h-4 transition-colors" style={{ color: isActive ? "white" : "var(--ch-text-muted)" }} />
                   </button>
                 );
               })}
@@ -847,17 +849,16 @@ export default function MediaMonitoring() {
         {/* Tab: Conversation Issue Clusters */}
         <TabsContent value="clusters" className="mt-5">
           <div className="flex rounded-xl overflow-hidden min-h-[500px]" style={cardStyle}>
-            <div className="w-14 shrink-0 flex flex-col" style={{ background: "var(--ch-bg)", borderRight: "1px solid var(--ch-border)" }}>
+            <div className="w-14 shrink-0 flex flex-col gap-1 p-1" style={{ background: "var(--ch-bg)", borderRight: "1px solid var(--ch-border)" }}>
               {clusterTabs.map((tab) => {
                 const isActive = clusterTab === tab.value;
                 const TabIcon = tab.icon;
                 return (
                   <button key={tab.value} onClick={() => setClusterTab(tab.value)}
-                    className="flex-1 flex items-center justify-center relative transition-all"
-                    style={isActive ? { background: "rgba(249,115,22,.1)" } : {}}
+                    className="flex-1 flex items-center justify-center relative transition-all rounded-lg"
+                    style={isActive ? { background: "linear-gradient(135deg, #16A34A, #22C55E)", boxShadow: "0 2px 6px rgba(34,197,94,.3)" } : { color: "var(--ch-text-muted)" }}
                     title={tab.label}>
-                    {isActive && <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full" style={{ background: "var(--ch-orange)" }} />}
-                    <TabIcon className="w-4 h-4 transition-colors" style={{ color: isActive ? "var(--ch-orange)" : "var(--ch-text-muted)" }} />
+                    <TabIcon className="w-4 h-4 transition-colors" style={{ color: isActive ? "white" : "var(--ch-text-muted)" }} />
                   </button>
                 );
               })}
