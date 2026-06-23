@@ -553,26 +553,23 @@ export default function MediaMonitoring() {
 
         {/* Tab: Analysis */}
         <TabsContent value="analysis" className="mt-5">
-          <div className="flex rounded-xl overflow-hidden min-h-[600px]" style={cardStyle}>
-            {/* Sub-Tab Sidebar */}
-            <div className="w-56 shrink-0 flex flex-col overflow-y-auto" style={{ background: "var(--ch-bg)", borderRight: "1px solid var(--ch-border)" }}>
-              {analysisTabs.map((tab) => {
-                const isActive = analysisTab === tab.value;
-                const TabIcon = tab.icon;
-                return (
-                  <button key={tab.value} onClick={() => setAnalysisTab(tab.value)}
-                    className="flex items-center gap-2.5 px-4 py-2.5 text-[12px] font-semibold transition-all relative text-left"
-                    style={isActive ? { background: "rgba(249,115,22,.1)", color: "var(--ch-orange)" } : { color: "var(--ch-text-muted)" }}>
-                    {isActive && <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full" style={{ background: "var(--ch-orange)" }} />}
-                    <TabIcon className="w-3.5 h-3.5 shrink-0" />
-                    <span className="truncate">{tab.label}</span>
-                  </button>
-                );
-              })}
-            </div>
+          {/* Horizontal Sub-Tabs */}
+          <div className="flex items-center gap-1.5 pb-4 overflow-x-auto" style={{ borderBottom: "1px solid var(--ch-border)" }}>
+            {analysisTabs.map((tab) => {
+              const isActive = analysisTab === tab.value;
+              const TabIcon = tab.icon;
+              return (
+                <button key={tab.value} onClick={() => setAnalysisTab(tab.value)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold rounded-full transition-all duration-150 whitespace-nowrap shrink-0"
+                  style={isActive ? { background: "var(--ch-orange)", color: "white", boxShadow: "0 2px 8px rgba(249,115,22,.35)" } : { color: "var(--ch-text-muted)", border: "1px solid var(--ch-border)" }}>
+                  <TabIcon className="w-3 h-3" />{tab.label}
+                </button>
+              );
+            })}
+          </div>
 
-            {/* Content Area */}
-            <div className="flex-1 p-6 min-w-0 overflow-y-auto">
+          {/* Content Area */}
+          <div className="p-6 min-w-0 overflow-y-auto">
 
               {/* Summary */}
               {analysisTab === "summary" && (
@@ -1004,7 +1001,6 @@ export default function MediaMonitoring() {
               )}
 
             </div>
-          </div>
         </TabsContent>
 
         {/* Placeholder tabs: Heatmap, Reports, Projects */}
