@@ -32,6 +32,7 @@ import CreatorMessages from "@/pages/kreator/CreatorMessages";
 import CreatorSettings from "@/pages/kreator/CreatorSettings";
 import CreatorSearch from "@/pages/kreator/CreatorSearch";
 import BrandSearch from "@/pages/BrandSearch";
+import CreatorAcademy from "@/pages/CreatorAcademy";
 
 export default function App() {
   return (
@@ -65,6 +66,7 @@ export default function App() {
           <Route path="content-hub" element={<BrandRoute><ContentHub /></BrandRoute>} />
           <Route path="media-monitoring" element={<BrandRoute><MediaMonitoring /></BrandRoute>} />
           <Route path="ai-support" element={<BrandRoute><AISupport /></BrandRoute>} />
+          <Route path="creator-academy" element={<CreatorAcademy />} />
           <Route path="messages" element={<BrandRoute><Messages /></BrandRoute>} />
           <Route path="payments" element={<BrandRoute><Payments /></BrandRoute>} />
           <Route path="settings" element={<BrandRoute><Settings /></BrandRoute>} />

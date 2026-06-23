@@ -5,7 +5,7 @@ import {
   MessageSquare, CreditCard, Settings, HelpCircle,
   Rocket, Briefcase, Coins, Network,
   Lightbulb, User, Home, Mail, Database, FolderOpen, Sparkles,
-  LayoutDashboard,
+  LayoutDashboard, GraduationCap,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -27,6 +27,7 @@ const brandNavItems = [
   { to: "/dashboard/content-hub",        icon: FolderOpen,      label: "Content Hub" },
   { to: "/dashboard/media-monitoring",   icon: Radio,           label: "Media Monitoring" },
   { to: "/dashboard/ai-support",         icon: Sparkles,        label: "AI Support" },
+  { to: "/dashboard/creator-academy",    icon: GraduationCap,   label: "Creator Academy" },
   { to: "/dashboard/messages",           icon: MessageSquare,   label: "Messages",   badge: 12 },
   { to: "/dashboard/payments",           icon: CreditCard,      label: "Payments" },
   { to: "/dashboard/settings",           icon: Settings,        label: "Settings" },
@@ -38,6 +39,7 @@ const kreatorNavItems = [
   { to: "/dashboard/kreator/work",        icon: Briefcase,     label: "Work" },
   { to: "/dashboard/kreator/earnings",    icon: Coins,         label: "Earnings" },
   { to: "/dashboard/kreator/insights",    icon: Lightbulb,     label: "Insights" },
+  { to: "/dashboard/creator-academy",    icon: GraduationCap,  label: "Creator Academy" },
   { to: "/dashboard/kreator/profile",     icon: User,          label: "Profile" },
   { to: "/dashboard/kreator/messages",    icon: MessageSquare, label: "Messages",      badgeKey: "messages" as const },
   { to: "/dashboard/kreator/settings",    icon: Settings,      label: "Settings" },

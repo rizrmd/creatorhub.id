@@ -1,0 +1,315 @@
+import { useState } from "react";
+import {
+  Search, BookOpen, Clock, Users, Star, Play,
+  FileText, CheckCircle,
+} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+
+const courses = [
+  {
+    id: 1,
+    title: "Content Strategy for Creator",
+    description: "Pelajari cara membuat konten yang menarik dan konsisten untuk membangun personal branding.",
+    category: "Content",
+    level: "Pemula",
+    duration: "4 jam",
+    lessons: 12,
+    students: 1240,
+    rating: 4.8,
+    instructor: "Sarah Chen",
+    thumbnail: "linear-gradient(135deg, #F97316 0%, #FB923C 100%)",
+    progress: 75,
+    tags: ["Content", "Branding"],
+  },
+  {
+    id: 2,
+    title: "Monetisasi Media Sosial",
+    description: "Strategi lengkap menghasilkan uang dari media sosial: endorsement, affiliate, dan produk digital.",
+    category: "Monetisasi",
+    level: "Menengah",
+    duration: "6 jam",
+    lessons: 18,
+    students: 890,
+    rating: 4.9,
+    instructor: "Rizky Pratama",
+    thumbnail: "linear-gradient(135deg, #16A34A 0%, #22C55E 100%)",
+    progress: 30,
+    tags: ["Monetisasi", "Bisnis"],
+  },
+  {
+    id: 3,
+    title: "Video Editing untuk Pemula",
+    description: "Kuasai dasar-dasar video editing untuk konten Reels, TikTok, dan YouTube Shorts.",
+    category: "Skill",
+    level: "Pemula",
+    duration: "8 jam",
+    lessons: 24,
+    students: 2100,
+    rating: 4.7,
+    instructor: "Davo Laksono",
+    thumbnail: "linear-gradient(135deg, #6366F1 0%, #818CF8 100%)",
+    progress: 0,
+    tags: ["Video", "Editing"],
+  },
+  {
+    id: 4,
+    title: "Negosiasi dengan Brand",
+    description: "Cara menegosiasi tarif dan kontrak kerja sama dengan brand agar mendapatkan nilai terbaik.",
+    category: "Bisnis",
+    level: "Lanjutan",
+    duration: "3 jam",
+    lessons: 10,
+    students: 560,
+    rating: 4.6,
+    instructor: "Nurul Arifin",
+    thumbnail: "linear-gradient(135deg, #EC4899 0%, #F472B6 100%)",
+    progress: 0,
+    tags: ["Negosiasi", "Bisnis"],
+  },
+  {
+    id: 5,
+    title: "Analitik & Data untuk Creator",
+    description: "Membaca dan memanfaatkan data analitik untuk mengoptimalkan strategi konten.",
+    category: "Skill",
+    level: "Menengah",
+    duration: "5 jam",
+    lessons: 15,
+    students: 720,
+    rating: 4.5,
+    instructor: "Sarah Chen",
+    thumbnail: "linear-gradient(135deg, #0EA5E9 0%, #38BDF8 100%)",
+    progress: 10,
+    tags: ["Analitik", "Data"],
+  },
+  {
+    id: 6,
+    title: "Membangun Komunitas Online",
+    description: "Strategi membangun dan mengelola komuitas yang engaged di berbagai platform.",
+    category: "Komunitas",
+    level: "Menengah",
+    duration: "4 jam",
+    lessons: 14,
+    students: 430,
+    rating: 4.4,
+    instructor: "Rizky Pratama",
+    thumbnail: "linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%)",
+    progress: 0,
+    tags: ["Komunitas", "Engagement"],
+  },
+];
+
+const stats = [
+  { label: "Total Kursus", value: "6", icon: BookOpen },
+  { label: "Sedang Diikuti", value: "3", icon: Play },
+  { label: "Selesai", value: "1", icon: CheckCircle },
+  { label: "Jam Belajar", value: "18", icon: Clock },
+];
+
+const levelColors: Record<string, { bg: string; text: string }> = {
+  Pemula: { bg: "#DCFCE7", text: "#16A34A" },
+  Menengah: { bg: "#FEF3C7", text: "#D97706" },
+  Lanjutan: { bg: "#FEE2E2", text: "#DC2626" },
+};
+
+export default function CreatorAcademy() {
+  const [activeTab, setActiveTab] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filtered = courses.filter(
+    (c) =>
+      c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.tags.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
+  return (
+    <div className="p-4 md:p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
+      <div>
+        <h1
+          className="text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]"
+          style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+        >
+          Creator Academy
+        </h1>
+        <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
+          Tingkatkan skill dan pengetahuanmu sebagai content creator.
+        </p>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        {stats.map((s) => (
+          <Card key={s.label}>
+            <CardContent className="p-4 flex items-center gap-3">
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                style={{ background: "var(--ch-primary-50)" }}
+              >
+                <s.icon className="w-5 h-5" style={{ color: "var(--ch-primary)" }} />
+              </div>
+              <div>
+                <p className="text-[20px] font-bold" style={{ color: "var(--ch-text)" }}>
+                  {s.value}
+                </p>
+                <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
+                  {s.label}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Tabs & Search */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList variant="line" className="border-b w-full justify-start gap-0">
+          <TabsTrigger
+            value="all"
+            className="text-[14px] font-semibold px-4 py-2 rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--ch-primary)] data-[state=active]:text-[var(--ch-primary)] data-[state=active]:shadow-none"
+          >
+            Semua
+          </TabsTrigger>
+          <TabsTrigger
+            value="in-progress"
+            className="text-[14px] font-semibold px-4 py-2 rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--ch-primary)] data-[state=active]:text-[var(--ch-primary)] data-[state=active]:shadow-none"
+          >
+            Sedang Diikuti
+          </TabsTrigger>
+          <TabsTrigger
+            value="completed"
+            className="text-[14px] font-semibold px-4 py-2 rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--ch-primary)] data-[state=active]:text-[var(--ch-primary)] data-[state=active]:shadow-none"
+          >
+            Selesai
+          </TabsTrigger>
+          <TabsTrigger
+            value="new"
+            className="text-[14px] font-semibold px-4 py-2 rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--ch-primary)] data-[state=active]:text-[var(--ch-primary)] data-[state=active]:shadow-none"
+          >
+            Belum Dicoba
+          </TabsTrigger>
+        </TabsList>
+
+        <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <div className="relative flex-1 max-w-sm w-full">
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
+              style={{ color: "var(--ch-text-muted)" }}
+            />
+            <input
+              type="text"
+              placeholder="Cari kursus..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-3 py-2 text-[13px] rounded-lg border bg-white"
+              style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+            />
+          </div>
+        </div>
+
+        <TabsContent value={activeTab} className="mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {filtered
+              .filter((c) => {
+                if (activeTab === "in-progress") return c.progress > 0 && c.progress < 100;
+                if (activeTab === "completed") return c.progress === 100;
+                if (activeTab === "new") return c.progress === 0;
+                return true;
+              })
+              .map((c) => {
+                const lc = levelColors[c.level] || levelColors.Pemula;
+                return (
+                  <Card
+                    key={c.id}
+                    className="group cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.01] overflow-hidden"
+                  >
+                    <div
+                      className="h-32 flex items-center justify-center relative"
+                      style={{ background: c.thumbnail }}
+                    >
+                      <BookOpen className="w-10 h-10 text-white/80" />
+                      {c.progress > 0 && (
+                        <div className="absolute top-2 right-2">
+                          <Badge className="bg-white/90 text-[11px] font-bold" style={{ color: c.progress === 100 ? "#16A34A" : "#F97316" }}>
+                            {c.progress === 100 ? (
+                              <span className="flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Selesai</span>
+                            ) : (
+                              `${c.progress}%`
+                            )}
+                          </Badge>
+                        </div>
+                      )}
+                    </div>
+                    <CardContent className="p-4 space-y-3">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span
+                          className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                          style={{ background: lc.bg, color: lc.text }}
+                        >
+                          {c.level}
+                        </span>
+                        <Badge variant="secondary" className="text-[10px]">
+                          {c.category}
+                        </Badge>
+                      </div>
+                      <p
+                        className="text-[14px] font-bold leading-tight line-clamp-2"
+                        style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                      >
+                        {c.title}
+                      </p>
+                      <p className="text-[12px] leading-relaxed line-clamp-2" style={{ color: "var(--ch-text-muted)" }}>
+                        {c.description}
+                      </p>
+                      {c.progress > 0 && c.progress < 100 && (
+                        <div className="space-y-1">
+                          <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                            <div
+                              className="h-full rounded-full transition-all"
+                              style={{ width: `${c.progress}%`, background: "var(--ch-primary)" }}
+                            />
+                          </div>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-3 pt-1">
+                        <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
+                          <Clock className="w-3 h-3" /> {c.duration}
+                        </span>
+                        <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
+                          <FileText className="w-3 h-3" /> {c.lessons} pelajaran
+                        </span>
+                        <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
+                          <Users className="w-3 h-3" /> {c.students}
+                        </span>
+                        <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
+                          <Star className="w-3 h-3 fill-amber-400 text-amber-400" /> {c.rating}
+                        </span>
+                      </div>
+                      <div className="pt-1 flex items-center justify-between">
+                        <span className="text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
+                          oleh {c.instructor}
+                        </span>
+                        <button
+                          className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-semibold rounded-lg text-white transition-opacity hover:opacity-90"
+                          style={{ background: "var(--ch-primary)" }}
+                        >
+                          {c.progress > 0 && c.progress < 100 ? (
+                            <><Play className="w-3 h-3" /> Lanjutkan</>
+                          ) : c.progress === 100 ? (
+                            <><CheckCircle className="w-3 h-3" /> Selesai</>
+                          ) : (
+                            <><Play className="w-3 h-3" /> Mulai</>
+                          )}
+                        </button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
