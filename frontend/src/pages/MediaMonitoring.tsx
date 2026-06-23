@@ -241,8 +241,7 @@ export default function MediaMonitoring() {
     { value: "clusters", icon: Layers, label: "Conversation Issue Clusters" },
     { value: "heatmap", icon: Flame, label: "Topical Heatmap" },
     { value: "reports", icon: FileText, label: "Reports" },
-    { value: "projects", icon: BarChart3, label: "Projects" },
-    { value: "sources", icon: Radio, label: "Top Exposure Sources" },
+    { value: "sources", icon: Radio, label: "Top Sources" },
     { value: "influencers", icon: Users, label: "Last 30-Day Influencers" },
     { value: "wordcloud", icon: PieChart, label: "Wordcloud" },
   ];
@@ -692,21 +691,28 @@ export default function MediaMonitoring() {
                 <div className="space-y-6">
                   <h2 className="text-[18px] font-bold" style={labelStyle}>Conversation Landscape</h2>
                   <div className="rounded-xl p-6" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="space-y-3">
                       {[
-                        { name: "Traffic Congestion", size: "w-40 h-40", color: "#F97316", mentions: 890, sentiment: "Mostly Negative" },
-                        { name: "Flooding", size: "w-32 h-32", color: "#3B82F6", mentions: 650, sentiment: "Mostly Negative" },
-                        { name: "Protests", size: "w-28 h-28", color: "#EF4444", mentions: 420, sentiment: "Negative" },
-                        { name: "Fires", size: "w-24 h-24", color: "#F59E0B", mentions: 310, sentiment: "Neutral" },
-                        { name: "Accidents", size: "w-20 h-20", color: "#8B5CF6", mentions: 180, sentiment: "Negative" },
+                        { name: "Traffic Congestion", color: "#F97316", mentions: 890, sentiment: "Mostly Negative", pct: 100 },
+                        { name: "Flooding", color: "#3B82F6", mentions: 650, sentiment: "Mostly Negative", pct: 73 },
+                        { name: "Protests", color: "#EF4444", mentions: 420, sentiment: "Negative", pct: 47 },
+                        { name: "Fires", color: "#F59E0B", mentions: 310, sentiment: "Neutral", pct: 35 },
+                        { name: "Accidents", color: "#8B5CF6", mentions: 180, sentiment: "Negative", pct: 20 },
                       ].map((b) => (
-                        <div key={b.name} className="flex flex-col items-center gap-2">
-                          <div className={`${b.size} rounded-full flex flex-col items-center justify-center text-white`} style={{ background: `${b.color}30`, border: `2px solid ${b.color}` }}>
-                            <span className="text-[16px] font-bold">{b.mentions}</span>
-                            <span className="text-[10px]">mentions</span>
+                        <div key={b.name} className="flex items-center gap-4 p-3 rounded-lg" style={{ background: "var(--ch-surface)" }}>
+                          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: `${b.color}20` }}>
+                            <div className="w-3 h-3 rounded-full" style={{ background: b.color }} />
                           </div>
-                          <span className="text-[12px] font-semibold text-center" style={labelStyle}>{b.name}</span>
-                          <span className="text-[10px]" style={mutedStyle}>{b.sentiment}</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-[13px] font-semibold" style={labelStyle}>{b.name}</span>
+                              <span className="text-[12px] font-bold" style={labelStyle}>{b.mentions}</span>
+                            </div>
+                            <div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--ch-border)" }}>
+                              <div className="h-full rounded-full" style={{ width: `${b.pct}%`, background: b.color }} />
+                            </div>
+                          </div>
+                          <span className="text-[11px] shrink-0" style={mutedStyle}>{b.sentiment}</span>
                         </div>
                       ))}
                     </div>
@@ -914,21 +920,10 @@ export default function MediaMonitoring() {
           </div>
         </TabsContent>
 
-        {/* Tab: Projects */}
-        <TabsContent value="projects" className="mt-5">
-          <div className="flex items-center justify-center py-20">
-            <div className="text-center space-y-2">
-              <BarChart3 className="w-12 h-12 mx-auto" style={{ color: "var(--ch-border-strong)" }} />
-              <p className="text-[14px] font-semibold" style={labelStyle}>Projects</p>
-              <p className="text-[12px]" style={mutedStyle}>Coming soon — manage and track your monitoring projects.</p>
-            </div>
-          </div>
-        </TabsContent>
-
-        {/* Tab: Top Exposure Sources */}
+        {/* Tab: Top Sources */}
         <TabsContent value="sources" className="mt-5">
           <div className="space-y-6">
-            <h2 className="text-[18px] font-bold" style={labelStyle}>Top Exposure Sources</h2>
+            <h2 className="text-[18px] font-bold" style={labelStyle}>Top Sources</h2>
             <div className="rounded-xl p-5" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
               <div className="space-y-3">
                 {[
