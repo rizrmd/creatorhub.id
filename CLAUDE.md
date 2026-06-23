@@ -28,16 +28,28 @@ npm run build     # type-check (tsc) + production build → frontend/dist/
 
 There are no tests, no linter config, and no preview server script.
 
-> **After every frontend code change**: rebuild with `npm run build`, then restart the backend so it serves the new `dist/`.
->
-> **Restart sequence** (PowerShell from repo root):
-> ```powershell
-> cd frontend; npm run build
-> cd ..\backend
-> $p = (Get-NetTCPConnection -LocalPort 8080 -State Listen -ErrorAction SilentlyContinue).OwningProcess
-> if ($p) { Stop-Process -Id $p -Force; Start-Sleep -Milliseconds 500 }
-> Start-Process -FilePath .\creatorhub.exe -WorkingDirectory $PWD -NoNewWindow
-> ```
+## Workflow
+
+**IMPORTANT: Never run dev server or restart backend locally. Always deploy directly to production.**
+
+After every frontend code change:
+
+1. Build frontend
+2. Commit & push to `main`
+3. Deploy to production using fast frontend-only copy:
+
+```powershell
+cd frontend; npm run build
+$container = (docker ps --filter "name=emzin0v" --format "{{.Names}}" | Select-Object -First 1)
+docker cp dist/. "$container:/app/static/"
+```
+
+This copies the new `dist/` into the live container in ~5-10 seconds. No image rebuild needed.
+
+**Do NOT:**
+- Run `npm run dev` for development
+- Restart local backend (`creatorhub.exe`)
+- Build locally just to test (use production URL directly: https://creatorhub.id)
 
 ## Architecture
 

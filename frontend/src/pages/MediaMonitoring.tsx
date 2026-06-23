@@ -659,13 +659,143 @@ export default function MediaMonitoring() {
 
               {/* Dataset */}
               {analysisTab === "dataset" && (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-[18px] font-bold" style={labelStyle}>Dataset</h2>
+                    <h2 className="text-[18px] font-bold" style={labelStyle}>Struktur Dataset Gabungan</h2>
                     <button className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold rounded-lg" style={{ border: "1px solid var(--ch-border)", color: "var(--ch-text-muted)" }}>
                       <Download className="w-3.5 h-3.5" /> Export CSV
                     </button>
                   </div>
+
+                  {/* Dataset Overview */}
+                  <div className="rounded-xl p-6" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                      {/* Left: Description */}
+                      <div className="space-y-5">
+                        <div className="flex items-start gap-4">
+                          <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "#EA580C20" }}>
+                            <span className="text-[14px] font-bold" style={{ color: "var(--ch-orange)" }}>01</span>
+                          </div>
+                          <div>
+                            <p className="text-[13px] leading-relaxed" style={{ color: "var(--ch-text)" }}>
+                              Dataset utama terdiri dari <span className="font-bold" style={{ color: "var(--ch-orange)" }}>23.077</span> percakapan publik lintas platform sebagai basis analisis terhadap keyword <span className="font-bold">'Jakarta'</span> dan kata kunci terkait.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-start gap-4">
+                          <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "#EA580C20" }}>
+                            <span className="text-[14px] font-bold" style={{ color: "var(--ch-orange)" }}>02</span>
+                          </div>
+                          <div>
+                            <p className="text-[13px] leading-relaxed" style={{ color: "var(--ch-text)" }}>
+                              Percakapan dihimpun dari hasil request pencarian data pada 4 platform utama: <span className="font-bold">TikTok 11.839 percakapan (52,0%)</span>, <span className="font-bold" style={{ color: "#1877F2" }}>Facebook 2.098 percakapan (9,2%)</span>, <span className="font-bold" style={{ color: "#E1306C" }}>Instagram 5.774 percakapan (25,3%)</span>, dan <span className="font-bold" style={{ color: "#FF0000" }}>YouTube 3.074 percakapan (13,5%)</span>.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-start gap-4">
+                          <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "#EA580C20" }}>
+                            <span className="text-[14px] font-bold" style={{ color: "var(--ch-orange)" }}>03</span>
+                          </div>
+                          <div>
+                            <p className="text-[13px] leading-relaxed" style={{ color: "var(--ch-text)" }}>
+                              Dataset dihimpun berdasarkan konten publik yang relevan dengan keyword <span className="font-bold">'Jakarta'</span>, termasuk unggahan, komentar, caption, dan interaksi publik yang memiliki eksposur serta keterlibatan tinggi.
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Platform Stats Cards */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4">
+                          {[
+                            { platform: "TikTok", icon: "TT", count: "11.839", pct: "52,0%", color: "#000", bgColor: "#000" },
+                            { platform: "Facebook", icon: "FB", count: "2.098", pct: "9,2%", color: "#1877F2", bgColor: "#1877F2" },
+                            { platform: "Instagram", icon: "IG", count: "5.774", pct: "25,3%", color: "#E1306C", bgColor: "#E1306C" },
+                            { platform: "YouTube", icon: "YT", count: "3.074", pct: "13,5%", color: "#FF0000", bgColor: "#FF0000" },
+                          ].map((p) => (
+                            <div key={p.platform} className="rounded-xl p-4 text-center" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
+                              <span className="w-8 h-8 rounded-full inline-flex items-center justify-center text-[10px] font-bold text-white mb-2" style={{ background: p.bgColor }}>{p.icon}</span>
+                              <p className="text-[11px] font-medium" style={mutedStyle}>{p.platform}</p>
+                              <p className="text-[18px] font-bold mt-1" style={{ color: p.color }}>{p.count}</p>
+                              <p className="text-[10px]" style={mutedStyle}>percakapan</p>
+                              <span className="inline-block mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold text-white" style={{ background: p.bgColor }}>{p.pct}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Right: Donut Chart */}
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="relative w-64 h-64">
+                          {/* Donut Chart using CSS */}
+                          <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90">
+                            {/* TikTok 52% */}
+                            <circle cx="50" cy="50" r="35" fill="none" stroke="#000" strokeWidth="18"
+                              strokeDasharray="114.35 105.56" strokeDashoffset="0" />
+                            {/* Instagram 25.3% */}
+                            <circle cx="50" cy="50" r="35" fill="none" stroke="#E1306C" strokeWidth="18"
+                              strokeDasharray="55.64 164.27" strokeDashoffset="-114.35" />
+                            {/* YouTube 13.5% */}
+                            <circle cx="50" cy="50" r="35" fill="none" stroke="#FF0000" strokeWidth="18"
+                              strokeDasharray="29.69 190.22" strokeDashoffset="-170.00" />
+                            {/* Facebook 9.2% */}
+                            <circle cx="50" cy="50" r="35" fill="none" stroke="#1877F2" strokeWidth="18"
+                              strokeDasharray="20.23 199.68" strokeDashoffset="-199.69" />
+                          </svg>
+                          {/* Center Text */}
+                          <div className="absolute inset-0 flex flex-col items-center justify-center">
+                            <span className="text-[28px] font-extrabold" style={{ color: "var(--ch-text)" }}>23.077</span>
+                            <span className="text-[10px] font-semibold uppercase tracking-wider" style={mutedStyle}>Percakapan Total</span>
+                          </div>
+                        </div>
+
+                        {/* Legend */}
+                        <div className="grid grid-cols-2 gap-3 mt-6 w-full max-w-xs">
+                          {[
+                            { platform: "TikTok", pct: "52,0%", color: "#000" },
+                            { platform: "Facebook", pct: "9,2%", color: "#1877F2" },
+                            { platform: "Instagram", pct: "25,3%", color: "#E1306C" },
+                            { platform: "YouTube", pct: "13,5%", color: "#FF0000" },
+                          ].map((l) => (
+                            <div key={l.platform} className="flex items-center gap-2">
+                              <span className="w-3 h-3 rounded-full shrink-0" style={{ background: l.color }} />
+                              <span className="text-[12px] font-medium" style={labelStyle}>{l.platform}</span>
+                              <span className="text-[12px] font-bold ml-auto" style={{ color: l.color }}>{l.pct}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Data Collection Flow */}
+                  <div className="rounded-xl p-6" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                    <h3 className="text-[14px] font-bold mb-4" style={labelStyle}>Sumber Penghimpunan Data</h3>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                      {[
+                        { icon: Search, label: "Request", sublabel: "Pencarian Data", color: "#3B82F6" },
+                        { icon: Globe, label: "Konten Publik", sublabel: "Lintas Platform", color: "#22C55E" },
+                        { icon: MessageSquare, label: "Percakapan Relevan", sublabel: "Keyword Jakarta", color: "#F97316" },
+                      ].map((step, i) => (
+                        <React.Fragment key={step.label}>
+                          <div className="flex flex-col items-center gap-2 p-4 rounded-xl" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)", minWidth: "140px" }}>
+                            <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: `${step.color}20` }}>
+                              <step.icon className="w-5 h-5" style={{ color: step.color }} />
+                            </div>
+                            <span className="text-[12px] font-bold text-center" style={{ color: step.color }}>{step.label}</span>
+                            <span className="text-[10px] text-center" style={mutedStyle}>{step.sublabel}</span>
+                          </div>
+                          {i < 2 && (
+                            <svg className="w-6 h-6 shrink-0" style={{ color: "var(--ch-text-muted)" }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Data Table */}
                   <div className="rounded-xl overflow-hidden" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
                     <div className="overflow-x-auto">
                       <table className="w-full text-[12px]">
