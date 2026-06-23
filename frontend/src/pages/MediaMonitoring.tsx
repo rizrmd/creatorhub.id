@@ -362,7 +362,7 @@ export default function MediaMonitoring() {
                         )}
                       </div>
                       <button className="mt-4 flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold rounded-lg transition-colors hover:opacity-80" style={{ border: "1px solid rgba(249,115,22,.3)", color: "var(--ch-orange)" }}>
-                        <Edit3 className="w-3 h-3" />Review & Edit
+                        <Edit3 className="w-3 h-3" />Update
                       </button>
                     </div>
                   </div>
