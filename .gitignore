@@ -32,3 +32,8 @@ npm-debug.log*
 # Large binaries
 *.exe
 *.msi
+
+# Deploy scripts (local use only)
+deploy.ps1
+deploy.sh
+deploy-full.sh
