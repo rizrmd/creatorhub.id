@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { NavLink, Link, useLocation } from "react-router-dom";
 import {
-  Store, Megaphone, FolderKanban, Radio,
+  Store, FolderKanban, Radio,
   MessageSquare, CreditCard, Settings, HelpCircle,
   Rocket, Briefcase, Coins, Network,
   Lightbulb, User, Home, Mail, Database, FolderOpen, Sparkles,
@@ -21,7 +21,6 @@ const brandNavItems = [
   { to: "/dashboard/service-hub",        icon: Network,         label: "Service Hub" },
   { to: "/dashboard/projects",           icon: FolderKanban,    label: "Projects" },
   { to: "/dashboard/marketplace",        icon: Store,           label: "Marketplace" },
-  { to: "/dashboard/campaigns",          icon: Megaphone,       label: "Campaigns" },
   { to: "/dashboard/boost-ads",          icon: Rocket,          label: "Boost Ads" },
   { to: "/dashboard/database",           icon: Database,        label: "Database" },
   { to: "/dashboard/content-hub",        icon: FolderOpen,      label: "Content Hub" },
