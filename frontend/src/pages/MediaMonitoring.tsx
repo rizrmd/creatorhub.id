@@ -757,64 +757,111 @@ export default function MediaMonitoring() {
               {/* Summary */}
               {analysisTab === "summary" && (
                 <div className="space-y-6">
-                  <h2 className="text-[18px] font-bold" style={labelStyle}>Monitoring Summary</h2>
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div>
+                    <h2 className="text-[22px] font-extrabold tracking-[-0.3px]" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Summary</h2>
+                    <p className="text-[13px] mt-1 leading-relaxed" style={mutedStyle}>Ringkasan analisis percakapan publik terkait keyword "Jakarta" pada periode 16–22 Mei 2024, mencakup distribusi platform, isu dominan, dan sentimen publik.</p>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {[
-                      { label: "Total Mentions", value: "2,450", change: "+14.2%", icon: MessageCircle, color: "#3B82F6" },
-                      { label: "Positive Sentiment", value: "34%", change: "+2.1%", icon: TrendingUp, color: "#22C55E" },
-                      { label: "Negative Sentiment", value: "52%", change: "-1.8%", icon: TrendingUp, color: "#EF4444" },
-                      { label: "Top Issue", value: "Traffic", change: "890 mentions", icon: Flame, color: "#F97316" },
+                      { label: "Total Percakapan", value: "23.077", color: "#F97316" },
+                      { label: "Platform Ditrack", value: "7", color: "#3B82F6" },
+                      { label: "Isu Dominan", value: "3", color: "#22C55E" },
+                      { label: "Periode", value: "7 Hari", color: "#8B5CF6", isText: true },
                     ].map((m) => (
-                      <div key={m.label} className="rounded-xl p-4" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${m.color}20` }}>
-                            <m.icon className="w-4 h-4" style={{ color: m.color }} />
-                          </div>
-                          <span className="text-[11px] font-medium" style={mutedStyle}>{m.label}</span>
-                        </div>
-                        <p className="text-[22px] font-bold" style={labelStyle}>{m.value}</p>
-                        <p className="text-[11px] mt-0.5" style={{ color: m.color }}>{m.change}</p>
+                      <div key={m.label} className="rounded-xl p-4 text-center" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                        <p className="text-[10px] font-semibold uppercase tracking-wider mb-1" style={mutedStyle}>{m.label}</p>
+                        <p className="text-[22px] font-extrabold" style={{ color: m.color }}>{m.value}</p>
                       </div>
                     ))}
                   </div>
-                  <div className="rounded-xl p-5" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
-                    <h3 className="text-[14px] font-bold mb-4" style={labelStyle}>Mention Trend (Last 7 Days)</h3>
-                    <div className="flex items-end gap-2 h-40">
-                      {[180, 320, 250, 410, 380, 520, 390].map((h, i) => (
-                        <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                          <div className="w-full rounded-t-md transition-all" style={{ height: `${(h / 520) * 100}%`, background: i === 5 ? "var(--ch-orange)" : "var(--ch-border)" }} />
-                          <span className="text-[10px]" style={mutedStyle}>{["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][i]}</span>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div className="rounded-xl p-5 space-y-4" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                      {[
+                        { num: 1, text: <>Analisis dilakukan terhadap <span className="font-bold" style={{ color: "var(--ch-orange)" }}>23.077 percakapan publik digital</span> yang memuat keyword utama <span className="font-bold" style={{ color: "var(--ch-orange)" }}>"Jakarta"</span> serta 15 related keywords yang sedang relevan dalam percakapan publik selama periode <span className="font-bold" style={{ color: "var(--ch-orange)" }}>16–22 Mei 2024</span>. Pemantauan ini bertujuan membaca isu dominan, arah sentimen, serta dinamika percakapan masyarakat terhadap berbagai topik yang berkaitan dengan Jakarta.</> },
+                        { num: 2, text: <>Data dikumpulkan dari <span className="font-bold" style={{ color: "var(--ch-orange)" }}>7 platform digital</span> melalui metode crawling, scraping, dan API integration untuk menghimpun postingan, komentar, hashtag, dan konten publik yang relevan. Dari keseluruhan data yang terkumpul, TikTok menjadi platform dengan kontribusi percakapan terbesar, yaitu <span className="font-bold" style={{ color: "var(--ch-orange)" }}>52%</span> dari total percakapan, menunjukkan bahwa diskusi publik terkait Jakarta paling aktif dan menonjol di platform berbasis video pendek.</> },
+                        { num: 3, text: <>Dari hasil pemetaan keyword, isu yang paling dominan dalam percakapan adalah <span className="font-bold" style={{ color: "var(--ch-orange)" }}>PON XXI sebesar 32%</span>, disusul <span className="font-bold" style={{ color: "var(--ch-orange)" }}>HUT Jakarta 499 sebesar 24%</span>, dan <span className="font-bold" style={{ color: "var(--ch-orange)" }}>Polusi Udara sebesar 18%</span>. Temuan ini menunjukkan bahwa percakapan publik tentang Jakarta pada periode tersebut tidak hanya didorong oleh isu seremonial dan event, tetapi juga oleh isu kualitas hidup perkotaan yang berdampak langsung pada masyarakat.</> },
+                      ].map((item) => (
+                        <div key={item.num} className="flex gap-3">
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--ch-orange)" }}>
+                            <span className="text-[13px] font-bold text-white">{item.num}</span>
+                          </div>
+                          <div>
+                            <p className="text-[12px] leading-relaxed" style={{ color: "var(--ch-text)" }}>{item.text}</p>
+                          </div>
                         </div>
                       ))}
                     </div>
-                  </div>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div className="rounded-xl p-5" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
-                      <h3 className="text-[14px] font-bold mb-3" style={labelStyle}>Sentiment Distribution</h3>
-                      <div className="space-y-2">
-                        {[{ label: "Negative", pct: 52, color: "#EF4444" }, { label: "Positive", pct: 34, color: "#22C55E" }, { label: "Neutral", pct: 14, color: "#94A3B8" }].map((s) => (
-                          <div key={s.label} className="flex items-center gap-3">
-                            <span className="text-[12px] w-16" style={mutedStyle}>{s.label}</span>
-                            <div className="flex-1 h-6 rounded-full overflow-hidden" style={{ background: "var(--ch-border)" }}>
-                              <div className="h-full rounded-full" style={{ width: `${s.pct}%`, background: s.color }} />
+
+                    <div className="rounded-xl p-5" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
+                      <div className="flex items-center gap-2 mb-4">
+                        <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: "var(--ch-orange)" }}>
+                          <Search className="w-3.5 h-3.5 text-white" />
+                        </div>
+                        <p className="text-[13px] font-bold" style={labelStyle}>RELATED KEYWORDS JAKARTA</p>
+                      </div>
+
+                      <div className="space-y-2 mb-4">
+                        <p className="text-[11px] font-semibold uppercase tracking-wide" style={mutedStyle}>Keyword Paling Dominan</p>
+                        {[
+                          { kw: "PON XXI", pct: 32, color: "#F97316" },
+                          { kw: "HUT Jakarta 499", pct: 24, color: "#3B82F6" },
+                          { kw: "Polusi Udara", pct: 18, color: "#22C55E" },
+                          { kw: "Ganjil Genap", pct: 12, color: "#8B5CF6" },
+                          { kw: "Urban Heat Island", pct: 8, color: "#0EA5E9" },
+                          { kw: "Others", pct: 6, color: "#64748B" },
+                        ].map((item) => (
+                          <div key={item.kw} className="flex items-center gap-2">
+                            <span className="text-[11px] flex-1 font-medium" style={labelStyle}>{item.kw}</span>
+                            <div className="w-20 h-2 rounded-full overflow-hidden" style={{ background: "var(--ch-border)" }}>
+                              <div className="h-full rounded-full" style={{ width: `${item.pct}%`, background: item.color }} />
                             </div>
-                            <span className="text-[12px] font-semibold w-10 text-right" style={labelStyle}>{s.pct}%</span>
+                            <span className="text-[10px] font-bold w-8 text-right" style={{ color: item.color }}>{item.pct}%</span>
                           </div>
                         ))}
                       </div>
-                    </div>
-                    <div className="rounded-xl p-5" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
-                      <h3 className="text-[14px] font-bold mb-3" style={labelStyle}>Top Issues</h3>
-                      <div className="space-y-2">
-                        {[{ issue: "Traffic Congestion", count: 890, pct: 36 }, { issue: "Flooding", count: 650, pct: 27 }, { issue: "Protests", count: 420, pct: 17 }, { issue: "Fires", count: 310, pct: 13 }, { issue: "Accidents", count: 180, pct: 7 }].map((t) => (
-                          <div key={t.issue} className="flex items-center gap-3">
-                            <span className="text-[12px] flex-1" style={labelStyle}>{t.issue}</span>
-                            <span className="text-[11px]" style={mutedStyle}>{t.count}</span>
-                            <div className="w-20 h-4 rounded-full overflow-hidden" style={{ background: "var(--ch-border)" }}>
-                              <div className="h-full rounded-full" style={{ width: `${t.pct}%`, background: "var(--ch-orange)" }} />
+
+                      <div className="pt-4 mb-4" style={{ borderTop: "1px solid var(--ch-border)" }}>
+                        <p className="text-[11px] font-semibold uppercase tracking-wide mb-3" style={mutedStyle}>Distribusi Platform</p>
+                        <div className="space-y-2.5">
+                          {[
+                            { platform: "TikTok", pct: 52, color: "#69C9D0" },
+                            { platform: "Instagram", pct: 25.3, color: "#E1306C" },
+                            { platform: "YouTube", pct: 13.5, color: "#FF0000" },
+                            { platform: "Facebook", pct: 9.2, color: "#1877F2" },
+                          ].map((p) => (
+                            <div key={p.platform}>
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="text-[11px] font-medium" style={labelStyle}>{p.platform}</span>
+                                <span className="text-[11px] font-bold" style={{ color: "var(--ch-orange)" }}>{p.pct}%</span>
+                              </div>
+                              <div className="w-full h-3 rounded-full overflow-hidden" style={{ background: "var(--ch-bg)" }}>
+                                <div className="h-full rounded-full" style={{ width: `${p.pct}%`, background: p.color }} />
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="pt-3" style={{ borderTop: "1px solid var(--ch-border)" }}>
+                        <p className="text-[10px] font-semibold mb-2" style={mutedStyle}>Platform yang Ditrack:</p>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          {[
+                            { name: "TikTok", color: "#000" },
+                            { name: "YouTube", color: "#FF0000" },
+                            { name: "Instagram", color: "#E1306C" },
+                            { name: "X", color: "#94A3B8" },
+                            { name: "Facebook", color: "#1877F2" },
+                            { name: "News", color: "#0EA5E9" },
+                            { name: "Forums", color: "#8B5CF6" },
+                          ].map((p) => (
+                            <span key={p.name} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold" style={{ background: `${p.color}18`, color: "var(--ch-text)", border: `1px solid ${p.color}30` }}>
+                              <span className="w-1.5 h-1.5 rounded-full" style={{ background: p.color }} />
+                              {p.name}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
