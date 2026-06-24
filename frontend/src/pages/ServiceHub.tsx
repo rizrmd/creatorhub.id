@@ -295,7 +295,7 @@ export default function ServiceHub() {
               }}
             />
             <img
-              src="/hero-banner.jpg"
+              src="/hero-banner.jpg?v=9"
               alt="CreatorHub Platform"
               className="rounded-xl object-cover w-full max-h-[280px]"
             />

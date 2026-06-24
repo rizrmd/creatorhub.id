@@ -673,8 +673,8 @@ export default function MediaMonitoring() {
                       {/* Left: Description */}
                       <div className="space-y-5">
                         <div className="flex items-start gap-4">
-                          <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--ch-orange)" }}>
-                            <span className="text-[14px] font-bold text-white">01</span>
+                          <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "#EA580C20" }}>
+                            <span className="text-[14px] font-bold" style={{ color: "var(--ch-orange)" }}>01</span>
                           </div>
                           <div>
                             <p className="text-[13px] leading-relaxed" style={{ color: "var(--ch-text)" }}>
@@ -684,8 +684,8 @@ export default function MediaMonitoring() {
                         </div>
 
                         <div className="flex items-start gap-4">
-                          <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--ch-orange)" }}>
-                            <span className="text-[14px] font-bold text-white">02</span>
+                          <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "#EA580C20" }}>
+                            <span className="text-[14px] font-bold" style={{ color: "var(--ch-orange)" }}>02</span>
                           </div>
                           <div>
                             <p className="text-[13px] leading-relaxed" style={{ color: "var(--ch-text)" }}>
@@ -695,8 +695,8 @@ export default function MediaMonitoring() {
                         </div>
 
                         <div className="flex items-start gap-4">
-                          <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--ch-orange)" }}>
-                            <span className="text-[14px] font-bold text-white">03</span>
+                          <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "#EA580C20" }}>
+                            <span className="text-[14px] font-bold" style={{ color: "var(--ch-orange)" }}>03</span>
                           </div>
                           <div>
                             <p className="text-[13px] leading-relaxed" style={{ color: "var(--ch-text)" }}>
@@ -716,40 +716,11 @@ export default function MediaMonitoring() {
                             <div key={p.platform} className="rounded-xl p-4 text-center" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
                               <span className="w-8 h-8 rounded-full inline-flex items-center justify-center text-[10px] font-bold text-white mb-2" style={{ background: p.bgColor }}>{p.icon}</span>
                               <p className="text-[11px] font-medium" style={mutedStyle}>{p.platform}</p>
-                              <p className="text-[18px] font-bold mt-1 text-white">{p.count}</p>
-                              <p className="text-[10px] text-white/60">percakapan</p>
+                              <p className="text-[18px] font-bold mt-1" style={{ color: p.color }}>{p.count}</p>
+                              <p className="text-[10px]" style={mutedStyle}>percakapan</p>
                               <span className="inline-block mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold text-white" style={{ background: p.bgColor }}>{p.pct}</span>
                             </div>
                           ))}
-                        </div>
-
-                        {/* Data Collection Flow */}
-                        <div className="pt-5 mt-5" style={{ borderTop: "1px solid var(--ch-border)" }}>
-                          <p className="text-[12px] font-bold mb-3" style={labelStyle}>Sumber Penghimpunan Data</p>
-                          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                            {[
-                              { icon: Search, label: "Request", sublabel: "Pencarian Data", color: "#3B82F6" },
-                              { icon: Globe, label: "Konten Publik", sublabel: "Lintas Platform", color: "#22C55E" },
-                              { icon: MessageSquare, label: "Percakapan Relevan", sublabel: "Keyword Jakarta", color: "#F97316" },
-                            ].map((step, i) => (
-                              <React.Fragment key={step.label}>
-                                <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
-                                  <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: `${step.color}20` }}>
-                                    <step.icon className="w-4 h-4" style={{ color: step.color }} />
-                                  </div>
-                                  <div>
-                                    <span className="text-[11px] font-bold block" style={{ color: step.color }}>{step.label}</span>
-                                    <span className="text-[9px] block" style={mutedStyle}>{step.sublabel}</span>
-                                  </div>
-                                </div>
-                                {i < 2 && (
-                                  <svg className="w-4 h-4 shrink-0" style={{ color: "var(--ch-text-muted)" }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                  </svg>
-                                )}
-                              </React.Fragment>
-                            ))}
-                          </div>
                         </div>
                       </div>
 
@@ -787,17 +758,40 @@ export default function MediaMonitoring() {
                             { platform: "YouTube", pct: "13,5%", color: "#FF0000" },
                           ].map((l) => (
                             <div key={l.platform} className="flex items-center gap-2">
-                              {l.color === "#000" ? (
-                                <span className="w-3 h-3 rounded-full shrink-0 border-2 border-white" style={{ background: l.color }} />
-                              ) : (
-                                <span className="w-3 h-3 rounded-full shrink-0" style={{ background: l.color }} />
-                              )}
+                              <span className="w-3 h-3 rounded-full shrink-0" style={{ background: l.color }} />
                               <span className="text-[12px] font-medium" style={labelStyle}>{l.platform}</span>
-                              <span className="text-[12px] font-bold ml-auto text-white">{l.pct}</span>
+                              <span className="text-[12px] font-bold ml-auto" style={{ color: l.color }}>{l.pct}</span>
                             </div>
                           ))}
                         </div>
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Data Collection Flow */}
+                  <div className="rounded-xl p-6" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                    <h3 className="text-[14px] font-bold mb-4" style={labelStyle}>Sumber Penghimpunan Data</h3>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                      {[
+                        { icon: Search, label: "Request", sublabel: "Pencarian Data", color: "#3B82F6" },
+                        { icon: Globe, label: "Konten Publik", sublabel: "Lintas Platform", color: "#22C55E" },
+                        { icon: MessageSquare, label: "Percakapan Relevan", sublabel: "Keyword Jakarta", color: "#F97316" },
+                      ].map((step, i) => (
+                        <React.Fragment key={step.label}>
+                          <div className="flex flex-col items-center gap-2 p-4 rounded-xl" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)", minWidth: "140px" }}>
+                            <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: `${step.color}20` }}>
+                              <step.icon className="w-5 h-5" style={{ color: step.color }} />
+                            </div>
+                            <span className="text-[12px] font-bold text-center" style={{ color: step.color }}>{step.label}</span>
+                            <span className="text-[10px] text-center" style={mutedStyle}>{step.sublabel}</span>
+                          </div>
+                          {i < 2 && (
+                            <svg className="w-6 h-6 shrink-0" style={{ color: "var(--ch-text-muted)" }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          )}
+                        </React.Fragment>
+                      ))}
                     </div>
                   </div>
 

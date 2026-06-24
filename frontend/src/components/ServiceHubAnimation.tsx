@@ -126,7 +126,7 @@ export default function ServiceHubAnimation({
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
         <div className="flex items-center gap-2">
-          <img src="/favicon.png?v=4" alt="AI" className="w-6 h-6 rounded-md" />
+          <img src="/favicon.png?v=9" alt="AI" className="w-6 h-6 rounded-md" />
           <span className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             AI Analysis
           </span>
@@ -162,7 +162,7 @@ export default function ServiceHubAnimation({
         )}
         {!isPlaying && !isComplete && displayLines.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full gap-3 text-center">
-            <img src="/favicon.png?v=4" alt="CreatorHub" className="w-10 h-10 rounded-lg opacity-40" />
+            <img src="/favicon.png?v=9" alt="CreatorHub" className="w-10 h-10 rounded-lg opacity-40" />
             <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>
               Click "Run AI Analysis" to analyze content creator distribution across all 38 provinces of Indonesia
             </p>
