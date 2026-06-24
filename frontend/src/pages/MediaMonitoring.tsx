@@ -237,6 +237,7 @@ export default function MediaMonitoring() {
   const tabItems = [
     { value: "setup", icon: Settings, label: "Setup" },
     { value: "mentions", icon: MessageSquare, label: "Mentions" },
+    { value: "overview", icon: PieChart, label: "Overview" },
     { value: "analysis", icon: BarChart3, label: "Analysis" },
     { value: "clusters", icon: Layers, label: "Issue Clusters" },
     { value: "heatmap", icon: Flame, label: "Topical Heatmap" },
@@ -563,6 +564,170 @@ export default function MediaMonitoring() {
                 className="px-3 py-1.5 text-[12px] font-semibold rounded-lg transition-colors disabled:opacity-30"
                 style={{ color: "var(--ch-text)", border: "1px solid var(--ch-border)" }}>Next</button>
               <span className="text-[11px] ml-2" style={mutedStyle}>{mentions.length} results · Page {currentPage} of {totalPages}</span>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Tab: Overview */}
+        <TabsContent value="overview" className="mt-5">
+          <div className="space-y-4">
+            <div className="rounded-xl p-4" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
+              <h3 className="text-[14px] font-bold mb-3" style={labelStyle}>Overview</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                {[
+                  { label: "Total mentions", value: "23.077", change: "+15%", up: true },
+                  { label: "Total reach", value: "108M", change: "-6%", up: false },
+                  { label: "Positive mentions", value: "3 491", change: "+10%", up: true },
+                  { label: "Negative mentions", value: "978", change: "+7%", up: false },
+                  { label: "Average Presence Score", value: "75/100", change: "+42%", up: true },
+                  { label: "AVE", value: "$7.7M", change: "-5%", up: false },
+                  { label: "Social media reach", value: "28M", change: "+78%", up: true },
+                  { label: "Non-Social media reach", value: "80M", change: "+19%", up: true },
+                  { label: "User generated content", value: "7 046", change: "+4%", up: true },
+                  { label: "Social media mentions", value: "5 456", change: "+165%", up: true },
+                  { label: "Non-Social media mentions", value: "18K", change: "-20%", up: false },
+                  { label: "Social media reactions", value: "793K", change: "+370%", up: true },
+                  { label: "Social media comments", value: "27K", change: "+246%", up: true },
+                  { label: "Social media shares", value: "63K", change: "+846%", up: true },
+                  { label: "Total interactions", value: "883K", change: "+565%", up: true },
+                ].map((m) => (
+                  <div key={m.label} className="rounded-lg p-3" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                    <p className="text-[10px] font-medium mb-1" style={{ color: "var(--ch-text-muted)" }}>{m.label}</p>
+                    <div className="flex items-baseline gap-2">
+                      <p className="text-[16px] font-bold" style={{ color: "var(--ch-text)" }}>{m.value}</p>
+                      <span className="text-[10px] font-semibold" style={{ color: m.up ? "#22C55E" : "#EF4444" }}>
+                        {m.up ? "↑" : "↓"} {m.change}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Total Data — Post & Comment stacked bars */}
+            <div className="rounded-xl overflow-hidden" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
+              <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: "1px solid var(--ch-border)" }}>
+                <h3 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Total Data</h3>
+                <div className="w-16 h-0.5 rounded-full" style={{ background: "var(--ch-orange)" }} />
+              </div>
+              <div className="grid grid-cols-2 gap-4 p-4">
+                <div className="rounded-lg p-4" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                  <p className="text-[12px] font-bold mb-3" style={{ color: "var(--ch-orange)" }}>Post</p>
+                  <div className="w-full h-8 rounded-lg overflow-hidden flex relative" style={{ background: "var(--ch-surface)" }}>
+                    <div className="h-full flex items-center justify-center" style={{ width: "32%", background: "#22C55E" }}><span className="text-[9px] font-bold text-white">32%</span></div>
+                    <div className="h-full flex items-center justify-center" style={{ width: "18%", background: "#94A3B8" }}><span className="text-[9px] font-bold text-white">18%</span></div>
+                    <div className="h-full flex items-center justify-center" style={{ width: "50%", background: "#EF4444" }}><span className="text-[9px] font-bold text-white">50%</span></div>
+                  </div>
+                  <div className="flex items-center justify-center gap-4 mt-2.5">
+                    {[{ label: "Positive", color: "#22C55E" }, { label: "Neutral", color: "#94A3B8" }, { label: "Negative", color: "#EF4444" }].map((l) => (
+                      <div key={l.label} className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full" style={{ background: l.color }} /><span className="text-[10px] font-medium" style={{ color: "var(--ch-text-muted)" }}>{l.label}</span></div>
+                    ))}
+                  </div>
+                </div>
+                <div className="rounded-lg p-4" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                  <p className="text-[12px] font-bold mb-3" style={{ color: "var(--ch-orange)" }}>Comment</p>
+                  <div className="w-full h-8 rounded-lg overflow-hidden flex relative" style={{ background: "var(--ch-surface)" }}>
+                    <div className="h-full flex items-center justify-center" style={{ width: "28%", background: "#22C55E" }}><span className="text-[9px] font-bold text-white">28%</span></div>
+                    <div className="h-full flex items-center justify-center" style={{ width: "22%", background: "#94A3B8" }}><span className="text-[9px] font-bold text-white">22%</span></div>
+                    <div className="h-full flex items-center justify-center" style={{ width: "50%", background: "#EF4444" }}><span className="text-[9px] font-bold text-white">50%</span></div>
+                  </div>
+                  <div className="flex items-center justify-center gap-4 mt-2.5">
+                    {[{ label: "Positive", color: "#22C55E" }, { label: "Neutral", color: "#94A3B8" }, { label: "Negative", color: "#EF4444" }].map((l) => (
+                      <div key={l.label} className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full" style={{ background: l.color }} /><span className="text-[10px] font-medium" style={{ color: "var(--ch-text-muted)" }}>{l.label}</span></div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Word Cloud + Hashtag Map + Share of Voice */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="rounded-xl overflow-hidden" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
+                <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: "1px solid var(--ch-border)" }}>
+                  <h3 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Word Cloud</h3>
+                  <div className="w-12 h-0.5 rounded-full" style={{ background: "var(--ch-orange)" }} />
+                </div>
+                <div className="p-3 flex items-center justify-center overflow-hidden rounded-2xl">
+                  <img src="/wordcloud-jakarta.png" alt="Word Cloud Jakarta" className="w-full h-auto rounded-2xl" style={{ maxHeight: "360px", objectFit: "contain" }} />
+                </div>
+              </div>
+
+              <div className="rounded-xl overflow-hidden" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
+                <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: "1px solid var(--ch-border)" }}>
+                  <h3 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Share of Voice</h3>
+                  <div className="w-12 h-0.5 rounded-full" style={{ background: "var(--ch-orange)" }} />
+                </div>
+                <div className="p-4">
+                  <div className="space-y-4">
+                    {[
+                      { platform: "Instagram", sov: 28, color: "#E1306C" },
+                      { platform: "X / Twitter", sov: 24, color: "#94A3B8" },
+                      { platform: "TikTok", sov: 22, color: "#69C9D0" },
+                      { platform: "News Online", sov: 14, color: "#0EA5E9" },
+                      { platform: "Facebook", sov: 8, color: "#1877F2" },
+                      { platform: "YouTube", sov: 4, color: "#FF0000" },
+                    ].map((p) => (
+                      <div key={p.platform}>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-[12px] font-semibold" style={{ color: "var(--ch-text)" }}>{p.platform}</span>
+                          <span className="text-[12px] font-bold" style={{ color: "var(--ch-orange)" }}>{p.sov}%</span>
+                        </div>
+                        <div className="w-full h-3 rounded-full overflow-hidden" style={{ background: "var(--ch-bg)" }}>
+                          <div className="h-full rounded-full" style={{ width: `${p.sov}%`, background: p.color }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-xl overflow-hidden" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
+                <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: "1px solid var(--ch-border)" }}>
+                  <h3 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Top Account</h3>
+                </div>
+                <div className="p-4 space-y-2">
+                  {[
+                    { name: "@dkijakarta", platform: "IG", buzz: 842 },
+                    { name: "@TMCPoldaMetro", platform: "X", buzz: 612 },
+                    { name: "@jktinfo", platform: "IG", buzz: 534 },
+                    { name: "@beritajakarta", platform: "Web", buzz: 298 },
+                    { name: "@banjir_jkt", platform: "X", buzz: 186 },
+                  ].map((a, i) => (
+                    <div key={i} className="flex items-center gap-2 p-2 rounded-lg" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                      <span className="text-[10px] font-bold w-5 h-5 rounded flex items-center justify-center shrink-0" style={{ background: "var(--ch-orange)", color: "#fff" }}>{i + 1}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[11px] font-semibold truncate" style={{ color: "var(--ch-text)" }}>{a.name}</p>
+                        <p className="text-[9px]" style={{ color: "var(--ch-text-muted)" }}>{a.platform}</p>
+                      </div>
+                      <span className="text-[10px] font-bold" style={{ color: "var(--ch-orange)" }}>{a.buzz}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-xl overflow-hidden" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
+                <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: "1px solid var(--ch-border)" }}>
+                  <h3 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Top Issue</h3>
+                </div>
+                <div className="p-4 space-y-2">
+                  {[
+                    { issue: "HUT Jakarta ke-499", mentions: 4280, pct: "33.2%" },
+                    { issue: "Kualitas udara / AQI", mentions: 2140, pct: "16.6%" },
+                    { issue: "Transportasi Rp1", mentions: 1860, pct: "14.4%" },
+                    { issue: "Bundaran HI 27-28 Juni", mentions: 1320, pct: "10.2%" },
+                    { issue: "SPMB & Job Fair", mentions: 980, pct: "7.6%" },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-2 p-2 rounded-lg" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                      <span className="text-[10px] font-bold w-5 h-5 rounded flex items-center justify-center shrink-0" style={{ background: "var(--ch-orange)", color: "#fff" }}>{i + 1}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[11px] font-semibold truncate" style={{ color: "var(--ch-text)" }}>{item.issue}</p>
+                        <p className="text-[9px]" style={{ color: "var(--ch-text-muted)" }}>{item.mentions.toLocaleString()} mentions</p>
+                      </div>
+                      <span className="text-[10px] font-bold" style={{ color: "var(--ch-orange)" }}>{item.pct}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </TabsContent>
