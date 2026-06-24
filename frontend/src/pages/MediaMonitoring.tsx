@@ -3,7 +3,7 @@ import {
   Settings, MessageSquare, BarChart3, Flame, FileText,
   Search, X, ChevronDown, ExternalLink,
   Heart, MessageCircle, Eye, Share2, Play,
-  CheckCircle, Info, Edit3,
+  CheckCircle, Info, Edit3, ThumbsUp, Minus, ThumbsDown,
   Sparkles, Globe, TrendingUp, Layers, Shield, Radio, Download,
   PieChart, Clock,
 } from "lucide-react";
@@ -1024,11 +1024,118 @@ export default function MediaMonitoring() {
 
         {/* Tab: Topical Heatmap */}
         <TabsContent value="heatmap" className="mt-5">
-          <div className="flex items-center justify-center py-20">
-            <div className="text-center space-y-2">
-              <Flame className="w-12 h-12 mx-auto" style={{ color: "var(--ch-border-strong)" }} />
-              <p className="text-[14px] font-semibold" style={labelStyle}>Topical Heatmap</p>
-              <p className="text-[12px]" style={mutedStyle}>Coming soon — visualize trending topics across platforms.</p>
+          <div className="space-y-5">
+            <div>
+              <h2 className="text-[20px] font-extrabold" style={labelStyle}>Heatmap Sentimen per Isu Jakarta</h2>
+              <p className="text-[12px] mt-1" style={mutedStyle}>Pembacaan sentimen pada kata kunci dominan berdasarkan percakapan publik digital periode 16–22 Mei 2024</p>
+            </div>
+
+            <div className="rounded-xl p-3 flex items-center gap-3 flex-wrap" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+              <span className="text-[11px] font-bold" style={{ color: "var(--ch-orange)" }}>RELATED KEYWORDS JAKARTA</span>
+              <div className="flex items-center gap-3 flex-wrap">
+                {[
+                  { kw: "PON XXI", pct: "32%" },
+                  { kw: "HUT Jakarta 499", pct: "24%" },
+                  { kw: "Polusi Udara", pct: "18%" },
+                  { kw: "Ganjil Genap", pct: "12%" },
+                  { kw: "Urban Heat Island", pct: "8%" },
+                  { kw: "Others", pct: "6%" },
+                ].map((item) => (
+                  <span key={item.kw} className="text-[11px]" style={labelStyle}>
+                    <span className="font-bold">{item.kw}</span> <span style={{ color: "var(--ch-orange)" }}>{item.pct}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+              <div className="lg:col-span-2 rounded-xl overflow-hidden" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                <table className="w-full text-[12px]">
+                  <thead>
+                    <tr>
+                      <th className="text-left p-3 font-bold" style={{ background: "#1E3A5F", color: "white" }}>
+                        <span className="flex items-center gap-1.5">Isu Utama</span>
+                      </th>
+                      <th className="text-center p-3 font-bold" style={{ background: "#22C55E", color: "white" }}>
+                        <span className="flex items-center justify-center gap-1.5"><ThumbsUp className="w-3.5 h-3.5" /> Positif</span>
+                      </th>
+                      <th className="text-center p-3 font-bold" style={{ background: "#F59E0B", color: "white" }}>
+                        <span className="flex items-center justify-center gap-1.5"><Minus className="w-3.5 h-3.5" /> Netral</span>
+                      </th>
+                      <th className="text-center p-3 font-bold" style={{ background: "#EF4444", color: "white" }}>
+                        <span className="flex items-center justify-center gap-1.5"><ThumbsDown className="w-3.5 h-3.5" /> Negatif/Kritis</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { issue: "PON XXI", icon: "🏆", pos: 42, neu: 36, neg: 22 },
+                      { issue: "HUT Jakarta 499", icon: "🏛️", pos: 48, neu: 34, neg: 18 },
+                      { issue: "Polusi Udara", icon: "🌫️", pos: 8, neu: 24, neg: 68 },
+                      { issue: "Ganjil Genap", icon: "🚗", pos: 15, neu: 30, neg: 55 },
+                      { issue: "Urban Heat Island", icon: "🌡️", pos: 10, neu: 35, neg: 55 },
+                      { issue: "Others", icon: "💬", pos: 20, neu: 45, neg: 35 },
+                    ].map((r) => (
+                      <tr key={r.issue} className="border-t" style={{ borderColor: "var(--ch-border)" }}>
+                        <td className="p-3 font-semibold" style={labelStyle}>
+                          <span className="flex items-center gap-2">
+                            <span>{r.icon}</span>
+                            {r.issue}
+                          </span>
+                        </td>
+                        <td className="p-3 text-center font-bold" style={{ background: `rgba(34,197,94,${r.pos / 100 * 0.4})`, color: "#22C55E" }}>{r.pos}%</td>
+                        <td className="p-3 text-center font-bold" style={{ background: `rgba(245,158,11,${r.neu / 100 * 0.4})`, color: "#F59E0B" }}>{r.neu}%</td>
+                        <td className="p-3 text-center font-bold" style={{ background: `rgba(239,68,68,${r.neg / 100 * 0.4})`, color: "#EF4444" }}>{r.neg}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="flex items-center gap-3 p-3 border-t" style={{ borderColor: "var(--ch-border)" }}>
+                  <span className="text-[10px] font-semibold" style={mutedStyle}>Skala Intensitas Sentimen</span>
+                  <div className="flex-1 h-2.5 rounded-full overflow-hidden flex">
+                    <div className="h-full" style={{ width: "33%", background: "#EF4444" }} />
+                    <div className="h-full" style={{ width: "33%", background: "#F59E0B" }} />
+                    <div className="h-full" style={{ width: "34%", background: "#22C55E" }} />
+                  </div>
+                  <div className="flex justify-between flex-1 -mt-1">
+                    <span className="text-[9px]" style={mutedStyle}>Lebih Negatif</span>
+                    <span className="text-[9px]" style={mutedStyle}>Campuran / Netral</span>
+                    <span className="text-[9px]" style={mutedStyle}>Lebih Positif</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-xl p-4" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: "var(--ch-orange)" }}>
+                    <span className="text-white text-sm">⭐</span>
+                  </div>
+                  <p className="text-[14px] font-bold" style={labelStyle}>Pembacaan Utama</p>
+                </div>
+                <div className="space-y-3">
+                  {[
+                    { num: 1, text: <>Polusi Udara menjadi isu dengan tekanan sentimen negatif paling kuat, menunjukkan tingginya kekhawatiran publik terhadap kualitas udara dan dampak kesehatan.</> },
+                    { num: 2, text: <>Ganjil Genap dan Urban Heat Island juga menunjukkan kecenderungan kritik yang tinggi karena berkaitan langsung dengan pengalaman harian warga Jakarta.</> },
+                    { num: 3, text: <>PON XXI dan HUT Jakarta 499 cenderung memperoleh persepsi lebih positif karena berasosiasi dengan event, perayaan, dan kebanggaan kota.</> },
+                    { num: 4, text: <>Heatmap ini menunjukkan bahwa isu berbasis kualitas hidup perkotaan masih menjadi sumber tekanan sentimen paling dominan dibandingkan isu seremonial dan event.</> },
+                  ].map((item) => (
+                    <div key={item.num} className="flex gap-2">
+                      <span className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold text-white" style={{ background: "var(--ch-orange)" }}>{item.num}</span>
+                      <p className="text-[11px] leading-relaxed" style={{ color: "var(--ch-text)" }}>{item.text}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-xl p-4 flex items-start gap-3" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+              <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--ch-orange)" }}>
+                <span className="text-white text-sm">💡</span>
+              </div>
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-wide mb-1" style={{ color: "var(--ch-orange)" }}>Key Insight</p>
+                <p className="text-[12px] leading-relaxed font-medium" style={{ color: "var(--ch-text)" }}>Sentimen terhadap isu Jakarta tidak merata pada semua topik. Tekanan persepsi paling kritis terkonsentrasi pada <span className="font-bold" style={{ color: "var(--ch-orange)" }}>Polusi Udara</span>, <span className="font-bold" style={{ color: "var(--ch-orange)" }}>Ganjil Genap</span>, dan <span className="font-bold" style={{ color: "var(--ch-orange)" }}>Urban Heat Island</span>, sementara PON XXI dan HUT Jakarta 499 cenderung dibaca lebih positif.</p>
+              </div>
             </div>
           </div>
         </TabsContent>
