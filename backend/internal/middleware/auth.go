@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/golang-jwt/jwt/v5"
+
 	"creatorhub/backend/internal/auth"
 )
 
@@ -37,7 +39,7 @@ func RequireAuth(next http.Handler) http.Handler {
 func RequireRole(roles ...string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			claims, ok := r.Context().Value(ClaimsKey).(map[string]interface{})
+			claims, ok := r.Context().Value(ClaimsKey).(jwt.MapClaims)
 			if !ok {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusForbidden)
