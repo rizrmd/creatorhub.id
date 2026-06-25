@@ -76,9 +76,30 @@ func main() {
 			r.Get("/{id}", creatorHandler.GetByID)
 		})
 
-		// Protected: all other API routes require a valid JWT
+		// Protected: media monitoring routes — admin + media_monitoring only
 		r.Group(func(r chi.Router) {
 			r.Use(authmw.RequireAuth)
+			r.Use(authmw.RequireRole("admin", "media_monitoring"))
+
+			r.Route("/media-groups", func(r chi.Router) {
+				r.Get("/", mediaNetworkHandler.ListGroups)
+				r.Get("/{id}/outlets", mediaNetworkHandler.ListOutlets)
+			})
+			r.Route("/media-outlets", func(r chi.Router) {
+				r.Get("/search", mediaNetworkHandler.SearchOutlets)
+				r.Put("/bulk", mediaNetworkHandler.BulkUpdate)
+			})
+			r.Route("/instagram-posts", func(r chi.Router) {
+				r.Post("/scrape", instagramPostHandler.ScrapeAccount)
+				r.Get("/", instagramPostHandler.ListPosts)
+				r.Delete("/", instagramPostHandler.ClearAccount)
+			})
+		})
+
+		// Protected: admin & brand/kreator routes (exclude media_monitoring)
+		r.Group(func(r chi.Router) {
+			r.Use(authmw.RequireAuth)
+			r.Use(authmw.RequireRole("admin", "brand", "kreator"))
 
 			r.Post("/creators/scrape", creatorHandler.ScrapeSocial)
 			r.Post("/creators", creatorHandler.Create)
@@ -96,19 +117,6 @@ func main() {
 				r.Post("/channels", messageHandler.CreateChannel)
 				r.Get("/channels/{channelId}/messages", messageHandler.ListMessages)
 				r.Post("/channels/{channelId}/messages", messageHandler.SendMessage)
-			})
-			r.Route("/media-groups", func(r chi.Router) {
-				r.Get("/", mediaNetworkHandler.ListGroups)
-				r.Get("/{id}/outlets", mediaNetworkHandler.ListOutlets)
-			})
-			r.Route("/media-outlets", func(r chi.Router) {
-				r.Get("/search", mediaNetworkHandler.SearchOutlets)
-				r.Put("/bulk", mediaNetworkHandler.BulkUpdate)
-			})
-			r.Route("/instagram-posts", func(r chi.Router) {
-				r.Post("/scrape", instagramPostHandler.ScrapeAccount)
-				r.Get("/", instagramPostHandler.ListPosts)
-				r.Delete("/", instagramPostHandler.ClearAccount)
 			})
 		})
 	})

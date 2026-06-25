@@ -1,6 +1,6 @@
 ﻿import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
-import { BrandRoute, KreatorRoute } from "@/components/RoleRoute";
+import { BrandRoute, KreatorRoute, MediaMonitoringRoute } from "@/components/RoleRoute";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
@@ -62,7 +62,7 @@ export default function App() {
           <Route path="boost-ads" element={<BrandRoute><BoostAds /></BrandRoute>} />
           <Route path="database" element={<BrandRoute><DatabasePage /></BrandRoute>} />
           <Route path="content-hub" element={<BrandRoute><ContentHub /></BrandRoute>} />
-          <Route path="media-monitoring" element={<BrandRoute><MediaMonitoring /></BrandRoute>} />
+          <Route path="media-monitoring" element={<MediaMonitoringRoute><MediaMonitoring /></MediaMonitoringRoute>} />
           <Route path="ai-support" element={<BrandRoute><AISupport /></BrandRoute>} />
           <Route path="creator-academy" element={<CreatorAcademy />} />
           <Route path="messages" element={<BrandRoute><Messages /></BrandRoute>} />

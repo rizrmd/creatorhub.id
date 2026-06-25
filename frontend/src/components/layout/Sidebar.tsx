@@ -5,7 +5,7 @@ import {
   MessageSquare, CreditCard, Settings, HelpCircle,
   Rocket, Briefcase, Coins, Network,
   Lightbulb, User, Home, Mail, Database, FolderOpen, Sparkles,
-  LayoutDashboard, GraduationCap,
+  LayoutDashboard, GraduationCap, type LucideIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -16,7 +16,15 @@ import { useRole } from "@/context/RoleContext";
 import { useSidebar } from "@/contexts/SidebarContext";
 import { useKreatorStatsOptional } from "@/context/KreatorDataContext";
 
-const brandNavItems = [
+interface NavItem {
+  to: string;
+  icon: LucideIcon;
+  label: string;
+  badge?: number;
+  badgeKey?: "invitations" | "messages";
+}
+
+const brandNavItems: NavItem[] = [
   { to: "/dashboard",                    icon: LayoutDashboard, label: "Dashboard" },
   { to: "/dashboard/service-hub",        icon: Network,         label: "Service Hub" },
   { to: "/dashboard/projects",           icon: FolderKanban,    label: "Projects" },
@@ -32,7 +40,11 @@ const brandNavItems = [
   { to: "/dashboard/settings",           icon: Settings,        label: "Settings" },
 ];
 
-const kreatorNavItems = [
+const mediaMonitoringNavItems: NavItem[] = [
+  { to: "/dashboard/media-monitoring",   icon: Radio,           label: "Media Monitoring" },
+];
+
+const kreatorNavItems: NavItem[] = [
   { to: "/dashboard/kreator/home",        icon: Home,          label: "Home" },
   { to: "/dashboard/kreator/invitations", icon: Mail,          label: "Invitations",   badgeKey: "invitations" as const },
   { to: "/dashboard/kreator/work",        icon: Briefcase,     label: "Work" },
@@ -60,9 +72,9 @@ export default function Sidebar() {
     closeMobile();
   }, [pathname, closeMobile]);
 
-  const navItems = effectiveRole === "kreator" ? kreatorNavItems : brandNavItems;
+  const navItems = effectiveRole === "kreator" ? kreatorNavItems : effectiveRole === "media_monitoring" ? mediaMonitoringNavItems : brandNavItems;
 
-  const resolveBadge = (item: { badge?: number; badgeKey?: "invitations" | "messages" }) => {
+  const resolveBadge = (item: NavItem) => {
     if (item.badgeKey && kreatorStats) {
       if (item.badgeKey === "invitations") return kreatorStats.pendingInvitationCount;
       if (item.badgeKey === "messages") return kreatorStats.unreadMessages;
