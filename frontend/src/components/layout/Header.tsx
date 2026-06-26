@@ -25,6 +25,11 @@ const USER_BY_ROLE = {
   kreator: { name: "Rina Pratiwi",  subtitle: "Lifestyle Creator", initial: "R", stats: { campaigns: 3, creators: 0,  spent: "Rp 48jt" } },
 };
 
+const USER_AVATARS: Record<string, string> = {
+  "admin@creatorhub.id": "/favicon.png",
+  "tuffa@creatorhub.id": "/user-avatars/tuffa.jpg",
+};
+
 function NotifIcon({ icon, bg, fg }: { icon: string; bg: string; fg: string }) {
   return (
     <div className="w-[34px] h-[34px] rounded-full flex items-center justify-center shrink-0 text-sm font-bold" style={{ background: bg, color: fg }}>
@@ -252,9 +257,13 @@ export default function Header() {
             onClick={() => open("profile")}
           >
             <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold shrink-0 bg-orange-500"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold shrink-0 bg-orange-500 overflow-hidden"
             >
-              {displayUser.initial}
+              {user?.email && USER_AVATARS[user.email] ? (
+                <img src={USER_AVATARS[user.email]} alt={displayUser.name} className="w-full h-full object-cover" />
+              ) : (
+                displayUser.initial
+              )}
             </div>
             <div className="hidden sm:block text-left">
               <p className="text-[13px] font-semibold leading-none text-white">{displayUser.subtitle}</p>
