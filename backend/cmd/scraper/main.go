@@ -39,6 +39,48 @@ type AllstarsResponse struct {
 	Pagination string         `json:"paginationHtml"`
 }
 
+type AllstarsRegion struct {
+	ID   string
+	Name string
+}
+
+var allstarsRegions = []AllstarsRegion{
+	{"11", "Aceh"},
+	{"12", "Sumatra Utara"},
+	{"13", "Sumatra Barat"},
+	{"14", "Riau"},
+	{"15", "Jambi"},
+	{"16", "Sumatra Selatan"},
+	{"17", "Bengkulu"},
+	{"18", "Lampung"},
+	{"19", "Kepulauan Bangka Belitung"},
+	{"21", "Kepulauan Riau"},
+	{"31", "DKI Jakarta"},
+	{"32", "Jawa Barat"},
+	{"33", "Jawa Tengah"},
+	{"34", "DI Yogyakarta"},
+	{"35", "Jawa Timur"},
+	{"36", "Banten"},
+	{"51", "Bali"},
+	{"52", "Nusa Tenggara Barat"},
+	{"53", "Nusa Tenggara Timur"},
+	{"61", "Kalimantan Barat"},
+	{"62", "Kalimantan Tengah"},
+	{"63", "Kalimantan Selatan"},
+	{"64", "Kalimantan Timur"},
+	{"65", "Kalimantan Utara"},
+	{"71", "Sulawesi Utara"},
+	{"72", "Sulawesi Tengah"},
+	{"73", "Sulawesi Selatan"},
+	{"74", "Sulawesi Tenggara"},
+	{"75", "Gorontalo"},
+	{"76", "Sulawesi Barat"},
+	{"81", "Maluku"},
+	{"82", "Maluku Utara"},
+	{"91", "Papua Barat"},
+	{"94", "Papua"},
+}
+
 var chromeUA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 
 var httpClient = &http.Client{
@@ -60,10 +102,7 @@ func main() {
 		dbURL = "postgres://postgres:postgres@localhost:5432/creatorhub?sslmode=disable"
 	}
 
-	regionID := "31"
-	if v := os.Getenv("REGION_ID"); v != "" {
-		regionID = v
-	}
+	regions := selectedRegions()
 
 	avatarDir := strings.TrimSpace(os.Getenv("AVATAR_DIR"))
 	publicAvatarBase := strings.TrimSpace(os.Getenv("AVATAR_PUBLIC_BASE"))
@@ -73,7 +112,7 @@ func main() {
 
 	maxPages := 50
 	if v := os.Getenv("MAX_PAGES"); v != "" {
-		if n, err := strconv.Atoi(v); err == nil && n > 0 {
+		if n, err := strconv.Atoi(v); err == nil && n >= 0 {
 			maxPages = n
 		}
 	}
@@ -90,44 +129,58 @@ func main() {
 	}
 	log.Println("Database connected.")
 
-	log.Printf("Scraping allstars.id influencers for region %s (max %d pages)...", regionID, maxPages)
-	influencers, err := scrapeAllPages(regionID, maxPages)
-	if err != nil {
-		log.Fatalf("Failed to scrape: %v", err)
-	}
-	log.Printf("Scraped %d influencers from allstars.id", len(influencers))
+	totalScraped := 0
+	totalInserted := 0
 
-	if avatarDir != "" {
-		log.Printf("Downloading %d profile photos...", len(influencers))
-		downloadAllPhotos(influencers, avatarDir)
-	} else {
-		log.Printf("Skipping local photo downloads; using allstars.id avatar URLs.")
-	}
-
-	// Insert into database
-	inserted := 0
-	for _, inf := range influencers {
-		if inf.Name == "" || inf.Name == "-" {
-			continue
-		}
-		if inf.Link == "" || inf.Platform == "" {
-			continue
-		}
-
-		_, err := insertCreator(context.Background(), db, inf, publicAvatarBase)
+	for _, region := range regions {
+		log.Printf("Scraping allstars.id influencers for region %s (%s, max pages: %s)...", region.ID, region.Name, maxPagesLabel(maxPages))
+		influencers, err := scrapeAllPages(region.ID, maxPages)
 		if err != nil {
-			log.Printf("Error inserting %s: %v", inf.Name, err)
-			continue
+			log.Fatalf("Failed to scrape region %s: %v", region.ID, err)
 		}
-		inserted++
+		log.Printf("Scraped %d influencers from allstars.id region %s", len(influencers), region.ID)
+
+		if avatarDir != "" {
+			log.Printf("Downloading %d profile photos...", len(influencers))
+			downloadAllPhotos(influencers, avatarDir)
+		} else {
+			log.Printf("Skipping local photo downloads; using allstars.id avatar URLs.")
+		}
+
+		inserted := 0
+		for _, inf := range influencers {
+			if inf.Name == "" || inf.Name == "-" {
+				continue
+			}
+			if inf.Link == "" || inf.Platform == "" {
+				continue
+			}
+
+			_, err := insertCreator(context.Background(), db, inf, publicAvatarBase, region.Name)
+			if err != nil {
+				log.Printf("Error inserting %s: %v", inf.Name, err)
+				continue
+			}
+			inserted++
+		}
+
+		totalScraped += len(influencers)
+		totalInserted += inserted
+		log.Printf("Region %s done: inserted/updated %d creators", region.ID, inserted)
+		time.Sleep(500 * time.Millisecond)
 	}
 
-	log.Printf("Done! inserted/updated: %d creators", inserted)
+	log.Printf("Done! scraped %d records, inserted/updated %d creators", totalScraped, totalInserted)
 }
 
 func scrapeAllPages(regionID string, maxPages int) ([]AllstarsItem, error) {
 	var all []AllstarsItem
 	page := 1
+	seen := map[string]struct{}{}
+	limit := maxPages
+	if limit == 0 {
+		limit = 1000
+	}
 
 	for {
 		url := fmt.Sprintf("https://www.allstars.id/influencer-feed?page=%d&selectedId=%s&searchType=region", page, regionID)
@@ -165,14 +218,24 @@ func scrapeAllPages(regionID string, maxPages int) ([]AllstarsItem, error) {
 			break
 		}
 
-		all = append(all, result.Data...)
-		log.Printf("  Page %d: %d items (total so far: %d)", page, len(result.Data), len(all))
+		newItems := 0
+		for _, item := range result.Data {
+			key := allstarsItemKey(item)
+			if _, ok := seen[key]; ok {
+				continue
+			}
+			seen[key] = struct{}{}
+			all = append(all, item)
+			newItems++
+		}
+		log.Printf("  Page %d: %d items, %d new (total so far: %d)", page, len(result.Data), newItems, len(all))
 
-		if len(result.Data) < 20 {
+		if newItems == 0 {
+			log.Printf("  Page %d had no new items; stopping region %s", page, regionID)
 			break
 		}
-		if page >= maxPages {
-			log.Printf("  Reached max pages limit (%d)", maxPages)
+		if page >= limit {
+			log.Printf("  Reached max pages limit (%d)", limit)
 			break
 		}
 		page++
@@ -254,7 +317,7 @@ func downloadFile(url, destPath string) error {
 	return err
 }
 
-func insertCreator(ctx context.Context, db *pgxpool.Pool, inf AllstarsItem, publicAvatarBase string) (string, error) {
+func insertCreator(ctx context.Context, db *pgxpool.Pool, inf AllstarsItem, publicAvatarBase, fallbackCity string) (string, error) {
 	handle := extractHandle(inf.Link)
 	if handle == "" {
 		handle = inf.Name
@@ -272,7 +335,10 @@ func insertCreator(ctx context.Context, db *pgxpool.Pool, inf AllstarsItem, publ
 
 	city := inf.City
 	if city == "" {
-		city = "Jakarta"
+		city = fallbackCity
+	}
+	if city == "" {
+		city = "Indonesia"
 	}
 
 	imgPath := publicAvatarPath(inf, publicAvatarBase)
@@ -282,11 +348,15 @@ func insertCreator(ctx context.Context, db *pgxpool.Pool, inf AllstarsItem, publ
 		VALUES ($1, $2, $3, $4, 'Indonesia', $5, $6, $7, $8, $9, $10, $11, true)
 		ON CONFLICT (id) DO UPDATE SET
 			name = EXCLUDED.name,
+			handle = EXCLUDED.handle,
+			city = EXCLUDED.city,
+			category = EXCLUDED.category,
 			followers = EXCLUDED.followers,
 			followers_text = EXCLUDED.followers_text,
 			engagement_rate = EXCLUDED.engagement_rate,
 			image_url = EXCLUDED.image_url,
 			img_path = EXCLUDED.img_path,
+			bio = EXCLUDED.bio,
 			verified = true,
 			updated_at = NOW()`,
 		slugID, inf.Name, handle, city, category, followers, followersText, engagementRate,
@@ -316,11 +386,94 @@ func insertCreator(ctx context.Context, db *pgxpool.Pool, inf AllstarsItem, publ
 }
 
 func extractHandle(link string) string {
-	parts := strings.Split(link, "/")
-	if len(parts) >= 7 {
-		return parts[6]
+	parsed, err := url.Parse(link)
+	rawPath := link
+	if err == nil {
+		rawPath = parsed.Path
+	}
+	parts := strings.Split(strings.Trim(rawPath, "/"), "/")
+	for i, part := range parts {
+		if part == "detail" && len(parts) > i+3 {
+			handle, _ := url.PathUnescape(parts[i+3])
+			return strings.TrimSpace(strings.TrimPrefix(handle, "@"))
+		}
+	}
+	if len(parts) > 0 {
+		handle, _ := url.PathUnescape(parts[len(parts)-1])
+		return strings.TrimSpace(strings.TrimPrefix(handle, "@"))
 	}
 	return ""
+}
+
+func allstarsItemKey(item AllstarsItem) string {
+	if id := extractAllstarsDetailID(item.Link); id != "" {
+		return id
+	}
+	return strings.ToLower(item.Platform + "|" + item.Link + "|" + item.Name)
+}
+
+func extractAllstarsDetailID(link string) string {
+	parsed, err := url.Parse(link)
+	rawPath := link
+	if err == nil {
+		rawPath = parsed.Path
+	}
+	parts := strings.Split(strings.Trim(rawPath, "/"), "/")
+	for i, part := range parts {
+		if part == "detail" && len(parts) > i+1 {
+			return parts[i+1]
+		}
+	}
+	return ""
+}
+
+func selectedRegions() []AllstarsRegion {
+	if raw := strings.TrimSpace(os.Getenv("REGION_IDS")); raw != "" {
+		var regions []AllstarsRegion
+		for _, id := range strings.Split(raw, ",") {
+			id = strings.TrimSpace(id)
+			if id == "" {
+				continue
+			}
+			regions = append(regions, AllstarsRegion{ID: id, Name: regionName(id)})
+		}
+		if len(regions) > 0 {
+			return regions
+		}
+	}
+	if truthy(os.Getenv("ALL_REGIONS")) {
+		return allstarsRegions
+	}
+	regionID := strings.TrimSpace(os.Getenv("REGION_ID"))
+	if regionID == "" {
+		regionID = "31"
+	}
+	return []AllstarsRegion{{ID: regionID, Name: regionName(regionID)}}
+}
+
+func regionName(id string) string {
+	for _, region := range allstarsRegions {
+		if region.ID == id {
+			return region.Name
+		}
+	}
+	return ""
+}
+
+func truthy(v string) bool {
+	switch strings.ToLower(strings.TrimSpace(v)) {
+	case "1", "true", "yes", "y", "all":
+		return true
+	default:
+		return false
+	}
+}
+
+func maxPagesLabel(maxPages int) string {
+	if maxPages == 0 {
+		return "until empty"
+	}
+	return strconv.Itoa(maxPages)
 }
 
 func avatarFilename(item AllstarsItem) string {
