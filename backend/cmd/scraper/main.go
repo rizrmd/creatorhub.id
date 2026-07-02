@@ -409,15 +409,15 @@ func parseEnRate(v interface{}) float64 {
 func mapPlatform(platform string) string {
 	switch strings.ToLower(platform) {
 	case "instagram":
-		return "lifestyle"
+		return "lifestyle, beauty, fashion"
 	case "tiktok":
-		return "entertainment"
+		return "entertainment, comedy, lifestyle"
 	case "youtube":
-		return "entertainment"
+		return "entertainment, education, lifestyle"
 	case "twitter", "x":
-		return "tech"
+		return "technology, lifestyle, entertainment"
 	default:
-		return "lifestyle"
+		return "lifestyle, entertainment"
 	}
 }
 
