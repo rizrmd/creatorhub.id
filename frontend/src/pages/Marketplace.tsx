@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { useCreators, useMarketplaceStats } from "@/hooks/useCreators";
+import { useInfiniteCreators, useMarketplaceStats } from "@/hooks/useCreators";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useCreateCampaign } from "@/hooks/useCampaigns";
 import { creatorsApi } from "@/lib/api";
@@ -1450,6 +1450,7 @@ export default function Marketplace() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const searchRef = useRef<HTMLInputElement>(null);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const [filters, setFilters] = useState<CreatorListParams>(() => ({
     page: 1,
@@ -1460,6 +1461,7 @@ export default function Marketplace() {
   const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
   const debouncedSearch = useDebouncedValue(search, 300);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedCreatorsById, setSelectedCreatorsById] = useState<Record<string, Creator>>({});
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [listView, setListView] = useState(false);
 
@@ -1519,20 +1521,65 @@ export default function Marketplace() {
   const advMinPrice = useRef("");
   const advMaxPrice = useRef("");
 
+  const [activeTab, setActiveTab] = useState("creators");
+  const [idnSearch, setIdnSearch] = useState("");
+
   const createMutation = useCreateCampaign();
 
-  const { data, isLoading } = useCreators({ ...filters, search: debouncedSearch || undefined });
+  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteCreators({ ...filters, search: debouncedSearch || undefined });
   const { data: stats, isLoading: statsLoading } = useMarketplaceStats();
 
-  const toggleSelect = (id: string) => {
-    setSelectedIds((prev) => {
-      if (prev.includes(id)) return prev.filter((x) => x !== id);
-      if (prev.length >= 5) {
-        toast.error("Maksimal 5 kreator dalam satu brief.");
-        return prev;
+  const creators = (() => {
+    const seen = new Set<string>();
+    const merged: Creator[] = [];
+
+    for (const page of data?.pages ?? []) {
+      for (const creator of page.data) {
+        if (seen.has(creator.id)) continue;
+        seen.add(creator.id);
+        merged.push(creator);
       }
-      return [...prev, id];
-    });
+    }
+
+    return merged;
+  })();
+  const totalCreatorsFound = data?.pages[0]?.total ?? 0;
+
+  useEffect(() => {
+    const target = loadMoreRef.current;
+    if (!target || activeTab !== "creators" || !hasNextPage || isFetchingNextPage) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          void fetchNextPage();
+        }
+      },
+      { root: null, rootMargin: "700px 0px", threshold: 0 },
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [activeTab, fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  const toggleSelect = (creator: Creator) => {
+    if (selectedIds.includes(creator.id)) {
+      setSelectedIds((prev) => prev.filter((x) => x !== creator.id));
+      setSelectedCreatorsById((prev) => {
+        const next = { ...prev };
+        delete next[creator.id];
+        return next;
+      });
+      return;
+    }
+
+    if (selectedIds.length >= 5) {
+      toast.error("Maksimal 5 kreator dalam satu brief.");
+      return;
+    }
+
+    setSelectedCreatorsById((prev) => ({ ...prev, [creator.id]: creator }));
+    setSelectedIds((prev) => [...prev, creator.id]);
   };
 
   const toggleFavorite = (id: string) => {
@@ -1579,10 +1626,13 @@ export default function Marketplace() {
     setShowCreateCampaign(false);
     setCampaignForm({ title: "", description: "", budget: "" });
     setSelectedIds([]);
+    setSelectedCreatorsById({});
     toast.success("Campaign created successfully!");
   };
 
-  const selectedCreators = data?.data.filter((c) => selectedIds.includes(c.id)) ?? [];
+  const selectedCreators = selectedIds
+    .map((id) => selectedCreatorsById[id] ?? creators.find((creator) => creator.id === id))
+    .filter((creator): creator is Creator => Boolean(creator));
 
   const statValues: Record<string, string> = {
     totalCreators: stats ? (1000).toLocaleString("en-US") : "–",
@@ -1615,9 +1665,6 @@ export default function Marketplace() {
       <Button className="w-full" onClick={() => { setShowMobileBrief(false); setShowCreateCampaign(true); }}>Create Campaign</Button>
     </div>
   ) : null;
-
-  const [activeTab, setActiveTab] = useState("creators");
-  const [idnSearch, setIdnSearch] = useState("");
 
   useEffect(() => {
     setIdnSearch("");
@@ -1759,7 +1806,7 @@ export default function Marketplace() {
         {/* Row 3: results info + actions */}
         <div className="px-3 sm:px-4 py-1.5 bg-[#0B1120] border-b border-white/5 flex flex-wrap items-center gap-2">
           <p className="text-xs text-slate-400 flex-1">
-            {isLoading ? "Loading..." : `${data?.total ?? 0} creators found`}
+            {isLoading ? "Loading..." : `${totalCreatorsFound} creators found`}
           </p>
           <Button variant="outline" size="sm" onClick={resetFilters} className="gap-1.5">
             <RotateCcw className="w-3.5 h-3.5" /> Reset
@@ -1801,7 +1848,7 @@ export default function Marketplace() {
                 </div>
               ))}
             </div>
-          ) : data?.data.length === 0 ? (
+          ) : creators.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-slate-500">
               <Users className="w-12 h-12 mb-3 opacity-40" />
               <p className="font-medium">No creators found</p>
@@ -1810,13 +1857,13 @@ export default function Marketplace() {
             </div>
           ) : (
             <div className={listView ? "space-y-2" : "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3"}>
-              {data?.data.map((creator) => (
+              {creators.map((creator) => (
                 <CreatorCard
                   key={creator.id}
                   creator={creator}
                   selected={selectedIds.includes(creator.id)}
                   favorited={favoriteIds.includes(creator.id)}
-                  onToggle={() => toggleSelect(creator.id)}
+                  onToggle={() => toggleSelect(creator)}
                   onCardClick={() => setProfileCreator(creator)}
                   onFavorite={() => toggleFavorite(creator.id)}
                   listView={listView}
@@ -1825,20 +1872,20 @@ export default function Marketplace() {
             </div>
           )}
 
-          {data && data.totalPages > 1 && (
-            <div className="flex flex-wrap justify-center gap-2 mt-6">
-              <Button variant="outline" size="sm" disabled={filters.page === 1}
-                onClick={() => setFilters((f) => ({ ...f, page: (f.page ?? 1) - 1 }))}>
-                Sebelumnya
-              </Button>
-              <span className="text-xs text-slate-400 self-center">
-                Menampilkan {((filters.page ?? 1) - 1) * (filters.pageSize ?? 20) + 1}–{Math.min((filters.page ?? 1) * (filters.pageSize ?? 20), data.total)} dari {data.total} kreator
-                {" · "}Halaman {filters.page} dari {data.totalPages}
-              </span>
-              <Button variant="outline" size="sm" disabled={filters.page === data.totalPages}
-                onClick={() => setFilters((f) => ({ ...f, page: (f.page ?? 1) + 1 }))}>
-                Berikutnya
-              </Button>
+          {!isLoading && creators.length > 0 && (
+            <div ref={loadMoreRef} className="flex justify-center py-6">
+              {hasNextPage ? (
+                <div className="flex items-center gap-2 text-xs text-slate-400">
+                  <Loader2 className={`w-4 h-4 ${isFetchingNextPage ? "animate-spin" : ""}`} />
+                  {isFetchingNextPage
+                    ? "Loading more creators..."
+                    : `Showing ${creators.length} of ${totalCreatorsFound} creators`}
+                </div>
+              ) : (
+                <span className="text-xs text-slate-500">
+                  Showing all {creators.length} creators
+                </span>
+              )}
             </div>
           )}
         </div>
@@ -2008,7 +2055,7 @@ export default function Marketplace() {
                   <p className="text-xs text-slate-500">{c.engagementRate}% ER · {c.priceText}</p>
                 </div>
                 <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-red-500"
-                  onClick={() => toggleSelect(c.id)}>
+                  onClick={() => toggleSelect(c)}>
                   <X className="w-3.5 h-3.5" />
                 </Button>
               </div>
@@ -2043,7 +2090,7 @@ export default function Marketplace() {
                     <p className="text-xs text-slate-400">{c.engagementRate}% ER · {c.priceText}</p>
                   </div>
                   <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-red-500"
-                    onClick={() => toggleSelect(c.id)}>
+                    onClick={() => toggleSelect(c)}>
                     <X className="w-3.5 h-3.5" />
                   </Button>
                 </div>
@@ -2060,7 +2107,7 @@ export default function Marketplace() {
           creator={profileCreator}
           selected={selectedIds.includes(profileCreator.id)}
           favorited={favoriteIds.includes(profileCreator.id)}
-          onToggle={() => toggleSelect(profileCreator.id)}
+          onToggle={() => toggleSelect(profileCreator)}
           onClose={() => setProfileCreator(null)}
           onChat={() => { setProfileCreator(null); navigate("/dashboard/messages"); }}
           onFavorite={() => toggleFavorite(profileCreator.id)}
