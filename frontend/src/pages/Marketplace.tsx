@@ -1803,11 +1803,18 @@ export default function Marketplace() {
           </button>
         </div>
 
-        {/* Row 3: results info + actions */}
-        <div className="px-3 sm:px-4 py-1.5 bg-[#0B1120] border-b border-white/5 flex flex-wrap items-center gap-2">
-          <p className="text-xs text-slate-400 flex-1">
-            {isLoading ? "Loading..." : `${totalCreatorsFound} creators found`}
-          </p>
+        {/* Row 3: sticky results info + actions */}
+        <div className="sticky top-0 z-30 px-3 sm:px-4 py-2 bg-[#0B1120]/95 backdrop-blur border-b border-white/10 shadow-[0_10px_28px_rgba(0,0,0,0.28)] flex flex-wrap items-center gap-2">
+          <div className="flex-1 min-w-[210px]">
+            <p className="text-sm font-bold text-white">
+              {isLoading ? "Loading creators..." : `${totalCreatorsFound.toLocaleString("en-US")} total creators`}
+            </p>
+            {!isLoading && totalCreatorsFound > 0 && (
+              <p className="text-[11px] text-slate-400">
+                Showing {creators.length.toLocaleString("en-US")} of {totalCreatorsFound.toLocaleString("en-US")}
+              </p>
+            )}
+          </div>
           <Button variant="outline" size="sm" onClick={resetFilters} className="gap-1.5">
             <RotateCcw className="w-3.5 h-3.5" /> Reset
           </Button>
