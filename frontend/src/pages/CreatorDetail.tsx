@@ -6,7 +6,7 @@ import {
   Plane, Laptop, Utensils, Palette, Shirt, Gamepad2, Baby, Dumbbell, Music,
 } from "lucide-react";
 import { useCreator } from "@/hooks/useCreators";
-import { formatFollowers, formatRupiah } from "@/lib/utils";
+import { formatFollowers, formatRupiah, resolveCreatorPhoto } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import NetworkGraph from "@/components/NetworkGraph";
@@ -145,7 +145,7 @@ export default function CreatorDetail() {
   const avgReelView = Math.round(creator.followers * 2.3);
   const viewRate = Math.min(99, Math.round(creator.engagementRate * 12));
 
-  const photoSrc = creator.img ? `/creators/${creator.img.split("/").pop()}` : creator.imageUrl;
+  const photoSrc = resolveCreatorPhoto(creator.img, creator.imageUrl);
 
   return (
     <div className="min-h-full pb-8">

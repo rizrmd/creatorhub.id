@@ -8,7 +8,9 @@ import (
 	"log"
 	"math"
 	"net/http"
+	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -63,11 +65,11 @@ func main() {
 		regionID = v
 	}
 
-	avatarDir := "data/avatars"
-	if v := os.Getenv("AVATAR_DIR"); v != "" {
-		avatarDir = v
+	avatarDir := strings.TrimSpace(os.Getenv("AVATAR_DIR"))
+	publicAvatarBase := strings.TrimSpace(os.Getenv("AVATAR_PUBLIC_BASE"))
+	if avatarDir != "" {
+		os.MkdirAll(avatarDir, 0755)
 	}
-	os.MkdirAll(avatarDir, 0755)
 
 	maxPages := 50
 	if v := os.Getenv("MAX_PAGES"); v != "" {
@@ -95,9 +97,12 @@ func main() {
 	}
 	log.Printf("Scraped %d influencers from allstars.id", len(influencers))
 
-	// Download all photos concurrently
-	log.Printf("Downloading %d profile photos...", len(influencers))
-	downloadAllPhotos(influencers, avatarDir)
+	if avatarDir != "" {
+		log.Printf("Downloading %d profile photos...", len(influencers))
+		downloadAllPhotos(influencers, avatarDir)
+	} else {
+		log.Printf("Skipping local photo downloads; using allstars.id avatar URLs.")
+	}
 
 	// Insert into database
 	inserted := 0
@@ -109,7 +114,7 @@ func main() {
 			continue
 		}
 
-		_, err := insertCreator(context.Background(), db, inf, avatarDir)
+		_, err := insertCreator(context.Background(), db, inf, publicAvatarBase)
 		if err != nil {
 			log.Printf("Error inserting %s: %v", inf.Name, err)
 			continue
@@ -117,7 +122,7 @@ func main() {
 		inserted++
 	}
 
-	log.Printf("Done! inserted/updated: %d creators with photos", inserted)
+	log.Printf("Done! inserted/updated: %d creators", inserted)
 }
 
 func scrapeAllPages(regionID string, maxPages int) ([]AllstarsItem, error) {
@@ -195,15 +200,7 @@ func downloadAllPhotos(influencers []AllstarsItem, avatarDir string) {
 			sem <- struct{}{}
 			defer func() { <-sem }()
 
-			slug := generateSlug(item.Name)
-			platform := strings.ToLower(item.Platform)
-			ext := ".jpg"
-			if strings.Contains(item.Avatar, ".png") {
-				ext = ".png"
-			} else if strings.Contains(item.Avatar, ".webp") {
-				ext = ".webp"
-			}
-			filename := fmt.Sprintf("%s_%s%s", slug, platform, ext)
+			filename := avatarFilename(item)
 			filepath := filepath.Join(avatarDir, filename)
 
 			// Skip if already downloaded
@@ -257,7 +254,7 @@ func downloadFile(url, destPath string) error {
 	return err
 }
 
-func insertCreator(ctx context.Context, db *pgxpool.Pool, inf AllstarsItem, avatarDir string) (string, error) {
+func insertCreator(ctx context.Context, db *pgxpool.Pool, inf AllstarsItem, publicAvatarBase string) (string, error) {
 	handle := extractHandle(inf.Link)
 	if handle == "" {
 		handle = inf.Name
@@ -278,16 +275,9 @@ func insertCreator(ctx context.Context, db *pgxpool.Pool, inf AllstarsItem, avat
 		city = "Jakarta"
 	}
 
-	// Local avatar path
-	ext := ".jpg"
-	if strings.Contains(inf.Avatar, ".png") {
-		ext = ".png"
-	} else if strings.Contains(inf.Avatar, ".webp") {
-		ext = ".webp"
-	}
-	imgPath := filepath.Join(avatarDir, fmt.Sprintf("%s_%s%s", slugID, strings.ToLower(inf.Platform), ext))
+	imgPath := publicAvatarPath(inf, publicAvatarBase)
 
-		_, err := db.Exec(ctx, `
+	_, err := db.Exec(ctx, `
 		INSERT INTO creators (id, name, handle, city, country, category, followers, followers_text, engagement_rate, image_url, img_path, bio, verified)
 		VALUES ($1, $2, $3, $4, 'Indonesia', $5, $6, $7, $8, $9, $10, $11, true)
 		ON CONFLICT (id) DO UPDATE SET
@@ -331,6 +321,39 @@ func extractHandle(link string) string {
 		return parts[6]
 	}
 	return ""
+}
+
+func avatarFilename(item AllstarsItem) string {
+	slug := generateSlug(item.Name)
+	if slug == "" {
+		slug = generateSlug(extractHandle(item.Link))
+	}
+	if slug == "" {
+		slug = "creator"
+	}
+	platform := strings.ToLower(strings.TrimSpace(item.Platform))
+	if platform == "" {
+		platform = "allstars"
+	}
+	return fmt.Sprintf("%s_%s%s", slug, platform, avatarExtension(item.Avatar))
+}
+
+func avatarExtension(rawURL string) string {
+	parsed, err := url.Parse(rawURL)
+	if err == nil {
+		switch ext := strings.ToLower(path.Ext(parsed.Path)); ext {
+		case ".jpg", ".jpeg", ".png", ".webp":
+			return ext
+		}
+	}
+	return ".jpg"
+}
+
+func publicAvatarPath(item AllstarsItem, publicAvatarBase string) string {
+	if publicAvatarBase == "" {
+		return ""
+	}
+	return strings.TrimRight(publicAvatarBase, "/") + "/" + avatarFilename(item)
 }
 
 func generateSlug(name string) string {

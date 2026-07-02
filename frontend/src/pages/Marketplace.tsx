@@ -18,7 +18,7 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useCreateCampaign } from "@/hooks/useCampaigns";
 import { creatorsApi } from "@/lib/api";
 import type { Creator, CreatorListParams, ScrapeResponse, PlatformInput } from "@/types";
-import { formatRupiah, formatFollowers } from "@/lib/utils";
+import { formatRupiah, formatFollowers, resolveCreatorPhoto } from "@/lib/utils";
 
 function formatBudget(n: number): string {
   if (n >= 1_000_000_000) return `Rp ${(n / 1_000_000_000).toFixed(1)}M`;
@@ -283,7 +283,7 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
     );
   }
 
-  const photoSrc = creator.img ? `/creators/${creator.img.split("/").pop()}` : creator.imageUrl;
+  const photoSrc = resolveCreatorPhoto(creator.img, creator.imageUrl);
   const gradientBg = `hsl(${creator.hue ?? 220}, 60%, 85%)`;
 
   return (
