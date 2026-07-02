@@ -194,19 +194,9 @@ func scrapeAllPages(regionID string, maxPages int) ([]AllstarsItem, error) {
 		req.Header.Set("Referer", "https://www.allstars.id/influencer/region/"+regionID)
 		req.Header.Set("Accept-Language", "en-US,en;q=0.9,id;q=0.8")
 
-		resp, err := httpClient.Do(req)
+		body, err := doAllstarsRequest(req, page)
 		if err != nil {
-			return nil, fmt.Errorf("fetching page %d: %w", page, err)
-		}
-
-		body, err := io.ReadAll(resp.Body)
-		resp.Body.Close()
-		if err != nil {
-			return nil, fmt.Errorf("reading page %d: %w", page, err)
-		}
-
-		if resp.StatusCode != 200 {
-			return nil, fmt.Errorf("page %d: HTTP %d", page, resp.StatusCode)
+			return nil, err
 		}
 
 		var result AllstarsResponse
@@ -244,6 +234,36 @@ func scrapeAllPages(regionID string, maxPages int) ([]AllstarsItem, error) {
 	}
 
 	return all, nil
+}
+
+func doAllstarsRequest(req *http.Request, page int) ([]byte, error) {
+	var lastErr error
+	for attempt := 1; attempt <= 5; attempt++ {
+		resp, err := httpClient.Do(req.Clone(req.Context()))
+		if err != nil {
+			lastErr = fmt.Errorf("fetching page %d: %w", page, err)
+		} else {
+			body, readErr := io.ReadAll(resp.Body)
+			resp.Body.Close()
+			if readErr != nil {
+				lastErr = fmt.Errorf("reading page %d: %w", page, readErr)
+			} else if resp.StatusCode == http.StatusOK {
+				return body, nil
+			} else {
+				lastErr = fmt.Errorf("page %d: HTTP %d", page, resp.StatusCode)
+				if resp.StatusCode < 500 && resp.StatusCode != http.StatusTooManyRequests {
+					return nil, lastErr
+				}
+			}
+		}
+
+		if attempt < 5 {
+			delay := time.Duration(attempt*2) * time.Second
+			log.Printf("  Page %d attempt %d failed: %v; retrying in %s", page, attempt, lastErr, delay)
+			time.Sleep(delay)
+		}
+	}
+	return nil, lastErr
 }
 
 func downloadAllPhotos(influencers []AllstarsItem, avatarDir string) {
