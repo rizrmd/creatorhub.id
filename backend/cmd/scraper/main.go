@@ -338,11 +338,7 @@ func downloadFile(url, destPath string) error {
 }
 
 func insertCreator(ctx context.Context, db *pgxpool.Pool, inf AllstarsItem, publicAvatarBase, fallbackCity string) (string, error) {
-	handle := extractHandle(inf.Link)
-	if handle == "" {
-		handle = inf.Name
-	}
-
+	handle := resolvedHandle(inf)
 	slugID := generateSlug(inf.Name)
 	if slugID == "" {
 		slugID = generateSlug(handle)
@@ -405,6 +401,17 @@ func insertCreator(ctx context.Context, db *pgxpool.Pool, inf AllstarsItem, publ
 	return "ok", nil
 }
 
+func resolvedHandle(inf AllstarsItem) string {
+	handle := extractHandle(inf.Link)
+	if handle != "" {
+		return handle
+	}
+	if detailID := extractAllstarsDetailID(inf.Link); detailID != "" {
+		return detailID
+	}
+	return inf.Name
+}
+
 func extractHandle(link string) string {
 	parsed, err := url.Parse(link)
 	rawPath := link
@@ -413,9 +420,12 @@ func extractHandle(link string) string {
 	}
 	parts := strings.Split(strings.Trim(rawPath, "/"), "/")
 	for i, part := range parts {
-		if part == "detail" && len(parts) > i+3 {
-			handle, _ := url.PathUnescape(parts[i+3])
-			return strings.TrimSpace(strings.TrimPrefix(handle, "@"))
+		if part == "detail" {
+			if len(parts) > i+3 {
+				handle, _ := url.PathUnescape(parts[i+3])
+				return strings.TrimSpace(strings.TrimPrefix(handle, "@"))
+			}
+			return ""
 		}
 	}
 	if len(parts) > 0 {
