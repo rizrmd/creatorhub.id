@@ -1542,7 +1542,7 @@ export default function Marketplace() {
   const createMutation = useCreateCampaign();
 
   const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteCreators({ ...filters, search: debouncedSearch || undefined });
-  const { data: stats, isLoading: statsLoading } = useMarketplaceStats();
+  const { data: stats, isLoading: statsLoading, dataUpdatedAt } = useMarketplaceStats();
 
   const creators = (() => {
     const seen = new Set<string>();
@@ -1843,7 +1843,7 @@ export default function Marketplace() {
               <AnimatedNumber value={`${stats?.totalCreators ?? 0} Creators`} loading={statsLoading} />
             </p>
             <p className="text-[10px] text-slate-500">
-              {statsLoading ? "Loading..." : `Last updated: ${new Date().toLocaleString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}`}
+              {statsLoading ? "Loading..." : `Last updated: ${dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "–"}`}
             </p>
           </div>
           <Button variant="outline" size="sm" onClick={resetFilters} className="gap-1.5">
