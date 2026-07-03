@@ -1799,11 +1799,7 @@ export default function Marketplace() {
 
         {/* Row 3: sticky results info + actions */}
         <div className="sticky top-0 z-30 px-3 sm:px-4 py-2 bg-[#0B1120]/95 backdrop-blur border-b border-white/10 shadow-[0_10px_28px_rgba(0,0,0,0.28)] flex flex-wrap items-center gap-2">
-          <div className="flex-1 min-w-[210px]">
-            <p className="text-sm font-bold text-white">
-              {isLoading ? "Loading creators..." : `${creators.length.toLocaleString("id-ID")} creators`}
-            </p>
-          </div>
+          <div className="flex-1" />
           <Button variant="outline" size="sm" onClick={resetFilters} className="gap-1.5">
             <RotateCcw className="w-3.5 h-3.5" /> Reset
           </Button>
