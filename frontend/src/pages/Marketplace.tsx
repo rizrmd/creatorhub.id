@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { useInfiniteCreators } from "@/hooks/useCreators";
+import { useInfiniteCreators, useMarketplaceStats } from "@/hooks/useCreators";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useCreateCampaign } from "@/hooks/useCampaigns";
 import { creatorsApi } from "@/lib/api";
@@ -142,6 +142,44 @@ const platformIcon = (p: string) => {
   );
   return <span className="text-[8px] font-bold uppercase">{p.slice(0, 2)}</span>;
 };
+
+function AnimatedNumber({ value, loading }: { value: string; loading: boolean }) {
+  const [display, setDisplay] = useState("0");
+  const numericPart = value.replace(/[^0-9.,]/g, "");
+  const prefix = value.match(/^[^0-9]*/)?.[0] ?? "";
+  const suffix = value.match(/[^0-9.,]*$/)?.[0] ?? "";
+
+  useEffect(() => {
+    if (loading || !numericPart) { setDisplay("0"); return; }
+    const isPercent = suffix.includes("%");
+    const raw = isPercent ? numericPart.replace(",", ".") : numericPart.replace(/[.,]/g, "");
+    const target = isPercent ? parseFloat(raw) : parseInt(raw, 10);
+    if (isNaN(target)) { setDisplay(numericPart); return; }
+    const duration = 1200;
+    const startTime = performance.now();
+    let raf: number;
+    const step = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 4);
+      const current = isPercent ? target * eased : Math.round(target * eased);
+      setDisplay(current.toLocaleString("id-ID", {
+        minimumFractionDigits: isPercent ? 2 : 0,
+        maximumFractionDigits: isPercent ? 2 : 0,
+      }));
+      if (progress < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [numericPart, loading]);
+
+  return (
+    <span className="whitespace-nowrap">
+      {prefix && <span className="text-[11px] font-bold opacity-60">{prefix}</span>}
+      {loading ? "–" : display}{suffix}
+    </span>
+  );
+}
 
 function socialUrl(platform: string, handle: string): string {
   const h = handle.replace(/^@/, "");
@@ -1504,6 +1542,7 @@ export default function Marketplace() {
   const createMutation = useCreateCampaign();
 
   const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteCreators({ ...filters, search: debouncedSearch || undefined });
+  const { data: stats, isLoading: statsLoading } = useMarketplaceStats();
 
   const creators = (() => {
     const seen = new Set<string>();
@@ -1799,7 +1838,14 @@ export default function Marketplace() {
 
         {/* Row 3: sticky results info + actions */}
         <div className="sticky top-0 z-30 px-3 sm:px-4 py-2 bg-[#0B1120]/95 backdrop-blur border-b border-white/10 shadow-[0_10px_28px_rgba(0,0,0,0.28)] flex flex-wrap items-center gap-2">
-          <div className="flex-1" />
+          <div className="flex-1 min-w-[200px]">
+            <p className="text-sm font-bold text-white">
+              <AnimatedNumber value={`${stats?.totalCreators ?? 0} Creators`} loading={statsLoading} />
+            </p>
+            <p className="text-[10px] text-slate-500">
+              {statsLoading ? "Loading..." : `Last updated: ${new Date().toLocaleString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}`}
+            </p>
+          </div>
           <Button variant="outline" size="sm" onClick={resetFilters} className="gap-1.5">
             <RotateCcw className="w-3.5 h-3.5" /> Reset
           </Button>
