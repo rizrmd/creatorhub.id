@@ -31,8 +31,8 @@ func (r *CreatorRepository) List(ctx context.Context, params models.CreatorListP
 	argIdx := 1
 
 	if params.Category != "" {
-		where = append(where, fmt.Sprintf("c.category = $%d", argIdx))
-		args = append(args, params.Category)
+		where = append(where, fmt.Sprintf("c.category ILIKE $%d", argIdx))
+		args = append(args, "%"+params.Category+"%")
 		argIdx++
 	}
 	if params.City != "" {

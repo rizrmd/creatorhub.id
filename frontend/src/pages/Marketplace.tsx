@@ -27,7 +27,11 @@ function formatBudget(n: number): string {
   return `Rp ${n}`;
 }
 
-const CATEGORIES = ["lifestyle", "travel", "beauty", "tech", "food", "sports", "social issues", "education", "environment", "animals", "business", "mental health", "entertainment"];
+const CATEGORIES = [
+  "lifestyle", "travel", "beauty", "fashion", "technology", "food", "sports",
+  "comedy", "education", "gaming", "family", "parenting", "social issues",
+  "environment", "animals", "business", "mental health", "entertainment",
+];
 const CITIES = ["Jakarta", "Bandung", "Surabaya", "Bali", "Yogyakarta", "Medan", "Makassar"];
 const PLATFORMS = ["instagram", "tiktok", "youtube", "facebook", "x", "linkedin"];
 
@@ -62,9 +66,15 @@ const CATEGORY_COLORS: Record<string, string> = {
   lifestyle: "bg-purple-500/20 text-purple-300",
   travel: "bg-blue-500/20 text-blue-300",
   beauty: "bg-pink-500/20 text-pink-300",
+  fashion: "bg-rose-500/20 text-rose-300",
   tech: "bg-slate-500/20 text-slate-300",
+  technology: "bg-slate-500/20 text-slate-300",
   food: "bg-orange-500/20 text-orange-300",
   sports: "bg-green-500/20 text-green-300",
+  comedy: "bg-yellow-500/20 text-yellow-300",
+  gaming: "bg-lime-500/20 text-lime-300",
+  family: "bg-sky-500/20 text-sky-300",
+  parenting: "bg-sky-500/20 text-sky-300",
   "social issues": "bg-red-500/20 text-red-300",
   education: "bg-indigo-500/20 text-indigo-300",
   environment: "bg-emerald-500/20 text-emerald-300",
@@ -1751,6 +1761,14 @@ export default function Marketplace() {
             <SelectContent>
               <SelectItem value="all">All Platforms</SelectItem>
               {PLATFORMS.map((p) => <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>)}
+            </SelectContent>
+          </Select>
+
+          <Select value={filters.category ?? "all"} onValueChange={(v) => setFilters((f) => ({ ...f, category: v === "all" ? undefined : v, page: 1 }))}>
+            <SelectTrigger className="w-full sm:w-40"><SelectValue placeholder="Category" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              {CATEGORIES.map((c) => <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>)}
             </SelectContent>
           </Select>
 
