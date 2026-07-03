@@ -21,9 +21,20 @@ import type { Creator, CreatorListParams, ScrapeResponse, PlatformInput } from "
 import { formatFollowers, resolveCreatorPhoto } from "@/lib/utils";
 
 const CATEGORIES = [
-  "lifestyle", "travel", "beauty", "fashion", "technology", "food", "sports",
-  "comedy", "education", "gaming", "family", "parenting", "social issues",
-  "environment", "animals", "business", "mental health", "entertainment",
+  { label: "Lifestyle", value: "lifestyle" },
+  { label: "Politik", value: "politi" },
+  { label: "Bisnis", value: "business" },
+  { label: "Sosial", value: "social" },
+  { label: "Entertainment", value: "entertainment" },
+  { label: "Beauty & Fashion", value: "beauty" },
+  { label: "Technology", value: "tech" },
+  { label: "Travel", value: "travel" },
+  { label: "Food", value: "food" },
+  { label: "Sports", value: "sport" },
+  { label: "Education", value: "education" },
+  { label: "Comedy", value: "comedy" },
+  { label: "Gaming", value: "gaming" },
+  { label: "Parenting", value: "parent" },
 ];
 const CITIES = ["Jakarta", "Bandung", "Surabaya", "Bali", "Yogyakarta", "Medan", "Makassar"];
 const PLATFORMS = ["instagram", "tiktok", "youtube", "facebook", "x", "linkedin"];
@@ -937,7 +948,7 @@ function AddCreatorDialog({ open, onOpenChange, onCreated }: {
                 </SelectTrigger>
                 <SelectContent>
                   {CATEGORIES.map((c) => (
-                    <SelectItem key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</SelectItem>
+                    <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -1508,8 +1519,6 @@ export default function Marketplace() {
 
     return merged;
   })();
-  const totalCreatorsFound = data?.pages[0]?.total ?? 0;
-
   const saveMarketplaceState = useCallback(() => {
     if (typeof window === "undefined") return;
     const scrollTop = getMarketplaceScrollElement()?.scrollTop ?? 0;
@@ -1741,8 +1750,8 @@ export default function Marketplace() {
           <Select value={filters.category ?? "all"} onValueChange={(v) => setFilters((f) => ({ ...f, category: v === "all" ? undefined : v, page: 1 }))}>
             <SelectTrigger className="w-full sm:w-40"><SelectValue placeholder="Category" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              {CATEGORIES.map((c) => <SelectItem key={c} value={c} className="capitalize">{c}</SelectItem>)}
+              <SelectItem value="all">Semua Kategori</SelectItem>
+              {CATEGORIES.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
             </SelectContent>
           </Select>
 
@@ -1803,13 +1812,8 @@ export default function Marketplace() {
         <div className="sticky top-0 z-30 px-3 sm:px-4 py-2 bg-[#0B1120]/95 backdrop-blur border-b border-white/10 shadow-[0_10px_28px_rgba(0,0,0,0.28)] flex flex-wrap items-center gap-2">
           <div className="flex-1 min-w-[210px]">
             <p className="text-sm font-bold text-white">
-              {isLoading ? "Loading creators..." : `${totalCreatorsFound.toLocaleString("id-ID")} total creators`}
+              {isLoading ? "Loading creators..." : `${creators.length.toLocaleString("id-ID")} creators`}
             </p>
-            {!isLoading && totalCreatorsFound > 0 && (
-              <p className="text-[11px] text-slate-400">
-                Showing {creators.length.toLocaleString("id-ID")} of {totalCreatorsFound.toLocaleString("id-ID")}
-              </p>
-            )}
           </div>
           <Button variant="outline" size="sm" onClick={resetFilters} className="gap-1.5">
             <RotateCcw className="w-3.5 h-3.5" /> Reset
@@ -1885,7 +1889,7 @@ export default function Marketplace() {
                   <Loader2 className={`w-4 h-4 ${isFetchingNextPage ? "animate-spin" : ""}`} />
                   {isFetchingNextPage
                     ? "Loading more creators..."
-                    : `Showing ${creators.length} of ${totalCreatorsFound} creators`}
+                    : `Showing ${creators.length} creators`}
                 </div>
               ) : (
                 <span className="text-xs text-slate-500">
