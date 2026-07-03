@@ -106,8 +106,9 @@ function AnimatedNumber({ value, loading }: { value: string; loading: boolean })
 
   useEffect(() => {
     if (loading || !numericPart) { setDisplay("0"); return; }
-    const raw = numericPart.replace(/[.,]/g, "");
-    const target = parseInt(raw, 10);
+    const isPercent = suffix.includes("%");
+    const raw = isPercent ? numericPart.replace(",", ".") : numericPart.replace(/[.,]/g, "");
+    const target = isPercent ? parseFloat(raw) : parseInt(raw, 10);
     if (isNaN(target)) { setDisplay(numericPart); return; }
     const duration = 1200;
     const startTime = performance.now();
@@ -116,8 +117,11 @@ function AnimatedNumber({ value, loading }: { value: string; loading: boolean })
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 4);
-      const current = Math.round(target * eased);
-      setDisplay(current.toLocaleString("id-ID"));
+      const current = isPercent ? target * eased : Math.round(target * eased);
+      setDisplay(current.toLocaleString("id-ID", {
+        minimumFractionDigits: isPercent ? 2 : 0,
+        maximumFractionDigits: isPercent ? 2 : 0,
+      }));
       if (progress < 1) raf = requestAnimationFrame(step);
     };
     raf = requestAnimationFrame(step);
@@ -133,10 +137,10 @@ function AnimatedNumber({ value, loading }: { value: string; loading: boolean })
 }
 
 const STAT_CONFIGS = [
-  { label: "Total Creators", key: "totalCreators", icon: Users, color: "#3B82F6", glow: "rgba(59,130,246,.15)", gradient: "linear-gradient(135deg,#3B82F6,#6366F1)", trend: "+18.6%" },
-  { label: "Active Campaigns", key: "activeCampaigns", icon: Megaphone, color: "#F97316", glow: "rgba(249,115,22,.15)", gradient: "linear-gradient(135deg,#F97316,#EF4444)", trend: "+12.4%" },
-  { label: "Avg. Engagement", key: "avgEngagementRate", icon: TrendingUp, color: "#10B981", glow: "rgba(16,185,129,.15)", gradient: "linear-gradient(135deg,#10B981,#06B6D4)", trend: "+0.6%" },
-  { label: "Budget Dikelola", key: "totalBudget", icon: Wallet, color: "#F59E0B", glow: "rgba(245,158,11,.15)", gradient: "linear-gradient(135deg,#F59E0B,#F97316)", trend: "+24.7%" },
+  { label: "Total Creators", key: "totalCreators", icon: Users, color: "#3B82F6", glow: "rgba(59,130,246,.15)", gradient: "linear-gradient(135deg,#3B82F6,#6366F1)" },
+  { label: "Active Campaigns", key: "activeCampaigns", icon: Megaphone, color: "#F97316", glow: "rgba(249,115,22,.15)", gradient: "linear-gradient(135deg,#F97316,#EF4444)" },
+  { label: "Avg. Engagement", key: "avgEngagementRate", icon: TrendingUp, color: "#10B981", glow: "rgba(16,185,129,.15)", gradient: "linear-gradient(135deg,#10B981,#06B6D4)" },
+  { label: "Budget Dikelola", key: "totalBudget", icon: Wallet, color: "#F59E0B", glow: "rgba(245,158,11,.15)", gradient: "linear-gradient(135deg,#F59E0B,#F97316)" },
 ] as const;
 
 function StatCard({ config, value, loading }: {
@@ -165,10 +169,6 @@ function StatCard({ config, value, loading }: {
           style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
           <AnimatedNumber value={value} loading={loading} />
         </p>
-      </div>
-      <div className="flex items-center gap-px shrink-0">
-        <ArrowUpRight className="w-2.5 h-2.5" style={{ color: config.color }} />
-        <span className="text-[9px] font-bold" style={{ color: config.color }}>{config.trend}</span>
       </div>
     </div>
   );
@@ -1635,7 +1635,7 @@ export default function Marketplace() {
     .filter((creator): creator is Creator => Boolean(creator));
 
   const statValues: Record<string, string> = {
-    totalCreators: stats ? (1000).toLocaleString("en-US") : "–",
+    totalCreators: stats ? stats.totalCreators.toLocaleString("id-ID") : "–",
     activeCampaigns: stats ? stats.activeCampaigns.toLocaleString("en-US") : "–",
     avgEngagementRate: stats ? `${stats.avgEngagementRate.toFixed(2)}%` : "–",
     totalBudget: stats ? formatBudget(stats.totalBudget) : "–",
@@ -1807,11 +1807,11 @@ export default function Marketplace() {
         <div className="sticky top-0 z-30 px-3 sm:px-4 py-2 bg-[#0B1120]/95 backdrop-blur border-b border-white/10 shadow-[0_10px_28px_rgba(0,0,0,0.28)] flex flex-wrap items-center gap-2">
           <div className="flex-1 min-w-[210px]">
             <p className="text-sm font-bold text-white">
-              {isLoading ? "Loading creators..." : `${totalCreatorsFound.toLocaleString("en-US")} total creators`}
+              {isLoading ? "Loading creators..." : `${totalCreatorsFound.toLocaleString("id-ID")} total creators`}
             </p>
             {!isLoading && totalCreatorsFound > 0 && (
               <p className="text-[11px] text-slate-400">
-                Showing {creators.length.toLocaleString("en-US")} of {totalCreatorsFound.toLocaleString("en-US")}
+                Showing {creators.length.toLocaleString("id-ID")} of {totalCreatorsFound.toLocaleString("id-ID")}
               </p>
             )}
           </div>

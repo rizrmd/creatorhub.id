@@ -201,7 +201,7 @@ func (r *CreatorRepository) Stats(ctx context.Context) (*models.MarketplaceStats
 		SELECT
 			(SELECT COUNT(*) FROM creators) AS total_creators,
 			(SELECT COUNT(*) FROM campaigns WHERE status = 'active') AS active_campaigns,
-			(SELECT COALESCE(AVG(engagement_rate), 0) FROM creators) AS avg_engagement,
+			(SELECT COALESCE(AVG(engagement_rate) FILTER (WHERE engagement_rate BETWEEN 0 AND 100), 0) FROM creators) AS avg_engagement,
 			(SELECT COALESCE(SUM(budget), 0) FROM campaigns) AS total_budget
 	`).Scan(&s.TotalCreators, &s.ActiveCampaigns, &s.AvgEngagementRate, &s.TotalBudget)
 	return &s, err
