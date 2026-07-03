@@ -1776,17 +1776,6 @@ export default function Marketplace() {
             <SelectContent>{PRICE_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
           </Select>
 
-          <Select value={filters.sortBy ?? "all"} onValueChange={(v) => setFilters((f) => ({ ...f, sortBy: v === "all" ? undefined : v }))}>
-            <SelectTrigger className="w-full sm:w-36"><SelectValue placeholder="Sort" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Relevance</SelectItem>
-              <SelectItem value="followers">Followers</SelectItem>
-              <SelectItem value="engagement">Engagement</SelectItem>
-              <SelectItem value="rating">Rating</SelectItem>
-              <SelectItem value="price">Price</SelectItem>
-            </SelectContent>
-          </Select>
-
           <div className="flex-1" />
 
           {/* Quick filter toggles */}
