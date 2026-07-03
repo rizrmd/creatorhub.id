@@ -2,6 +2,7 @@ package models
 
 type PlatformMetric struct {
 	Platform       string  `json:"platform"`
+	Handle         string  `json:"handle,omitempty"`
 	Followers      int64   `json:"followers"`
 	EngagementRate float64 `json:"engagementRate"`
 }
@@ -75,17 +76,17 @@ type ScrapeRequest struct {
 }
 
 type PlatformInput struct {
-	Platform           string `json:"platform"`
-	Handle             string `json:"handle"`
-	ProfilePictureURL  string `json:"profilePictureUrl"`
-	Followers          int64  `json:"followers"`
+	Platform          string `json:"platform"`
+	Handle            string `json:"handle"`
+	ProfilePictureURL string `json:"profilePictureUrl"`
+	Followers         int64  `json:"followers"`
 }
 
 type CreateCreatorRequest struct {
-	Name      string           `json:"name"`
-	Bio       string           `json:"bio"`
-	Category  string           `json:"category"`
-	City      string           `json:"city"`
-	ImageURL  string           `json:"imageUrl"`
-	Platforms []PlatformInput  `json:"platforms"`
+	Name      string          `json:"name"`
+	Bio       string          `json:"bio"`
+	Category  string          `json:"category"`
+	City      string          `json:"city"`
+	ImageURL  string          `json:"imageUrl"`
+	Platforms []PlatformInput `json:"platforms"`
 }

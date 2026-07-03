@@ -12,6 +12,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -82,6 +83,13 @@ var allstarsRegions = []AllstarsRegion{
 }
 
 var chromeUA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+
+var (
+	instagramTikTokHandleRE = regexp.MustCompile(`^[A-Za-z0-9._]{2,30}$`)
+	youtubeHandleRE         = regexp.MustCompile(`^[A-Za-z0-9._-]{2,100}$`)
+	xHandleRE               = regexp.MustCompile(`^[A-Za-z0-9_]{1,15}$`)
+	allDigitsRE             = regexp.MustCompile(`^[0-9]+$`)
+)
 
 var httpClient = &http.Client{
 	Timeout: 20 * time.Second,
@@ -156,9 +164,12 @@ func main() {
 				continue
 			}
 
-			_, err := insertCreator(context.Background(), db, inf, publicAvatarBase, region.Name)
+			status, err := insertCreator(context.Background(), db, inf, publicAvatarBase, region.Name)
 			if err != nil {
 				log.Printf("Error inserting %s: %v", inf.Name, err)
+				continue
+			}
+			if status == "" {
 				continue
 			}
 			inserted++
@@ -338,16 +349,24 @@ func downloadFile(url, destPath string) error {
 }
 
 func insertCreator(ctx context.Context, db *pgxpool.Pool, inf AllstarsItem, publicAvatarBase, fallbackCity string) (string, error) {
+	platform := normalizePlatform(inf.Platform)
 	handle := resolvedHandle(inf)
+	followers := parseExposure(inf.Exposure)
+	engagementRate := parseEnRate(inf.EnRate)
+	if !isVerifiedAllstarsAccount(inf, platform, handle, followers, engagementRate) {
+		return "", nil
+	}
+
 	slugID := generateSlug(inf.Name)
 	if slugID == "" {
 		slugID = generateSlug(handle)
 	}
+	if slugID == "" {
+		return "", nil
+	}
 
-	followers := parseExposure(inf.Exposure)
 	followersText := formatFollowers(followers)
-	engagementRate := parseEnRate(inf.EnRate)
-	category := mapPlatform(inf.Platform)
+	category := mapPlatform(platform)
 
 	city := inf.City
 	if city == "" {
@@ -392,7 +411,7 @@ func insertCreator(ctx context.Context, db *pgxpool.Pool, inf AllstarsItem, publ
 			platform_followers = EXCLUDED.platform_followers,
 			followers = EXCLUDED.followers,
 			engagement_rate = EXCLUDED.engagement_rate`,
-		slugID, inf.Platform, handle, inf.Avatar, followers, followers, engagementRate,
+		slugID, platform, handle, inf.Avatar, followers, followers, engagementRate,
 	)
 	if err != nil {
 		return "", fmt.Errorf("upsert platform for %s: %w", inf.Name, err)
@@ -402,14 +421,23 @@ func insertCreator(ctx context.Context, db *pgxpool.Pool, inf AllstarsItem, publ
 }
 
 func resolvedHandle(inf AllstarsItem) string {
-	handle := extractHandle(inf.Link)
-	if handle != "" {
-		return handle
+	platform := normalizePlatform(inf.Platform)
+	candidates := []string{}
+	switch platform {
+	case "instagram", "tiktok", "x":
+		candidates = append(candidates, inf.Name, extractHandle(inf.Link))
+	default:
+		candidates = append(candidates, extractHandle(inf.Link), inf.Name)
 	}
-	if detailID := extractAllstarsDetailID(inf.Link); detailID != "" {
-		return detailID
+
+	for _, candidate := range candidates {
+		handle := normalizeHandleCandidate(candidate)
+		if isValidSocialHandle(platform, handle) {
+			return handle
+		}
 	}
-	return inf.Name
+
+	return ""
 }
 
 func extractHandle(link string) string {
@@ -576,6 +604,7 @@ func parseFollowerString(s string) int64 {
 	}
 
 	multiplier := int64(1)
+	hasSuffix := true
 	if strings.HasSuffix(s, "b") {
 		multiplier = 1000000000
 		s = strings.TrimSuffix(s, "b")
@@ -585,12 +614,11 @@ func parseFollowerString(s string) int64 {
 	} else if strings.HasSuffix(s, "k") {
 		multiplier = 1000
 		s = strings.TrimSuffix(s, "k")
+	} else {
+		hasSuffix = false
 	}
 
-	s = strings.ReplaceAll(s, ",", "")
-	s = strings.TrimSpace(s)
-
-	f, err := strconv.ParseFloat(s, 64)
+	f, err := parseLocalizedNumber(s, hasSuffix)
 	if err != nil {
 		return 0
 	}
@@ -600,27 +628,142 @@ func parseFollowerString(s string) int64 {
 func parseEnRate(v interface{}) float64 {
 	switch val := v.(type) {
 	case float64:
-		return val
+		return val / 100
 	case string:
-		f, err := strconv.ParseFloat(val, 64)
+		s := strings.TrimSpace(val)
+		hasPercent := strings.Contains(s, "%")
+		s = strings.TrimSuffix(s, "%")
+		f, err := parseLocalizedNumber(s, true)
 		if err != nil {
 			return 0
 		}
-		return f
+		if hasPercent && f <= 100 {
+			return f
+		}
+		return f / 100
 	default:
 		return 0
 	}
 }
 
+func parseLocalizedNumber(s string, decimalPreferred bool) (float64, error) {
+	s = strings.TrimSpace(strings.ToLower(s))
+	s = strings.ReplaceAll(s, " ", "")
+	s = strings.ReplaceAll(s, "\u00a0", "")
+	s = strings.Map(func(r rune) rune {
+		if (r >= '0' && r <= '9') || r == '.' || r == ',' || r == '-' {
+			return r
+		}
+		return -1
+	}, s)
+	if s == "" || s == "-" {
+		return 0, strconv.ErrSyntax
+	}
+
+	lastDot := strings.LastIndex(s, ".")
+	lastComma := strings.LastIndex(s, ",")
+	switch {
+	case lastDot >= 0 && lastComma >= 0:
+		decimalSep := "."
+		thousandsSep := ","
+		if lastComma > lastDot {
+			decimalSep = ","
+			thousandsSep = "."
+		}
+		s = strings.ReplaceAll(s, thousandsSep, "")
+		if decimalSep == "," {
+			s = strings.ReplaceAll(s, ",", ".")
+		}
+	case lastComma >= 0:
+		if decimalPreferred || singleSeparatorLooksDecimal(s, ",") {
+			s = strings.ReplaceAll(s, ",", ".")
+		} else {
+			s = strings.ReplaceAll(s, ",", "")
+		}
+	case lastDot >= 0:
+		if !decimalPreferred && !singleSeparatorLooksDecimal(s, ".") {
+			s = strings.ReplaceAll(s, ".", "")
+		}
+	}
+
+	return strconv.ParseFloat(s, 64)
+}
+
+func singleSeparatorLooksDecimal(s, sep string) bool {
+	idx := strings.LastIndex(s, sep)
+	if idx < 0 || idx == len(s)-1 {
+		return false
+	}
+	fracLen := len(s) - idx - 1
+	return fracLen != 3
+}
+
+func normalizePlatform(platform string) string {
+	switch strings.ToLower(strings.TrimSpace(platform)) {
+	case "twitter":
+		return "x"
+	default:
+		return strings.ToLower(strings.TrimSpace(platform))
+	}
+}
+
+func normalizeHandleCandidate(handle string) string {
+	handle = strings.TrimSpace(handle)
+	return strings.TrimPrefix(handle, "@")
+}
+
+func isVerifiedAllstarsAccount(inf AllstarsItem, platform, handle string, followers int64, engagementRate float64) bool {
+	return isSupportedPlatform(platform) &&
+		isValidSocialHandle(platform, handle) &&
+		followers > 0 &&
+		engagementRate >= 0 &&
+		engagementRate <= 100 &&
+		hasHTTPURL(inf.Link) &&
+		hasHTTPURL(inf.Avatar)
+}
+
+func isSupportedPlatform(platform string) bool {
+	switch platform {
+	case "instagram", "tiktok", "youtube", "x":
+		return true
+	default:
+		return false
+	}
+}
+
+func isValidSocialHandle(platform, handle string) bool {
+	if handle == "" || allDigitsRE.MatchString(handle) {
+		return false
+	}
+	switch platform {
+	case "instagram", "tiktok":
+		return instagramTikTokHandleRE.MatchString(handle) && !strings.Contains(handle, "..")
+	case "youtube":
+		return youtubeHandleRE.MatchString(handle)
+	case "x":
+		return xHandleRE.MatchString(handle)
+	default:
+		return false
+	}
+}
+
+func hasHTTPURL(raw string) bool {
+	parsed, err := url.Parse(strings.TrimSpace(raw))
+	if err != nil {
+		return false
+	}
+	return (parsed.Scheme == "http" || parsed.Scheme == "https") && parsed.Host != ""
+}
+
 func mapPlatform(platform string) string {
-	switch strings.ToLower(platform) {
+	switch normalizePlatform(platform) {
 	case "instagram":
 		return "lifestyle, beauty, fashion"
 	case "tiktok":
 		return "entertainment, comedy, lifestyle"
 	case "youtube":
 		return "entertainment, education, lifestyle"
-	case "twitter", "x":
+	case "x":
 		return "technology, lifestyle, entertainment"
 	default:
 		return "lifestyle, entertainment"

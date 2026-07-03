@@ -1,4 +1,4 @@
-﻿import { useState, useRef, useEffect } from "react";
+﻿import { useState, useRef, useEffect, useCallback } from "react";
 import {
   Search, SlidersHorizontal, Star, CheckCircle, Award,
   Instagram, Youtube, Users, Megaphone, TrendingUp, Wallet,
@@ -61,6 +61,35 @@ const PRICE_OPTIONS = [
 ];
 
 const DEFAULT_CREATOR_TIER = "1000-10000";
+const MARKETPLACE_STATE_KEY = "creatorhub.marketplace.state";
+
+type MarketplaceStoredState = {
+  filters?: CreatorListParams;
+  search?: string;
+  followersVal?: string;
+  engagementVal?: string;
+  priceVal?: string;
+  listView?: boolean;
+  activeTab?: string;
+  scrollTop?: number;
+};
+
+function readMarketplaceState(): MarketplaceStoredState | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.sessionStorage.getItem(MARKETPLACE_STATE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as MarketplaceStoredState;
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function getMarketplaceScrollElement(): HTMLElement | null {
+  if (typeof document === "undefined") return null;
+  return document.querySelector("main");
+}
 
 const CATEGORY_COLORS: Record<string, string> = {
   lifestyle: "bg-purple-500/20 text-purple-300",
@@ -188,6 +217,7 @@ function StatCard({ config, value, loading }: {
 
 function socialUrl(platform: string, handle: string): string {
   const h = handle.replace(/^@/, "");
+  if (!h) return "#";
   switch (platform) {
     case "instagram": return `https://www.instagram.com/${h}`;
     case "tiktok":    return `https://www.tiktok.com/@${h}`;
@@ -249,10 +279,11 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
               {creator.platforms.map((p) => {
                 const pm = creator.platformMetrics?.find((m) => m.platform === p);
                 const followers = pm?.followers ?? 0;
+                const platformHandle = pm?.handle ?? creator.handle;
                 return (
                   <a
                     key={p}
-                    href={socialUrl(p, creator.handle)}
+                    href={socialUrl(p, platformHandle)}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
@@ -382,10 +413,11 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
             {creator.platforms.map((p) => {
               const pm = creator.platformMetrics?.find((m) => m.platform === p);
               const followers = pm?.followers ?? 0;
+              const platformHandle = pm?.handle ?? creator.handle;
               return (
                 <a
                   key={p}
-                  href={socialUrl(p, creator.handle)}
+                  href={socialUrl(p, platformHandle)}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
@@ -1461,6 +1493,8 @@ function getTierColor(rate: number) {
 export default function Marketplace() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const restoredStateRef = useRef<MarketplaceStoredState | null>(readMarketplaceState());
+  const pendingScrollTopRef = useRef(restoredStateRef.current?.scrollTop ?? 0);
   const searchRef = useRef<HTMLInputElement>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -1470,14 +1504,15 @@ export default function Marketplace() {
     minFollowers: 1000,
     maxFollowers: 10000,
     verified: true,
-    city: searchParams.get("city") ?? undefined,
+    ...restoredStateRef.current?.filters,
+    city: searchParams.get("city") ?? restoredStateRef.current?.filters?.city,
   }));
-  const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
+  const [search, setSearch] = useState(() => searchParams.get("search") ?? restoredStateRef.current?.search ?? "");
   const debouncedSearch = useDebouncedValue(search, 300);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectedCreatorsById, setSelectedCreatorsById] = useState<Record<string, Creator>>({});
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
-  const [listView, setListView] = useState(false);
+  const [listView, setListView] = useState(() => restoredStateRef.current?.listView ?? false);
 
   useEffect(() => {
     const hasUpdates =
@@ -1520,9 +1555,9 @@ export default function Marketplace() {
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
-  const [followersVal, setFollowersVal] = useState(DEFAULT_CREATOR_TIER);
-  const [engagementVal, setEngagementVal] = useState("all");
-  const [priceVal, setPriceVal] = useState("all");
+  const [followersVal, setFollowersVal] = useState(() => restoredStateRef.current?.followersVal ?? DEFAULT_CREATOR_TIER);
+  const [engagementVal, setEngagementVal] = useState(() => restoredStateRef.current?.engagementVal ?? "all");
+  const [priceVal, setPriceVal] = useState(() => restoredStateRef.current?.priceVal ?? "all");
 
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showMobileBrief, setShowMobileBrief] = useState(false);
@@ -1535,7 +1570,7 @@ export default function Marketplace() {
   const advMinPrice = useRef("");
   const advMaxPrice = useRef("");
 
-  const [activeTab, setActiveTab] = useState("creators");
+  const [activeTab, setActiveTab] = useState(() => restoredStateRef.current?.activeTab ?? "creators");
   const [idnSearch, setIdnSearch] = useState("");
 
   const createMutation = useCreateCampaign();
@@ -1558,6 +1593,43 @@ export default function Marketplace() {
     return merged;
   })();
   const totalCreatorsFound = data?.pages[0]?.total ?? 0;
+
+  const saveMarketplaceState = useCallback(() => {
+    if (typeof window === "undefined") return;
+    const scrollTop = getMarketplaceScrollElement()?.scrollTop ?? 0;
+    const state: MarketplaceStoredState = {
+      filters,
+      search,
+      followersVal,
+      engagementVal,
+      priceVal,
+      listView,
+      activeTab,
+      scrollTop,
+    };
+    window.sessionStorage.setItem(MARKETPLACE_STATE_KEY, JSON.stringify(state));
+  }, [activeTab, engagementVal, filters, followersVal, listView, priceVal, search]);
+
+  useEffect(() => () => saveMarketplaceState(), [saveMarketplaceState]);
+
+  useEffect(() => {
+    const scrollTop = pendingScrollTopRef.current;
+    if (activeTab !== "creators" || !scrollTop || isLoading) return;
+
+    const scrollElement = getMarketplaceScrollElement();
+    if (!scrollElement) return;
+
+    const needsMoreRows = scrollElement.scrollHeight < scrollTop + scrollElement.clientHeight;
+    if (needsMoreRows && hasNextPage && !isFetchingNextPage) {
+      void fetchNextPage();
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      scrollElement.scrollTo({ top: scrollTop });
+      pendingScrollTopRef.current = 0;
+    });
+  }, [activeTab, creators.length, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading]);
 
   useEffect(() => {
     const target = loadMoreRef.current;
@@ -1601,6 +1673,8 @@ export default function Marketplace() {
   };
 
   const resetFilters = () => {
+    pendingScrollTopRef.current = 0;
+    window.sessionStorage.removeItem(MARKETPLACE_STATE_KEY);
     setFilters({ page: 1, pageSize: 20, minFollowers: 1000, maxFollowers: 10000 });
     setSearch("");
     setFollowersVal(DEFAULT_CREATOR_TIER);
@@ -1893,7 +1967,10 @@ export default function Marketplace() {
                   selected={selectedIds.includes(creator.id)}
                   favorited={favoriteIds.includes(creator.id)}
                   onToggle={() => toggleSelect(creator)}
-                  onCardClick={() => navigate(`/dashboard/creators/${creator.id}`)}
+                  onCardClick={() => {
+                    saveMarketplaceState();
+                    navigate(`/dashboard/creators/${creator.id}`);
+                  }}
                   onFavorite={() => toggleFavorite(creator.id)}
                   listView={listView}
                 />

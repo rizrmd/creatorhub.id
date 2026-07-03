@@ -145,6 +145,7 @@ func (r *CreatorRepository) List(ctx context.Context, params models.CreatorListP
 			COALESCE(
 				(SELECT jsonb_agg(jsonb_build_object(
 					'platform', cp.platform,
+					'handle', cp.handle,
 					'followers', cp.followers,
 					'engagementRate', cp.engagement_rate
 				) ORDER BY cp.platform)
@@ -223,6 +224,7 @@ func (r *CreatorRepository) GetByID(ctx context.Context, id string) (*models.Cre
 			COALESCE(
 				(SELECT jsonb_agg(jsonb_build_object(
 					'platform', cp.platform,
+					'handle', cp.handle,
 					'followers', cp.followers,
 					'engagementRate', cp.engagement_rate
 				) ORDER BY cp.platform)

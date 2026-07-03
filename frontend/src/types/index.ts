@@ -1,5 +1,6 @@
 export interface PlatformMetric {
   platform: string;
+  handle?: string;
   followers: number;
   engagementRate: number;
 }

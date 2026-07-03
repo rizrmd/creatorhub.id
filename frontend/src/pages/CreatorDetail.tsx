@@ -144,6 +144,9 @@ export default function CreatorDetail() {
   const avgComments = Math.round(creator.followers * creator.engagementRate / 100 * 0.15);
   const avgReelView = Math.round(creator.followers * 2.3);
   const viewRate = Math.min(99, Math.round(creator.engagementRate * 12));
+  const selectedPlatform = creator.platforms.includes(activePlatform) ? activePlatform : creator.platforms[0];
+  const selectedPlatformMetric = creator.platformMetrics?.find((metric) => metric.platform === selectedPlatform);
+  const selectedHandle = selectedPlatformMetric?.handle ?? creator.handle;
 
   const photoSrc = resolveCreatorPhoto(creator.img, creator.imageUrl);
 
@@ -210,7 +213,7 @@ export default function CreatorDetail() {
                       key={p}
                       onClick={() => setActivePlatform(p)}
                       className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold capitalize transition-colors ${
-                        activePlatform === p
+                        selectedPlatform === p
                           ? "bg-white text-slate-900"
                           : "text-white/50 hover:text-white/80 hover:bg-white/10"
                       }`}
@@ -223,7 +226,7 @@ export default function CreatorDetail() {
 
               {/* Handle + location */}
               <p className="text-xs text-white/40 mt-1">
-                {creator.handle && <span>@{creator.handle} · </span>}
+                {selectedHandle && <span>@{selectedHandle} · </span>}
                 📍 {creator.city}{creator.country ? `, ${creator.country}` : ", Indonesia"}
               </p>
 
