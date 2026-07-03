@@ -1,7 +1,7 @@
 ﻿import { useState, useRef, useEffect, useCallback } from "react";
 import {
   Search, SlidersHorizontal, Star, CheckCircle, Award,
-  Instagram, Youtube, Users, Megaphone, TrendingUp, Wallet,
+  Instagram, Youtube, Users, Megaphone, TrendingUp,
   LayoutGrid, List, RotateCcw, X, Flame, MessageSquare, MapPin,
   Heart, ArrowUpRight, User, Video, Building2,
   UserPlus, Loader2, Link2,
@@ -13,19 +13,12 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { useInfiniteCreators, useMarketplaceStats } from "@/hooks/useCreators";
+import { useInfiniteCreators } from "@/hooks/useCreators";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useCreateCampaign } from "@/hooks/useCampaigns";
 import { creatorsApi } from "@/lib/api";
 import type { Creator, CreatorListParams, ScrapeResponse, PlatformInput } from "@/types";
 import { formatFollowers, resolveCreatorPhoto } from "@/lib/utils";
-
-function formatBudget(n: number): string {
-  if (n >= 1_000_000_000) return `Rp ${(n / 1_000_000_000).toFixed(1)}M`;
-  if (n >= 1_000_000) return `Rp ${(n / 1_000_000).toFixed(0)}jt`;
-  if (n >= 1_000) return `Rp ${(n / 1_000).toFixed(0)}rb`;
-  return `Rp ${n}`;
-}
 
 const CATEGORIES = [
   "lifestyle", "travel", "beauty", "fashion", "technology", "food", "sports",
@@ -138,82 +131,6 @@ const platformIcon = (p: string) => {
   );
   return <span className="text-[8px] font-bold uppercase">{p.slice(0, 2)}</span>;
 };
-
-function AnimatedNumber({ value, loading }: { value: string; loading: boolean }) {
-  const [display, setDisplay] = useState("0");
-  const numericPart = value.replace(/[^0-9.,]/g, "");
-  const prefix = value.match(/^[^0-9]*/)?.[0] ?? "";
-  const suffix = value.match(/[^0-9.,]*$/)?.[0] ?? "";
-
-  useEffect(() => {
-    if (loading || !numericPart) { setDisplay("0"); return; }
-    const isPercent = suffix.includes("%");
-    const raw = isPercent ? numericPart.replace(",", ".") : numericPart.replace(/[.,]/g, "");
-    const target = isPercent ? parseFloat(raw) : parseInt(raw, 10);
-    if (isNaN(target)) { setDisplay(numericPart); return; }
-    const duration = 1200;
-    const startTime = performance.now();
-    let raf: number;
-    const step = (now: number) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 4);
-      const current = isPercent ? target * eased : Math.round(target * eased);
-      setDisplay(current.toLocaleString("id-ID", {
-        minimumFractionDigits: isPercent ? 2 : 0,
-        maximumFractionDigits: isPercent ? 2 : 0,
-      }));
-      if (progress < 1) raf = requestAnimationFrame(step);
-    };
-    raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, [numericPart, loading]);
-
-  return (
-    <span className="whitespace-nowrap">
-      {prefix && <span className="text-[11px] font-bold opacity-60">{prefix}</span>}
-      {loading ? "–" : display}{suffix}
-    </span>
-  );
-}
-
-const STAT_CONFIGS = [
-  { label: "Total Creators", key: "totalCreators", icon: Users, color: "#3B82F6", glow: "rgba(59,130,246,.15)", gradient: "linear-gradient(135deg,#3B82F6,#6366F1)" },
-  { label: "Active Campaigns", key: "activeCampaigns", icon: Megaphone, color: "#F97316", glow: "rgba(249,115,22,.15)", gradient: "linear-gradient(135deg,#F97316,#EF4444)" },
-  { label: "Avg. Engagement", key: "avgEngagementRate", icon: TrendingUp, color: "#10B981", glow: "rgba(16,185,129,.15)", gradient: "linear-gradient(135deg,#10B981,#06B6D4)" },
-  { label: "Budget Dikelola", key: "totalBudget", icon: Wallet, color: "#F59E0B", glow: "rgba(245,158,11,.15)", gradient: "linear-gradient(135deg,#F59E0B,#F97316)" },
-] as const;
-
-function StatCard({ config, value, loading }: {
-  config: typeof STAT_CONFIGS[number]; value: string; loading: boolean;
-}) {
-  const Icon = config.icon;
-  return (
-    <div
-      className="group relative rounded-xl border px-2.5 py-2 flex items-center gap-2 cursor-default transition-all duration-200 hover:scale-[1.02]"
-      style={{
-        background: "rgba(255,255,255,.05)",
-        backdropFilter: "blur(12px)",
-        borderColor: "rgba(255,255,255,.08)",
-        boxShadow: "inset 0 1px 0 rgba(255,255,255,.05)",
-      }}
-    >
-      <div
-        className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-shadow duration-200 group-hover:shadow-md"
-        style={{ background: config.gradient, boxShadow: `0 3px 10px ${config.glow}` }}
-      >
-        <Icon className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
-      </div>
-      <div className="min-w-0 flex-1 overflow-hidden">
-        <p className="text-[9px] font-semibold uppercase tracking-wider leading-none mb-0.5" style={{ color: "var(--ch-text-muted)" }}>{config.label}</p>
-        <p className="text-[15px] font-extrabold leading-none tracking-tight"
-          style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-          <AnimatedNumber value={value} loading={loading} />
-        </p>
-      </div>
-    </div>
-  );
-}
 
 function socialUrl(platform: string, handle: string): string {
   const h = handle.replace(/^@/, "");
@@ -1576,7 +1493,6 @@ export default function Marketplace() {
   const createMutation = useCreateCampaign();
 
   const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteCreators({ ...filters, search: debouncedSearch || undefined });
-  const { data: stats, isLoading: statsLoading } = useMarketplaceStats();
 
   const creators = (() => {
     const seen = new Set<string>();
@@ -1722,13 +1638,6 @@ export default function Marketplace() {
     .map((id) => selectedCreatorsById[id] ?? creators.find((creator) => creator.id === id))
     .filter((creator): creator is Creator => Boolean(creator));
 
-  const statValues: Record<string, string> = {
-    totalCreators: stats ? stats.totalCreators.toLocaleString("id-ID") : "–",
-    activeCampaigns: stats ? stats.activeCampaigns.toLocaleString("en-US") : "–",
-    avgEngagementRate: stats ? `${stats.avgEngagementRate.toFixed(2)}%` : "–",
-    totalBudget: stats ? formatBudget(stats.totalBudget) : "–",
-  };
-
   const totalReach = selectedCreators.reduce((a, c) => a + c.followers, 0);
   const avgEngagement = selectedCreators.length > 0
     ? (selectedCreators.reduce((a, c) => a + c.engagementRate, 0) / selectedCreators.length).toFixed(2)
@@ -1801,15 +1710,6 @@ export default function Marketplace() {
 
         {activeTab === "creators" ? (
           <>
-        {/* Stats */}
-        <div className="px-3 pt-2.5 pb-2 border-b border-white/5">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-1.5">
-            {STAT_CONFIGS.map((cfg) => (
-              <StatCard key={cfg.key} config={cfg} value={statValues[cfg.key]} loading={statsLoading} />
-            ))}
-          </div>
-        </div>
-
         {/* Filters row 1 */}
         <div className="px-3 sm:px-4 pt-3 pb-0 bg-[#0B1120] flex flex-wrap items-center gap-2">
           <div className="relative w-full sm:flex-1 sm:min-w-48">
