@@ -18,7 +18,7 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useCreateCampaign } from "@/hooks/useCampaigns";
 import { creatorsApi } from "@/lib/api";
 import type { Creator, CreatorListParams, ScrapeResponse, PlatformInput } from "@/types";
-import { formatRupiah, formatFollowers, resolveCreatorPhoto } from "@/lib/utils";
+import { formatFollowers, resolveCreatorPhoto } from "@/lib/utils";
 
 function formatBudget(n: number): string {
   if (n >= 1_000_000_000) return `Rp ${(n / 1_000_000_000).toFixed(1)}M`;
@@ -1457,6 +1457,8 @@ export default function Marketplace() {
     pageSize: 20,
     verified: true,
     city: searchParams.get("city") ?? undefined,
+    minFollowers: 1000,
+    maxFollowers: 10000,
   }));
   const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
   const debouncedSearch = useDebouncedValue(search, 300);
@@ -1506,7 +1508,7 @@ export default function Marketplace() {
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
-  const [followersVal, setFollowersVal] = useState("all");
+  const [followersVal, setFollowersVal] = useState("1000-10000");
   const [engagementVal, setEngagementVal] = useState("all");
   const [priceVal, setPriceVal] = useState("all");
 
@@ -1657,9 +1659,9 @@ export default function Marketplace() {
           <span className="text-slate-400">Avg. Engagement</span>
           <span className="font-semibold text-white">{avgEngagement}%</span>
         </div>
-        <div className="flex justify-between pt-1.5 border-t border-white/10">
-          <span className="text-slate-400">Est. Total Budget</span>
-          <span className="font-bold text-white">{formatRupiah(selectedCreators.reduce((a, c) => a + c.price, 0))}</span>
+        <div className="flex justify-between">
+          <span className="text-slate-400">Selected Creators</span>
+          <span className="font-semibold text-white">{selectedIds.length} / 5</span>
         </div>
       </div>
       <Button className="w-full" onClick={() => { setShowMobileBrief(false); setShowCreateCampaign(true); }}>Create Campaign</Button>
