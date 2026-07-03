@@ -7,6 +7,7 @@ import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import ServiceHub from "@/pages/ServiceHub";
 import Marketplace from "@/pages/Marketplace";
+import CreatorDetail from "@/pages/CreatorDetail";
 import CampaignDetail from "@/pages/CampaignDetail";
 import Analytics from "@/pages/Analytics";
 import ProjectDetail from "@/pages/ProjectDetail";
@@ -55,6 +56,7 @@ export default function App() {
           <Route path="service-hub" element={<BrandRoute><ServiceHub /></BrandRoute>} />
           <Route path="search" element={<BrandRoute><BrandSearch /></BrandRoute>} />
           <Route path="marketplace" element={<BrandRoute><Marketplace /></BrandRoute>} />
+          <Route path="creators/:id" element={<BrandRoute><CreatorDetail /></BrandRoute>} />
           <Route path="homeless-media" element={<BrandRoute><HomelessMedia /></BrandRoute>} />
           <Route path="campaigns/:id" element={<BrandRoute><CampaignDetail /></BrandRoute>} />
           <Route path="projects" element={<BrandRoute><Analytics /></BrandRoute>} />

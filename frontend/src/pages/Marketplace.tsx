@@ -56,6 +56,8 @@ const PRICE_OPTIONS = [
   { label: "$900+", value: "13000000-0" },
 ];
 
+const DEFAULT_CREATOR_TIER = "1000-10000";
+
 const CATEGORY_COLORS: Record<string, string> = {
   lifestyle: "bg-purple-500/20 text-purple-300",
   travel: "bg-blue-500/20 text-blue-300",
@@ -1455,10 +1457,10 @@ export default function Marketplace() {
   const [filters, setFilters] = useState<CreatorListParams>(() => ({
     page: 1,
     pageSize: 20,
-    verified: true,
-    city: searchParams.get("city") ?? undefined,
     minFollowers: 1000,
     maxFollowers: 10000,
+    verified: true,
+    city: searchParams.get("city") ?? undefined,
   }));
   const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
   const debouncedSearch = useDebouncedValue(search, 300);
@@ -1508,7 +1510,7 @@ export default function Marketplace() {
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
-  const [followersVal, setFollowersVal] = useState("1000-10000");
+  const [followersVal, setFollowersVal] = useState(DEFAULT_CREATOR_TIER);
   const [engagementVal, setEngagementVal] = useState("all");
   const [priceVal, setPriceVal] = useState("all");
 
@@ -1589,9 +1591,9 @@ export default function Marketplace() {
   };
 
   const resetFilters = () => {
-    setFilters({ page: 1, pageSize: 20 });
+    setFilters({ page: 1, pageSize: 20, minFollowers: 1000, maxFollowers: 10000 });
     setSearch("");
-    setFollowersVal("all");
+    setFollowersVal(DEFAULT_CREATOR_TIER);
     setEngagementVal("all");
     setPriceVal("all");
   };
@@ -1873,7 +1875,7 @@ export default function Marketplace() {
                   selected={selectedIds.includes(creator.id)}
                   favorited={favoriteIds.includes(creator.id)}
                   onToggle={() => toggleSelect(creator)}
-                  onCardClick={() => setProfileCreator(creator)}
+                  onCardClick={() => navigate(`/dashboard/creators/${creator.id}`)}
                   onFavorite={() => toggleFavorite(creator.id)}
                   listView={listView}
                 />
