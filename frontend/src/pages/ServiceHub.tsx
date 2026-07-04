@@ -219,7 +219,7 @@ function HeatmapBlobs({
   useEffect(() => {
     if (!zoomed && geoJsonData) {
       if (selectedProvince === "DKI Jakarta") {
-        map.setView([-6.2088, 106.8456], 11);
+        map.setView([-6.175, 106.827], 11);
         setZoomed(true);
       } else {
         for (const f of geoJsonData.features) {
@@ -259,7 +259,7 @@ function HeatmapBlobs({
       const base = centroids.get(city);
       if (!base) continue;
       const count = cityCreators.length;
-      const spread = count > 50 ? 0.06 : count > 20 ? 0.04 : count > 5 ? 0.025 : 0.015;
+      const spread = count > 50 ? 0.04 : count > 20 ? 0.03 : count > 5 ? 0.02 : 0.012;
       for (let i = 0; i < count; i++) {
         const c = cityCreators[i];
         const tier = getTier(c.followers);
@@ -267,7 +267,7 @@ function HeatmapBlobs({
         const rng = seededRandom(hashString(c.id));
         const angle = rng() * Math.PI * 2;
         const dist = rng() * spread;
-        const size = 80 + Math.floor(rng() * 40);
+        const size = 36 + Math.floor(rng() * 20);
         result.push({
           creator: c,
           pos: [base[0] + dist * Math.cos(angle), base[1] + dist * Math.sin(angle)],
@@ -284,7 +284,7 @@ function HeatmapBlobs({
       className: "",
       iconSize: [size, size],
       iconAnchor: [size / 2, size / 2],
-      html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:radial-gradient(circle, ${color}bb 0%, ${color}66 25%, ${color}22 50%, transparent 70%);pointer-events:none;"></div>`,
+      html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:radial-gradient(circle, ${color}cc 0%, ${color}88 20%, ${color}44 45%, ${color}11 65%, transparent 80%);pointer-events:none;"></div>`,
     });
   }, []);
 
@@ -318,7 +318,10 @@ function HeatmapBlobs({
 function JakartaBoundaries({ kotaGeoJson }: { kotaGeoJson: FeatureCollection | null }) {
   const jakartaFeatures = useMemo(() => {
     if (!kotaGeoJson) return null;
-    const features = kotaGeoJson.features.filter((f) => f.properties?.NAME_1 === "DKI Jakarta");
+    const features = kotaGeoJson.features.filter((f) => {
+      const name1 = f.properties?.NAME_1 || "";
+      return name1 === "Jakarta Raya" || name1 === "DKI Jakarta";
+    });
     if (features.length === 0) return null;
     return { type: "FeatureCollection", features } as unknown as FeatureCollection;
   }, [kotaGeoJson]);
@@ -329,9 +332,9 @@ function JakartaBoundaries({ kotaGeoJson }: { kotaGeoJson: FeatureCollection | n
     <GeoJSON
       data={jakartaFeatures}
       style={() => ({
-        weight: 2,
+        weight: 2.5,
         color: "white",
-        opacity: 0.85,
+        opacity: 0.9,
         fillColor: "transparent",
         fillOpacity: 0,
       })}
@@ -343,7 +346,10 @@ function JakartaBoundaries({ kotaGeoJson }: { kotaGeoJson: FeatureCollection | n
 function KabupatenLabels({ kotaGeoJson }: { kotaGeoJson: FeatureCollection | null }) {
   const labels = useMemo(() => {
     if (!kotaGeoJson) return [];
-    const jakartaFeatures = kotaGeoJson.features.filter((f) => f.properties?.NAME_1 === "DKI Jakarta");
+    const jakartaFeatures = kotaGeoJson.features.filter((f) => {
+      const name1 = f.properties?.NAME_1 || "";
+      return name1 === "Jakarta Raya" || name1 === "DKI Jakarta";
+    });
     return jakartaFeatures.map((f) => {
       const name = f.properties?.NAME_2 || "";
       const centroid = computeCentroid(f.geometry);
@@ -433,7 +439,7 @@ function MapViewController({ center, zoom, province }: { center: [number, number
   const map = useMap();
   useEffect(() => {
     if (province === "DKI Jakarta") {
-      map.setView([-6.2088, 106.8456], 11);
+      map.setView([-6.175, 106.827], 11);
     } else {
       map.setView(center, zoom);
     }
