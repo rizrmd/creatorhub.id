@@ -771,14 +771,17 @@ func mapPlatform(platform string) string {
 }
 
 func formatFollowers(n int64) string {
-	if n >= 1000000000 {
-		return fmt.Sprintf("%.1fB", float64(n)/1000000000)
+	s := fmt.Sprintf("%d", n)
+	if n < 1000 {
+		return s
 	}
-	if n >= 1000000 {
-		return fmt.Sprintf("%.1fM", float64(n)/1000000)
+	// Add thousand separators from right
+	var result []byte
+	for i, c := range s {
+		if i > 0 && (len(s)-i)%3 == 0 {
+			result = append(result, '.')
+		}
+		result = append(result, byte(c))
 	}
-	if n >= 1000 {
-		return fmt.Sprintf("%.1fK", float64(n)/1000)
-	}
-	return fmt.Sprintf("%d", n)
+	return string(result)
 }

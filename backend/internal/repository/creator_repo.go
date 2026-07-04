@@ -182,6 +182,7 @@ func (r *CreatorRepository) List(ctx context.Context, params models.CreatorListP
 		if c.PlatformMetrics == nil {
 			c.PlatformMetrics = []models.PlatformMetric{}
 		}
+		c.FollowersText = formatFollowers(c.Followers)
 		creators = append(creators, c)
 	}
 
@@ -249,6 +250,7 @@ func (r *CreatorRepository) GetByID(ctx context.Context, id string) (*models.Cre
 	if c.PlatformMetrics == nil {
 		c.PlatformMetrics = []models.PlatformMetric{}
 	}
+	c.FollowersText = formatFollowers(c.Followers)
 	return &c, nil
 }
 
@@ -315,14 +317,16 @@ func (r *CreatorRepository) AddPlatform(ctx context.Context, creatorID string, p
 }
 
 func formatFollowers(n int64) string {
-	if n >= 1000000000 {
-		return fmt.Sprintf("%.1fB", float64(n)/1000000000)
+	s := fmt.Sprintf("%d", n)
+	if n < 1000 {
+		return s
 	}
-	if n >= 1000000 {
-		return fmt.Sprintf("%.1fM", float64(n)/1000000)
+	var result []byte
+	for i, c := range s {
+		if i > 0 && (len(s)-i)%3 == 0 {
+			result = append(result, '.')
+		}
+		result = append(result, byte(c))
 	}
-	if n >= 1000 {
-		return fmt.Sprintf("%.1fK", float64(n)/1000)
-	}
-	return fmt.Sprintf("%d", n)
+	return string(result)
 }

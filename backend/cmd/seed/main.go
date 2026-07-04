@@ -40,10 +40,18 @@ var cities = []string{
 }
 
 func formatFollowers(n int64) string {
-	if n >= 1_000_000 {
-		return fmt.Sprintf("%.1fM", float64(n)/1_000_000)
+	s := fmt.Sprintf("%d", n)
+	if n < 1000 {
+		return s
 	}
-	return fmt.Sprintf("%dK", n/1_000)
+	var result []byte
+	for i, c := range s {
+		if i > 0 && (len(s)-i)%3 == 0 {
+			result = append(result, '.')
+		}
+		result = append(result, byte(c))
+	}
+	return string(result)
 }
 
 func formatRupiah(n int64) string {

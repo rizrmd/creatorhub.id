@@ -6,6 +6,7 @@ import {
   Heart, ArrowUpRight, User, Video, Building2,
   UserPlus, Loader2, Link2,
 } from "lucide-react";
+import * as topojson from "topojson-client";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -36,7 +37,8 @@ const CATEGORIES = [
   { label: "Gaming", value: "gaming" },
   { label: "Parenting", value: "parent" },
 ];
-const CITIES = ["Jakarta", "Bandung", "Surabaya", "Bali", "Yogyakarta", "Medan", "Makassar"];
+const DEFAULT_CITIES: string[] = [];
+const KABUPATEN_KOTA_URL = "https://gist.githubusercontent.com/ajie31/3144875bad9705e2b2b544909c022276/raw/Peta%20Indonesia%20Kota%20Kabupaten%20simplified.json";
 const PLATFORMS = ["instagram", "tiktok", "youtube", "facebook", "x", "linkedin"];
 
 const FOLLOWERS_OPTIONS = [
@@ -204,9 +206,10 @@ const platformBg: Record<string, string> = {
   linkedin:  "bg-blue-400/15 text-blue-300 border-blue-400/20",
 };
 
-function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFavorite, listView }: {
+function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFavorite, listView, onCityClick }: {
   creator: Creator; selected: boolean; favorited: boolean;
   onToggle: () => void; onCardClick: () => void; onFavorite: () => void; listView: boolean;
+  onCityClick?: (city: string) => void;
 }) {
   const catColor = CATEGORY_COLORS[creator.category] ?? "bg-white/10 text-slate-300";
 
@@ -237,7 +240,11 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
                 {creator.verified && <CheckCircle style={{ width: 13, height: 13, color: "#2563EB", flexShrink: 0 }} />}
               </div>
               <div className="flex items-center gap-1.5 text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
-                <MapPin style={{ width: 11, height: 11 }} />{creator.city}
+                <MapPin style={{ width: 11, height: 11 }} />
+                <button
+                  onClick={(e) => { e.stopPropagation(); onCityClick?.(creator.city); }}
+                  className="hover:underline cursor-pointer text-left"
+                >{creator.city}</button>
                 <span className={`px-1.5 py-0 rounded-full text-[10px] font-medium capitalize ${catColor}`}>{creator.category}</span>
               </div>
             </div>
@@ -265,7 +272,7 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
               <span className="font-semibold">{creator.followersText}</span>
               <span className="font-semibold">{creator.engagementRate}% ER</span>
               <span className="font-bold whitespace-nowrap" style={{ color: "var(--ch-text)" }}>
-                Starts from {creator.priceText}
+                {creator.priceText}
               </span>
             </div>
             <button
@@ -365,7 +372,10 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
             <p className="font-bold text-[14px] truncate leading-tight" style={{ color: "var(--ch-text)" }}>{creator.name}</p>
             <p className="text-[12px] flex items-center gap-1 mt-0.5" style={{ color: "var(--ch-text-muted)" }}>
               <MapPin style={{ width: 11, height: 11 }} />
-              {creator.city}
+              <button
+                onClick={(e) => { e.stopPropagation(); onCityClick?.(creator.city); }}
+                className="hover:underline cursor-pointer text-left"
+              >{creator.city}</button>
             </p>
           </div>
           <span className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize ${catColor}`}>
@@ -403,7 +413,7 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
 
         {/* Price */}
         <div className="mt-2 text-[11px]" style={{ color: "var(--ch-text-soft)" }}>
-          Starts from <span className="font-semibold" style={{ color: "var(--ch-text)" }}>{creator.priceText}</span>
+          <span className="font-semibold" style={{ color: "var(--ch-text)" }}>{creator.priceText}</span>
         </div>
 
         {/* Actions */}
@@ -433,9 +443,10 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
   );
 }
 
-function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, onChat, onFavorite }: {
+function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, onChat, onFavorite, onCityClick }: {
   creator: Creator; selected: boolean; favorited: boolean;
   onToggle: () => void; onClose: () => void; onChat: () => void; onFavorite: () => void;
+  onCityClick?: (city: string) => void;
 }) {
   const catColor = CATEGORY_COLORS[creator.category] ?? "bg-white/10 text-slate-300";
 
@@ -488,7 +499,10 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
               <p className="text-sm mb-3" style={{ color: "var(--ch-text-muted)" }}>
                 <span className="flex items-center gap-1">
                   <MapPin style={{ width: 14, height: 14 }} />
-                  {creator.city}, Indonesia
+                  <button
+                    onClick={() => onCityClick?.(creator.city)}
+                    className="hover:underline cursor-pointer text-left"
+                  >{creator.city}, Indonesia</button>
                 </span>
                 <span className="mx-2">·</span>
                 <span className={`px-2 py-0.5 rounded-md text-xs font-medium capitalize ${catColor}`}>
@@ -745,10 +759,11 @@ function parseSocialUrl(url: string): { platform: string; handle: string } | nul
   return null;
 }
 
-function AddCreatorDialog({ open, onOpenChange, onCreated }: {
+function AddCreatorDialog({ open, onOpenChange, onCreated, cityOptions }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCreated: () => void;
+  cityOptions: string[];
 }) {
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
@@ -1028,7 +1043,7 @@ function AddCreatorDialog({ open, onOpenChange, onCreated }: {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {CITIES.map((c) => (
+                {cityOptions.map((c) => (
                   <SelectItem key={c} value={c}>{c}</SelectItem>
                 ))}
               </SelectContent>
@@ -1479,6 +1494,24 @@ export default function Marketplace() {
   const [selectedCreatorsById, setSelectedCreatorsById] = useState<Record<string, Creator>>({});
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [listView, setListView] = useState(() => restoredStateRef.current?.listView ?? false);
+  const [cityOptions, setCityOptions] = useState<string[]>(DEFAULT_CITIES);
+
+  useEffect(() => {
+    fetch(KABUPATEN_KOTA_URL)
+      .then((r) => r.json())
+      .then((topo: any) => {
+        const obj = topo.objects.gadm36_IDN_2;
+        const geo = topojson.feature(topo, obj) as any;
+        const names = new Set<string>();
+        const features = geo.features ?? [geo];
+        for (const f of features) {
+          const name = f.properties?.NAME_2;
+          if (name) names.add(name);
+        }
+        setCityOptions(Array.from(names).sort());
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const hasUpdates =
@@ -1789,16 +1822,16 @@ export default function Marketplace() {
           <Select value={filters.category ?? "all"} onValueChange={(v) => setFilters((f) => ({ ...f, category: v === "all" ? undefined : v, page: 1 }))}>
             <SelectTrigger className="w-full sm:w-40"><SelectValue placeholder="Category" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Semua Kategori</SelectItem>
+              <SelectItem value="all">All Categories</SelectItem>
               {CATEGORIES.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
             </SelectContent>
           </Select>
 
           <Select value={filters.city ?? "all"} onValueChange={(v) => setFilters((f) => ({ ...f, city: v === "all" ? undefined : v, page: 1 }))}>
-            <SelectTrigger className="w-full sm:w-32"><SelectValue placeholder="Province" /></SelectTrigger>
+            <SelectTrigger className="w-full sm:w-40"><SelectValue placeholder="City" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Provinces</SelectItem>
-              {CITIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              <SelectItem value="all">All Cities</SelectItem>
+              {cityOptions.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
@@ -1908,6 +1941,7 @@ export default function Marketplace() {
                   }}
                   onFavorite={() => toggleFavorite(creator.id)}
                   listView={listView}
+                  onCityClick={(city) => setFilters((f) => ({ ...f, city, page: 1 }))}
                 />
               ))}
             </div>
@@ -2152,6 +2186,10 @@ export default function Marketplace() {
           onClose={() => setProfileCreator(null)}
           onChat={() => { setProfileCreator(null); navigate("/dashboard/messages"); }}
           onFavorite={() => toggleFavorite(profileCreator.id)}
+          onCityClick={(city) => {
+            setProfileCreator(null);
+            setFilters((f) => ({ ...f, city, page: 1 }));
+          }}
         />
       )}
 
@@ -2249,6 +2287,7 @@ export default function Marketplace() {
       <AddCreatorDialog
         open={showAddCreator}
         onOpenChange={setShowAddCreator}
+        cityOptions={cityOptions}
         onCreated={() => {
           // Refetch creators list
           window.location.reload();
