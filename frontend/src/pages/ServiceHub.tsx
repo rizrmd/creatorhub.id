@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+﻿import { useState, useEffect, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Users, CheckCircle, MapPin, Share2, Tag, BarChart3, UsersRound, SlidersHorizontal, ChevronDown } from "lucide-react";
 import { MapContainer, TileLayer, GeoJSON, Marker, ScaleControl, useMap } from "react-leaflet";
@@ -104,7 +104,6 @@ const TIER_COLORS = ["#3B82F6", "#22C55E", "#A855F7", "#F97316"];
 const PLATFORM_COLORS = ["#E4405F", "#000000", "#FF0000", "#1877F2", "#1DA1F2", "#94A3B8"];
 const GENDER_COLORS = ["#EC4899", "#3B82F6", "#94A3B8"];
 const TIER_PIN_COLORS: Record<string, string> = { Nano: "#22C55E", Micro: "#EAB308", Mid: "#F97316", Macro: "#EF4444", Mega: "#DC2626" };
-const HEATMAP_COLORS: Record<string, string> = { Nano: "#7c3aed", Micro: "#3b82f6", Mid: "#22c55e", Macro: "#f97316", Mega: "#ef4444" };
 
 function getTier(followers: number): string {
   if (followers >= 1000000) return "Mega";
@@ -199,123 +198,18 @@ function ProvinceChoropleth({
   );
 }
 
-/* ---------- Heatmap Blobs (radial-gradient divIcon) ---------- */
-function HeatmapBlobs({
-  geoJsonData,
+/* ---------- Jakarta Region Choropleth ---------- */
+function JakartaRegions({
+  kotaGeoJson,
   creators,
-  selectedProvince,
 }: {
-  geoJsonData: FeatureCollection | null;
+  kotaGeoJson: FeatureCollection | null;
   creators: Creator[];
-  selectedProvince: string;
 }) {
   const map = useMap();
   const [zoomed, setZoomed] = useState(false);
+  const layerRef = useRef<any>(null);
 
-  const provinceCreators = useMemo(() => {
-    return creators.filter((c) => getProvince(c.city) === selectedProvince);
-  }, [creators, selectedProvince]);
-
-  useEffect(() => {
-    if (!zoomed && geoJsonData) {
-      if (selectedProvince === "DKI Jakarta") {
-        map.setView([-6.175, 106.827], 11);
-        setZoomed(true);
-      } else {
-        for (const f of geoJsonData.features) {
-          if (f.properties?.NAME_1 === selectedProvince) {
-            const layer = L.geoJSON(f as any);
-            map.fitBounds(layer.getBounds(), { padding: [60, 60] });
-            setZoomed(true);
-            break;
-          }
-        }
-      }
-    }
-  }, [selectedProvince, geoJsonData, map, zoomed]);
-
-  const centroids = useMemo(() => {
-    if (!geoJsonData) return new Map<string, [number, number]>();
-    const m = new Map<string, [number, number]>();
-    for (const f of geoJsonData.features) {
-      const name = f.properties?.NAME_2;
-      if (name && !m.has(name)) {
-        const c = computeCentroid(f.geometry);
-        if (c) m.set(name, c);
-      }
-    }
-    return m;
-  }, [geoJsonData]);
-
-  const markers = useMemo(() => {
-    const cityGroups = new Map<string, Creator[]>();
-    for (const c of provinceCreators) {
-      const key = selectedProvince === "DKI Jakarta" ? normalizeJakartaCity(c.city) : c.city;
-      if (!cityGroups.has(key)) cityGroups.set(key, []);
-      cityGroups.get(key)!.push(c);
-    }
-    const result: { creator: Creator; pos: [number, number]; size: number; color: string }[] = [];
-    for (const [city, cityCreators] of cityGroups) {
-      const base = centroids.get(city);
-      if (!base) continue;
-      const count = cityCreators.length;
-      const spread = count > 50 ? 0.04 : count > 20 ? 0.03 : count > 5 ? 0.02 : 0.012;
-      for (let i = 0; i < count; i++) {
-        const c = cityCreators[i];
-        const tier = getTier(c.followers);
-        const color = HEATMAP_COLORS[tier] ?? "#7c3aed";
-        const rng = seededRandom(hashString(c.id));
-        const angle = rng() * Math.PI * 2;
-        const dist = rng() * spread;
-        const size = 36 + Math.floor(rng() * 20);
-        result.push({
-          creator: c,
-          pos: [base[0] + dist * Math.cos(angle), base[1] + dist * Math.sin(angle)],
-          size,
-          color,
-        });
-      }
-    }
-    return result;
-  }, [provinceCreators, centroids, selectedProvince]);
-
-  const makeBlobIcon = useCallback((size: number, color: string) => {
-    return L.divIcon({
-      className: "",
-      iconSize: [size, size],
-      iconAnchor: [size / 2, size / 2],
-      html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:radial-gradient(circle, ${color}cc 0%, ${color}88 20%, ${color}44 45%, ${color}11 65%, transparent 80%);pointer-events:none;"></div>`,
-    });
-  }, []);
-
-  return (
-    <>
-      {markers.map(({ creator, pos, size, color }) => (
-        <Marker
-          key={creator.id}
-          position={pos}
-          icon={makeBlobIcon(size, color)}
-          eventHandlers={{
-            mouseover: (e) => {
-              const tier = getTier(creator.followers);
-              e.target.bindTooltip(
-                `<div style="background:#0F172A;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:6px 8px;font-family:Inter,sans-serif;font-size:11px;color:#F1F5F9;white-space:nowrap;min-width:140px;">
-                  <div style="font-weight:700;">${creator.name}</div>
-                  <div style="color:#94A3B8;">${formatFollowers(creator.followers)} followers · ${creator.engagementRate}% ER</div>
-                  <div style="color:${color};font-weight:700;">${tier}</div>
-                </div>`,
-                { direction: "top", sticky: true, opacity: 1, className: "" }
-              );
-            },
-          }}
-        />
-      ))}
-    </>
-  );
-}
-
-/* ---------- Kabupaten Boundary Outlines ---------- */
-function JakartaBoundaries({ kotaGeoJson }: { kotaGeoJson: FeatureCollection | null }) {
   const jakartaFeatures = useMemo(() => {
     if (!kotaGeoJson) return null;
     const features = kotaGeoJson.features.filter((f) => {
@@ -326,18 +220,71 @@ function JakartaBoundaries({ kotaGeoJson }: { kotaGeoJson: FeatureCollection | n
     return { type: "FeatureCollection", features } as unknown as FeatureCollection;
   }, [kotaGeoJson]);
 
+  const cityCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const c of creators) {
+      const city = normalizeJakartaCity(c.city);
+      counts.set(city, (counts.get(city) ?? 0) + 1);
+    }
+    return counts;
+  }, [creators]);
+
+  const maxCount = useMemo(() => Math.max(...Array.from(cityCounts.values()), 1), [cityCounts]);
+
+  useEffect(() => {
+    if (!zoomed && jakartaFeatures) {
+      map.setView([-6.175, 106.827], 11);
+      setZoomed(true);
+    }
+  }, [jakartaFeatures, map, zoomed]);
+
   if (!jakartaFeatures) return null;
+
+  const REGION_COLORS = [
+    "#3B82F6",
+    "#22C55E",
+    "#F97316",
+    "#A855F7",
+    "#EC4899",
+    "#14B8A6",
+  ];
+
+  const jakartaKab = ["Jakarta Pusat", "Jakarta Selatan", "Jakarta Barat", "Jakarta Timur", "Jakarta Utara", "Kepulauan Seribu"];
+
+  function getRegionColor(name2: string, count: number): string {
+    const idx = jakartaKab.indexOf(name2);
+    const base = REGION_COLORS[idx >= 0 ? idx : 0];
+    const ratio = count / maxCount;
+    const opacity = 0.15 + ratio * 0.45;
+    return base + Math.round(opacity * 255).toString(16).padStart(2, "0");
+  }
 
   return (
     <GeoJSON
+      ref={layerRef}
       data={jakartaFeatures}
-      style={() => ({
-        weight: 2.5,
-        color: "white",
-        opacity: 0.9,
-        fillColor: "transparent",
-        fillOpacity: 0,
-      })}
+      style={(feature) => {
+        const name = feature?.properties?.NAME_2 || "";
+        const count = cityCounts.get(name) ?? 0;
+        return {
+          weight: 2.5,
+          color: "white",
+          opacity: 0.95,
+          fillColor: getRegionColor(name, count),
+          fillOpacity: 0.6,
+        };
+      }}
+      onEachFeature={(feature, layer) => {
+        const name = feature.properties?.NAME_2 || "";
+        const count = cityCounts.get(name) ?? 0;
+        layer.bindTooltip(
+          `<div style="font-family:'Plus Jakarta Sans',Inter,sans-serif;padding:8px 12px;background:#0F172A;border:1px solid rgba(255,255,255,0.1);border-radius:10px;">
+            <div style="font-weight:700;font-size:14px;color:#F1F5F9;">${name}</div>
+            <div style="font-size:12px;color:#93C5FD;margin-top:2px;">${count.toLocaleString()} creators</div>
+          </div>`,
+          { direction: "top", sticky: true, opacity: 1 }
+        );
+      }}
     />
   );
 }
@@ -390,14 +337,15 @@ function KabupatenLabels({ kotaGeoJson }: { kotaGeoJson: FeatureCollection | nul
   );
 }
 
-/* ---------- Heatmap Legend Card ---------- */
-function HeatmapLegend() {
-  const tiers: { label: string; color: string }[] = [
-    { label: "Nano (<10K)", color: HEATMAP_COLORS.Nano },
-    { label: "Micro (10K\u2013100K)", color: HEATMAP_COLORS.Micro },
-    { label: "Mid (100K\u2013500K)", color: HEATMAP_COLORS.Mid },
-    { label: "Macro (500K\u20131M)", color: HEATMAP_COLORS.Macro },
-    { label: "Mega (>1M)", color: HEATMAP_COLORS.Mega },
+/* ---------- Region Legend Card ---------- */
+function RegionLegend() {
+  const regions: { label: string; color: string }[] = [
+    { label: "Jakarta Pusat", color: "#3B82F6" },
+    { label: "Jakarta Selatan", color: "#22C55E" },
+    { label: "Jakarta Barat", color: "#F97316" },
+    { label: "Jakarta Timur", color: "#A855F7" },
+    { label: "Jakarta Utara", color: "#EC4899" },
+    { label: "Kep. Seribu", color: "#14B8A6" },
   ];
 
   return (
@@ -415,21 +363,18 @@ function HeatmapLegend() {
       }}
     >
       <div style={{ fontWeight: 800, fontSize: 16, color: "#0f172a", marginBottom: 2 }}>Legend</div>
-      <div style={{ fontSize: 12, color: "#64748b", marginBottom: 10 }}>Creators by Tier</div>
+      <div style={{ fontSize: 12, color: "#64748b", marginBottom: 10 }}>Jakarta Regions</div>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {tiers.map((t) => (
-          <div key={t.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        {regions.map((r) => (
+          <div key={r.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <div style={{
-              width: 14, height: 14, borderRadius: "50%",
-              background: `radial-gradient(circle, ${t.color}cc 0%, ${t.color}66 60%, transparent 100%)`,
-              boxShadow: `0 0 6px ${t.color}88`,
+              width: 14, height: 14, borderRadius: 4,
+              background: r.color,
+              opacity: 0.7,
             }} />
-            <span style={{ fontSize: 12, color: "#334155", fontWeight: 500 }}>{t.label}</span>
+            <span style={{ fontSize: 12, color: "#334155", fontWeight: 500 }}>{r.label}</span>
           </div>
         ))}
-      </div>
-      <div style={{ marginTop: 12, fontSize: 10, color: "#94a3b8", lineHeight: 1.4, fontStyle: "italic" }}>
-        Heatmap shows the density of creators by highest follower tier.
       </div>
     </div>
   );
@@ -955,15 +900,13 @@ export default function ServiceHub() {
               {selectedProvince ? (
                 <>
                   <MapViewController center={[-2.5, 118.0]} zoom={5} province={selectedProvince} />
-                  <JakartaBoundaries kotaGeoJson={kotaGeoJson} />
-                  <KabupatenLabels kotaGeoJson={kotaGeoJson} />
                   {kotaGeoJson && (
-                    <HeatmapBlobs
-                      geoJsonData={kotaGeoJson}
+                    <JakartaRegions
+                      kotaGeoJson={kotaGeoJson}
                       creators={filteredCreators}
-                      selectedProvince={selectedProvince}
                     />
                   )}
+                  <KabupatenLabels kotaGeoJson={kotaGeoJson} />
                   <ScaleControl position="bottomright" />
                 </>
               ) : (
@@ -1001,8 +944,8 @@ export default function ServiceHub() {
               </div>
             )}
 
-            {/* Heatmap legend */}
-            {selectedProvince && <HeatmapLegend />}
+            {/* Region legend */}
+            {selectedProvince && <RegionLegend />}
           </div>
 
           {/* Right sidebar */}
