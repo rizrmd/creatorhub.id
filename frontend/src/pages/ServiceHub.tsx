@@ -1,590 +1,1016 @@
-﻿import { useState, useEffect, useCallback, useRef } from "react";
+﻿import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
-import {
-  Users, ArrowLeft,
-  Megaphone, Newspaper, Podcast, Radio,
-  Send,
-} from "lucide-react";
-import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
+import { Users, CheckCircle, MapPin, Share2, Tag, BarChart3, UsersRound, SlidersHorizontal, ChevronDown } from "lucide-react";
+import { MapContainer, TileLayer, GeoJSON, Marker, ScaleControl, useMap } from "react-leaflet";
+import L from "leaflet";
 import type { FeatureCollection } from "geojson";
-import type { GeoJSON as LeafletGeoJSON } from "leaflet";
 import * as topojson from "topojson-client";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { PieChart, Pie, Cell, Tooltip as RechartsTooltip } from "recharts";
+import { creatorsApi } from "@/lib/api";
+import { formatFollowers } from "@/lib/utils";
+import type { Creator } from "@/types";
 
-/* ---------- Types ---------- */
-interface ProvinceData {
-  name: string;
-  count: number;
-  studioNum: number;
-  baseLat: number;
-  baseLng: number;
+const PROVINCE_URL = "https://gist.githubusercontent.com/ajie31/3144875bad9705e2b2b544909c022276/raw/Peta%20Indonesia%20Provinsi.json";
+const KABUPATEN_KOTA_URL = "https://gist.githubusercontent.com/ajie31/3144875bad9705e2b2b544909c022276/raw/Peta%20Indonesia%20Kota%20Kabupaten%20simplified.json";
+
+const JAKARTA_KAB = ["Jakarta Pusat", "Jakarta Selatan", "Jakarta Barat", "Jakarta Timur", "Jakarta Utara", "Kepulauan Seribu"];
+
+const CITY_TO_PROVINCE: Record<string, string> = {
+  "Jakarta Pusat": "DKI Jakarta", "Jakarta Selatan": "DKI Jakarta", "Jakarta Barat": "DKI Jakarta",
+  "Jakarta Timur": "DKI Jakarta", "Jakarta Utara": "DKI Jakarta", "Kepulauan Seribu": "DKI Jakarta",
+  "Jakarta": "DKI Jakarta", "DKI Jakarta": "DKI Jakarta", "Daerah Khusus Ibukota Jakarta": "DKI Jakarta", "Dk Jakarta": "DKI Jakarta",
+  Bandung: "Jawa Barat", "Bandung Barat": "Jawa Barat", Bogor: "Jawa Barat", Depok: "Jawa Barat",
+  Bekasi: "Jawa Barat", Cirebon: "Jawa Barat", Tasikmalaya: "Jawa Barat", Sukabumi: "Jawa Barat",
+  Garut: "Jawa Barat", Karawang: "Jawa Barat", Subang: "Jawa Barat", Purwakarta: "Jawa Barat",
+  Indramayu: "Jawa Barat", Majalaya: "Jawa Barat",
+  Surabaya: "Jawa Timur", Malang: "Jawa Timur", "Kediri": "Jawa Timur", "Madiun": "Jawa Timur",
+  "Probolinggo": "Jawa Timur", "Lumajang": "Jawa Timur", "Jember": "Jawa Timur",
+  "Banyuwangi": "Jawa Timur", "Blitar": "Jawa Timur", "Pasuruan": "Jawa Timur",
+  "Sidoarjo": "Jawa Timur", "Gresik": "Jawa Timur", "Tuban": "Jawa Timur",
+  "Lamongan": "Jawa Timur", "Mojokerto": "Jawa Timur",
+  Semarang: "Jawa Tengah", Solo: "Jawa Tengah", "Pekalongan": "Jawa Tengah",
+  "Tegal": "Jawa Tengah", "Purwokerto": "Jawa Tengah", "Magelang": "Jawa Tengah",
+  Bali: "Bali", Denpasar: "Bali",
+  Yogyakarta: "DI Yogyakarta",
+  Medan: "Sumatera Utara", "Pematangsiantar": "Sumatera Utara", "Binjai": "Sumatera Utara",
+  Makassar: "Sulawesi Selatan", Palembang: "Sumatera Selatan", "Padang": "Sumatera Barat",
+  "Pekanbaru": "Riau", "Jambi": "Jambi", "Bengkulu": "Bengkulu", "Bandar Lampung": "Lampung",
+  "Pontianak": "Kalimantan Barat", "Palangkaraya": "Kalimantan Tengah", "Banjarmasin": "Kalimantan Selatan",
+  Balikpapan: "Kalimantan Timur", Samarinda: "Kalimantan Timur", "Tanjung Selor": "Kalimantan Utara",
+  Manado: "Sulawesi Utara", "Gorontalo": "Gorontalo", "Palu": "Sulawesi Tengah",
+  "Kendari": "Sulawesi Tenggara", "Mamuju": "Sulawesi Barat", Ambon: "Maluku", "Sofifi": "Maluku Utara",
+  "Manokwari": "Papua Barat", Jayapura: "Papua",
+};
+
+function normalizeJakartaCity(name: string): string {
+  const lower = name.toLowerCase().trim();
+  if (lower.includes("pusat")) return "Jakarta Pusat";
+  if (lower.includes("selatan")) return "Jakarta Selatan";
+  if (lower.includes("barat")) return "Jakarta Barat";
+  if (lower.includes("timur")) return "Jakarta Timur";
+  if (lower.includes("utara")) return "Jakarta Utara";
+  if (lower.includes("kepulauan seribu") || lower.includes("seribu")) return "Kepulauan Seribu";
+  return "Jakarta Pusat";
 }
 
-/* ---------- Data ---------- */
-const PROVINCES: ProvinceData[] = [
-  { name: "Aceh", studioNum: 1, baseLat: 5.5483, baseLng: 95.3238, count: 16 },
-  { name: "North Sumatra", studioNum: 1, baseLat: 3.5952, baseLng: 98.6722, count: 52 },
-  { name: "West Sumatra", studioNum: 1, baseLat: -0.9471, baseLng: 100.4172, count: 20 },
-  { name: "Riau", studioNum: 1, baseLat: 0.5071, baseLng: 101.4478, count: 25 },
-  { name: "Riau Islands", studioNum: 1, baseLat: 1.0881, baseLng: 104.0305, count: 14 },
-  { name: "Jambi", studioNum: 1, baseLat: -1.6101, baseLng: 103.6131, count: 10 },
-  { name: "South Sumatra", studioNum: 1, baseLat: -2.9909, baseLng: 104.7567, count: 28 },
-  { name: "Bengkulu", studioNum: 1, baseLat: -3.7928, baseLng: 102.2608, count: 10 },
-  { name: "Lampung", studioNum: 1, baseLat: -5.3971, baseLng: 105.2663, count: 28 },
-  { name: "Bangka Belitung", studioNum: 1, baseLat: -2.1301, baseLng: 106.1161, count: 8 },
-  { name: "Banten", studioNum: 1, baseLat: -6.1149, baseLng: 106.1502, count: 62 },
-  { name: "DKI Jakarta", studioNum: 1, baseLat: -6.2088, baseLng: 106.8456, count: 140 },
-  { name: "West Java", studioNum: 1, baseLat: -6.9175, baseLng: 107.6191, count: 185 },
-  { name: "Central Java", studioNum: 1, baseLat: -6.9667, baseLng: 110.4167, count: 128 },
-  { name: "DI Yogyakarta", studioNum: 1, baseLat: -7.7956, baseLng: 110.3695, count: 52 },
-  { name: "East Java", studioNum: 1, baseLat: -7.2575, baseLng: 112.7521, count: 152 },
-  { name: "Bali", studioNum: 1, baseLat: -8.6705, baseLng: 115.2126, count: 38 },
-  { name: "West Nusa Tenggara", studioNum: 1, baseLat: -8.5833, baseLng: 116.1167, count: 16 },
-  { name: "East Nusa Tenggara", studioNum: 1, baseLat: -10.1772, baseLng: 123.607, count: 12 },
-  { name: "West Kalimantan", studioNum: 1, baseLat: -0.0263, baseLng: 109.3425, count: 18 },
-  { name: "Central Kalimantan", studioNum: 1, baseLat: -2.2083, baseLng: 113.9167, count: 10 },
-  { name: "South Kalimantan", studioNum: 1, baseLat: -3.3167, baseLng: 114.59, count: 14 },
-  { name: "East Kalimantan", studioNum: 1, baseLat: -1.2654, baseLng: 116.8312, count: 14 },
-  { name: "North Sulawesi", studioNum: 1, baseLat: 1.4748, baseLng: 124.8428, count: 12 },
-  { name: "Gorontalo", studioNum: 1, baseLat: 0.543, baseLng: 123.056, count: 8 },
-  { name: "Central Sulawesi", studioNum: 1, baseLat: -0.8917, baseLng: 119.8708, count: 10 },
-  { name: "South Sulawesi", studioNum: 1, baseLat: -5.1477, baseLng: 119.4327, count: 35 },
-  { name: "Southeast Sulawesi", studioNum: 1, baseLat: -3.988, baseLng: 122.514, count: 10 },
-  { name: "West Sulawesi", studioNum: 1, baseLat: -2.6772, baseLng: 118.8922, count: 8 },
-  { name: "Maluku", studioNum: 1, baseLat: -3.6954, baseLng: 128.1814, count: 10 },
-  { name: "North Maluku", studioNum: 1, baseLat: 0.79, baseLng: 127.38, count: 8 },
-  { name: "West Papua", studioNum: 1, baseLat: -0.8614, baseLng: 134.062, count: 8 },
-  { name: "Papua", studioNum: 1, baseLat: -2.5488, baseLng: 140.669, count: 10 },
-];
-
-const PLATFORM_FEATURES = [
-  { title: "Content Creators", desc: "Find and connect with trusted creators who align with your niche, target audience, and campaign objectives.", icon: Users, bg: "bg-blue-500/10", color: "text-blue-400", border: "border-blue-500/20", link: "/dashboard/marketplace" },
-  { title: "Homeless Media", desc: "Explore strategic media placement opportunities across influential digital channels, online communities, and publisher networks.", icon: Newspaper, bg: "bg-orange-500/10", color: "text-orange-400", border: "border-orange-500/20", link: "/dashboard/homeless-media" },
-  { title: "Publishers", desc: "Find the right publishers and digital media platforms to expand your campaign reach and increase public visibility.", icon: Megaphone, bg: "bg-purple-500/10", color: "text-purple-400", border: "border-purple-500/20", link: "/dashboard/marketplace" },
-  { title: "Podcast / Live Streaming", desc: "Promote your products and services through podcasts, live streams, live shopping sessions, and creator-driven conversations.", icon: Podcast, bg: "bg-teal-500/10", color: "text-teal-400", border: "border-teal-500/20", link: "/dashboard" },
-  { title: "Media Monitoring Tools", desc: "Monitor conversations, mentions, reach, sentiment, and campaign performance in real time across multiple digital platforms.", icon: Radio, bg: "bg-red-500/10", color: "text-red-400", border: "border-red-500/20", link: "/dashboard" },
-];
-
-const ACTIVE_CAMPAIGNS = [
-  { name: "GlowUp Skincare", type: "Micro Influencer Campaign", date: "May 10 - May 30, 2024", status: "Live", color: "text-green-600 bg-green-50" },
-  { name: "SoundCore Indonesia", type: "Product Awareness", date: "May 12 - Jun 2, 2024", status: "In Progress", color: "text-blue-600 bg-blue-50" },
-  { name: "Wanderlust Travel", type: "Destination Promotion", date: "May 18 - Jun 8, 2024", status: "Pending", color: "text-amber-600 bg-amber-50" },
-];
-
-const RECENT_MESSAGES = [
-  { name: "Andi Pratama", role: "Content Creator", message: "Hi Yael! I'm excited about the campaign brief. Can we discuss the deliverables in more detail?", time: "5m ago" },
-  { name: "Andi Pratama", role: "Content Creator", message: "Hi Yael! I'm excited about the campaign brief. Can we discuss the deliverables in more detail?", time: "5m ago" },
-  { name: "Andi Pratama", role: "Content Creator", message: "Hi Yael! I'm excited about the campaign brief. Can we discuss the deliverables in more detail?", time: "5m ago" },
-];
-
-const CAMPAIGN_EVENTS = [
-  { date: 20, month: "May", year: "2024", label: "Skincare Launch Campaign", color: "bg-blue-600" },
-  { date: 28, month: "May", year: "2024", label: "Tech Gadget Review", color: "bg-white border" },
-];
-
-/* ---------- Helpers ---------- */
-function getProvinceColor(count: number): string {
-  if (count === 0) return "rgba(30,41,59,0.4)";
-  if (count <= 5) return "#1e3a5f";
-  if (count <= 15) return "#1d4ed8";
-  if (count <= 40) return "#3b82f6";
-  if (count <= 100) return "#60a5fa";
-  return "#93c5fd";
+function getProvince(name: string): string {
+  const direct = CITY_TO_PROVINCE[name];
+  if (direct) return direct;
+  const lower = name.toLowerCase();
+  if (lower.includes("jakarta") || lower === "dki jakarta" || lower === "dk jakarta") return "DKI Jakarta";
+  if (lower.includes("bandung")) return "Jawa Barat";
+  if (lower.includes("surabaya")) return "Jawa Timur";
+  if (lower.includes("semarang")) return "Jawa Tengah";
+  if (lower.includes("medan")) return "Sumatera Utara";
+  if (lower.includes("makassar")) return "Sulawesi Selatan";
+  if (lower.includes("bali") || lower.includes("denpasar")) return "Bali";
+  if (lower.includes("yogyakarta") || lower.includes("sleman")) return "DI Yogyakarta";
+  if (lower.includes("malang")) return "Jawa Timur";
+  return name;
 }
 
-/* ---------- Sub-components ---------- */
-function MapController({
-  selectedProvince,
+function computeCentroid(geometry: any): [number, number] | null {
+  if (!geometry) return null;
+  let coords: number[][] = [];
+  if (geometry.type === "Polygon") coords = geometry.coordinates[0];
+  else if (geometry.type === "MultiPolygon") coords = geometry.coordinates[0][0];
+  if (!coords || coords.length === 0) return null;
+  let sumLng = 0, sumLat = 0;
+  for (const c of coords) { sumLng += c[0]; sumLat += c[1]; }
+  return [sumLat / coords.length, sumLng / coords.length];
+}
+
+function seededRandom(seed: number): () => number {
+  let s = seed;
+  return () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
+}
+
+function hashString(str: string): number {
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
+const MOCK_TRENDS: Record<string, string> = {};
+const PROVINCE_LIST = Object.values(CITY_TO_PROVINCE);
+const uniqueProvinces = [...new Set(PROVINCE_LIST)];
+for (const p of uniqueProvinces) {
+  const rng = seededRandom(hashString(p));
+  const val = Math.floor(rng() * 25) + 3;
+  MOCK_TRENDS[p] = `↑ ${val}%`;
+}
+
+const TIER_COLORS = ["#3B82F6", "#22C55E", "#A855F7", "#F97316"];
+const PLATFORM_COLORS = ["#E4405F", "#000000", "#FF0000", "#1877F2", "#1DA1F2", "#94A3B8"];
+const GENDER_COLORS = ["#EC4899", "#3B82F6", "#94A3B8"];
+const TIER_PIN_COLORS: Record<string, string> = { Nano: "#22C55E", Micro: "#EAB308", Mid: "#F97316", Macro: "#EF4444", Mega: "#DC2626" };
+const HEATMAP_COLORS: Record<string, string> = { Nano: "#7c3aed", Micro: "#3b82f6", Mid: "#22c55e", Macro: "#f97316", Mega: "#ef4444" };
+
+function getTier(followers: number): string {
+  if (followers >= 1000000) return "Mega";
+  if (followers >= 500000) return "Macro";
+  if (followers >= 100000) return "Mid";
+  if (followers >= 10000) return "Micro";
+  return "Nano";
+}
+
+/* ---------- Animated Counter ---------- */
+function AnimatedNumber({ value, duration = 1200 }: { value: number; duration?: number }) {
+  const [display, setDisplay] = useState(0);
+  const ref = useRef<number>(0);
+  useEffect(() => {
+    const start = ref.current;
+    const diff = value - start;
+    if (diff === 0) return;
+    const startTime = performance.now();
+    function tick(now: number) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(start + diff * eased);
+      setDisplay(current);
+      if (progress < 1) requestAnimationFrame(tick);
+      else ref.current = value;
+    }
+    requestAnimationFrame(tick);
+  }, [value, duration]);
+  return <>{display.toLocaleString()}</>;
+}
+
+/* ---------- Map Components ---------- */
+function ProvinceChoropleth({
   geoJsonData,
+  provinceCounts,
   onProvinceClick,
 }: {
-  selectedProvince: string;
   geoJsonData: FeatureCollection | null;
+  provinceCounts: Map<string, number>;
   onProvinceClick: (name: string) => void;
 }) {
   const map = useMap();
-  const geoJsonLayerRef = useRef<LeafletGeoJSON | null>(null);
+  const layerRef = useRef<any>(null);
+  const maxCount = useMemo(() => Math.max(...Array.from(provinceCounts.values()), 1), [provinceCounts]);
 
   useEffect(() => {
-    if (selectedProvince !== "all" && geoJsonLayerRef.current) {
-      geoJsonLayerRef.current.eachLayer((layer: any) => {
-        if (layer.feature?.properties?.NAME_1) {
-          const provName = mapGeoJSONProvince(layer.feature.properties.NAME_1);
-          if (provName === selectedProvince) {
-            map.fitBounds(layer.getBounds());
-          }
-        }
-      });
-    } else {
-      map.setView([-2.5, 118.0], 5);
-    }
-  }, [selectedProvince, map, geoJsonData]);
-
-  const geoJsonKey = `${selectedProvince}-${geoJsonData ? "loaded" : "empty"}`;
+    map.setView([-2.5, 118.0], 5);
+  }, [map, geoJsonData]);
 
   if (!geoJsonData) return null;
 
+  function getColor(count: number): string {
+    const ratio = count / maxCount;
+    if (ratio > 0.7) return "#1e40af";
+    if (ratio > 0.5) return "#2563eb";
+    if (ratio > 0.3) return "#3b82f6";
+    if (ratio > 0.1) return "#60a5fa";
+    if (ratio > 0) return "#93c5fd";
+    return "rgba(30,41,59,0.3)";
+  }
+
   return (
     <GeoJSON
-      key={geoJsonKey}
       data={geoJsonData}
-      ref={geoJsonLayerRef}
+      ref={layerRef}
       style={(feature) => {
         if (!feature) return {};
-        const provName = mapGeoJSONProvince(feature.properties.NAME_1);
-        const p = PROVINCES.find((x) => x.name === provName);
-        const count = p?.count ?? 0;
-
-        if (selectedProvince !== "all") {
-          const isSelected = provName === selectedProvince;
-          return {
-            fillColor: getProvinceColor(count),
-            weight: isSelected ? 2.5 : 0.5,
-            opacity: isSelected ? 1 : 0.3,
-            color: "rgba(148,163,184,0.4)",
-            fillOpacity: isSelected ? 0.85 : 0.15,
-          };
-        }
-
+        const name = feature.properties?.NAME_1 || "";
+        const count = provinceCounts.get(name) ?? 0;
         return {
-          fillColor: getProvinceColor(count),
+          fillColor: getColor(count),
           weight: 1,
-          opacity: 0.5,
+          opacity: 0.6,
           color: "rgba(148,163,184,0.3)",
-          fillOpacity: 0.7,
+          fillOpacity: count > 0 ? 0.7 : 0.2,
         };
       }}
       onEachFeature={(feature, layer) => {
-        const provName = mapGeoJSONProvince(feature.properties.NAME_1);
-        const p = PROVINCES.find((x) => x.name === provName);
-        const count = p?.count ?? 0;
-
+        const name = feature.properties?.NAME_1 || "Unknown";
+        const count = provinceCounts.get(name) ?? 0;
         layer.bindTooltip(
-          `<div style="font-family:Inter,sans-serif;padding:4px;line-height:1.4;background:#0F172A;border:1px solid rgba(255,255,255,0.1);border-radius:8px;">
-            <strong style="font-size:12px;color:#F1F5F9;">${provName}</strong><br>
-            <span style="font-size:11px;color:#94A3B8;">${count} creators</span>
+          `<div style="font-family:Inter,sans-serif;padding:6px 10px;background:#0F172A;border:1px solid rgba(255,255,255,0.1);border-radius:8px;">
+            <strong style="font-size:13px;color:#F1F5F9;">${name}</strong><br/>
+            <span style="font-size:12px;color:#93C5FD;">${count.toLocaleString()} creators</span>
           </div>`,
-          { direction: "top", sticky: true, className: "" },
+          { direction: "top", sticky: true }
         );
-
-        layer.on("click", () => onProvinceClick(provName));
+        layer.on("click", () => onProvinceClick(name));
       }}
     />
   );
 }
 
-function mapGeoJSONProvince(geoName: string): string {
-  const map: Record<string, string> = {
-    "Aceh": "Aceh",
-    "Sumatera Utara": "North Sumatra",
-    "Sumatera Barat": "West Sumatra",
-    "Riau": "Riau",
-    "Kepulauan Riau": "Riau Islands",
-    "Jambi": "Jambi",
-    "Sumatera Selatan": "South Sumatra",
-    "Bengkulu": "Bengkulu",
-    "Lampung": "Lampung",
-    "Kep. Bangka Belitung": "Bangka Belitung",
-    "Banten": "Banten",
-    "DKI Jakarta": "DKI Jakarta",
-    "Jawa Barat": "West Java",
-    "Jawa Tengah": "Central Java",
-    "DI Yogyakarta": "DI Yogyakarta",
-    "Jawa Timur": "East Java",
-    "Bali": "Bali",
-    "Nusa Tenggara Barat": "West Nusa Tenggara",
-    "Nusa Tenggara Timur": "East Nusa Tenggara",
-    "Kalimantan Barat": "West Kalimantan",
-    "Kalimantan Tengah": "Central Kalimantan",
-    "Kalimantan Selatan": "South Kalimantan",
-    "Kalimantan Timur": "East Kalimantan",
-    "Kalimantan Utara": "North Kalimantan",
-    "Sulawesi Utara": "North Sulawesi",
-    "Gorontalo": "Gorontalo",
-    "Sulawesi Tengah": "Central Sulawesi",
-    "Sulawesi Selatan": "South Sulawesi",
-    "Sulawesi Tenggara": "Southeast Sulawesi",
-    "Sulawesi Barat": "West Sulawesi",
-    "Maluku": "Maluku",
-    "Maluku Utara": "North Maluku",
-    "Papua Barat": "West Papua",
-    "Papua": "Papua",
-  };
-  return map[geoName] ?? geoName;
-}
+/* ---------- Heatmap Blobs (radial-gradient divIcon) ---------- */
+function HeatmapBlobs({
+  geoJsonData,
+  creators,
+  selectedProvince,
+}: {
+  geoJsonData: FeatureCollection | null;
+  creators: Creator[];
+  selectedProvince: string;
+}) {
+  const map = useMap();
+  const [zoomed, setZoomed] = useState(false);
 
-/* ---------- Main Component ---------- */
-export default function ServiceHub() {
-  const [province, setProvince] = useState("all");
-  const [geoJsonData, setGeoJsonData] = useState<FeatureCollection | null>(null);
-  const [mapTab, setMapTab] = useState<"creator" | "homeless" | "podcast">("creator");
+  const provinceCreators = useMemo(() => {
+    return creators.filter((c) => getProvince(c.city) === selectedProvince);
+  }, [creators, selectedProvince]);
 
   useEffect(() => {
-    fetch("https://gist.githubusercontent.com/ajie31/3144875bad9705e2b2b544909c022276/raw/Peta%20Indonesia%20Provinsi.json")
-      .then((r) => r.json())
-      .then((topo: any) => {
-        const obj = topo.objects.gadm36_IDN_1;
-        const geo = topojson.feature(topo, obj) as unknown as FeatureCollection;
-        setGeoJsonData(geo);
-      })
-      .catch(() => {});
+    if (!zoomed && geoJsonData) {
+      if (selectedProvince === "DKI Jakarta") {
+        map.setView([-6.2088, 106.8456], 11);
+        setZoomed(true);
+      } else {
+        for (const f of geoJsonData.features) {
+          if (f.properties?.NAME_1 === selectedProvince) {
+            const layer = L.geoJSON(f as any);
+            map.fitBounds(layer.getBounds(), { padding: [60, 60] });
+            setZoomed(true);
+            break;
+          }
+        }
+      }
+    }
+  }, [selectedProvince, geoJsonData, map, zoomed]);
+
+  const centroids = useMemo(() => {
+    if (!geoJsonData) return new Map<string, [number, number]>();
+    const m = new Map<string, [number, number]>();
+    for (const f of geoJsonData.features) {
+      const name = f.properties?.NAME_2;
+      if (name && !m.has(name)) {
+        const c = computeCentroid(f.geometry);
+        if (c) m.set(name, c);
+      }
+    }
+    return m;
+  }, [geoJsonData]);
+
+  const markers = useMemo(() => {
+    const cityGroups = new Map<string, Creator[]>();
+    for (const c of provinceCreators) {
+      const key = selectedProvince === "DKI Jakarta" ? normalizeJakartaCity(c.city) : c.city;
+      if (!cityGroups.has(key)) cityGroups.set(key, []);
+      cityGroups.get(key)!.push(c);
+    }
+    const result: { creator: Creator; pos: [number, number]; size: number; color: string }[] = [];
+    for (const [city, cityCreators] of cityGroups) {
+      const base = centroids.get(city);
+      if (!base) continue;
+      const count = cityCreators.length;
+      const spread = count > 50 ? 0.06 : count > 20 ? 0.04 : count > 5 ? 0.025 : 0.015;
+      for (let i = 0; i < count; i++) {
+        const c = cityCreators[i];
+        const tier = getTier(c.followers);
+        const color = HEATMAP_COLORS[tier] ?? "#7c3aed";
+        const rng = seededRandom(hashString(c.id));
+        const angle = rng() * Math.PI * 2;
+        const dist = rng() * spread;
+        const size = 80 + Math.floor(rng() * 40);
+        result.push({
+          creator: c,
+          pos: [base[0] + dist * Math.cos(angle), base[1] + dist * Math.sin(angle)],
+          size,
+          color,
+        });
+      }
+    }
+    return result;
+  }, [provinceCreators, centroids, selectedProvince]);
+
+  const makeBlobIcon = useCallback((size: number, color: string) => {
+    return L.divIcon({
+      className: "",
+      iconSize: [size, size],
+      iconAnchor: [size / 2, size / 2],
+      html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:radial-gradient(circle, ${color}bb 0%, ${color}66 25%, ${color}22 50%, transparent 70%);pointer-events:none;"></div>`,
+    });
   }, []);
-
-  const handleProvinceClick = useCallback((name: string) => {
-    setProvince((prev) => (prev === name ? "all" : name));
-  }, []);
-
-  const sortedProvinces = [...PROVINCES].sort((a, b) => b.count - a.count);
-
-  const leftHalf = sortedProvinces.slice(0, 20);
-  const rightHalf = sortedProvinces.slice(20);
 
   return (
-    <div className="p-4 md:p-6 space-y-5" style={{ background: "var(--ch-bg)", minHeight: "100%" }}>
-      {/* Hero Banner */}
-      <div
-        className="relative rounded-2xl overflow-hidden border border-white/10"
-        style={{ background: "#040e1f", minHeight: 240 }}
-      >
-        <div className="relative z-10 grid lg:grid-cols-2 gap-0 items-center">
-          {/* Left: Text */}
-          <div className="px-8 py-10 lg:px-12 lg:py-12">
-            <h2
-              className="text-2xl lg:text-[2rem] font-extrabold text-white leading-[1.15] tracking-tight mb-4"
-              style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-            >
-              One Platform to Connect with{" "}
-              <span className="text-orange-400">Creators</span>,{" "}
-              <span className="text-blue-400">Homeless Media</span>, and{" "}
-              <span className="text-blue-500">Publishers</span>
-            </h2>
-            <p className="text-sm text-slate-400 mb-6 max-w-md leading-relaxed">
-              The all-in-one marketplace connecting brands with the right creators to achieve real impact.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Link to="/dashboard/marketplace">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg shadow-blue-600/25 text-sm px-5">
-                  <Users className="w-4 h-4 mr-1.5" /> Find Creators
-                </Button>
-              </Link>
-              <Link to="/dashboard/campaigns">
-                <Button variant="outline" className="border-white/25 text-white hover:bg-white/10 font-semibold text-sm px-5">
-                  Create Campaign
-                </Button>
-              </Link>
-            </div>
-          </div>
+    <>
+      {markers.map(({ creator, pos, size, color }) => (
+        <Marker
+          key={creator.id}
+          position={pos}
+          icon={makeBlobIcon(size, color)}
+          eventHandlers={{
+            mouseover: (e) => {
+              const tier = getTier(creator.followers);
+              e.target.bindTooltip(
+                `<div style="background:#0F172A;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:6px 8px;font-family:Inter,sans-serif;font-size:11px;color:#F1F5F9;white-space:nowrap;min-width:140px;">
+                  <div style="font-weight:700;">${creator.name}</div>
+                  <div style="color:#94A3B8;">${formatFollowers(creator.followers)} followers · ${creator.engagementRate}% ER</div>
+                  <div style="color:${color};font-weight:700;">${tier}</div>
+                </div>`,
+                { direction: "top", sticky: true, opacity: 1, className: "" }
+              );
+            },
+          }}
+        />
+      ))}
+    </>
+  );
+}
 
-          {/* Right: Hero Image — centered in column, not edge-to-edge */}
-          <div className="hidden lg:flex items-center justify-center relative px-6 py-5">
-            <div
-              className="absolute inset-0 z-10 pointer-events-none"
-              style={{
-                background: `
-                  radial-gradient(ellipse at 0% 0%, #040e1f 0%, transparent 50%),
-                  linear-gradient(to right, #040e1f 0%, transparent 15%),
-                  linear-gradient(to bottom, #040e1f 0%, transparent 12%),
-                  linear-gradient(to left, #040e1f 0%, transparent 15%),
-                  linear-gradient(to top, #040e1f 0%, transparent 10%)
-                `
-              }}
-            />
-            <img
-              src="/hero-banner.jpg?v=9"
-              alt="CreatorHub Platform"
-              className="rounded-xl object-cover w-full max-h-[280px]"
-            />
+/* ---------- Kabupaten Boundary Outlines ---------- */
+function JakartaBoundaries({ kotaGeoJson }: { kotaGeoJson: FeatureCollection | null }) {
+  const jakartaFeatures = useMemo(() => {
+    if (!kotaGeoJson) return null;
+    const features = kotaGeoJson.features.filter((f) => f.properties?.NAME_1 === "DKI Jakarta");
+    if (features.length === 0) return null;
+    return { type: "FeatureCollection", features } as unknown as FeatureCollection;
+  }, [kotaGeoJson]);
+
+  if (!jakartaFeatures) return null;
+
+  return (
+    <GeoJSON
+      data={jakartaFeatures}
+      style={() => ({
+        weight: 2,
+        color: "white",
+        opacity: 0.85,
+        fillColor: "transparent",
+        fillOpacity: 0,
+      })}
+    />
+  );
+}
+
+/* ---------- Kabupaten Name Labels ---------- */
+function KabupatenLabels({ kotaGeoJson }: { kotaGeoJson: FeatureCollection | null }) {
+  const labels = useMemo(() => {
+    if (!kotaGeoJson) return [];
+    const jakartaFeatures = kotaGeoJson.features.filter((f) => f.properties?.NAME_1 === "DKI Jakarta");
+    return jakartaFeatures.map((f) => {
+      const name = f.properties?.NAME_2 || "";
+      const centroid = computeCentroid(f.geometry);
+      const displayName = name === "Kep. Seribu" ? "Kabupaten\nKepulauan Seribu" : name;
+      return { name, centroid, displayName };
+    }).filter((l) => l.centroid);
+  }, [kotaGeoJson]);
+
+  return (
+    <>
+      {labels.map((l) => {
+        const isMultiLine = l.displayName.includes("\n");
+        const lines = l.displayName.split("\n");
+        return (
+          <Marker
+            key={l.name}
+            position={l.centroid!}
+            icon={L.divIcon({
+              className: "",
+              iconSize: [0, 0],
+              iconAnchor: [60, 12],
+              html: `<div style="
+                color: white;
+                font-size: 14px;
+                font-weight: 800;
+                font-family: 'Plus Jakarta Sans', Inter, sans-serif;
+                text-shadow: 1px 1px 3px rgba(0,0,0,0.7), -1px -1px 3px rgba(0,0,0,0.7), 1px -1px 3px rgba(0,0,0,0.7), -1px 1px 3px rgba(0,0,0,0.7);
+                white-space: ${isMultiLine ? 'pre-line' : 'nowrap'};
+                text-align: center;
+                line-height: 1.3;
+                pointer-events: none;
+              ">${lines.join('<br/>')}</div>`,
+            })}
+          />
+        );
+      })}
+    </>
+  );
+}
+
+/* ---------- Heatmap Legend Card ---------- */
+function HeatmapLegend() {
+  const tiers: { label: string; color: string }[] = [
+    { label: "Nano (<10K)", color: HEATMAP_COLORS.Nano },
+    { label: "Micro (10K\u2013100K)", color: HEATMAP_COLORS.Micro },
+    { label: "Mid (100K\u2013500K)", color: HEATMAP_COLORS.Mid },
+    { label: "Macro (500K\u20131M)", color: HEATMAP_COLORS.Macro },
+    { label: "Mega (>1M)", color: HEATMAP_COLORS.Mega },
+  ];
+
+  return (
+    <div
+      className="absolute z-[1000]"
+      style={{
+        bottom: 24,
+        left: 24,
+        background: "white",
+        borderRadius: 14,
+        padding: "16px 20px",
+        boxShadow: "0 2px 12px rgba(0,0,0,0.12)",
+        fontFamily: "'Plus Jakarta Sans', Inter, sans-serif",
+        minWidth: 190,
+      }}
+    >
+      <div style={{ fontWeight: 800, fontSize: 16, color: "#0f172a", marginBottom: 2 }}>Legend</div>
+      <div style={{ fontSize: 12, color: "#64748b", marginBottom: 10 }}>Creators by Tier</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {tiers.map((t) => (
+          <div key={t.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{
+              width: 14, height: 14, borderRadius: "50%",
+              background: `radial-gradient(circle, ${t.color}cc 0%, ${t.color}66 60%, transparent 100%)`,
+              boxShadow: `0 0 6px ${t.color}88`,
+            }} />
+            <span style={{ fontSize: 12, color: "#334155", fontWeight: 500 }}>{t.label}</span>
           </div>
-        </div>
+        ))}
       </div>
-
-      {/* Map Section — full width */}
-      <div className="rounded-xl border flex flex-col" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-        <div className="flex flex-wrap items-center justify-between gap-2 px-5 pt-4 pb-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setMapTab("creator")}
-              className={`text-[13px] font-bold px-3 py-1.5 rounded-lg transition-all ${
-                mapTab === "creator"
-                  ? "bg-orange-500 text-white shadow-md shadow-orange-500/20"
-                  : "text-white/50 hover:text-white/80"
-              }`}
-              style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-            >
-              Content Creators
-            </button>
-            <button
-              onClick={() => setMapTab("homeless")}
-              className={`text-[13px] font-bold px-3 py-1.5 rounded-lg transition-all ${
-                mapTab === "homeless"
-                  ? "bg-orange-500 text-white shadow-md shadow-orange-500/20"
-                  : "text-white/50 hover:text-white/80"
-              }`}
-              style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-            >
-              Homeless Media
-            </button>
-            <button
-              onClick={() => setMapTab("podcast")}
-              className={`text-[13px] font-bold px-3 py-1.5 rounded-lg transition-all ${
-                mapTab === "podcast"
-                  ? "bg-orange-500 text-white shadow-md shadow-orange-500/20"
-                  : "text-white/50 hover:text-white/80"
-              }`}
-              style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-            >
-              Podcast Facilities
-            </button>
-          </div>
-          <div className="flex items-center gap-3">
-            <select
-              value={province}
-              onChange={(e) => setProvince(e.target.value)}
-              className="text-[12px] font-semibold border rounded-lg px-3 py-1.5 outline-none"
-              style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)", background: "var(--ch-surface)" }}
-            >
-              <option value="all">Indonesia</option>
-              {PROVINCES.map((p) => (
-                <option key={p.name} value={p.name}>{p.name}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-        <div className="relative min-h-[380px]">
-          <MapContainer
-            center={[-2.5, 118.0]}
-            zoom={5}
-            zoomControl={true}
-            className="w-full h-full absolute inset-0 z-0"
-            scrollWheelZoom={true}
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-            />
-            <MapController
-              selectedProvince={province}
-              geoJsonData={geoJsonData}
-              onProvinceClick={handleProvinceClick}
-            />
-          </MapContainer>
-          {/* Density legend inside map */}
-          <div className="absolute bottom-3 left-3 z-[1000] flex items-center gap-2 px-3 py-1.5 rounded-lg" style={{ background: "rgba(15,23,42,0.85)", border: "1px solid rgba(255,255,255,0.1)" }}>
-            <span className="text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Density</span>
-            <div className="flex gap-0.5">
-              {["#1e3a5f", "#1d4ed8", "#3b82f6", "#60a5fa", "#93c5fd"].map((c) => (
-                <span key={c} className="inline-block w-3.5 h-2.5 rounded-sm" style={{ background: c }} />
-              ))}
-            </div>
-            <span className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>Low → High</span>
-          </div>
-        </div>
-        <div className="flex flex-wrap items-center gap-6 px-5 py-3 border-t text-[11px]" style={{ borderColor: "var(--ch-border)" }}>
-          <div className="flex items-center gap-2">
-            <Users className="w-4 h-4" style={{ color: "#3B82F6" }} />
-            <span className="font-bold" style={{ color: "var(--ch-text)" }}>1.000 Content Creators</span>
-            <span style={{ color: "var(--ch-text-muted)" }}>tersedia di seluruh Indonesia</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Newspaper className="w-4 h-4" style={{ color: "#F97316" }} />
-            <span className="font-bold" style={{ color: "var(--ch-text)" }}>226 Homeless Media</span>
-            <span style={{ color: "var(--ch-text-muted)" }}>siap amplifikasi narasi & kampanye</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Radio className="w-4 h-4" style={{ color: "#8B5CF6" }} />
-            <span className="font-bold" style={{ color: "var(--ch-text)" }}>58 Shelter Accounts</span>
-            <span style={{ color: "var(--ch-text-muted)" }}>kanal utama publikasi</span>
-          </div>
-        </div>
+      <div style={{ marginTop: 12, fontSize: 10, color: "#94a3b8", lineHeight: 1.4, fontStyle: "italic" }}>
+        Heatmap shows the density of creators by highest follower tier.
       </div>
+    </div>
+  );
+}
 
-      {/* Platform Features */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-[15px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            Platform Features
-          </h3>
-          <Link to="/dashboard/marketplace" className="text-xs font-semibold text-blue-400 hover:underline">View All</Link>
+function MapViewController({ center, zoom, province }: { center: [number, number]; zoom: number; province?: string | null }) {
+  const map = useMap();
+  useEffect(() => {
+    if (province === "DKI Jakarta") {
+      map.setView([-6.2088, 106.8456], 11);
+    } else {
+      map.setView(center, zoom);
+    }
+  }, [map, center, zoom, province]);
+  return null;
+}
+
+/* ---------- Dashboard Cards ---------- */
+function DonutCard({ title, data, colors, total }: {
+  title: string;
+  data: { name: string; value: number }[];
+  colors: string[];
+  total: number;
+}) {
+  return (
+    <div className="rounded-xl border p-5" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
+      <div className="flex items-center justify-between mb-4">
+        <h4 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{title}</h4>
+      </div>
+      <div className="flex items-center gap-4">
+        <div className="relative shrink-0">
+          <PieChart width={140} height={140}>
+            <Pie
+              data={data}
+              cx={70}
+              cy={70}
+              innerRadius={42}
+              outerRadius={62}
+              paddingAngle={2}
+              dataKey="value"
+              strokeWidth={0}
+            >
+              {data.map((_, i) => (
+                <Cell key={i} fill={colors[i % colors.length]} />
+              ))}
+            </Pie>
+            <RechartsTooltip
+              contentStyle={{ background: "#0F172A", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", fontSize: "12px", color: "#F1F5F9" }}
+              formatter={(value: any, name: any) => [`${Number(value).toLocaleString()} (${((Number(value) / total) * 100).toFixed(1)}%)`, String(name)]}
+            />
+          </PieChart>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-[18px] font-extrabold" style={{ color: "var(--ch-text)" }}>{total.toLocaleString()}</span>
+            <span className="text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Creators</span>
+          </div>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-          {PLATFORM_FEATURES.map((feat) => {
-            const Icon = feat.icon;
+        <div className="flex-1 space-y-1.5">
+          {data.map((item, i) => {
+            const pct = total > 0 ? ((item.value / total) * 100).toFixed(1) : "0";
             return (
-              <Link key={feat.title} to={feat.link}>
-                <div className="rounded-xl border border-white/[0.06] p-4 flex flex-col items-center text-center gap-2 hover:border-white/15 transition-all cursor-pointer group"
-                  style={{ background: "rgba(15,23,42,0.6)" }}>
-                  <div className={`w-12 h-12 ${feat.bg} border ${feat.border} rounded-xl flex items-center justify-center`}>
-                    <Icon className={`w-6 h-6 ${feat.color}`} />
-                  </div>
-                  <p className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>{feat.title}</p>
-                  <p className="text-[11px] leading-snug" style={{ color: "var(--ch-text-muted)" }}>{feat.desc}</p>
-                </div>
-              </Link>
+              <div key={item.name} className="flex items-center gap-2 text-[11px]">
+                <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: colors[i % colors.length] }} />
+                <span className="flex-1" style={{ color: "var(--ch-text-muted)" }}>{item.name}</span>
+                <span className="font-bold" style={{ color: "var(--ch-text)" }}>{pct}%</span>
+              </div>
             );
           })}
         </div>
       </div>
+    </div>
+  );
+}
 
-      {/* Table + Right Sidebar */}
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-5">
-        {/* Main: Table */}
-        <div className="space-y-5">
-          {/* Creators by Province Table */}
-          <div className="rounded-xl border" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-            <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
-              <h3 className="text-[15px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                Creators by Province
-              </h3>
-              {province !== "all" && (
-                <button onClick={() => setProvince("all")} className="text-xs font-semibold text-blue-600 hover:underline flex items-center gap-1">
-                  <ArrowLeft className="w-3 h-3" /> Back to All
+function BarCard({ title, data, maxVal }: {
+  title: string;
+  data: { name: string; value: number }[];
+  maxVal: number;
+}) {
+  return (
+    <div className="rounded-xl border p-5" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
+      <div className="flex items-center justify-between mb-4">
+        <h4 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{title}</h4>
+      </div>
+      <div className="space-y-3">
+        {data.map((item) => (
+          <div key={item.name}>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>{item.name}</span>
+              <span className="text-[11px] font-bold" style={{ color: "var(--ch-text)" }}>{item.value.toLocaleString()}</span>
+            </div>
+            <div className="w-full h-2 rounded-full" style={{ background: "var(--ch-border)" }}>
+              <div
+                className="h-full rounded-full"
+                style={{
+                  width: `${maxVal > 0 ? (item.value / maxVal) * 100 : 0}%`,
+                  background: "linear-gradient(90deg, #3B82F6, #60A5FA)",
+                }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function InsightsCard({ insights }: { insights: string[] }) {
+  return (
+    <div className="rounded-xl border p-5" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
+      <div className="flex items-center gap-2 mb-4">
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "rgba(59,130,246,0.1)" }}>
+          <span className="text-[16px]">💡</span>
+        </div>
+        <h4 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Key Insights</h4>
+      </div>
+      <div className="space-y-3">
+        {insights.map((insight, i) => (
+          <div key={i} className="flex gap-2">
+            <span className="text-blue-400 mt-0.5 shrink-0">✓</span>
+            <p className="text-[12px] leading-relaxed" style={{ color: "var(--ch-text-muted)" }}>{insight}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Creator Sidebar ---------- */
+function CreatorSidebar({ creators, province }: { creators: Creator[]; province: string }) {
+  const sorted = useMemo(() => [...creators].sort((a, b) => b.engagementRate - a.engagementRate), [creators]);
+  const shown = sorted.slice(0, 20);
+  const label = province === "DKI Jakarta" ? "All Jakarta" : province;
+  return (
+    <div className="rounded-xl border flex flex-col" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", maxHeight: "420px" }}>
+      <div className="px-4 pt-4 pb-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
+        <p className="text-[14px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+          {creators.length.toLocaleString()} Creators in {label}
+        </p>
+        <p className="text-[10px] mt-0.5" style={{ color: "var(--ch-text-muted)" }}>Sort by: Engagement Rate</p>
+      </div>
+      <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "thin" }}>
+        {shown.map((c) => (
+          <a
+            key={c.id}
+            href={`/dashboard/creators/${c.id}`}
+            className="flex items-center gap-3 px-4 py-3 border-b transition-colors hover:bg-white/5 no-underline"
+            style={{ borderColor: "var(--ch-border)" }}
+          >
+            <img
+              src={c.imageUrl || c.img || ""}
+              alt={c.name}
+              className="w-10 h-10 rounded-full object-cover shrink-0"
+              style={{ border: "2px solid var(--ch-border)" }}
+              onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+            />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1">
+                <span className="text-[12px] font-bold truncate" style={{ color: "var(--ch-text)" }}>@{c.handle}</span>
+                {c.verified && <CheckCircle className="w-3 h-3 shrink-0" style={{ color: "#3B82F6" }} />}
+              </div>
+              <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>
+                {c.platforms[0] ? c.platforms[0].charAt(0).toUpperCase() + c.platforms[0].slice(1) : ""} · {c.city}
+              </p>
+              <p className="text-[10px]" style={{ color: "var(--ch-text-soft)" }}>{c.category}</p>
+            </div>
+            <div className="text-right shrink-0">
+              <p className="text-[12px] font-bold" style={{ color: "var(--ch-text)" }}>{formatFollowers(c.followers)}</p>
+              <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>followers</p>
+              <p className="text-[11px] font-bold mt-0.5" style={{ color: "#3B82F6" }}>{c.engagementRate}%</p>
+              <p className="text-[9px]" style={{ color: "var(--ch-text-muted)" }}>ER</p>
+            </div>
+          </a>
+        ))}
+      </div>
+      <div className="px-4 py-3 border-t" style={{ borderColor: "var(--ch-border)" }}>
+        <a href="/dashboard/marketplace" className="block text-center text-[11px] font-bold py-2 rounded-lg transition-colors hover:bg-white/5 no-underline" style={{ color: "#3B82F6" }}>
+          View All Creators →
+        </a>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Filter Select ---------- */
+function FilterSelect({ icon, value, onChange, options }: {
+  icon: React.ReactNode;
+  value: string;
+  onChange: (v: string) => void;
+  options: { value: string; label: string }[];
+}) {
+  return (
+    <div className="relative">
+      <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-medium"
+        style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)", color: value === "all" ? "var(--ch-text-muted)" : "#3B82F6" }}>
+        <span style={{ color: "#3B82F6" }}>{icon}</span>
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="appearance-none bg-transparent outline-none cursor-pointer pr-1"
+          style={{ color: "inherit", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+        >
+          {options.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+        <ChevronDown className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--ch-text-muted)" }} />
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Main Component ---------- */
+export default function ServiceHub() {
+  const [selectedProvince, setSelectedProvince] = useState<string | null>("DKI Jakarta");
+  const [provinceGeoJson, setProvinceGeoJson] = useState<FeatureCollection | null>(null);
+  const [kotaGeoJson, setKotaGeoJson] = useState<FeatureCollection | null>(null);
+  const [allCreators, setAllCreators] = useState<Creator[]>([]);
+  const [loadingCreators, setLoadingCreators] = useState(true);
+
+  const [filterCity, setFilterCity] = useState<string>("all");
+  const [filterPlatform, setFilterPlatform] = useState<string>("all");
+  const [filterCategory, setFilterCategory] = useState<string>("all");
+  const [filterTier, setFilterTier] = useState<string>("all");
+  const [filterGender, setFilterGender] = useState<string>("all");
+
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchAll() {
+      setLoadingCreators(true);
+      try {
+        const res = await creatorsApi.list({ page: 1, pageSize: 50000, verified: true });
+        if (!cancelled) { setAllCreators(res.data); setLoadingCreators(false); }
+      } catch {
+        if (!cancelled) setLoadingCreators(false);
+      }
+    }
+    fetchAll();
+    return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
+    fetch(PROVINCE_URL)
+      .then((r) => r.json())
+      .then((topo: any) => {
+        setProvinceGeoJson(topojson.feature(topo, topo.objects.gadm36_IDN_1) as unknown as FeatureCollection);
+      })
+      .catch(() => {});
+    fetch(KABUPATEN_KOTA_URL)
+      .then((r) => r.json())
+      .then((topo: any) => {
+        setKotaGeoJson(topojson.feature(topo, topo.objects.gadm36_IDN_2) as unknown as FeatureCollection);
+      })
+      .catch(() => {});
+  }, []);
+
+  const provinceCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const c of allCreators) {
+      const prov = getProvince(c.city);
+      counts.set(prov, (counts.get(prov) ?? 0) + 1);
+    }
+    return counts;
+  }, [allCreators]);
+
+  const provinceCities = useMemo(() => {
+    if (!selectedProvince) return [];
+    if (selectedProvince === "DKI Jakarta") return JAKARTA_KAB;
+    const set = new Set<string>();
+    for (const c of allCreators) {
+      if (getProvince(c.city) === selectedProvince) set.add(c.city);
+    }
+    return Array.from(set).sort();
+  }, [allCreators, selectedProvince]);
+
+  const platformOptions = useMemo(() => {
+    const set = new Set<string>();
+    for (const c of allCreators) for (const p of c.platforms) set.add(p.toLowerCase());
+    return Array.from(set).sort();
+  }, [allCreators]);
+
+  const categoryOptions = useMemo(() => {
+    const set = new Set<string>();
+    for (const c of allCreators) {
+      if (c.category) {
+        for (const cat of c.category.split(",")) {
+          const trimmed = cat.trim();
+          if (trimmed) set.add(trimmed);
+        }
+      }
+    }
+    return Array.from(set).sort();
+  }, [allCreators]);
+
+  const filteredCreators = useMemo(() => {
+    return allCreators.filter((c) => {
+      const cityForFilter = (selectedProvince === "DKI Jakarta") ? normalizeJakartaCity(c.city) : c.city;
+      if (filterCity !== "all" && cityForFilter !== filterCity) return false;
+      if (filterPlatform !== "all" && !c.platforms.map((p) => p.toLowerCase()).includes(filterPlatform)) return false;
+      if (filterCategory !== "all") {
+        const cats = (c.category || "").split(",").map((s) => s.trim().toLowerCase());
+        if (!cats.includes(filterCategory.toLowerCase())) return false;
+      }
+      if (filterTier !== "all") {
+        const tier = getTier(c.followers);
+        if (tier.toLowerCase() !== filterTier.toLowerCase()) return false;
+      }
+      if (filterGender !== "all") {
+        const rng = seededRandom(hashString(c.id));
+        const r = rng();
+        const gender = r < 0.612 ? "female" : r < 0.993 ? "male" : "other";
+        if (gender !== filterGender.toLowerCase()) return false;
+      }
+      return true;
+    });
+  }, [allCreators, filterCity, filterPlatform, filterCategory, filterTier, filterGender, selectedProvince]);
+
+  const totalCreators = allCreators.length;
+
+  const topProvinces = useMemo(() => {
+    return Array.from(provinceCounts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
+  }, [provinceCounts]);
+
+  const platformData = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const c of allCreators) {
+      for (const p of c.platforms) {
+        const key = p.toLowerCase();
+        counts.set(key, (counts.get(key) ?? 0) + 1);
+      }
+    }
+    const arr = Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
+    const known = ["instagram", "tiktok", "youtube", "facebook", "x", "linkedin"];
+    const result: { name: string; value: number }[] = [];
+    let others = 0;
+    for (const [name, val] of arr) {
+      if (known.includes(name)) result.push({ name: name.charAt(0).toUpperCase() + name.slice(1), value: val });
+      else others += val;
+    }
+    if (others > 0) result.push({ name: "Others", value: others });
+    return result;
+  }, [allCreators]);
+
+  const tierData = useMemo(() => {
+    let nano = 0, micro = 0, macro = 0, mega = 0;
+    for (const c of allCreators) {
+      if (c.followers >= 1000000) mega++;
+      else if (c.followers >= 100000) macro++;
+      else if (c.followers >= 10000) micro++;
+      else nano++;
+    }
+    return [
+      { name: "Nano (1K-10K)", value: nano },
+      { name: "Micro (10K-100K)", value: micro },
+      { name: "Macro (100K-1M)", value: macro },
+      { name: "Mega (1M+)", value: mega },
+    ];
+  }, [allCreators]);
+
+  const categoryData = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const c of allCreators) {
+      const cat = c.category || "Other";
+      counts.set(cat, (counts.get(cat) ?? 0) + 1);
+    }
+    return Array.from(counts.entries()).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([name, value]) => ({ name, value }));
+  }, [allCreators]);
+
+  const insights = useMemo(() => {
+    if (topProvinces.length === 0) return [];
+    const topProv = topProvinces[0];
+    const topPct = totalCreators > 0 ? ((topProv[1] / totalCreators) * 100).toFixed(1) : "0";
+    const nanoCount = tierData.find(t => t.name.includes("Nano"))?.value ?? 0;
+    const microCount = tierData.find(t => t.name.includes("Micro"))?.value ?? 0;
+    const nmPct = totalCreators > 0 ? (((nanoCount + microCount) / totalCreators) * 100).toFixed(0) : "0";
+    const topCat = categoryData[0];
+    return [
+      `The largest creator concentration is in ${topProv[0]}, with ${topProv[1].toLocaleString()} creators (${topPct}% of total).`,
+      `Over ${nmPct}% of creators are Nano and Micro creators, forming the backbone of the creator ecosystem.`,
+      topCat ? `Top category is ${topCat.name} with ${topCat.value.toLocaleString()} creators.` : "",
+    ].filter(Boolean);
+  }, [topProvinces, tierData, categoryData, totalCreators]);
+
+  const selectedProvCount = selectedProvince ? provinceCounts.get(selectedProvince) ?? 0 : 0;
+  const selectedProvTrend = selectedProvince ? MOCK_TRENDS[selectedProvince] ?? "↑ 5%" : "";
+
+  const selectedProvCreators = useMemo(() => {
+    if (!selectedProvince) return [];
+    return filteredCreators.filter((c) => getProvince(c.city) === selectedProvince);
+  }, [filteredCreators, selectedProvince]);
+
+  const genderData = useMemo(() => {
+    const source = selectedProvince ? selectedProvCreators : allCreators;
+    let female = 0, male = 0, other = 0;
+    for (const c of source) {
+      const rng = seededRandom(hashString(c.id));
+      const r = rng();
+      if (r < 0.612) female++;
+      else if (r < 0.993) male++;
+      else other++;
+    }
+    return [
+      { name: "Female", value: female },
+      { name: "Male", value: male },
+      { name: "Other", value: other },
+    ];
+  }, [selectedProvCreators, selectedProvince, allCreators]);
+  const genderTotal = genderData.reduce((s, d) => s + d.value, 0);
+
+  const displayLabel = selectedProvince === "DKI Jakarta" ? "All Jakarta" : selectedProvince;
+
+  return (
+    <div className="p-4 md:p-6 space-y-5" style={{ background: "var(--ch-bg)", minHeight: "100%" }}>
+      {/* Hero Banner */}
+      <div className="relative rounded-2xl overflow-hidden border border-white/10" style={{ background: "#040e1f", minHeight: 240 }}>
+        <div className="relative z-10 grid lg:grid-cols-2 gap-0 items-center">
+          <div className="px-8 py-10 lg:px-12 lg:py-12">
+            <h2 className="text-2xl lg:text-[2rem] font-extrabold text-white leading-[1.15] tracking-tight mb-4" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+              Creator <span className="text-blue-400">Distribution</span> Analytics
+            </h2>
+            <p className="text-sm text-slate-400 mb-6 max-w-md leading-relaxed">
+              Explore how {totalCreators.toLocaleString()} creators are distributed across Indonesia's provinces and cities.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link to="/dashboard/marketplace">
+                <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-lg shadow-blue-600/25 text-sm px-5 py-2.5 rounded-lg transition-colors">
+                  <Users className="w-4 h-4 mr-1.5 inline" /> Find Creators
                 </button>
-              )}
+              </Link>
             </div>
-            <div className="p-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
-                {/* Left column */}
-                <table className="w-full text-[12px]">
-                  <thead>
-                    <tr className="text-[10px] uppercase border-b" style={{ color: "var(--ch-text-soft)", borderColor: "var(--ch-border)" }}>
-                      <th className="py-2 text-left w-8">#</th>
-                      <th className="py-2 text-left">Province</th>
-                      <th className="py-2 text-right">KOLs</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {leftHalf.map((p, i) => (
-                      <tr
-                        key={p.name}
-                        className="cursor-pointer hover:bg-white/5"
-                        style={{
-                          borderBottom: "1px solid var(--ch-border)",
-                          background: province === p.name ? "rgba(249,115,22,0.08)" : "transparent",
-                        }}
-                        onClick={() => handleProvinceClick(p.name)}
-                      >
-                        <td className="py-2" style={{ color: "var(--ch-text-muted)" }}>{i + 1}</td>
-                        <td className="py-2 font-semibold" style={{ color: "var(--ch-text)" }}>{p.name}</td>
-                        <td className="py-2 text-right font-bold" style={{ color: "var(--ch-text)" }}>{p.count}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {/* Right column */}
-                <table className="w-full text-[12px]">
-                  <thead>
-                    <tr className="text-[10px] uppercase border-b" style={{ color: "var(--ch-text-soft)", borderColor: "var(--ch-border)" }}>
-                      <th className="py-2 text-left w-8">#</th>
-                      <th className="py-2 text-left">Province</th>
-                      <th className="py-2 text-right">KOLs</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rightHalf.map((p, i) => (
-                      <tr
-                        key={p.name}
-                        className="cursor-pointer hover:bg-white/5"
-                        style={{
-                          borderBottom: "1px solid var(--ch-border)",
-                          background: province === p.name ? "rgba(249,115,22,0.08)" : "transparent",
-                        }}
-                        onClick={() => handleProvinceClick(p.name)}
-                      >
-                        <td className="py-2" style={{ color: "var(--ch-text-muted)" }}>{i + 21}</td>
-                        <td className="py-2 font-semibold" style={{ color: "var(--ch-text)" }}>{p.name}</td>
-                        <td className="py-2 text-right font-bold" style={{ color: "var(--ch-text)" }}>{p.count}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="flex items-center justify-between mt-3 pt-3 border-t text-[11px]" style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}>
-                <span>Total 33 provinces</span>
-                <span>Last updated: May 20, 2024</span>
-              </div>
-            </div>
+          </div>
+          <div className="hidden lg:flex items-center justify-center relative px-6 py-5">
+            <div className="absolute inset-0 z-10 pointer-events-none" style={{ background: `radial-gradient(ellipse at 0% 0%, #040e1f 0%, transparent 50%), linear-gradient(to right, #040e1f 0%, transparent 15%), linear-gradient(to bottom, #040e1f 0%, transparent 12%), linear-gradient(to left, #040e1f 0%, transparent 15%), linear-gradient(to top, #040e1f 0%, transparent 10%)` }} />
+            <img src="/hero-banner.jpg?v=9" alt="CreatorHub Platform" className="rounded-xl object-cover w-full max-h-[280px]" />
           </div>
         </div>
+      </div>
 
-        {/* Right Sidebar */}
-        <div className="space-y-4">
-          {/* Campaign Calendar */}
-          <div className="rounded-xl border p-4" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Campaign Calendar</h4>
-              <Link to="/dashboard/campaigns" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
-            </div>
-            <div className="flex gap-3">
-              {CAMPAIGN_EVENTS.map((ev, i) => (
-                <div key={i} className={`flex-1 rounded-xl p-3 text-center ${ev.color === "bg-white border" ? "border border-slate-200" : "bg-blue-600 text-white"}`}>
-                  <p className={`text-[10px] font-semibold ${ev.color === "bg-white border" ? "text-slate-500" : "text-blue-100"}`}>{ev.month}</p>
-                  <p className={`text-2xl font-extrabold ${ev.color === "bg-white border" ? "text-slate-800" : "text-white"}`}>{ev.date}</p>
-                  <p className={`text-[10px] font-semibold ${ev.color === "bg-white border" ? "text-slate-500" : "text-blue-100"}`}>{ev.year}</p>
-                </div>
-              ))}
-            </div>
-            <div className="mt-3 space-y-1.5">
-              {CAMPAIGN_EVENTS.map((ev, i) => (
-                <p key={i} className="text-[10px] font-medium" style={{ color: "var(--ch-text-muted)" }}>{ev.label}</p>
-              ))}
+      {/* Filter Bar */}
+      <div className="flex flex-wrap items-center gap-3">
+        <FilterSelect icon={<MapPin className="w-4 h-4" />} value={filterCity} onChange={setFilterCity}
+          options={[{ value: "all", label: displayLabel || "All Cities" }, ...provinceCities.map((c) => ({ value: c, label: c }))]} />
+        <FilterSelect icon={<Share2 className="w-4 h-4" />} value={filterPlatform} onChange={setFilterPlatform}
+          options={[{ value: "all", label: "All Platform" }, ...platformOptions.map((p) => ({ value: p, label: p.charAt(0).toUpperCase() + p.slice(1) }))]} />
+        <FilterSelect icon={<Tag className="w-4 h-4" />} value={filterCategory} onChange={setFilterCategory}
+          options={[{ value: "all", label: "All Category" }, ...categoryOptions.map((c) => ({ value: c, label: c }))]} />
+        <FilterSelect icon={<BarChart3 className="w-4 h-4" />} value={filterTier} onChange={setFilterTier}
+          options={[
+            { value: "all", label: "All Tier" },
+            { value: "nano", label: "Nano (<10K)" },
+            { value: "micro", label: "Micro (10K-100K)" },
+            { value: "mid", label: "Mid (100K-500K)" },
+            { value: "macro", label: "Macro (500K-1M)" },
+            { value: "mega", label: "Mega (>1M)" },
+          ]} />
+        <FilterSelect icon={<UsersRound className="w-4 h-4" />} value={filterGender} onChange={setFilterGender}
+          options={[
+            { value: "all", label: "All Gender" },
+            { value: "female", label: "Female" },
+            { value: "male", label: "Male" },
+          ]} />
+        <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-medium transition-colors"
+          style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)", color: "var(--ch-text-muted)" }}>
+          <SlidersHorizontal className="w-4 h-4" /> More Filter
+        </button>
+      </div>
+
+      {/* Single unified card: Map + Sidebar + Analytics */}
+      <div className="rounded-xl border overflow-hidden" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
+        {/* Card header */}
+        <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
+          <div className="flex items-center gap-2">
+            <div>
+              <div className="flex items-center gap-1.5 text-[10px] mb-0.5" style={{ color: "var(--ch-text-muted)" }}>
+                <span>Indonesia</span>
+                {selectedProvince && <><span>›</span><span style={{ color: "#3B82F6" }}>{displayLabel}</span></>}
+              </div>
+              <h3 className="text-[14px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                {selectedProvince ? `${displayLabel} Creators` : "Creator Distribution by Province"}
+              </h3>
             </div>
           </div>
-
-          {/* Active Campaigns */}
-          <div className="rounded-xl border p-4" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Active Campaigns</h4>
-              <Link to="/dashboard/campaigns" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
-            </div>
-            <div className="space-y-3">
-              {ACTIVE_CAMPAIGNS.map((c, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center shrink-0">
-                    <Megaphone className="w-4 h-4 text-blue-600" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[12px] font-bold truncate" style={{ color: "var(--ch-text)" }}>{c.name}</span>
-                      <Badge variant={c.status === "Live" ? "success" : c.status === "In Progress" ? "default" : "secondary"} className="text-[9px] shrink-0">
-                        {c.status}
-                      </Badge>
-                    </div>
-                    <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{c.type}</p>
-                    <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{c.date}</p>
-                  </div>
+          {selectedProvince ? (
+            <div className="flex items-center gap-3 text-[10px]">
+              {Object.entries(TIER_PIN_COLORS).map(([tier, color]) => (
+                <div key={tier} className="flex items-center gap-1">
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ background: color }} />
+                  <span style={{ color: "var(--ch-text-muted)" }}>{tier}</span>
                 </div>
               ))}
             </div>
+          ) : (
+            <div className="flex items-center gap-2 text-[10px]" style={{ color: "var(--ch-text-muted)" }}>
+              <span>Least</span>
+              <div className="flex gap-0.5">
+                {["#93c5fd", "#60a5fa", "#3b82f6", "#2563eb", "#1e40af"].map((c) => (
+                  <span key={c} className="inline-block w-4 h-2.5 rounded-sm" style={{ background: c }} />
+                ))}
+              </div>
+              <span>Most</span>
+            </div>
+          )}
+        </div>
+
+        {/* Map + Sidebar row */}
+        <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px]">
+          {/* Map area */}
+          <div className="relative" style={{ height: "420px" }}>
+            <MapContainer
+              preferCanvas
+              center={[-2.5, 118.0]}
+              zoom={5}
+              zoomControl={false}
+              className="w-full h-full"
+              scrollWheelZoom={true}
+              style={{ background: "#e8f0e8" }}
+            >
+              <TileLayer
+                attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+                url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+              />
+              {selectedProvince ? (
+                <>
+                  <MapViewController center={[-2.5, 118.0]} zoom={5} province={selectedProvince} />
+                  <JakartaBoundaries kotaGeoJson={kotaGeoJson} />
+                  <KabupatenLabels kotaGeoJson={kotaGeoJson} />
+                  {kotaGeoJson && (
+                    <HeatmapBlobs
+                      geoJsonData={kotaGeoJson}
+                      creators={filteredCreators}
+                      selectedProvince={selectedProvince}
+                    />
+                  )}
+                  <ScaleControl position="bottomright" />
+                </>
+              ) : (
+                provinceGeoJson && (
+                  <ProvinceChoropleth
+                    geoJsonData={provinceGeoJson}
+                    provinceCounts={provinceCounts}
+                    onProvinceClick={setSelectedProvince}
+                  />
+                )
+              )}
+            </MapContainer>
+
+            {/* Province info overlay */}
+            {selectedProvince && (
+              <div className="absolute top-4 left-4 z-[1000] rounded-xl p-4 min-w-[200px]" style={{ background: "rgba(255,255,255,0.95)", border: "1px solid #e2e8f0", backdropFilter: "blur(8px)" }}>
+                <p className="text-[12px] font-semibold mb-1" style={{ color: "#1e293b" }}>{displayLabel}</p>
+                <p className="text-[28px] font-extrabold leading-none" style={{ color: "#0f172a" }}>
+                  <AnimatedNumber value={selectedProvCount} />
+                </p>
+                <p className="text-[11px] mt-1" style={{ color: "#64748b" }}>Total Creators</p>
+                <div className="mt-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold" style={{ background: "rgba(34,197,94,0.15)", color: "#16a34a" }}>
+                  {selectedProvTrend} <span style={{ color: "#64748b", fontWeight: 500 }}>vs last month</span>
+                </div>
+              </div>
+            )}
+
+            {/* Loading overlay */}
+            {loadingCreators && (
+              <div className="absolute inset-0 z-[1001] flex items-center justify-center" style={{ background: "rgba(7,11,20,0.7)" }}>
+                <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: "var(--ch-text-muted)" }}>
+                  <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+                  Loading creators...
+                </div>
+              </div>
+            )}
+
+            {/* Heatmap legend */}
+            {selectedProvince && <HeatmapLegend />}
           </div>
 
-          {/* Recent Messages */}
-          <div className="rounded-xl border p-4" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Recent Messages</h4>
-              <Link to="/dashboard/messages" className="text-[11px] font-semibold text-blue-600 hover:underline">View All</Link>
-            </div>
-            <div className="space-y-3">
-              {RECENT_MESSAGES.map((m, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-[12px] font-bold text-blue-600 shrink-0">
-                    {m.name[0]}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[12px] font-bold" style={{ color: "var(--ch-text)" }}>{m.name}</span>
-                      <Badge variant="success" className="text-[9px] px-1 py-0">✓</Badge>
-                      <span className="text-[10px] ml-auto shrink-0" style={{ color: "var(--ch-text-muted)" }}>{m.time}</span>
-                    </div>
-                    <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{m.role}</p>
-                    <p className="text-[11px] mt-1 line-clamp-2" style={{ color: "var(--ch-text-muted)" }}>{m.message}</p>
-                    <Button variant="outline" size="sm" className="mt-2 h-7 text-[11px] gap-1">
-                      <Send className="w-3 h-3" /> Reply
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
+          {/* Right sidebar */}
+          {selectedProvince && <CreatorSidebar creators={selectedProvCreators} province={selectedProvince} />}
+        </div>
+
+        {/* Bottom analytics inside same card */}
+        <div className="border-t p-5" style={{ borderColor: "var(--ch-border)" }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
+            <DonutCard title="Platform Distribution" data={platformData} colors={PLATFORM_COLORS} total={totalCreators} />
+            <DonutCard title="Creator Tier Distribution" data={tierData} colors={TIER_COLORS} total={totalCreators} />
+            <BarCard title="Top Categories" data={categoryData} maxVal={categoryData[0]?.value ?? 1} />
+            <DonutCard title="Audience Gender" data={genderData} colors={GENDER_COLORS} total={genderTotal} />
+            <InsightsCard insights={insights} />
           </div>
         </div>
       </div>
