@@ -87,7 +87,6 @@ export default function App() {
         </Route>
 
         {/* Legacy redirects — old /service-hub/* URLs */}
-        <Route path="\/dashboard" element={<Navigate to="/dashboard" replace />} />
         <Route path="/service-hub/*" element={<ServiceHubRedirect />} />
         <Route path="/marketplace" element={<Navigate to="/dashboard/marketplace" replace />} />
         <Route path="/campaigns" element={<Navigate to="/dashboard/campaigns" replace />} />
@@ -107,6 +106,6 @@ export default function App() {
 
 /** Handles legacy /service-hub/* redirects to /dashboard/* */
 function ServiceHubRedirect() {
-  const path = window.location.pathname.replace("\/dashboard", "") || "";
+  const path = window.location.pathname.replace("/service-hub", "") || "";
   return <Navigate to={`/dashboard${path}`} replace />;
 }

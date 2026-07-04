@@ -6,7 +6,9 @@ import {
   Send,
 } from "lucide-react";
 import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
+import type { FeatureCollection } from "geojson";
 import type { GeoJSON as LeafletGeoJSON } from "leaflet";
+import * as topojson from "topojson-client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -44,7 +46,6 @@ const PROVINCES: ProvinceData[] = [
   { name: "Central Kalimantan", studioNum: 1, baseLat: -2.2083, baseLng: 113.9167, count: 10 },
   { name: "South Kalimantan", studioNum: 1, baseLat: -3.3167, baseLng: 114.59, count: 14 },
   { name: "East Kalimantan", studioNum: 1, baseLat: -1.2654, baseLng: 116.8312, count: 14 },
-  { name: "North Kalimantan", studioNum: 1, baseLat: 3.3, baseLng: 117.6333, count: 8 },
   { name: "North Sulawesi", studioNum: 1, baseLat: 1.4748, baseLng: 124.8428, count: 12 },
   { name: "Gorontalo", studioNum: 1, baseLat: 0.543, baseLng: 123.056, count: 8 },
   { name: "Central Sulawesi", studioNum: 1, baseLat: -0.8917, baseLng: 119.8708, count: 10 },
@@ -54,10 +55,6 @@ const PROVINCES: ProvinceData[] = [
   { name: "Maluku", studioNum: 1, baseLat: -3.6954, baseLng: 128.1814, count: 10 },
   { name: "North Maluku", studioNum: 1, baseLat: 0.79, baseLng: 127.38, count: 8 },
   { name: "West Papua", studioNum: 1, baseLat: -0.8614, baseLng: 134.062, count: 8 },
-  { name: "Southwest Papua", studioNum: 1, baseLat: -0.8667, baseLng: 131.25, count: 8 },
-  { name: "Central Papua", studioNum: 1, baseLat: -3.3667, baseLng: 135.4833, count: 8 },
-  { name: "Highland Papua", studioNum: 1, baseLat: -4.095, baseLng: 138.948, count: 8 },
-  { name: "South Papua", studioNum: 1, baseLat: -8.5, baseLng: 140.4, count: 6 },
   { name: "Papua", studioNum: 1, baseLat: -2.5488, baseLng: 140.669, count: 10 },
 ];
 
@@ -103,7 +100,7 @@ function MapController({
   onProvinceClick,
 }: {
   selectedProvince: string;
-  geoJsonData: GeoJSON.FeatureCollection | null;
+  geoJsonData: FeatureCollection | null;
   onProvinceClick: (name: string) => void;
 }) {
   const map = useMap();
@@ -112,8 +109,8 @@ function MapController({
   useEffect(() => {
     if (selectedProvince !== "all" && geoJsonLayerRef.current) {
       geoJsonLayerRef.current.eachLayer((layer: any) => {
-        if (layer.feature?.properties?.PROVINSI) {
-          const provName = mapGeoJSONProvince(layer.feature.properties.PROVINSI);
+        if (layer.feature?.properties?.NAME_1) {
+          const provName = mapGeoJSONProvince(layer.feature.properties.NAME_1);
           if (provName === selectedProvince) {
             map.fitBounds(layer.getBounds());
           }
@@ -135,7 +132,7 @@ function MapController({
       ref={geoJsonLayerRef}
       style={(feature) => {
         if (!feature) return {};
-        const provName = mapGeoJSONProvince(feature.properties.PROVINSI);
+        const provName = mapGeoJSONProvince(feature.properties.NAME_1);
         const p = PROVINCES.find((x) => x.name === provName);
         const count = p?.count ?? 0;
 
@@ -159,7 +156,7 @@ function MapController({
         };
       }}
       onEachFeature={(feature, layer) => {
-        const provName = mapGeoJSONProvince(feature.properties.PROVINSI);
+        const provName = mapGeoJSONProvince(feature.properties.NAME_1);
         const p = PROVINCES.find((x) => x.name === provName);
         const count = p?.count ?? 0;
 
@@ -212,10 +209,6 @@ function mapGeoJSONProvince(geoName: string): string {
     "Maluku": "Maluku",
     "Maluku Utara": "North Maluku",
     "Papua Barat": "West Papua",
-    "Papua Barat Daya": "Southwest Papua",
-    "Papua Tengah": "Central Papua",
-    "Papua Pegunungan": "Highland Papua",
-    "Papua Selatan": "South Papua",
     "Papua": "Papua",
   };
   return map[geoName] ?? geoName;
@@ -224,14 +217,17 @@ function mapGeoJSONProvince(geoName: string): string {
 /* ---------- Main Component ---------- */
 export default function ServiceHub() {
   const [province, setProvince] = useState("all");
-  const [geoJsonData, setGeoJsonData] = useState<GeoJSON.FeatureCollection | null>(null);
-  const [mapKey] = useState(0);
+  const [geoJsonData, setGeoJsonData] = useState<FeatureCollection | null>(null);
   const [mapTab, setMapTab] = useState<"creator" | "homeless" | "podcast">("creator");
 
   useEffect(() => {
-    fetch("/indonesia-38-provinces.geojson")
+    fetch("https://gist.githubusercontent.com/ajie31/3144875bad9705e2b2b544909c022276/raw/Peta%20Indonesia%20Provinsi.json")
       .then((r) => r.json())
-      .then(setGeoJsonData)
+      .then((topo: any) => {
+        const obj = topo.objects.gadm36_IDN_1;
+        const geo = topojson.feature(topo, obj) as unknown as FeatureCollection;
+        setGeoJsonData(geo);
+      })
       .catch(() => {});
   }, []);
 
@@ -357,7 +353,6 @@ export default function ServiceHub() {
         </div>
         <div className="relative min-h-[380px]">
           <MapContainer
-            key={mapKey}
             center={[-2.5, 118.0]}
             zoom={5}
             zoomControl={true}
@@ -505,7 +500,7 @@ export default function ServiceHub() {
                 </table>
               </div>
               <div className="flex items-center justify-between mt-3 pt-3 border-t text-[11px]" style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}>
-                <span>Total 38 provinces</span>
+                <span>Total 33 provinces</span>
                 <span>Last updated: May 20, 2024</span>
               </div>
             </div>
