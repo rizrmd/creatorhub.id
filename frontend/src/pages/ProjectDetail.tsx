@@ -448,7 +448,7 @@ export default function ProjectDetail() {
                 return (
                   <button key={sub.value} onClick={() => setActiveSubTab(sub.value)} className={`flex-1 flex items-center justify-center relative transition-all ${isActive ? "bg-orange-500/10" : "hover:bg-white/5"}`}>
                     {isActive && <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full bg-orange-500" />}
-                    <span className="text-[11px] font-bold tracking-widest select-none" style={{ writingMode: "vertical-lr", transform: "rotate(180deg)", color: isActive ? "#F97316" : "#E2E8F0", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                    <span className="text-[11px] font-extrabold tracking-widest select-none" style={{ writingMode: "vertical-lr", transform: "rotate(180deg)", color: isActive ? "#F97316" : "#E2E8F0", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                       {sub.label}
                     </span>
                   </button>
@@ -469,8 +469,8 @@ export default function ProjectDetail() {
                     <table className="w-full text-left border-collapse">
                       <thead>
                         <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
-                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider w-28" style={{ color: "var(--ch-text-muted)" }}>Theme</th>
-                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Details</th>
+                          <th className="px-4 py-3 text-[13px] font-extrabold uppercase tracking-wider w-28" style={{ color: "#3B82F6", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Theme</th>
+                          <th className="px-4 py-3 text-[13px] font-extrabold uppercase tracking-wider" style={{ color: "#10B981", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Details</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -501,23 +501,23 @@ export default function ProjectDetail() {
                     <table className="w-full text-left border-collapse">
                       <thead>
                         <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
-                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider w-28" style={{ color: "var(--ch-text-muted)" }}>Priorities</th>
-                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-center" style={{ color: "var(--ch-text-muted)" }}>Strategic</th>
-                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-center" style={{ color: "var(--ch-text-muted)" }}>Measurable</th>
-                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-center" style={{ color: "var(--ch-text-muted)" }}>Algorithmic</th>
-                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-center" style={{ color: "var(--ch-text-muted)" }}>Operational</th>
+                          <th className="px-4 py-3 text-[13px] font-extrabold uppercase tracking-wider w-28" style={{ color: "var(--ch-text-muted)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Priorities</th>
+                          <th className="px-4 py-3 text-[13px] font-extrabold uppercase tracking-wider text-center" style={{ color: "#3B82F6", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Strategic</th>
+                          <th className="px-4 py-3 text-[13px] font-extrabold uppercase tracking-wider text-center" style={{ color: "#10B981", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Measurable</th>
+                          <th className="px-4 py-3 text-[13px] font-extrabold uppercase tracking-wider text-center" style={{ color: "#8B5CF6", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Algorithmic</th>
+                          <th className="px-4 py-3 text-[13px] font-extrabold uppercase tracking-wider text-center" style={{ color: "#F59E0B", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Operational</th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr>
-                          <td className="px-4 py-3 text-[11px] font-bold" style={{ color: "var(--ch-text-muted)" }}>Focus</td>
+                          <td className="px-4 py-3 text-[12px] font-medium" style={{ color: "#FFFFFF" }}>Focus</td>
                           {WORKSTREAM_PRIORITIES.map((p) => (
-                            <td key={p.label} className="px-4 py-3 text-[11px] text-center" style={{ color: "var(--ch-text-muted)" }}>{p.sub}</td>
+                            <td key={p.label} className="px-4 py-3 text-[12px] font-medium text-center" style={{ color: "#FFFFFF" }}>{p.sub}</td>
                           ))}
                         </tr>
                       </tbody>
                     </table>
-                    <p className="text-[11px] text-center pb-3 italic" style={{ color: "var(--ch-text-muted)" }}>"Summary of goals vs issues/challenges"</p>
+                    <p className="text-[12px] font-medium text-center pb-3" style={{ color: "#FFFFFF" }}>"Summary of goals vs issues/challenges"</p>
                   </div>
 
                   {/* Strategic Initiatives — simple table */}
@@ -525,21 +525,21 @@ export default function ProjectDetail() {
                     <table className="w-full text-left border-collapse">
                       <thead>
                         <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
-                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider w-28" style={{ color: "var(--ch-text-muted)" }}>Initiatives</th>
-                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider" style={{ color: "#3B82F6" }}>Proactive</th>
-                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider" style={{ color: "#10B981" }}>Collaborative</th>
-                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider" style={{ color: "#8B5CF6" }}>Educative</th>
-                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider" style={{ color: "#F97316" }}>Responsive</th>
+                          <th className="px-4 py-3 text-[13px] font-extrabold uppercase tracking-wider w-28" style={{ color: "var(--ch-text-muted)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Initiatives</th>
+                          <th className="px-4 py-3 text-[13px] font-extrabold uppercase tracking-wider" style={{ color: "#3B82F6", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Proactive</th>
+                          <th className="px-4 py-3 text-[13px] font-extrabold uppercase tracking-wider" style={{ color: "#10B981", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Collaborative</th>
+                          <th className="px-4 py-3 text-[13px] font-extrabold uppercase tracking-wider" style={{ color: "#8B5CF6", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Educative</th>
+                          <th className="px-4 py-3 text-[13px] font-extrabold uppercase tracking-wider" style={{ color: "#F97316", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Responsive</th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr>
-                          <td className="px-4 py-3 text-[11px] font-bold" style={{ color: "var(--ch-text-muted)" }}>Actions</td>
+                          <td className="px-4 py-3 text-[15px] font-extrabold" style={{ color: "#FFFFFF", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Actions</td>
                           {WORKSTREAM_INITIATIVES.map((ini) => (
                             <td key={ini.label} className="px-3 py-3">
-                              <ul className="space-y-1">
+                              <ul className="space-y-2">
                                 {ini.items.map((item, i) => (
-                                  <li key={i} className="text-[10px] leading-relaxed" style={{ color: "var(--ch-text-muted)" }}>• {item}</li>
+                                  <li key={i} className="text-[12px] font-normal leading-relaxed text-white rounded-lg px-3 py-2" style={{ background: `${ini.color}20` }}>• {item}</li>
                                 ))}
                               </ul>
                             </td>
@@ -554,9 +554,9 @@ export default function ProjectDetail() {
                     <table className="w-full text-left border-collapse">
                       <thead>
                         <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
-                          <th className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider w-28" style={{ color: "var(--ch-text-muted)" }}>Tactical</th>
+                          <th className="px-4 py-3 text-[13px] font-extrabold uppercase tracking-wider w-28" style={{ color: "var(--ch-text-muted)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Tactical</th>
                           {WORKSTREAM_TACTICAL.map((t) => (
-                            <th key={t.label} className="px-4 py-3 text-[11px] font-bold uppercase tracking-wider text-center" style={{ color: "var(--ch-text-muted)" }}>{t.label}</th>
+                            <th key={t.label} className="px-4 py-3 text-[13px] font-extrabold uppercase tracking-wider text-center" style={{ color: t.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{t.label}</th>
                           ))}
                         </tr>
                       </thead>
@@ -571,11 +571,6 @@ export default function ProjectDetail() {
                         </tr>
                       </tbody>
                     </table>
-                    <div className="px-4 pb-3">
-                      <div className="rounded-lg p-2 border text-center" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
-                        <p className="text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Dashboard real-time analytics: reach, ER, sentiment</p>
-                      </div>
-                    </div>
                   </div>
                 </div>
               )}
@@ -729,7 +724,9 @@ export default function ProjectDetail() {
 
               {/* ═══ TARGET & KPI ═══ */}
               {activeSubTab === "target-kpi" && project.kpi && (
-                <div className="rounded-xl border overflow-hidden" style={{ background: "var(--ch-bg)", borderColor: "var(--ch-border)" }}>
+                <div className="space-y-4">
+                  <h2 className="text-[16px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Target & KPI</h2>
+                  <div className="rounded-xl border overflow-hidden" style={{ background: "var(--ch-bg)", borderColor: "var(--ch-border)" }}>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
@@ -774,6 +771,7 @@ export default function ProjectDetail() {
                     </table>
                   </div>
                 </div>
+                </div>
               )}
             </div>
           </div>
@@ -781,61 +779,6 @@ export default function ProjectDetail() {
 
         {/* ═══ CONTENT PLAN TAB ═══ */}
         <TabsContent value="content-plan" className="mt-6 space-y-4">
-          {/* Instagram Analysis */}
-          <div className="rounded-xl border overflow-hidden" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-            <div className="px-4 py-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
-              <p className="text-[13px] font-bold" style={{ color: "#E1306C" }}>Instagram Analysis — @jurnal.wargajakarta</p>
-            </div>
-            <div className="p-4">
-              <div className="flex items-center gap-4 mb-4">
-                <img src="https://scontent-sin6-2.cdninstagram.com/v/t51.82787-19/726674020_18086027558540673_100074225850668041_n.jpg?stp=dst-jpg_s320x320_tt6" alt="profile" className="w-16 h-16 rounded-full object-cover" />
-                <div>
-                  <p className="text-[15px] font-bold" style={{ color: "var(--ch-text)" }}>Jurnal.WargaJakarta</p>
-                  <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>📰 Media warga Jakarta · 🏛 Pemerintah · Ekonomi · UMKM</p>
-                  <div className="flex gap-4 mt-1">
-                    <span className="text-[12px] font-semibold" style={{ color: "var(--ch-text)" }}><strong>51</strong> posts</span>
-                    <span className="text-[12px] font-semibold" style={{ color: "var(--ch-text)" }}><strong>123K</strong> followers</span>
-                    <span className="text-[12px] font-semibold" style={{ color: "var(--ch-text)" }}><strong>14</strong> following</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
-                    <th className="text-left px-4 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Account</th>
-                    <th className="text-left px-4 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Link Post</th>
-                    <th className="text-right px-4 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Views</th>
-                    <th className="text-right px-4 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Likes</th>
-                    <th className="text-right px-4 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Comments</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    { account: "jurnal.wargajakarta", link: "https://www.instagram.com/p/DZ4rQhaT8Kg/", views: 69, likes: 3, comments: 0 },
-                    { account: "jurnal.wargajakarta", link: "https://www.instagram.com/p/DZz1TEZz_AA/", views: 175, likes: 10, comments: 0 },
-                    { account: "jurnal.wargajakarta", link: "https://www.instagram.com/p/DZw10mikxn_/", views: 0, likes: 0, comments: 1 },
-                    { account: "jurnal.wargajakarta", link: "https://www.instagram.com/p/DZuadhyTBdj/", views: 1503, likes: 28, comments: 0 },
-                    { account: "jurnal.wargajakarta", link: "https://www.instagram.com/p/DZm36knzi_T/", views: 2100, likes: 68, comments: 6 },
-                  ].map((p, i) => (
-                    <tr key={i} className="border-b last:border-b-0 hover:bg-white/3 transition-colors" style={{ borderColor: "var(--ch-border)" }}>
-                      <td className="px-4 py-2 text-[12px] font-semibold" style={{ color: "var(--ch-text)" }}>@{p.account}</td>
-                      <td className="px-4 py-2">
-                        <a href={p.link} target="_blank" rel="noopener noreferrer" className="text-[11px] font-semibold hover:underline" style={{ color: "var(--ch-primary)" }}>
-                          <ExternalLink className="w-3 h-3 inline mr-1" />{p.link.replace("https://www.instagram.com/p/", "").replace("/", "")}
-                        </a>
-                      </td>
-                      <td className="px-4 py-2 text-right text-[12px] font-semibold" style={{ color: "var(--ch-text)" }}>{p.views.toLocaleString()}</td>
-                      <td className="px-4 py-2 text-right text-[12px] font-semibold" style={{ color: "var(--ch-text)" }}>{p.likes.toLocaleString()}</td>
-                      <td className="px-4 py-2 text-right text-[12px] font-semibold" style={{ color: "var(--ch-text)" }}>{p.comments.toLocaleString()}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
           {(() => {
             const contentPlan = [
               { no: 1, date: "7 April 2025", platform: "TikTok", steps: [

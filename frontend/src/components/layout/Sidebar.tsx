@@ -120,25 +120,25 @@ export default function Sidebar() {
         <Link
           to="/dashboard"
           className="flex items-center shrink-0 overflow-hidden no-underline"
-          style={{ padding: effectiveCollapsed ? "12px" : "16px" }}
+          style={{ padding: effectiveCollapsed ? "10px" : "12px 14px" }}
         >
           <div className={cn("flex items-center gap-2", effectiveCollapsed ? "justify-center" : "")}>
             <img
               src="/favicon.png?v=9"
               alt="CreatorHub"
               className="shrink-0"
-              style={{ width: effectiveCollapsed ? 36 : 32, height: effectiveCollapsed ? 36 : 32 }}
+              style={{ width: effectiveCollapsed ? 32 : 28, height: effectiveCollapsed ? 32 : 28 }}
             />
             {!effectiveCollapsed && (
-              <span className="text-base font-extrabold tracking-tight" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>CreatorHub.ID</span>
+              <span className="text-[14px] font-extrabold tracking-tight" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>CreatorHub.ID</span>
             )}
           </div>
         </Link>
 
         {/* Creator workspace pill */}
         {effectiveRole === "kreator" && !effectiveCollapsed && (
-          <div className="px-3 pt-3">
-            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold" style={{ background: "#DCFCE7", color: "#15803D" }}>
+          <div className="px-2.5 pt-2">
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-semibold" style={{ background: "#DCFCE7", color: "#15803D" }}>
               <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
               Creator workspace
             </div>
@@ -147,8 +147,8 @@ export default function Sidebar() {
 
         {/* Nav */}
         <nav
-          className="flex-1 overflow-y-auto min-h-0 flex flex-col gap-0.5"
-          style={{ padding: effectiveCollapsed ? "12px 8px" : "12px 10px" }}
+          className="flex-1 overflow-y-auto min-h-0 flex flex-col gap-px"
+          style={{ padding: effectiveCollapsed ? "6px 6px" : "6px 8px" }}
         >
           {navItems.map((item) => {
             const { to, icon: Icon, label } = item;
@@ -163,7 +163,7 @@ export default function Sidebar() {
               className={({ isActive }) =>
                 cn(
                   "flex items-center rounded-lg transition-all duration-150 relative cursor-pointer",
-                  effectiveCollapsed ? "justify-center w-11 h-11 mx-auto" : "gap-2.5 px-[11px] py-2",
+                  effectiveCollapsed ? "justify-center w-9 h-9 mx-auto" : "gap-2 px-2.5 py-1.5",
                   isActive
                     ? "text-white"
                     : "hover:text-white"
@@ -179,18 +179,18 @@ export default function Sidebar() {
             >
               {({ isActive }) => (
                 <>
-                  <Icon className="w-4 h-4 shrink-0" />
+                  <Icon className="w-3.5 h-3.5 shrink-0" />
                   {!effectiveCollapsed && (
                     <>
-                      <span className="flex-1 text-[13px] font-semibold leading-none">{label}</span>
+                      <span className="flex-1 text-[12px] font-semibold leading-none">{label}</span>
                       {badge !== undefined && !isActive && (
-                        <span className="min-w-[22px] h-5 rounded-full text-[10.5px] font-bold flex items-center justify-center px-1.5"
+                        <span className="min-w-[18px] h-4 rounded-full text-[9px] font-bold flex items-center justify-center px-1"
                           style={{ background: "var(--ch-orange)", color: "#FFFFFF" }}>
                           {badge}
                         </span>
                       )}
                       {badge !== undefined && isActive && (
-                        <span className="min-w-[22px] h-5 rounded-full text-[10.5px] font-bold flex items-center justify-center px-1.5"
+                        <span className="min-w-[18px] h-4 rounded-full text-[9px] font-bold flex items-center justify-center px-1"
                           style={{ background: "rgba(255,255,255,.22)", color: "white" }}>
                           {badge}
                         </span>
@@ -210,26 +210,26 @@ export default function Sidebar() {
         </nav>
 
         {/* Bottom section */}
-        <div className="border-t border-white/10 shrink-0" style={{ padding: effectiveCollapsed ? "10px 8px" : "10px" }}>
+        <div className="border-t border-white/10 shrink-0" style={{ padding: effectiveCollapsed ? "6px" : "8px" }}>
           {effectiveCollapsed ? (
-            <div className="flex flex-col items-center gap-2">
+            <div className="flex flex-col items-center gap-1.5">
               <button
                 onClick={() => setShowSupport(true)}
                 title="Support"
-                className="w-9 h-9 rounded-lg border border-white/10 flex items-center justify-center transition-colors hover:bg-white/10 text-slate-400"
+                className="w-8 h-8 rounded-lg border border-white/10 flex items-center justify-center transition-colors hover:bg-white/10 text-slate-400"
               >
-                <HelpCircle className="w-4 h-4" />
+                <HelpCircle className="w-3.5 h-3.5" />
               </button>
             </div>
           ) : (
-            <div className="flex flex-col gap-2">
-              <div className="rounded-[10px] p-[10px] flex items-center gap-2.5 border border-white/10 bg-white/5">
-                <HelpCircle className="w-7 h-7 shrink-0 text-slate-500" />
+            <div className="flex flex-col gap-1.5">
+              <div className="rounded-lg p-2 flex items-center gap-2 border border-white/10 bg-white/5">
+                <HelpCircle className="w-5 h-5 shrink-0 text-slate-500" />
                 <div className="min-w-0">
-                  <p className="text-[12px] font-bold text-white">Need Help?</p>
+                  <p className="text-[11px] font-bold text-white">Need Help?</p>
                   <button
                     onClick={() => setShowSupport(true)}
-                    className="text-[11px] font-semibold hover:underline mt-0.5 block text-blue-400"
+                    className="text-[10px] font-semibold hover:underline mt-0.5 block text-blue-400"
                   >
                     Contact Support
                   </button>
