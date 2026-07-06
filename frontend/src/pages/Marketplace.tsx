@@ -1734,6 +1734,11 @@ export default function Marketplace() {
     setSelectedIds((prev) => [...prev, creator.id]);
   };
 
+  const clearSelection = () => {
+    setSelectedIds([]);
+    setSelectedCreatorsById({});
+  };
+
   const toggleFavorite = (id: string) => {
     setFavoriteIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
   };
@@ -1783,8 +1788,7 @@ export default function Marketplace() {
     });
     setShowCreateCampaign(false);
     setCampaignForm({ title: "", description: "", budget: "" });
-    setSelectedIds([]);
-    setSelectedCreatorsById({});
+    clearSelection();
     toast.success("Campaign created successfully!");
   };
 
@@ -2259,7 +2263,15 @@ export default function Marketplace() {
         {/* Scrollable: selected creators */}
         <div className="flex-1 overflow-auto p-4">
           {selectedCreators.length > 0 && (
-            <p className="text-[14px] font-bold uppercase tracking-wider mb-2" style={{ color: "var(--ch-primary)" }}>Selected Creators</p>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-[14px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-primary)" }}>Selected Creators</p>
+              <button
+                onClick={clearSelection}
+                className="text-[11px] font-semibold text-red-400 hover:text-red-300 transition-colors cursor-pointer"
+              >
+                Clear Selection
+              </button>
+            </div>
           )}
           <div className="grid grid-cols-2 gap-2">
             {selectedCreators.map((c) => (
@@ -2341,7 +2353,15 @@ export default function Marketplace() {
           {/* Scrollable: selected creators */}
           <div className="flex-1 overflow-auto p-4">
             {selectedCreators.length > 0 && (
-              <p className="text-[14px] font-bold uppercase tracking-wider mb-2" style={{ color: "var(--ch-primary)" }}>Selected Creators</p>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[14px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-primary)" }}>Selected Creators</p>
+                <button
+                  onClick={clearSelection}
+                  className="text-[11px] font-semibold text-red-500 hover:text-red-400 transition-colors cursor-pointer"
+                >
+                  Clear Selection
+                </button>
+              </div>
             )}
             <div className="grid grid-cols-2 gap-2">
               {selectedCreators.map((c) => (
