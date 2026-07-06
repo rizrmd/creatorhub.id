@@ -5,7 +5,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 const courses = [
   {
@@ -164,38 +164,36 @@ export default function CreatorAcademy() {
 
       {/* Tabs & Search */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <div className="px-4 pt-3 pb-0 bg-[#0B1120] rounded-t-xl">
-          <div className="flex items-center gap-0 rounded-2xl overflow-hidden" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
-            <TabsTrigger
-              value="all"
-              className="flex items-center gap-2 text-[13px] font-semibold px-4 py-2.5 rounded-none border-0 data-[state=active]:bg-[var(--ch-orange)] data-[state=active]:text-white data-[state=active]:shadow-none text-slate-400 hover:text-white transition-colors"
-            >
-              <BookOpen className="w-4 h-4" />
-              All
-            </TabsTrigger>
-            <TabsTrigger
-              value="in-progress"
-              className="flex items-center gap-2 text-[13px] font-semibold px-4 py-2.5 rounded-none border-0 data-[state=active]:bg-[var(--ch-orange)] data-[state=active]:text-white data-[state=active]:shadow-none text-slate-400 hover:text-white transition-colors"
-            >
-              <Play className="w-4 h-4" />
-              In Progress
-            </TabsTrigger>
-            <TabsTrigger
-              value="completed"
-              className="flex items-center gap-2 text-[13px] font-semibold px-4 py-2.5 rounded-none border-0 data-[state=active]:bg-[var(--ch-orange)] data-[state=active]:text-white data-[state=active]:shadow-none text-slate-400 hover:text-white transition-colors"
-            >
-              <CheckCircle className="w-4 h-4" />
-              Completed
-            </TabsTrigger>
-            <TabsTrigger
-              value="new"
-              className="flex items-center gap-2 text-[13px] font-semibold px-4 py-2.5 rounded-none border-0 data-[state=active]:bg-[var(--ch-orange)] data-[state=active]:text-white data-[state=active]:shadow-none text-slate-400 hover:text-white transition-colors"
-            >
-              <Clock className="w-4 h-4" />
-              Not Started
-            </TabsTrigger>
-          </div>
-        </div>
+        <TabsList className="rounded-2xl p-0 gap-0 overflow-hidden" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
+          <TabsTrigger
+            value="all"
+            className="flex items-center gap-2 text-[13px] font-semibold px-4 py-2.5 rounded-none border-0 data-[state=active]:bg-[var(--ch-orange)] data-[state=active]:text-white data-[state=active]:shadow-none text-slate-400 hover:text-white transition-colors"
+          >
+            <BookOpen className="w-4 h-4" />
+            All
+          </TabsTrigger>
+          <TabsTrigger
+            value="in-progress"
+            className="flex items-center gap-2 text-[13px] font-semibold px-4 py-2.5 rounded-none border-0 data-[state=active]:bg-[var(--ch-orange)] data-[state=active]:text-white data-[state=active]:shadow-none text-slate-400 hover:text-white transition-colors"
+          >
+            <Play className="w-4 h-4" />
+            In Progress
+          </TabsTrigger>
+          <TabsTrigger
+            value="completed"
+            className="flex items-center gap-2 text-[13px] font-semibold px-4 py-2.5 rounded-none border-0 data-[state=active]:bg-[var(--ch-orange)] data-[state=active]:text-white data-[state=active]:shadow-none text-slate-400 hover:text-white transition-colors"
+          >
+            <CheckCircle className="w-4 h-4" />
+            Completed
+          </TabsTrigger>
+          <TabsTrigger
+            value="new"
+            className="flex items-center gap-2 text-[13px] font-semibold px-4 py-2.5 rounded-none border-0 data-[state=active]:bg-[var(--ch-orange)] data-[state=active]:text-white data-[state=active]:shadow-none text-slate-400 hover:text-white transition-colors"
+          >
+            <Clock className="w-4 h-4" />
+            Not Started
+          </TabsTrigger>
+        </TabsList>
 
         <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center gap-3">
           <div className="relative flex-1 max-w-sm w-full">
