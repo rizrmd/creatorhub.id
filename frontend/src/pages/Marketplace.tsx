@@ -44,7 +44,6 @@ const DEFAULT_CITIES: string[] = [
   "Tangerang", "Bekasi", "Solo", "Maluku", "Papua", "Sulawesi",
 ];
 const KABUPATEN_KOTA_URL = "https://gist.githubusercontent.com/ajie31/3144875bad9705e2b2b544909c022276/raw/Peta%20Indonesia%20Kota%20Kabupaten%20simplified.json";
-const PLATFORMS = ["instagram", "tiktok", "youtube", "facebook", "x", "linkedin"];
 
 const FOLLOWERS_OPTIONS = [
   { label: "All Tiers", value: "all" },
@@ -217,11 +216,12 @@ const platformBg: Record<string, string> = {
   linkedin:  "bg-blue-400/15 text-blue-300 border-blue-400/20",
 };
 
-function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFavorite, listView, onCityClick, onCategoryClick }: {
+function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFavorite, listView, onCityClick, onCategoryClick, platformFilterActive }: {
   creator: Creator; selected: boolean; favorited: boolean;
   onToggle: () => void; onCardClick: () => void; onFavorite: () => void; listView: boolean;
   onCityClick?: (city: string) => void;
   onCategoryClick?: (category: string) => void;
+  platformFilterActive?: boolean;
 }) {
   const followersLabel = creator.followersText || formatFollowers(creator.followers);
 
@@ -297,16 +297,20 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
               <Heart style={{ width: 14, height: 14, color: favorited ? "#EF4444" : "#94A3B8", fill: favorited ? "#EF4444" : "none" }} />
             </button>
             <button
-              onClick={(e) => { e.stopPropagation(); onToggle(); }}
+              onClick={(e) => { e.stopPropagation(); if (platformFilterActive) onToggle(); }}
               className="px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all shrink-0"
               style={selected ? {
                 background: "var(--ch-primary)", color: "white",
-              } : {
+              } : platformFilterActive ? {
                 background: "var(--ch-primary-50)", color: "var(--ch-primary)",
                 border: "1.5px solid var(--ch-primary-100)",
+              } : {
+                background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.25)",
+                border: "1.5px solid rgba(255,255,255,0.08)", cursor: "not-allowed",
               }}
+              disabled={!platformFilterActive && !selected}
             >
-              {selected ? "✓ Invited" : "Invite"}
+              {selected ? "✓ Invited" : platformFilterActive ? "Invite" : "Select Platform"}
             </button>
           </div>
         </div>
@@ -448,16 +452,20 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
             Profile
           </button>
           <button
-            onClick={(e) => { e.stopPropagation(); onToggle(); }}
+            onClick={(e) => { e.stopPropagation(); if (platformFilterActive) onToggle(); }}
             className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-bold transition-all"
             style={selected ? {
               background: "var(--ch-primary)", color: "white", border: "none",
-            } : {
+            } : platformFilterActive ? {
               background: "var(--ch-primary)", color: "white",
+            } : {
+              background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.25)",
+              border: "1px solid rgba(255,255,255,0.08)", cursor: "not-allowed",
             }}
+            disabled={!platformFilterActive && !selected}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg>
-            {selected ? "Invited" : "Invite"}
+            {selected ? "Invited" : platformFilterActive ? "Invite" : "Select Platform"}
           </button>
         </div>
       </div>
@@ -1517,6 +1525,8 @@ export default function Marketplace() {
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [listView, setListView] = useState(() => restoredStateRef.current?.listView ?? false);
   const [cityOptions, setCityOptions] = useState<string[]>(DEFAULT_CITIES);
+  const [activePlatforms, setActivePlatforms] = useState<string[]>([]);
+  const platformFilterActive = activePlatforms.length > 0;
 
   useEffect(() => {
     fetch(KABUPATEN_KOTA_URL)
@@ -1613,6 +1623,10 @@ export default function Marketplace() {
 
     return merged;
   })();
+
+  const filteredCreators = activePlatforms.length > 0
+    ? creators.filter((c) => c.platforms?.some((p) => activePlatforms.includes(p)))
+    : creators;
   const saveMarketplaceState = useCallback(() => {
     if (typeof window === "undefined") return;
     const scrollTop = getMarketplaceScrollElement()?.scrollTop ?? 0;
@@ -1699,6 +1713,13 @@ export default function Marketplace() {
     setFollowersVal(DEFAULT_CREATOR_TIER);
     setEngagementVal("all");
     setPriceVal("all");
+    setActivePlatforms([]);
+  };
+
+  const togglePlatform = (p: string) => {
+    setActivePlatforms((prev) =>
+      prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p]
+    );
   };
 
   const applyFollowers = (val: string) => {
@@ -1834,14 +1855,6 @@ export default function Marketplace() {
             </SelectContent>
           </Select>
 
-          <Select value={filters.platform ?? "all"} onValueChange={(v) => setFilters((f) => ({ ...f, platform: v === "all" ? undefined : v, page: 1 }))}>
-            <SelectTrigger className="w-full sm:w-36"><SelectValue placeholder="Platform" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Platforms</SelectItem>
-              {PLATFORMS.map((p) => <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>)}
-            </SelectContent>
-          </Select>
-
           <Select value={filters.category ?? "all"} onValueChange={(v) => setFilters((f) => ({ ...f, category: v === "all" ? undefined : v, page: 1 }))}>
             <SelectTrigger className="w-full sm:w-40"><SelectValue placeholder="Category" /></SelectTrigger>
             <SelectContent>
@@ -1905,6 +1918,32 @@ export default function Marketplace() {
           <Button variant="outline" size="sm" onClick={resetFilters} className="gap-1.5">
             <RotateCcw className="w-3.5 h-3.5" /> Reset
           </Button>
+
+          {/* Platform filter buttons */}
+          {[
+            { id: "instagram", label: "Instagram", color: "#E1306C" },
+            { id: "tiktok", label: "TikTok", color: "#000000" },
+            { id: "youtube", label: "YouTube", color: "#FF0000" },
+            { id: "x", label: "X", color: "#ffffff" },
+          ].map((plat) => {
+            const active = activePlatforms.includes(plat.id);
+            return (
+              <button
+                key={plat.id}
+                onClick={() => togglePlatform(plat.id)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold border transition-all ${
+                  active
+                    ? "border-white/30 text-white shadow-[0_0_12px_rgba(255,255,255,0.1)]"
+                    : "border-white/10 text-slate-400 hover:border-white/20 hover:text-slate-300"
+                }`}
+                style={active ? { background: plat.color + "22" } : {}}
+              >
+                {platformIcon(plat.id)}
+                {plat.label}
+              </button>
+            );
+          })}
+
           <Button size="sm" onClick={() => setShowAddCreator(true)} className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white">
             <UserPlus className="w-3.5 h-3.5" /> Add Creator
           </Button>
@@ -1951,7 +1990,7 @@ export default function Marketplace() {
             </div>
           ) : (
             <div className={listView ? "space-y-2" : "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3"}>
-              {creators.map((creator) => (
+              {filteredCreators.map((creator) => (
                 <CreatorCard
                   key={creator.id}
                   creator={creator}
@@ -1966,6 +2005,7 @@ export default function Marketplace() {
                   listView={listView}
                   onCityClick={(city) => setFilters((f) => ({ ...f, city, page: 1 }))}
                   onCategoryClick={(category) => setFilters((f) => ({ ...f, category, page: 1 }))}
+                  platformFilterActive={platformFilterActive}
                 />
               ))}
             </div>
