@@ -2230,57 +2230,53 @@ export default function Marketplace() {
 
       {/* Campaign Brief Panel — desktop */}
       <aside className="hidden xl:flex w-[312px] shrink-0 flex-col bg-[#111827] border-l border-white/10">
-        <div className="p-4 border-b border-white/10">
-          <h2 className="font-bold text-[15px] text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Campaign Brief</h2>
-          <p className="text-[12px] mt-0.5 text-slate-400">{selectedIds.length} Creator{selectedIds.length !== 1 ? "s" : ""} Selected</p>
-        </div>
+        {selectedCreators.length > 0 && (
+          <div className="p-4 border-b border-white/10">
+            <h2 className="font-bold text-[15px] text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Campaign Brief</h2>
+            <p className="text-[12px] mt-0.5 text-slate-400">{selectedIds.length} Creator{selectedIds.length !== 1 ? "s" : ""} Selected</p>
+          </div>
+        )}
 
         <div className="flex-1 overflow-auto p-4 space-y-3">
-          {selectedCreators.length === 0 ? (
-            <div className="text-center py-12 text-slate-500">
-              <p className="text-sm">No creators selected yet</p>
-              <p className="text-xs mt-1">Click "Invite" or open creator profile</p>
-              {/* Show platform services when a platform is selected */}
-              {activePlatforms.length > 0 && activePlatforms.map((platId) => {
-                const services = PLATFORM_SERVICES[platId] ?? [];
-                if (services.length === 0) return null;
-                return (
-                  <div key={platId} className="mt-6 text-left space-y-2">
-                    <p className="text-[12px] font-semibold text-slate-400 uppercase tracking-wider mb-3">Available Services</p>
-                    {services.map((svc) => (
-                      <label key={svc} className="flex items-center gap-2.5 cursor-pointer group">
-                        <input
-                          type="checkbox"
-                          checked={!!selectedServices[svc]}
-                          onChange={() => toggleService(svc)}
-                          className="w-4 h-4 rounded border-2 cursor-pointer accent-orange-500 shrink-0"
-                          style={{ borderColor: "var(--ch-border)" }}
-                        />
-                        <span className="text-[12px] text-slate-400 group-hover:text-slate-300 transition-colors">{svc}</span>
-                      </label>
-                    ))}
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            selectedCreators.map((c) => (
-              <div key={c.id} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl">
-                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-semibold text-slate-300 overflow-hidden shrink-0">
-                  {c.imageUrl ? <img src={c.imageUrl} alt={c.name} className="w-full h-full object-cover" /> : c.name[0]}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{c.name}</p>
-                  <p className="text-xs text-slate-400">{c.followersText} followers</p>
-                  <p className="text-xs text-slate-500">{c.engagementRate}% ER · {c.priceText}</p>
-                </div>
-                <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-red-500"
-                  onClick={() => toggleSelect(c)}>
-                  <X className="w-3.5 h-3.5" />
-                </Button>
+          {selectedCreators.map((c) => (
+            <div key={c.id} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl">
+              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-semibold text-slate-300 overflow-hidden shrink-0">
+                {c.imageUrl ? <img src={c.imageUrl} alt={c.name} className="w-full h-full object-cover" /> : c.name[0]}
               </div>
-            ))
-          )}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-white truncate">{c.name}</p>
+                <p className="text-xs text-slate-400">{c.followersText} followers</p>
+                <p className="text-xs text-slate-500">{c.engagementRate}% ER · {c.priceText}</p>
+              </div>
+              <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-red-500"
+                onClick={() => toggleSelect(c)}>
+                <X className="w-3.5 h-3.5" />
+              </Button>
+            </div>
+          ))}
+
+          {/* Platform services */}
+          {activePlatforms.length > 0 && activePlatforms.map((platId) => {
+            const services = PLATFORM_SERVICES[platId] ?? [];
+            if (services.length === 0) return null;
+            return (
+              <div key={platId} className="text-left space-y-2">
+                <p className="text-[12px] font-semibold text-slate-400 uppercase tracking-wider mb-3">Available Services</p>
+                {services.map((svc) => (
+                  <label key={svc} className="flex items-center gap-2.5 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={!!selectedServices[svc]}
+                      onChange={() => toggleService(svc)}
+                      className="w-4 h-4 rounded border-2 cursor-pointer accent-orange-500 shrink-0"
+                      style={{ borderColor: "var(--ch-border)" }}
+                    />
+                    <span className="text-[12px] text-slate-400 group-hover:text-slate-300 transition-colors">{svc}</span>
+                  </label>
+                ))}
+              </div>
+            );
+          })}
         </div>
 
         {briefFooter}
@@ -2289,56 +2285,52 @@ export default function Marketplace() {
       {/* Campaign Brief — mobile sheet */}
       <Dialog open={showMobileBrief} onOpenChange={setShowMobileBrief}>
         <DialogContent className="max-w-lg p-0 gap-0 flex flex-col max-h-[85dvh]">
-          <DialogHeader className="p-4 border-b shrink-0" style={{ borderColor: "var(--ch-border)" }}>
-            <DialogTitle>Campaign Brief</DialogTitle>
-            <p className="text-[12px] mt-0.5" style={{ color: "var(--ch-text-muted)" }}>{selectedIds.length} Creator{selectedIds.length !== 1 ? "s" : ""} Selected</p>
-          </DialogHeader>
+          {selectedCreators.length > 0 && (
+            <DialogHeader className="p-4 border-b shrink-0" style={{ borderColor: "var(--ch-border)" }}>
+              <DialogTitle>Campaign Brief</DialogTitle>
+              <p className="text-[12px] mt-0.5" style={{ color: "var(--ch-text-muted)" }}>{selectedIds.length} Creator{selectedIds.length !== 1 ? "s" : ""} Selected</p>
+            </DialogHeader>
+          )}
           <div className="flex-1 overflow-auto p-4 space-y-3">
-            {selectedCreators.length === 0 ? (
-              <div className="text-center py-8 text-slate-400">
-                <p className="text-sm">No creators selected yet</p>
-                <p className="text-xs mt-1">Click "Invite" or open creator profile</p>
-                {/* Show platform services when a platform is selected */}
-                {activePlatforms.length > 0 && activePlatforms.map((platId) => {
-                  const services = PLATFORM_SERVICES[platId] ?? [];
-                  if (services.length === 0) return null;
-                  return (
-                    <div key={platId} className="mt-6 text-left space-y-2">
-                      <p className="text-[12px] font-semibold text-slate-400 uppercase tracking-wider mb-3">Available Services</p>
-                      {services.map((svc) => (
-                        <label key={svc} className="flex items-center gap-2.5 cursor-pointer group">
-                          <input
-                            type="checkbox"
-                            checked={!!selectedServices[svc]}
-                            onChange={() => toggleService(svc)}
-                            className="w-4 h-4 rounded border-2 cursor-pointer accent-orange-500 shrink-0"
-                            style={{ borderColor: "var(--ch-border)" }}
-                          />
-                          <span className="text-[12px] text-slate-400 group-hover:text-slate-300 transition-colors">{svc}</span>
-                        </label>
-                      ))}
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              selectedCreators.map((c) => (
-                <div key={c.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                  <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-semibold text-slate-600 overflow-hidden shrink-0">
-                    {c.imageUrl ? <img src={c.imageUrl} alt={c.name} className="w-full h-full object-cover" /> : c.name[0]}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-800 truncate">{c.name}</p>
-                    <p className="text-xs text-slate-500">{c.followersText} followers</p>
-                    <p className="text-xs text-slate-400">{c.engagementRate}% ER · {c.priceText}</p>
-                  </div>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-red-500"
-                    onClick={() => toggleSelect(c)}>
-                    <X className="w-3.5 h-3.5" />
-                  </Button>
+            {selectedCreators.map((c) => (
+              <div key={c.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-semibold text-slate-600 overflow-hidden shrink-0">
+                  {c.imageUrl ? <img src={c.imageUrl} alt={c.name} className="w-full h-full object-cover" /> : c.name[0]}
                 </div>
-              ))
-            )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-slate-800 truncate">{c.name}</p>
+                  <p className="text-xs text-slate-500">{c.followersText} followers</p>
+                  <p className="text-xs text-slate-400">{c.engagementRate}% ER · {c.priceText}</p>
+                </div>
+                <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-red-500"
+                  onClick={() => toggleSelect(c)}>
+                  <X className="w-3.5 h-3.5" />
+                </Button>
+              </div>
+            ))}
+
+            {/* Platform services */}
+            {activePlatforms.length > 0 && activePlatforms.map((platId) => {
+              const services = PLATFORM_SERVICES[platId] ?? [];
+              if (services.length === 0) return null;
+              return (
+                <div key={platId} className="text-left space-y-2">
+                  <p className="text-[12px] font-semibold text-slate-400 uppercase tracking-wider mb-3">Available Services</p>
+                  {services.map((svc) => (
+                    <label key={svc} className="flex items-center gap-2.5 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={!!selectedServices[svc]}
+                        onChange={() => toggleService(svc)}
+                        className="w-4 h-4 rounded border-2 cursor-pointer accent-orange-500 shrink-0"
+                        style={{ borderColor: "var(--ch-border)" }}
+                      />
+                      <span className="text-[12px] text-slate-400 group-hover:text-slate-300 transition-colors">{svc}</span>
+                    </label>
+                  ))}
+                </div>
+              );
+            })}
           </div>
           {briefFooter}
         </DialogContent>
