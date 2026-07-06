@@ -1872,28 +1872,12 @@ export default function Marketplace() {
 
           <div className="flex-1" />
 
-          <Button variant="outline" size="sm" onClick={resetFilters} className="gap-1.5">
-            <RotateCcw className="w-3.5 h-3.5" /> Reset
-          </Button>
-        </div>
-
-        {/* Row 3: sticky results info + actions */}
-        <div className="sticky top-0 z-30 px-3 sm:px-4 py-2 bg-[#0B1120]/95 backdrop-blur border-b border-white/10 shadow-[0_10px_28px_rgba(0,0,0,0.28)] flex flex-wrap items-center gap-2">
-          <div className="flex-1 min-w-[200px]">
-            <p className="text-sm font-bold text-white">
-              <AnimatedNumber value={`${stats?.totalCreators ?? 0} Creators`} loading={statsLoading} />
-            </p>
-            <p className="text-[10px] text-slate-500">
-              {statsLoading ? "Loading..." : `Last updated: ${dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "–"}`}
-            </p>
-          </div>
-
-          {/* Platform filter buttons — rectangular to match Select style */}
+          {/* Platform filter buttons */}
           {[
             { id: "instagram", label: "Instagram", color: "#E1306C" },
             { id: "tiktok", label: "TikTok", color: "#25F4EE" },
             { id: "youtube", label: "YouTube", color: "#FF0000" },
-            { id: "x", label: "X", color: "#ffffff" },
+            { id: "x", label: "X (Twitter)", color: "#ffffff" },
           ].map((plat) => {
             const active = activePlatforms.includes(plat.id);
             return (
@@ -1912,6 +1896,22 @@ export default function Marketplace() {
               </button>
             );
           })}
+
+          <Button variant="outline" size="sm" onClick={resetFilters} className="gap-1.5">
+            <RotateCcw className="w-3.5 h-3.5" /> Reset
+          </Button>
+        </div>
+
+        {/* Row 3: sticky results info + actions */}
+        <div className="sticky top-0 z-30 px-3 sm:px-4 py-2 bg-[#0B1120]/95 backdrop-blur border-b border-white/10 shadow-[0_10px_28px_rgba(0,0,0,0.28)] flex flex-wrap items-center gap-2">
+          <div className="flex-1 min-w-[200px]">
+            <p className="text-sm font-bold text-white">
+              <AnimatedNumber value={`${stats?.totalCreators ?? 0} Creators`} loading={statsLoading} />
+            </p>
+            <p className="text-[10px] text-slate-500">
+              {statsLoading ? "Loading..." : `Last updated: ${dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "–"}`}
+            </p>
+          </div>
 
           <Button size="sm" onClick={() => setShowAddCreator(true)} className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white">
             <UserPlus className="w-3.5 h-3.5" /> Add Creator
