@@ -75,7 +75,7 @@ export default function App() {
           <Route path="database/podcast" element={<BrandRoute><DatabasePodcast /></BrandRoute>} />
           <Route path="database/indonesianmedia" element={<BrandRoute><DatabaseIndonesianMedia /></BrandRoute>} />
           <Route path="database/internationalmedia" element={<BrandRoute><DatabaseInternationalMedia /></BrandRoute>} />
-          <Route path="content-hub" element={<BrandRoute><ContentHub /></BrandRoute>} />
+          <Route path="creator-hub" element={<BrandRoute><ContentHub /></BrandRoute>} />
           <Route path="media-monitoring" element={<MediaMonitoringRoute><MediaMonitoring /></MediaMonitoringRoute>} />
           <Route path="ai-support" element={<BrandRoute><AISupport /></BrandRoute>} />
           <Route path="creator-academy" element={<CreatorAcademy />} />

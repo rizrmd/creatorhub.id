@@ -1,257 +1,779 @@
 import { useState } from "react";
 import {
-  Search, Upload, Calendar, Eye, Heart,
-  MessageCircle, Share2, MoreHorizontal, Image, Video, FileText,
+  Search, Eye, Image,
+  ArrowUpDown, ChevronDown, Instagram, Plus,
+  FolderOpen, Megaphone, X, Download,
 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 
-const contents = [
+/* ───────────────────── Campaigns Data ───────────────────── */
+
+const campaigns = [
   {
     id: 1,
-    title: "Swasembada Air - Campaign Launch",
-    client: "Komdigi",
-    type: "Reels",
-    typeIcon: Video,
-    status: "published",
-    date: "15 Mar 2026",
-    views: "124K",
-    likes: "8.2K",
-    comments: 342,
-    hue: 210,
+    title: "ENHYPEN Jakarta (Presale Hype) - Instagram",
+    brand: "PK Entertainment",
+    category: "ENTERTAINMENT",
+    pricePerView: "Rp1.000",
+    views: "1K views",
+    creators: 3376,
+    budgetRemaining: 60,
+    hue: 0,
+    platform: "instagram",
   },
   {
     id: 2,
-    title: "Tutorial Digitalisasi UMKM Ep.1",
-    client: "Kementrian UMKM",
-    type: "Video",
-    typeIcon: Video,
-    status: "published",
-    date: "10 Mar 2026",
-    views: "89K",
-    likes: "5.1K",
-    comments: 210,
-    hue: 142,
+    title: "ENHYPEN Jakarta (Presale Hype) - TikTok",
+    brand: "PK Entertainment",
+    category: "ENTERTAINMENT",
+    pricePerView: "Rp1.000",
+    views: "1K views",
+    creators: 2608,
+    budgetRemaining: 85,
+    hue: 0,
+    platform: "tiktok",
   },
   {
     id: 3,
-    title: "Koperasi Sejahtera - Testimoni",
-    client: "Kemenkop",
-    type: "Carousel",
-    typeIcon: Image,
-    status: "draft",
-    date: "20 Mar 2026",
-    views: "-",
-    likes: "-",
-    comments: 0,
-    hue: 262,
+    title: "Emina x Gelato Cleanser",
+    brand: "Emina",
+    category: "LIFESTYLE",
+    pricePerView: "Rp2.000",
+    views: "1K views",
+    creators: 21753,
+    budgetRemaining: 52,
+    hue: 340,
+    platform: "instagram",
   },
   {
     id: 4,
-    title: "BNI QRIS Challenge",
-    client: "PT Bank Negara Indonesia",
-    type: "Reels",
-    typeIcon: Video,
-    status: "published",
-    date: "28 Feb 2026",
-    views: "256K",
-    likes: "15.3K",
-    comments: 890,
-    hue: 35,
+    title: "BNI QRIS Cashback Challenge",
+    brand: "PT Bank Negara Indonesia",
+    category: "FINANCE",
+    pricePerView: "Rp1.500",
+    views: "2K views",
+    creators: 8920,
+    budgetRemaining: 73,
+    hue: 210,
+    platform: "tiktok",
   },
   {
     id: 5,
-    title: "Behind the Scenes - Davo Daily",
-    client: "Dave Laksono",
-    type: "Stories",
-    typeIcon: Image,
-    status: "published",
-    date: "18 Mar 2026",
-    views: "45K",
-    likes: "3.2K",
-    comments: 87,
-    hue: 190,
+    title: "Kementrian UMKM Digitalisasi",
+    brand: "Kementrian UMKM",
+    category: "GOVERNMENT",
+    pricePerView: "Rp3.000",
+    views: "5K views",
+    creators: 12450,
+    budgetRemaining: 40,
+    hue: 142,
+    platform: "youtube",
   },
   {
     id: 6,
-    title: "Healthy Morning Routine",
-    client: "Nurul Arifin",
-    type: "Reels",
-    typeIcon: Video,
-    status: "review",
-    date: "22 Mar 2026",
-    views: "-",
-    likes: "-",
-    comments: 0,
-    hue: 340,
-  },
-  {
-    id: 7,
-    title: "Infografis Data Koperasi 2026",
-    client: "Kemenkop",
-    type: "Carousel",
-    typeIcon: Image,
-    status: "published",
-    date: "5 Mar 2026",
-    views: "67K",
-    likes: "4.5K",
-    comments: 156,
-    hue: 262,
-  },
-  {
-    id: 8,
-    title: "BTS Photoshoot Campaign",
-    client: "Komdigi",
-    type: "Photo",
-    typeIcon: Image,
-    status: "published",
-    date: "12 Mar 2026",
-    views: "34K",
-    likes: "2.8K",
-    comments: 95,
+    title: "Komdigi Swasembada Air",
+    brand: "Komdigi",
+    category: "GOVERNMENT",
+    pricePerView: "Rp2.500",
+    views: "3K views",
+    creators: 6780,
+    budgetRemaining: 91,
     hue: 210,
+    platform: "instagram",
   },
 ];
 
-const statusConfig: Record<string, { label: string; bg: string; color: string }> = {
-  published: { label: "Published", bg: "#DCFCE7", color: "#16A34A" },
-  draft: { label: "Draft", bg: "#F3F4F6", color: "#6B7280" },
-  review: { label: "In Review", bg: "#FEF3C7", color: "#D97706" },
+/* ───────────────────── Pipeline Data ───────────────────── */
+
+interface PipelineItem {
+  id: number;
+  topic: string;
+  creatorName: string;
+  creatorRole: string;
+  creatorAvatar: string;
+  thumbnail: string;
+  digitalAssets: number;
+  targetDate: string;
+  platforms: string[];
+  completedSteps: number;
+  totalSteps: number;
+  progressPercent: number;
+  lastStep: string;
+  contentCode?: string;
+  caption?: string;
+  hashtags?: string;
+  fase?: string;
+  contentPillar?: string;
+}
+
+interface ProductionStep {
+  no: number;
+  alurProduksi: string;
+  penanggungJawab: string[];
+  status: "Done" | "Not Done" | "No Need";
+  supervisor: string;
+  hasPreview?: boolean;
+  previewLabel?: string;
+}
+
+const pipelineData: PipelineItem[] = [
+  {
+    id: 1,
+    topic: "Konten Edukasi tentang Sumatera Utara",
+    creatorName: "Budi Wijaya",
+    creatorRole: "Project Manager",
+    creatorAvatar: "/creators/jerome-polin.png",
+    thumbnail: "/thumbnails/bencana-sumatera-utara.jpg",
+    digitalAssets: 1,
+    targetDate: "13 Juli 2026, 14:09",
+    platforms: ["instagram", "tiktok"],
+    completedSteps: 2,
+    totalSteps: 8,
+    progressPercent: 25,
+    lastStep: "Completed: Brief & Konsep",
+    contentCode: "KONTEN-001",
+    caption: "Caption untuk konten #1",
+    hashtags: "#konten #edukasi #SumateraUtara",
+    fase: "Awareness",
+    contentPillar: "Edukasi",
+  },
+  {
+    id: 2,
+    topic: "Konten Edukasi tentang Sumatera Barat",
+    creatorName: "Ani Suryani",
+    creatorRole: "Project Manager",
+    creatorAvatar: "/creators/rachel-vennya.png",
+    thumbnail: "/creators/nessie-judge.png",
+    digitalAssets: 1,
+    targetDate: "13 Juli 2026, 14:09",
+    platforms: ["instagram", "tiktok"],
+    completedSteps: 2,
+    totalSteps: 8,
+    progressPercent: 25,
+    lastStep: "Completed: Brief & Konsep",
+    contentCode: "KONTEN-002",
+    caption: "Caption untuk konten #2",
+    hashtags: "#konten #edukasi #SumateraBarat",
+    fase: "Awareness",
+    contentPillar: "Edukasi",
+  },
+  {
+    id: 3,
+    topic: "Konten Edukasi tentang Sumatera Selatan",
+    creatorName: "Cahya Putra",
+    creatorRole: "Project Manager",
+    creatorAvatar: "/creators/fadil-jaidi.png",
+    thumbnail: "/creators/arief-muhammad.png",
+    digitalAssets: 1,
+    targetDate: "13 Juli 2026, 14:09",
+    platforms: ["instagram", "tiktok"],
+    completedSteps: 2,
+    totalSteps: 8,
+    progressPercent: 25,
+    lastStep: "Completed: Brief & Konsep",
+    contentCode: "KONTEN-003",
+    caption: "Caption untuk konten #3",
+    hashtags: "#konten #edukasi #SumateraSelatan",
+    fase: "Awareness",
+    contentPillar: "Edukasi",
+  },
+  {
+    id: 4,
+    topic: "Konten Edukasi tentang DKI Jakarta",
+    creatorName: "Dewi Lestari",
+    creatorRole: "Project Manager",
+    creatorAvatar: "/creators/rahadi-wangsapermana.jpg",
+    thumbnail: "/creators/tasya-farasya.png",
+    digitalAssets: 1,
+    targetDate: "13 Juli 2026, 14:09",
+    platforms: ["instagram", "tiktok"],
+    completedSteps: 2,
+    totalSteps: 8,
+    progressPercent: 25,
+    lastStep: "Completed: Brief & Konsep",
+    contentCode: "KONTEN-004",
+    caption: "Caption untuk konten #4",
+    hashtags: "#konten #edukasi #DKIJakarta",
+    fase: "Awareness",
+    contentPillar: "Edukasi",
+  },
+  {
+    id: 5,
+    topic: "Konten Edukasi tentang Jawa Barat",
+    creatorName: "Eko Prasetyo",
+    creatorRole: "Project Manager",
+    creatorAvatar: "/creators/jerome-polin.png",
+    thumbnail: "/creators/nessie-judge.png",
+    digitalAssets: 1,
+    targetDate: "13 Juli 2026, 14:09",
+    platforms: ["instagram", "tiktok"],
+    completedSteps: 2,
+    totalSteps: 8,
+    progressPercent: 25,
+    lastStep: "Completed: Brief & Konsep",
+    contentCode: "KONTEN-005",
+    caption: "Caption untuk konten #5",
+    hashtags: "#konten #edukasi #JawaBarat",
+    fase: "Awareness",
+    contentPillar: "Edukasi",
+  },
+];
+
+const getProductionSteps = (_item: PipelineItem): ProductionStep[] => [
+  { no: 1, alurProduksi: "Brief & Konsep", penanggungJawab: ["Project Manager"], status: "Done", supervisor: "Creative Director" },
+  { no: 2, alurProduksi: "Pengumpulan Raw Materials (Video/Foto)", penanggungJawab: ["Konten Kreator"], status: "Not Done", supervisor: "Project Manager", hasPreview: true, previewLabel: "Preview Raw Materials:" },
+  { no: 3, alurProduksi: "Editing & Produksi", penanggungJawab: ["Video Editor", "Graphic Designer"], status: "Not Done", supervisor: "Creative Director" },
+  { no: 4, alurProduksi: "Review Konten", penanggungJawab: ["Project Manager", "Creative Director"], status: "Not Done", supervisor: "Head of Production", hasPreview: true, previewLabel: "Preview Konten Hasil Edit:" },
+  { no: 5, alurProduksi: "Revisi", penanggungJawab: ["Video Editor"], status: "No Need", supervisor: "Creative Director" },
+  { no: 6, alurProduksi: "Approved Content", penanggungJawab: ["Project Manager"], status: "Not Done", supervisor: "Head of Production", hasPreview: true, previewLabel: "Preview Konten Final:" },
+  { no: 7, alurProduksi: "Penjadwalan Posting", penanggungJawab: ["Digital Specialist"], status: "Not Done", supervisor: "Project Manager" },
+  { no: 8, alurProduksi: "Konten diposting", penanggungJawab: ["Digital Specialist"], status: "Not Done", supervisor: "Project Manager" },
+];
+
+/* ───────────────────── Helpers ───────────────────── */
+
+const PlatformIcon = ({ platform }: { platform: string }) => {
+  if (platform === "instagram") return <Instagram className="w-3.5 h-3.5" style={{ color: "#E1306C" }} />;
+  if (platform === "tiktok") return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5" style={{ color: "#00F2EA" }}>
+      <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 0010.86 4.43v-7.15a8.16 8.16 0 005.58 2.18v-3.45a4.85 4.85 0 01-3.58-1.58V6.69h3.58z" />
+    </svg>
+  );
+  if (platform === "youtube") return <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5" style={{ color: "#FF0000" }}><path d="M23.5 6.19a3.02 3.02 0 00-2.12-2.14C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.38.55A3.02 3.02 0 00.5 6.19 31.6 31.6 0 000 12a31.6 31.6 0 00.5 5.81 3.02 3.02 0 002.12 2.14c1.88.55 9.38.55 9.38.55s7.5 0 9.38-.55a3.02 3.02 0 002.12-2.14A31.6 31.6 0 0024 12a31.6 31.6 0 00-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z" /></svg>;
+  return null;
 };
 
-const contentStats = [
-  { label: "Total Konten", value: "8", icon: FileText },
-  { label: "Published", value: "6", icon: Eye },
-  { label: "Total Views", value: "615K", icon: Eye },
-  { label: "Total Engagement", value: "39.4K", icon: Heart },
-];
+/* ───────────────────── Campaign Card ───────────────────── */
 
-export default function ContentHub() {
-  const [activeTab, setActiveTab] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const filtered = contents.filter(
-    (c) =>
-      c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.client.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
+function CampaignCard({ campaign }: { campaign: typeof campaigns[0] }) {
   return (
-    <div className="p-4 md:p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
-      <div>
-        <h1 className="text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]"
-          style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-          Content Hub
-        </h1>
-        <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
-          Kelola semua konten kampanye dalam satu tempat.
+    <div
+      className="rounded-[14px] overflow-hidden border transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+      style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}
+    >
+      {/* Banner */}
+      <div className="relative h-40 w-full" style={{ background: `linear-gradient(135deg, hsl(${campaign.hue}, 60%, 25%), hsl(${campaign.hue}, 40%, 10%))` }}>
+        <div className="absolute inset-0 flex items-center justify-center opacity-30">
+          <Image className="w-16 h-16 text-white/40" />
+        </div>
+        <div className="absolute top-3 left-3 flex items-center gap-2">
+          <span className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-[10px] font-bold text-white">
+            {campaign.brand.charAt(0)}
+          </span>
+        </div>
+        <div className="absolute top-3 right-3">
+          <span className="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-white/20 backdrop-blur-sm text-white">
+            Clipping
+          </span>
+        </div>
+        <div className="absolute bottom-3 right-3">
+          <PlatformIcon platform={campaign.platform} />
+        </div>
+      </div>
+
+      {/* Body */}
+      <div className="p-3.5 space-y-2.5">
+        <p className="text-[13px] font-bold leading-tight line-clamp-2" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+          {campaign.title}
         </p>
-      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        {contentStats.map((s) => (
-          <Card key={s.label}>
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: "var(--ch-primary-50)" }}>
-                <s.icon className="w-5 h-5" style={{ color: "var(--ch-primary)" }} />
-              </div>
-              <div>
-                <p className="text-[20px] font-bold" style={{ color: "var(--ch-text)" }}>{s.value}</p>
-                <p className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>{s.label}</p>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+        <div className="flex items-center gap-1.5">
+          <span className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>{campaign.pricePerView}</span>
+          <span className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>/ {campaign.views}</span>
+        </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList variant="line" className="border-b w-full justify-start gap-0">
-          <TabsTrigger value="all" className="text-[14px] font-semibold px-4 py-2 rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--ch-primary)] data-[state=active]:text-[var(--ch-primary)] data-[state=active]:shadow-none">
-            Semua
-          </TabsTrigger>
-          <TabsTrigger value="published" className="text-[14px] font-semibold px-4 py-2 rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--ch-primary)] data-[state=active]:text-[var(--ch-primary)] data-[state=active]:shadow-none">
-            Published
-          </TabsTrigger>
-          <TabsTrigger value="draft" className="text-[14px] font-semibold px-4 py-2 rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--ch-primary)] data-[state=active]:text-[var(--ch-primary)] data-[state=active]:shadow-none">
-            Draft
-          </TabsTrigger>
-          <TabsTrigger value="review" className="text-[14px] font-semibold px-4 py-2 rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--ch-primary)] data-[state=active]:text-[var(--ch-primary)] data-[state=active]:shadow-none">
-            In Review
-          </TabsTrigger>
-        </TabsList>
+        <div className="flex items-center gap-2">
+          <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider" style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>
+            {campaign.category}
+          </span>
+          <span className="flex items-center gap-1 text-[11px]" style={{ color: "var(--ch-text-muted)" }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3 h-3"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4-4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" /></svg>
+            {campaign.creators.toLocaleString("id-ID")}
+          </span>
+        </div>
 
-        <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center gap-3">
-          <div className="relative flex-1 max-w-sm w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--ch-text-muted)" }} />
-            <input
-              type="text"
-              placeholder="Cari konten..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 text-[13px] rounded-lg border bg-white"
-              style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+        {/* Budget Progress */}
+        <div className="pt-1">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Budget Tersisa</span>
+            <span className="text-[10px] font-bold" style={{ color: "var(--ch-text)" }}>{campaign.budgetRemaining}%</span>
+          </div>
+          <div className="w-full h-1.5 rounded-full" style={{ background: "var(--ch-border)" }}>
+            <div
+              className="h-full rounded-full transition-all"
+              style={{
+                width: `${campaign.budgetRemaining}%`,
+                background: campaign.budgetRemaining > 50 ? "#22C55E" : campaign.budgetRemaining > 25 ? "#F59E0B" : "#EF4444",
+              }}
             />
           </div>
-          <button className="flex items-center gap-1.5 px-3 py-2 text-[12px] font-semibold rounded-lg text-white" style={{ background: "var(--ch-primary)" }}>
-            <Upload className="w-3.5 h-3.5" /> Upload Konten
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ───────────────────── Content Production Management ───────────────────── */
+
+function ContentProductionManagement({ item, onClose }: { item: PipelineItem; onClose: () => void }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [thumbnail, setThumbnail] = useState(item.thumbnail);
+  const [caption, setCaption] = useState(item.caption || "");
+  const [hashtags, setHashtags] = useState(item.hashtags || "");
+  const steps = getProductionSteps(item);
+  const statusColors: Record<string, { bg: string; color: string }> = {
+    "Done": { bg: "#166534", color: "#4ADE80" },
+    "Not Done": { bg: "#854D0E", color: "#FACC15" },
+    "No Need": { bg: "#334155", color: "#94A3B8" },
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setThumbnail(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70" onClick={onClose}>
+      <div className="rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl" style={{ background: "#0F172A", border: "1px solid #1E293B" }} onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
+        <div className="flex items-start justify-between p-5 border-b" style={{ borderColor: "#1E293B" }}>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full overflow-hidden shrink-0">
+              <img src={item.creatorAvatar} alt={item.creatorName} className="w-full h-full object-cover" />
+            </div>
+            <div>
+              <h2 className="text-[16px] font-bold" style={{ color: "#F1F5F9", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                Content Production Management: {item.contentCode}
+              </h2>
+              <p className="text-[12px]" style={{ color: "#94A3B8" }}>{item.creatorName}</p>
+              <p className="text-[11px]" style={{ color: "#64748B" }}>Konten Kreator / {item.creatorRole}</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-1.5 rounded-lg transition-colors hover:bg-white/10">
+            <X className="w-5 h-5" style={{ color: "#94A3B8" }} />
           </button>
         </div>
 
-        <TabsContent value={activeTab} className="mt-4">
-          <div className="flex flex-col gap-4">
-            {filtered
-              .filter((c) => activeTab === "all" || c.status === activeTab)
-              .map((c) => {
-                const TypeIcon = c.typeIcon;
-                const st = statusConfig[c.status];
-                return (
-                  <div
-                    key={c.id}
-                    className="rounded-[14px] border overflow-hidden transition-all duration-200 hover:shadow-md"
-                    style={{ background: "#FFFFFF", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}
-                  >
-                    <div className="flex flex-col sm:flex-row">
-                      <div className="w-full sm:w-40 h-24 sm:h-auto flex items-center justify-center shrink-0" style={{ background: `hsl(${c.hue}, 80%, 95%)` }}>
-                        <TypeIcon style={{ width: 32, height: 32, color: `hsl(${c.hue}, 60%, 45%)` }} />
-                      </div>
-                      <div className="flex-1 p-4 sm:p-5 space-y-2">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: `hsl(${c.hue}, 60%, 45%)` }}>{c.client}</span>
-                          <Badge variant="secondary" className="text-[10px]">{c.type}</Badge>
-                          <span className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: st.bg, color: st.color }}>{st.label}</span>
-                        </div>
-                        <p className="text-[15px] font-bold leading-tight" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{c.title}</p>
-                        <div className="flex flex-wrap items-center gap-4 pt-1">
-                          <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
-                            <Calendar className="w-3 h-3" /> {c.date}
-                          </span>
-                          <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
-                            <Eye className="w-3 h-3" /> {c.views}
-                          </span>
-                          <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
-                            <Heart className="w-3 h-3" /> {c.likes}
-                          </span>
-                          <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
-                            <MessageCircle className="w-3 h-3" /> {c.comments}
-                          </span>
-                          <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
-                            <Share2 className="w-3 h-3" /> Share
-                          </span>
-                        </div>
-                      </div>
-                      <div className="p-4 sm:p-5 flex items-start">
-                        <button className="p-1 rounded hover:bg-slate-100">
-                          <MoreHorizontal className="w-4 h-4" style={{ color: "var(--ch-text-muted)" }} />
-                        </button>
-                      </div>
-                    </div>
+        {/* Content Info + Thumbnail */}
+        <div className="p-5 border-b" style={{ borderColor: "#1E293B" }}>
+          <div className="grid grid-cols-[1fr_200px] gap-6">
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "#64748B" }}>Target Posting</p>
+                  <p className="text-[13px] font-semibold mt-0.5" style={{ color: "#F1F5F9" }}>{item.targetDate}</p>
+                </div>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "#64748B" }}>Target Platform</p>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    {item.platforms.map((p) => <PlatformIcon key={p} platform={p} />)}
                   </div>
+                </div>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "#64748B" }}>Fase</p>
+                  <p className="text-[13px] font-semibold mt-0.5" style={{ color: "#F1F5F9" }}>{item.fase}</p>
+                </div>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "#64748B" }}>Content Pillar</p>
+                  <p className="text-[13px] font-semibold mt-0.5" style={{ color: "#F1F5F9" }}>{item.contentPillar}</p>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "#64748B" }}>Tema/Topik</p>
+                  <p className="text-[14px] font-bold mt-0.5" style={{ color: "#60A5FA" }}>{item.topic}</p>
+                </div>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "#64748B" }}>Caption</p>
+                  {isEditing ? (
+                    <textarea
+                      value={caption}
+                      onChange={(e) => setCaption(e.target.value)}
+                      className="w-full mt-1 p-2 text-[13px] rounded-lg border resize-none"
+                      style={{ background: "#1E293B", borderColor: "#334155", color: "#F1F5F9" }}
+                      rows={2}
+                    />
+                  ) : (
+                    <p className="text-[13px] mt-0.5" style={{ color: "#F1F5F9" }}>{caption}</p>
+                  )}
+                </div>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "#64748B" }}>Hashtags</p>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={hashtags}
+                      onChange={(e) => setHashtags(e.target.value)}
+                      className="w-full mt-1 p-2 text-[13px] rounded-lg border"
+                      style={{ background: "#1E293B", borderColor: "#334155", color: "#F1F5F9" }}
+                    />
+                  ) : (
+                    <p className="text-[13px] mt-0.5" style={{ color: "#60A5FA" }}>{hashtags}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+            {/* Thumbnail */}
+            <div className="rounded-xl overflow-hidden relative group" style={{ background: "#1E293B" }}>
+              <img src={thumbnail} alt={item.topic} className="w-full h-full min-h-[180px] object-cover" />
+              {isEditing && (
+                <label className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                  <div className="text-center">
+                    <Image className="w-6 h-6 mx-auto mb-1" style={{ color: "#94A3B8" }} />
+                    <span className="text-[10px] font-semibold" style={{ color: "#94A3B8" }}>Ganti Foto</span>
+                  </div>
+                  <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                </label>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Production Steps Table */}
+        <div className="p-5">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b" style={{ borderColor: "#1E293B" }}>
+                <th className="text-left py-2.5 px-3 text-[10px] font-bold uppercase tracking-wider" style={{ color: "#64748B" }}>NO</th>
+                <th className="text-left py-2.5 px-3 text-[10px] font-bold uppercase tracking-wider" style={{ color: "#64748B" }}>ALUR PRODUKSI</th>
+                <th className="text-left py-2.5 px-3 text-[10px] font-bold uppercase tracking-wider" style={{ color: "#64748B" }}>PENANGGUNG JAWAB KERJAAN</th>
+                <th className="text-left py-2.5 px-3 text-[10px] font-bold uppercase tracking-wider" style={{ color: "#64748B" }}>DONE/NOT DONE</th>
+                <th className="text-left py-2.5 px-3 text-[10px] font-bold uppercase tracking-wider" style={{ color: "#64748B" }}>SUPERVISOR</th>
+              </tr>
+            </thead>
+            <tbody>
+              {steps.map((step) => {
+                const st = statusColors[step.status];
+                return (
+                  <StepRow key={step.no} step={step} statusStyle={st} />
                 );
               })}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Footer */}
+        <div className="p-5 border-t flex items-center justify-between" style={{ borderColor: "#1E293B" }}>
+          <Button
+            variant="outline"
+            className="gap-1.5 text-[13px] font-semibold"
+            style={{ borderColor: "#334155", color: "#94A3B8" }}
+            onClick={() => setIsEditing(!isEditing)}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+            {isEditing ? "Batal Edit" : "Edit"}
+          </Button>
+          <Button className="gap-1.5 text-[13px] font-semibold" style={{ background: "#2563EB" }}>
+            Save Progress
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StepRow({ step, statusStyle }: { step: ProductionStep; statusStyle: { bg: string; color: string } }) {
+  return (
+    <>
+      <tr className="border-b" style={{ borderColor: "#1E293B" }}>
+        <td className="py-2.5 px-3 text-[12px] font-semibold" style={{ color: "#F1F5F9" }}>{step.no}</td>
+        <td className="py-2.5 px-3 text-[12px] font-semibold" style={{ color: "#F1F5F9" }}>{step.alurProduksi}</td>
+        <td className="py-2.5 px-3">
+          <div className="flex flex-wrap gap-1">
+            {step.penanggungJawab.map((pj) => (
+              <span key={pj} className="px-2 py-0.5 rounded text-[10px] font-semibold" style={{ background: "#1E3A5F", color: "#60A5FA" }}>
+                {pj}
+              </span>
+            ))}
           </div>
-        </TabsContent>
-      </Tabs>
+        </td>
+        <td className="py-2.5 px-3">
+          <span className="px-2.5 py-1 rounded text-[10px] font-bold" style={{ background: statusStyle.bg, color: statusStyle.color }}>
+            {step.status}
+          </span>
+        </td>
+        <td className="py-2.5 px-3 text-[11px]" style={{ color: "#94A3B8" }}>{step.supervisor}</td>
+      </tr>
+      {step.hasPreview && (
+        <tr className="border-b" style={{ borderColor: "#1E293B" }}>
+          <td colSpan={5} className="py-3 px-3">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <p className="text-[11px] font-semibold" style={{ color: "#94A3B8" }}>{step.previewLabel}</p>
+                <button className="flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold rounded transition-colors hover:bg-red-500/10" style={{ color: "#F87171", border: "1px solid #7F1D1D" }}>
+                  <Download className="w-3 h-3" /> Download {step.no === 2 ? "All Assets" : "Asset"}
+                </button>
+              </div>
+              {/* Google Docs Link Preview - Dark */}
+              <div className="rounded-xl overflow-hidden border" style={{ borderColor: "#1E293B", maxWidth: "480px", background: "#1A2332" }}>
+                <div className="flex items-center gap-3 p-3" style={{ background: "#1A3A2A" }}>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ background: "#166534" }}>
+                    <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
+                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" fill="#22C55E" opacity="0.3"/>
+                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="#22C55E" strokeWidth="1.5"/>
+                      <path d="M14 2v6h6M8 13h8M8 17h5" stroke="#22C55E" strokeWidth="1.5" strokeLinecap="round"/>
+                    </svg>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[12px] font-semibold truncate" style={{ color: "#4ADE80" }}>docs.google.com</p>
+                    <p className="text-[11px] truncate mt-0.5" style={{ color: "#86EFAC" }}>
+                      https://docs.google.com/spreadsheets/d/16kRhfe6UWCVxKkKPTyWHTNzl2m1ZnBUcgOi_1pDRA/edit?gid=730194611#gid=730194611
+                    </p>
+                  </div>
+                  <span className="text-[10px] shrink-0" style={{ color: "#4ADE80" }}>14:53</span>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      )}
+    </>
+  );
+}
+
+/* ───────────────────── Pipeline Row ───────────────────── */
+
+function PipelineRow({ item, onView }: { item: PipelineItem; onView: () => void }) {
+  return (
+    <tr className="border-b transition-colors hover:bg-white/[0.02]" style={{ borderColor: "var(--ch-border)" }}>
+      {/* Tema/Topik */}
+      <td className="py-3.5 px-4">
+        <span className="text-[13px] font-semibold" style={{ color: "var(--ch-text)" }}>{item.topic}</span>
+      </td>
+
+      {/* Konten Kreator */}
+      <td className="py-3.5 px-4">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-full overflow-hidden shrink-0">
+            <img src={item.creatorAvatar} alt={item.creatorName} className="w-full h-full object-cover" />
+          </div>
+          <div>
+            <p className="text-[13px] font-semibold" style={{ color: "var(--ch-text)" }}>{item.creatorName}</p>
+            <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>{item.creatorRole}</p>
+          </div>
+        </div>
+      </td>
+
+      {/* Digital Assets */}
+      <td className="py-3.5 px-4">
+        <div className="flex items-center gap-1.5">
+          <div className="w-6 h-6 rounded flex items-center justify-center" style={{ background: "var(--ch-orange-50)" }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3 h-3" style={{ color: "var(--ch-orange)" }}><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
+          </div>
+          <span className="text-[12px] font-semibold" style={{ color: "var(--ch-text)" }}>{item.digitalAssets}</span>
+        </div>
+      </td>
+
+      {/* Target Posting */}
+      <td className="py-3.5 px-4">
+        <span className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>{item.targetDate}</span>
+      </td>
+
+      {/* Target Platform */}
+      <td className="py-3.5 px-4">
+        <div className="flex items-center gap-1.5">
+          {item.platforms.map((p) => <PlatformIcon key={p} platform={p} />)}
+        </div>
+      </td>
+
+      {/* Progress */}
+      <td className="py-3.5 px-4">
+        <div className="space-y-1 min-w-[140px]">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-semibold" style={{ color: "var(--ch-text)" }}>{item.completedSteps}/{item.totalSteps} Steps</span>
+            <span className="text-[11px] font-bold" style={{ color: "var(--ch-primary)" }}>{item.progressPercent}%</span>
+          </div>
+          <div className="w-full h-1.5 rounded-full" style={{ background: "var(--ch-border)" }}>
+            <div className="h-full rounded-full bg-blue-500" style={{ width: `${item.progressPercent}%` }} />
+          </div>
+          <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{item.lastStep}</p>
+        </div>
+      </td>
+
+      {/* Actions */}
+      <td className="py-3.5 px-4">
+        <div className="flex items-center gap-2">
+          <button onClick={onView} className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold rounded-lg transition-colors hover:bg-white/10" style={{ color: "var(--ch-text-muted)", border: "1px solid var(--ch-border)" }}>
+            <Eye className="w-3 h-3" /> View
+          </button>
+          <button className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold rounded-lg transition-colors hover:bg-white/10" style={{ color: "var(--ch-text-muted)", border: "1px solid var(--ch-border)" }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3 h-3"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" /></svg> Edit
+          </button>
+        </div>
+      </td>
+    </tr>
+  );
+}
+
+/* ───────────────────── Main Component ───────────────────── */
+
+export default function ContentHub() {
+  const [mainTab, setMainTab] = useState("campaigns");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [pipelineSearch, setPipelineSearch] = useState("");
+  const [selectedItem, setSelectedItem] = useState<PipelineItem | null>(null);
+
+  const filteredCampaigns = campaigns.filter(
+    (c) =>
+      c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.brand.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredPipeline = pipelineData.filter(
+    (p) =>
+      p.topic.toLowerCase().includes(pipelineSearch.toLowerCase()) ||
+      p.creatorName.toLowerCase().includes(pipelineSearch.toLowerCase())
+  );
+
+  const mainTabs = [
+    { value: "campaigns", icon: Megaphone, label: "Campaigns" },
+    { value: "content-hub", icon: FolderOpen, label: "Content Hub" },
+  ];
+
+  return (
+    <div className="p-4 md:p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
+      {/* Main Tabs: Campaigns | Content Hub */}
+      <div className="flex items-center gap-2 pb-2 overflow-x-auto">
+        {mainTabs.map((tab) => {
+          const isActive = mainTab === tab.value;
+          const TabIcon = tab.icon;
+          return (
+            <button key={tab.value} onClick={() => setMainTab(tab.value)}
+              className="flex items-center gap-1.5 px-4 py-2 text-[12px] font-semibold rounded-lg transition-all duration-150 whitespace-nowrap shrink-0"
+              style={isActive ? {
+                background: "linear-gradient(135deg, #EA580C, #F97316)",
+                color: "white",
+                boxShadow: "0 2px 8px rgba(249,115,22,.3)",
+              } : {
+                color: "var(--ch-text-muted)",
+                background: "var(--ch-surface)",
+                border: "1px solid var(--ch-border)",
+              }}>
+              <TabIcon className="w-3.5 h-3.5" />{tab.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* ═══════════ CAMPAIGNS TAB ═══════════ */}
+      {mainTab === "campaigns" && (
+        <div className="space-y-5">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl md:text-[22px] font-extrabold tracking-[-0.5px]" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                Explore Semua Campaign
+              </h1>
+            </div>
+          </div>
+
+          {/* Filters */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <div className="relative flex-1 max-w-sm w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--ch-text-muted)" }} />
+              <input
+                type="text"
+                placeholder="Cari campaign atau brand..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 text-[13px] rounded-lg border"
+                style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)", color: "var(--ch-text)" }}
+              />
+            </div>
+
+            <div className="flex items-center gap-2 flex-wrap">
+              <button className="flex items-center gap-1.5 px-3 py-2 text-[12px] font-semibold rounded-lg border transition-colors hover:bg-white/5"
+                style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}>
+                Urutkan dari <ArrowUpDown className="w-3 h-3" />
+              </button>
+              <button className="flex items-center gap-1.5 px-3 py-2 text-[12px] font-semibold rounded-lg border transition-colors hover:bg-white/5"
+                style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}>
+                Kategori <ChevronDown className="w-3 h-3" />
+              </button>
+              <button className="flex items-center gap-1.5 px-3 py-2 text-[12px] font-semibold rounded-lg border transition-colors hover:bg-white/5"
+                style={{ borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }}>
+                Tipe <ChevronDown className="w-3 h-3" />
+              </button>
+              <div className="flex items-center gap-1 ml-1">
+                {["tiktok", "instagram", "youtube"].map((p) => (
+                  <button key={p} className="w-8 h-8 rounded-lg flex items-center justify-center border transition-colors hover:bg-white/5"
+                    style={{ borderColor: "var(--ch-border)" }}>
+                    <PlatformIcon platform={p} />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Campaign Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {filteredCampaigns.map((c) => (
+              <CampaignCard key={c.id} campaign={c} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════ CONTENT HUB TAB ═══════════ */}
+      {mainTab === "content-hub" && (
+        <div className="space-y-5">
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl md:text-[22px] font-extrabold tracking-[-0.5px]" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+              Content Production Pipeline ({filteredPipeline.length})
+            </h1>
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--ch-text-muted)" }} />
+                <input
+                  type="text"
+                  placeholder="Cari konten atau kreator..."
+                  value={pipelineSearch}
+                  onChange={(e) => setPipelineSearch(e.target.value)}
+                  className="pl-9 pr-3 py-2 text-[13px] rounded-lg border w-64"
+                  style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)", color: "var(--ch-text)" }}
+                />
+              </div>
+              <Button className="gap-1.5 text-[13px] font-semibold" style={{ background: "var(--ch-primary)" }}>
+                <Plus className="w-4 h-4" /> Create Topic
+              </Button>
+            </div>
+          </div>
+
+          {/* Pipeline Table */}
+          <div className="rounded-[14px] border overflow-hidden" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
+                    <th className="text-left py-3 px-4 text-[11px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Tema/Topik</th>
+                    <th className="text-left py-3 px-4 text-[11px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Konten Kreator</th>
+                    <th className="text-left py-3 px-4 text-[11px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Digital Assets</th>
+                    <th className="text-left py-3 px-4 text-[11px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Target Posting</th>
+                    <th className="text-left py-3 px-4 text-[11px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Target Platform</th>
+                    <th className="text-left py-3 px-4 text-[11px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Progress</th>
+                    <th className="text-left py-3 px-4 text-[11px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredPipeline.map((item) => (
+                    <PipelineRow key={item.id} item={item} onView={() => setSelectedItem(item)} />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Content Production Management Modal */}
+      {selectedItem && (
+        <ContentProductionManagement item={selectedItem} onClose={() => setSelectedItem(null)} />
+      )}
     </div>
   );
 }

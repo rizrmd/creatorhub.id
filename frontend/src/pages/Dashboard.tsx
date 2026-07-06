@@ -12,7 +12,7 @@ const SERVICES = [
   { label: "Campaigns", desc: "Influencer campaign management", icon: Megaphone, color: "text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20", link: "/dashboard/campaigns" },
   { label: "Boost Ads", desc: "Ad boosting across platforms", icon: Zap, color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20", link: "/dashboard/boost-ads" },
   { label: "Database", desc: "Creator database management", icon: Database, color: "text-teal-400", bg: "bg-teal-500/10", border: "border-teal-500/20", link: "/dashboard/database" },
-  { label: "Content Hub", desc: "Content creation & management", icon: FolderOpen, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", link: "/dashboard/content-hub" },
+  { label: "Creator Hub", desc: "Content creation & management", icon: FolderOpen, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", link: "/dashboard/creator-hub" },
   { label: "Media Monitoring", desc: "Real-time media tracking", icon: Radio, color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/20", link: "/dashboard/media-monitoring" },
   { label: "AI Support", desc: "AI-powered campaign insights", icon: Sparkles, color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20", link: "/dashboard/ai-support" },
   { label: "Messages", desc: "Direct messaging with creators", icon: MessageSquare, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", link: "/dashboard/messages" },

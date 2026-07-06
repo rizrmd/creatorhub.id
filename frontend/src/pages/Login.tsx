@@ -14,7 +14,7 @@ const CLIENT_PERKS = [
 ];
 
 const CREATOR_PERKS = [
-  { emoji: "🎨", text: "Content Hub untuk manage konten" },
+  { emoji: "🎨", text: "Creator Hub untuk manage konten" },
   { emoji: "📢", text: "Terima undangan campaign dari brand" },
   { emoji: "📈", text: "Insights & performa akun" },
   { emoji: "💸", text: "Pembayaran langsung dari brand" },
