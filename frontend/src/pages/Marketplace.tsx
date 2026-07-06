@@ -374,21 +374,21 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
 
       {/* Card body */}
       <div className="p-3.5">
-        {/* Name + city + category */}
-        <div className="flex items-start justify-between gap-2 mb-1">
-          <div className="min-w-0">
-            <p className="font-bold text-[14px] leading-tight" style={{ color: "var(--ch-text)" }}>{creator.name}</p>
-            <p className="text-[12px] flex items-center gap-1 mt-0.5" style={{ color: "var(--ch-text-muted)" }}>
-              <MapPin style={{ width: 11, height: 11 }} />
-              <button
-                onClick={(e) => { e.stopPropagation(); onCityClick?.(creator.city); }}
-                className="hover:underline cursor-pointer text-left"
-              >{creator.city}</button>
-            </p>
-          </div>
+        {/* Name */}
+        <p className="font-bold text-[14px] leading-tight mb-1" style={{ color: "var(--ch-text)" }}>{creator.name}</p>
+
+        {/* City + category */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <p className="text-[12px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
+            <MapPin style={{ width: 11, height: 11 }} />
+            <button
+              onClick={(e) => { e.stopPropagation(); onCityClick?.(creator.city); }}
+              className="hover:underline cursor-pointer text-left"
+            >{creator.city}</button>
+          </p>
           <button
             onClick={(e) => { e.stopPropagation(); onCategoryClick?.(creator.category); }}
-            className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize cursor-pointer hover:opacity-80 ${catColor}`}
+            className={`px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize cursor-pointer hover:opacity-80 ${catColor}`}
           >
             {creator.category}
           </button>
