@@ -16,7 +16,13 @@ import Messages from "@/pages/Messages";
 import Payments from "@/pages/Payments";
 import Settings from "@/pages/Settings";
 import BoostAds from "@/pages/BoostAds";
-import DatabasePage from "@/pages/Database";
+import DatabasePage from "@/pages/database/DatabaseHub";
+import DatabaseContentCreators from "@/pages/database/ContentCreators";
+import DatabaseHomelessMedia from "@/pages/database/HomelessMedia";
+import DatabaseLiveShopping from "@/pages/database/LiveShopping";
+import DatabasePodcast from "@/pages/database/Podcast";
+import DatabaseIndonesianMedia from "@/pages/database/IndonesianMedia";
+import DatabaseInternationalMedia from "@/pages/database/InternationalMedia";
 import ContentHub from "@/pages/ContentHub";
 import AISupport from "@/pages/AISupport";
 import HomelessMedia from "@/pages/HomelessMedia";
@@ -63,6 +69,12 @@ export default function App() {
           <Route path="projects/:id" element={<BrandRoute><ProjectDetail /></BrandRoute>} />
           <Route path="boost-ads" element={<BrandRoute><BoostAds /></BrandRoute>} />
           <Route path="database" element={<BrandRoute><DatabasePage /></BrandRoute>} />
+          <Route path="database/contentcreators" element={<BrandRoute><DatabaseContentCreators /></BrandRoute>} />
+          <Route path="database/homelessmedia" element={<BrandRoute><DatabaseHomelessMedia /></BrandRoute>} />
+          <Route path="database/liveshopping" element={<BrandRoute><DatabaseLiveShopping /></BrandRoute>} />
+          <Route path="database/podcast" element={<BrandRoute><DatabasePodcast /></BrandRoute>} />
+          <Route path="database/indonesianmedia" element={<BrandRoute><DatabaseIndonesianMedia /></BrandRoute>} />
+          <Route path="database/internationalmedia" element={<BrandRoute><DatabaseInternationalMedia /></BrandRoute>} />
           <Route path="content-hub" element={<BrandRoute><ContentHub /></BrandRoute>} />
           <Route path="media-monitoring" element={<MediaMonitoringRoute><MediaMonitoring /></MediaMonitoringRoute>} />
           <Route path="ai-support" element={<BrandRoute><AISupport /></BrandRoute>} />

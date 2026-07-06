@@ -21,8 +21,8 @@ const MESSAGE_THREADS = [
 ];
 
 const USER_BY_ROLE = {
-  brand:   { name: "Arif Budiman",  subtitle: "Brand Manager",     initial: "A", stats: { campaigns: 8, creators: 24, spent: "Rp 1.4B" } },
-  kreator: { name: "Rina Pratiwi",  subtitle: "Lifestyle Creator", initial: "R", stats: { campaigns: 3, creators: 0,  spent: "Rp 48jt" } },
+  brand:   { name: "Arif Budiman",  subtitle: "Brand Manager",     initial: "A", stats: { campaigns: 0, creators: 0, spent: "Rp 0" } },
+  kreator: { name: "Rina Pratiwi",  subtitle: "Lifestyle Creator", initial: "R", stats: { campaigns: 0, creators: 0,  spent: "Rp 0" } },
 };
 
 const USER_AVATARS: Record<string, string> = {
@@ -69,7 +69,7 @@ export default function Header() {
   } : {
     ...USER_BY_ROLE.brand,
     name:     user?.name ?? "Arif Budiman",
-    subtitle: user?.role === "admin" ? "Super Admin" : "Brand Manager",
+    subtitle: user?.role === "admin" ? "Admin" : "Brand Manager",
     initial:  user?.name ? user.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase() : "A",
     stats: USER_BY_ROLE.brand.stats,
   };

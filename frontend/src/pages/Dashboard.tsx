@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -20,7 +19,7 @@ const SERVICES = [
 ];
 
 const OVERVIEW_STATS = [
-  { label: "Total Spent", value: "Rp 0", change: "Super Admin — all features free", icon: Coins, color: "text-orange-400" },
+  { label: "Total Spent", value: "Rp 0", change: "Admin — all features free", icon: Coins, color: "text-orange-400" },
   { label: "Active Campaigns", value: "3", change: "1 pending review", icon: Megaphone, color: "text-blue-400" },
   { label: "Content Created", value: "156", change: "23 posts this week", icon: FileVideo, color: "text-teal-400" },
   { label: "Media Placements", value: "24", change: "8 this month", icon: Eye, color: "text-purple-400" },
@@ -48,9 +47,6 @@ export default function Dashboard() {
   const displayEmail = user?.email || "admin@creatorhub.id";
   const initials = displayName.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
 
-  const [photoError, setPhotoError] = useState(false);
-  const photoUrl = "/muhamad-azhari.jpg";
-
   return (
     <div className="min-h-full pb-8">
       {/* Profile Card */}
@@ -59,26 +55,16 @@ export default function Dashboard() {
           <div className="h-20 w-full" style={{ background: "linear-gradient(135deg, #F97316, #3B82F6)" }} />
           <div className="px-5 pb-5 -mt-10">
             <div className="flex items-end gap-4">
-              {!photoError ? (
-                <img
-                  src={photoUrl}
-                  alt={displayName}
-                  className="w-20 h-20 rounded-2xl object-cover border-4 shrink-0"
-                  style={{ borderColor: "var(--ch-surface)" }}
-                  onError={() => setPhotoError(true)}
-                />
-              ) : (
-                <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-2xl font-extrabold text-white border-4 shrink-0" style={{ background: "linear-gradient(135deg, #F97316, #EA580C)", borderColor: "var(--ch-surface)" }}>
-                  {initials}
-                </div>
-              )}
+              <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-2xl font-extrabold text-white border-4 shrink-0" style={{ background: "linear-gradient(135deg, #F97316, #EA580C)", borderColor: "var(--ch-surface)" }}>
+                {initials}
+              </div>
               <div className="flex-1 min-w-0 pb-1">
                 <div className="flex items-center gap-2">
                   <h1 className="text-lg font-extrabold truncate" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                     {displayName}
                   </h1>
                   <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-500/15 text-orange-400 shrink-0">
-                    <Shield className="w-3 h-3" /> Super Admin
+                    <Shield className="w-3 h-3" /> Admin
                   </span>
                 </div>
                 <p className="text-xs mt-0.5" style={{ color: "var(--ch-text-muted)" }}>{displayEmail}</p>
