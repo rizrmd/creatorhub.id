@@ -1708,7 +1708,7 @@ export default function Marketplace() {
 
   const togglePlatform = (p: string) => {
     setActivePlatforms((prev) =>
-      prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p]
+      prev.includes(p) ? [] : [p]
     );
   };
 
@@ -1872,26 +1872,34 @@ export default function Marketplace() {
 
           <div className="flex-1" />
 
-          {/* Platform filter buttons */}
+          {/* Platform filter buttons — circle icon like media-monitoring */}
           {[
-            { id: "instagram", label: "Instagram", color: "#E1306C" },
-            { id: "tiktok", label: "TikTok", color: "#25F4EE" },
-            { id: "youtube", label: "YouTube", color: "#FF0000" },
-            { id: "x", label: "X (Twitter)", color: "#ffffff" },
+            { id: "instagram", label: "Instagram", abbr: "IG", color: "#E1306C" },
+            { id: "tiktok", label: "TikTok", abbr: "TT", color: "#000000" },
+            { id: "youtube", label: "YouTube", abbr: "YT", color: "#FF0000" },
+            { id: "x", label: "X (Twitter)", abbr: "X", color: "#ffffff" },
           ].map((plat) => {
             const active = activePlatforms.includes(plat.id);
             return (
               <button
                 key={plat.id}
                 onClick={() => togglePlatform(plat.id)}
-                className={`flex items-center gap-1.5 h-9 px-3 rounded-md text-[13px] font-medium border transition-all ${
+                className={`flex items-center gap-2 h-9 pl-1.5 pr-3 rounded-md text-[13px] font-medium border transition-all ${
                   active
-                    ? "border-white/30 text-white"
+                    ? "border-orange-500/50 text-white"
                     : "border-white/10 text-slate-400 hover:border-white/20 hover:text-slate-300"
                 }`}
-                style={active ? { background: plat.color + "18", borderColor: plat.color + "44" } : { background: "var(--ch-surface)" }}
+                style={active
+                  ? { background: "var(--ch-orange)", borderColor: "var(--ch-orange)" }
+                  : { background: "var(--ch-surface)" }
+                }
               >
-                {platformIcon(plat.id)}
+                <span
+                  className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white shrink-0"
+                  style={{ background: plat.color }}
+                >
+                  {plat.abbr}
+                </span>
                 {plat.label}
               </button>
             );
