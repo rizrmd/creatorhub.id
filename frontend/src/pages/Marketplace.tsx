@@ -252,13 +252,12 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
   if (listView) {
     return (
       <div
-        className="cursor-pointer transition-all rounded-[14px] border"
+        className="transition-all rounded-[14px] border"
         style={{
           background: "var(--ch-surface)",
           borderColor: selected ? "var(--ch-primary)" : "var(--ch-border)",
           boxShadow: selected ? "0 0 0 3px rgba(37,99,235,.15)" : "var(--ch-shadow-sm)",
         }}
-        onClick={onCardClick}
       >
         <div className="p-3">
           <div className="flex items-center gap-3">
@@ -346,7 +345,7 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
 
   return (
     <div
-      className={`rounded-[14px] overflow-hidden border transition-all cursor-pointer`}
+      className={`rounded-[14px] overflow-hidden border transition-all`}
       style={{
         background: "var(--ch-surface)",
         borderColor: selected ? "var(--ch-primary)" : "var(--ch-border)",
@@ -356,7 +355,6 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
       }}
       onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; (e.currentTarget as HTMLElement).style.boxShadow = "var(--ch-shadow-md)"; }}
       onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLElement).style.boxShadow = selected ? "0 0 0 2px var(--ch-primary)" : "var(--ch-shadow-sm)"; }}
-      onClick={onCardClick}
     >
       {/* Photo header — 220px */}
       <div className="relative w-full overflow-hidden" style={{ height: 220, background: gradientBg }}>
