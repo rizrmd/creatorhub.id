@@ -1791,30 +1791,11 @@ export default function Marketplace() {
     .map((id) => selectedCreatorsById[id] ?? creators.find((creator) => creator.id === id))
     .filter((creator): creator is Creator => Boolean(creator));
 
-  const totalReach = selectedCreators.reduce((a, c) => a + c.followers, 0);
-  const avgEngagement = selectedCreators.length > 0
-    ? (selectedCreators.reduce((a, c) => a + c.engagementRate, 0) / selectedCreators.length).toFixed(2)
-    : "0";
-
-  const briefFooter = selectedIds.length > 0 ? (
+  const briefFooter = (
     <div className="p-4 border-t border-white/10 space-y-3">
-      <div className="space-y-1.5 text-sm">
-        <div className="flex justify-between">
-          <span className="text-slate-400">Est. Total Reach</span>
-          <span className="font-semibold text-white">{formatFollowers(totalReach)}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-slate-400">Avg. Engagement</span>
-          <span className="font-semibold text-white">{avgEngagement}%</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-slate-400">Selected Creators</span>
-          <span className="font-semibold text-white">{selectedIds.length} / 5</span>
-        </div>
-      </div>
-      <Button className="w-full" onClick={() => { setShowMobileBrief(false); setShowCreateCampaign(true); }}>Create Campaign</Button>
+      <Button className="w-full" onClick={() => { setShowMobileBrief(false); setShowCreateCampaign(true); }}>Run Campaign</Button>
     </div>
-  ) : null;
+  );
 
   useEffect(() => {
     setIdnSearch("");
@@ -2221,8 +2202,7 @@ export default function Marketplace() {
       {selectedIds.length > 0 && (
         <div className="xl:hidden fixed bottom-0 left-0 right-0 z-30 p-3 bg-[#111827] border-t border-white/10 shadow-lg flex items-center gap-3">
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold truncate text-white">Campaign Brief</p>
-            <p className="text-xs text-slate-400">{selectedIds.length} Creator{selectedIds.length !== 1 ? "s" : ""} Selected</p>
+            <p className="text-sm font-bold truncate text-white">{selectedIds.length} Creator{selectedIds.length !== 1 ? "s" : ""} Selected</p>
           </div>
           <Button size="sm" onClick={() => setShowMobileBrief(true)}>View Brief</Button>
         </div>
@@ -2230,37 +2210,14 @@ export default function Marketplace() {
 
       {/* Campaign Brief Panel — desktop */}
       <aside className="hidden xl:flex w-[312px] shrink-0 flex-col bg-[#111827] border-l border-white/10">
-        {selectedCreators.length > 0 && (
-          <div className="p-4 border-b border-white/10">
-            <h2 className="font-bold text-[15px] text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Campaign Brief</h2>
-            <p className="text-[12px] mt-0.5 text-slate-400">{selectedIds.length} Creator{selectedIds.length !== 1 ? "s" : ""} Selected</p>
-          </div>
-        )}
-
-        <div className="flex-1 overflow-auto p-4 space-y-3">
-          {selectedCreators.map((c) => (
-            <div key={c.id} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl">
-              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-semibold text-slate-300 overflow-hidden shrink-0">
-                {c.imageUrl ? <img src={c.imageUrl} alt={c.name} className="w-full h-full object-cover" /> : c.name[0]}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">{c.name}</p>
-                <p className="text-xs text-slate-400">{c.followersText} followers</p>
-                <p className="text-xs text-slate-500">{c.engagementRate}% ER · {c.priceText}</p>
-              </div>
-              <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-red-500"
-                onClick={() => toggleSelect(c)}>
-                <X className="w-3.5 h-3.5" />
-              </Button>
-            </div>
-          ))}
-
+        {/* Top: sticky services + Run Campaign */}
+        <div className="shrink-0 border-b border-white/10">
           {/* Platform services */}
           {activePlatforms.length > 0 && activePlatforms.map((platId) => {
             const services = PLATFORM_SERVICES[platId] ?? [];
             if (services.length === 0) return null;
             return (
-              <div key={platId} className="text-left space-y-2">
+              <div key={platId} className="p-4 text-left space-y-2">
                 <p className="text-[12px] font-semibold text-slate-400 uppercase tracking-wider mb-3">Available Services</p>
                 {services.map((svc) => (
                   <label key={svc} className="flex items-center gap-2.5 cursor-pointer group">
@@ -2277,45 +2234,57 @@ export default function Marketplace() {
               </div>
             );
           })}
+          {activePlatforms.length === 0 && (
+            <div className="p-4 text-center text-slate-500 text-[12px]">
+              <p>Select a platform above to see available services</p>
+            </div>
+          )}
+          {briefFooter}
         </div>
 
-        {briefFooter}
+        {/* Scrollable: selected creators */}
+        <div className="flex-1 overflow-auto p-4">
+          {selectedCreators.length > 0 && (
+            <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2">Selected Creators</p>
+          )}
+          <div className="grid grid-cols-2 gap-2">
+            {selectedCreators.map((c) => (
+              <div key={c.id} className="relative p-2.5 bg-white/5 rounded-xl text-center group">
+                <button
+                  onClick={() => toggleSelect(c)}
+                  className="absolute top-1 right-1 w-5 h-5 rounded-full bg-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/30"
+                >
+                  <X className="w-3 h-3 text-slate-400" />
+                </button>
+                <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center font-semibold text-slate-300 overflow-hidden mx-auto">
+                  {c.imageUrl ? <img src={c.imageUrl} alt={c.name} className="w-full h-full object-cover" /> : c.name[0]}
+                </div>
+                <p className="text-[11px] font-semibold text-white truncate mt-1.5">{c.name}</p>
+                <p className="text-[10px] text-slate-500 truncate">{c.handle}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Sticky bottom: creator count */}
+        {selectedCreators.length > 0 && (
+          <div className="shrink-0 p-3 border-t border-white/10 bg-[#111827]">
+            <p className="text-[13px] font-semibold text-white text-center">{selectedIds.length} Creator{selectedIds.length !== 1 ? "s" : ""} Selected</p>
+          </div>
+        )}
       </aside>
 
       {/* Campaign Brief — mobile sheet */}
       <Dialog open={showMobileBrief} onOpenChange={setShowMobileBrief}>
         <DialogContent className="max-w-lg p-0 gap-0 flex flex-col max-h-[85dvh]">
-          {selectedCreators.length > 0 && (
-            <DialogHeader className="p-4 border-b shrink-0" style={{ borderColor: "var(--ch-border)" }}>
-              <DialogTitle>Campaign Brief</DialogTitle>
-              <p className="text-[12px] mt-0.5" style={{ color: "var(--ch-text-muted)" }}>{selectedIds.length} Creator{selectedIds.length !== 1 ? "s" : ""} Selected</p>
-            </DialogHeader>
-          )}
-          <div className="flex-1 overflow-auto p-4 space-y-3">
-            {selectedCreators.map((c) => (
-              <div key={c.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-semibold text-slate-600 overflow-hidden shrink-0">
-                  {c.imageUrl ? <img src={c.imageUrl} alt={c.name} className="w-full h-full object-cover" /> : c.name[0]}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-800 truncate">{c.name}</p>
-                  <p className="text-xs text-slate-500">{c.followersText} followers</p>
-                  <p className="text-xs text-slate-400">{c.engagementRate}% ER · {c.priceText}</p>
-                </div>
-                <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-red-500"
-                  onClick={() => toggleSelect(c)}>
-                  <X className="w-3.5 h-3.5" />
-                </Button>
-              </div>
-            ))}
-
-            {/* Platform services */}
+          {/* Sticky top: services + Run Campaign */}
+          <div className="shrink-0 border-b" style={{ borderColor: "var(--ch-border)" }}>
             {activePlatforms.length > 0 && activePlatforms.map((platId) => {
               const services = PLATFORM_SERVICES[platId] ?? [];
               if (services.length === 0) return null;
               return (
-                <div key={platId} className="text-left space-y-2">
-                  <p className="text-[12px] font-semibold text-slate-400 uppercase tracking-wider mb-3">Available Services</p>
+                <div key={platId} className="p-4 text-left space-y-2">
+                  <p className="text-[12px] font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--ch-text-muted)" }}>Available Services</p>
                   {services.map((svc) => (
                     <label key={svc} className="flex items-center gap-2.5 cursor-pointer group">
                       <input
@@ -2325,14 +2294,52 @@ export default function Marketplace() {
                         className="w-4 h-4 rounded border-2 cursor-pointer accent-orange-500 shrink-0"
                         style={{ borderColor: "var(--ch-border)" }}
                       />
-                      <span className="text-[12px] text-slate-400 group-hover:text-slate-300 transition-colors">{svc}</span>
+                      <span className="text-[12px] transition-colors" style={{ color: "var(--ch-text-muted)" }}>{svc}</span>
                     </label>
                   ))}
                 </div>
               );
             })}
+            {activePlatforms.length === 0 && (
+              <div className="p-4 text-center text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
+                <p>Select a platform to see available services</p>
+              </div>
+            )}
+            <div className="p-4 border-t" style={{ borderColor: "var(--ch-border)" }}>
+              <Button className="w-full" onClick={() => { setShowMobileBrief(false); setShowCreateCampaign(true); }}>Run Campaign</Button>
+            </div>
           </div>
-          {briefFooter}
+
+          {/* Scrollable: selected creators */}
+          <div className="flex-1 overflow-auto p-4">
+            {selectedCreators.length > 0 && (
+              <p className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--ch-text-muted)" }}>Selected Creators</p>
+            )}
+            <div className="grid grid-cols-2 gap-2">
+              {selectedCreators.map((c) => (
+                <div key={c.id} className="relative p-2.5 bg-slate-50 rounded-xl text-center group">
+                  <button
+                    onClick={() => toggleSelect(c)}
+                    className="absolute top-1 right-1 w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100"
+                  >
+                    <X className="w-3 h-3 text-slate-400" />
+                  </button>
+                  <div className="w-9 h-9 rounded-full bg-slate-200 flex items-center justify-center font-semibold text-slate-600 overflow-hidden mx-auto">
+                    {c.imageUrl ? <img src={c.imageUrl} alt={c.name} className="w-full h-full object-cover" /> : c.name[0]}
+                  </div>
+                  <p className="text-[11px] font-semibold text-slate-800 truncate mt-1.5">{c.name}</p>
+                  <p className="text-[10px] text-slate-500 truncate">{c.handle}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Sticky bottom: creator count */}
+          {selectedCreators.length > 0 && (
+            <div className="shrink-0 p-3 border-t" style={{ borderColor: "var(--ch-border)" }}>
+              <p className="text-[13px] font-semibold text-center" style={{ color: "var(--ch-text)" }}>{selectedIds.length} Creator{selectedIds.length !== 1 ? "s" : ""} Selected</p>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 
