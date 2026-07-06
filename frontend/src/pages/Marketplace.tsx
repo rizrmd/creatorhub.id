@@ -1942,7 +1942,7 @@ export default function Marketplace() {
             <SlidersHorizontal className="w-4 h-4" />
             <span className="absolute -top-9 left-1/2 -translate-x-1/2 px-2 py-1 rounded-md text-[11px] font-medium bg-slate-800 text-white whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-200 group-hover:opacity-100">Filter results</span>
           </Button>
-          <div className="flex border border-white/10 rounded-md overflow-hidden relative">
+          <div className="flex border border-white/10 rounded-md relative">
             <button onClick={() => setListView(false)} className={`p-2 group relative ${!listView ? "bg-white/10 text-white" : "text-slate-400 hover:text-white"}`}>
               <LayoutGrid className="w-4 h-4" />
               <span className="absolute -top-9 left-1/2 -translate-x-1/2 px-2 py-1 rounded-md text-[11px] font-medium bg-slate-800 text-white whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-200 group-hover:opacity-100">Show as grid</span>
