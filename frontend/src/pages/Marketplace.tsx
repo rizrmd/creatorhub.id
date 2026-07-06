@@ -102,6 +102,12 @@ function getMarketplaceScrollElement(): HTMLElement | null {
   return document.querySelector("main");
 }
 
+const splitCategories = (cat: string): string[] =>
+  (cat || "").split(",").map((s) => s.trim()).filter(Boolean);
+const getCategoryColor = (cat: string): string => {
+  const first = splitCategories(cat)[0]?.toLowerCase() ?? "";
+  return CATEGORY_COLORS[first] ?? "bg-white/10 text-slate-300";
+};
 const CATEGORY_COLORS: Record<string, string> = {
   lifestyle: "bg-purple-500/20 text-purple-300",
   travel: "bg-blue-500/20 text-blue-300",
@@ -217,7 +223,6 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
   onCityClick?: (city: string) => void;
   onCategoryClick?: (category: string) => void;
 }) {
-  const catColor = CATEGORY_COLORS[creator.category] ?? "bg-white/10 text-slate-300";
   const followersLabel = creator.followersText || formatFollowers(creator.followers);
 
   if (listView) {
@@ -252,8 +257,10 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
                   onClick={(e) => { e.stopPropagation(); onCityClick?.(creator.city); }}
                   className="hover:underline cursor-pointer text-left"
                 >{creator.city}</button>
-                <span className={`px-1.5 py-0 rounded-full text-[10px] font-medium capitalize cursor-pointer hover:opacity-80 ${catColor}`}
-                  onClick={(e) => { e.stopPropagation(); onCategoryClick?.(creator.category); }}>{creator.category}</span>
+                {splitCategories(creator.category).map((cat) => (
+                  <span key={cat} className={`px-1.5 py-0 rounded-full text-[10px] font-medium capitalize cursor-pointer hover:opacity-80 ${getCategoryColor(cat)}`}
+                    onClick={(e) => { e.stopPropagation(); onCategoryClick?.(cat); }}>{cat}</span>
+                ))}
               </div>
             </div>
             <div className="hidden md:flex items-center gap-1.5">
@@ -386,12 +393,14 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
               className="hover:underline cursor-pointer text-left"
             >{creator.city}</button>
           </p>
-          <button
-            onClick={(e) => { e.stopPropagation(); onCategoryClick?.(creator.category); }}
-            className={`px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize cursor-pointer hover:opacity-80 ${catColor}`}
-          >
-            {creator.category}
-          </button>
+          {splitCategories(creator.category).map((cat) => (
+            <button key={cat}
+              onClick={(e) => { e.stopPropagation(); onCategoryClick?.(cat); }}
+              className={`px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize cursor-pointer hover:opacity-80 ${getCategoryColor(cat)}`}
+            >
+              {cat}
+            </button>
+          ))}
         </div>
 
         {/* Platform table */}
@@ -461,8 +470,6 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
   onToggle: () => void; onClose: () => void; onChat: () => void; onFavorite: () => void;
   onCityClick?: (city: string) => void;
 }) {
-  const catColor = CATEGORY_COLORS[creator.category] ?? "bg-white/10 text-slate-300";
-
   const platformSplit = (creator.platformMetrics && creator.platformMetrics.length > 0)
     ? creator.platformMetrics
     : creator.platforms.map((p) => ({ platform: p, followers: 0, engagementRate: 0 }));
@@ -518,9 +525,11 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
                   >{creator.city}, Indonesia</button>
                 </span>
                 <span className="mx-2">·</span>
-                <span className={`px-2 py-0.5 rounded-md text-xs font-medium capitalize ${catColor}`}>
-                  {creator.category}
-                </span>
+                {splitCategories(creator.category).map((cat) => (
+                  <span key={cat} className={`px-2 py-0.5 rounded-md text-xs font-medium capitalize ${getCategoryColor(cat)}`}>
+                    {cat}
+                  </span>
+                ))}
               </p>
 
               {/* Quick Stats */}
