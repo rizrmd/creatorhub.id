@@ -5,16 +5,16 @@ import {
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 const courses = [
   {
     id: 1,
     title: "Content Strategy for Creator",
-    description: "Pelajari cara membuat konten yang menarik dan konsisten untuk membangun personal branding.",
+    description: "Learn how to create engaging and consistent content to build your personal brand.",
     category: "Content",
-    level: "Pemula",
-    duration: "4 jam",
+    level: "Beginner",
+    duration: "4 hours",
     lessons: 12,
     students: 1240,
     rating: 4.8,
@@ -25,26 +25,26 @@ const courses = [
   },
   {
     id: 2,
-    title: "Monetisasi Media Sosial",
-    description: "Strategi lengkap menghasilkan uang dari media sosial: endorsement, affiliate, dan produk digital.",
-    category: "Monetisasi",
-    level: "Menengah",
-    duration: "6 jam",
+    title: "Social Media Monetization",
+    description: "Complete strategy to earn money from social media: endorsements, affiliate, and digital products.",
+    category: "Monetization",
+    level: "Intermediate",
+    duration: "6 hours",
     lessons: 18,
     students: 890,
     rating: 4.9,
     instructor: "Rizky Pratama",
     thumbnail: "linear-gradient(135deg, #16A34A 0%, #22C55E 100%)",
     progress: 30,
-    tags: ["Monetisasi", "Bisnis"],
+    tags: ["Monetization", "Business"],
   },
   {
     id: 3,
-    title: "Video Editing untuk Pemula",
-    description: "Kuasai dasar-dasar video editing untuk konten Reels, TikTok, dan YouTube Shorts.",
+    title: "Video Editing for Beginners",
+    description: "Master the basics of video editing for Reels, TikTok, and YouTube Shorts content.",
     category: "Skill",
-    level: "Pemula",
-    duration: "8 jam",
+    level: "Beginner",
+    duration: "8 hours",
     lessons: 24,
     students: 2100,
     rating: 4.7,
@@ -55,62 +55,62 @@ const courses = [
   },
   {
     id: 4,
-    title: "Negosiasi dengan Brand",
-    description: "Cara menegosiasi tarif dan kontrak kerja sama dengan brand agar mendapatkan nilai terbaik.",
-    category: "Bisnis",
-    level: "Lanjutan",
-    duration: "3 jam",
+    title: "Brand Negotiation",
+    description: "How to negotiate rates and collaboration contracts with brands to get the best value.",
+    category: "Business",
+    level: "Advanced",
+    duration: "3 hours",
     lessons: 10,
     students: 560,
     rating: 4.6,
     instructor: "Nurul Arifin",
     thumbnail: "linear-gradient(135deg, #EC4899 0%, #F472B6 100%)",
     progress: 0,
-    tags: ["Negosiasi", "Bisnis"],
+    tags: ["Negotiation", "Business"],
   },
   {
     id: 5,
-    title: "Analitik & Data untuk Creator",
-    description: "Membaca dan memanfaatkan data analitik untuk mengoptimalkan strategi konten.",
+    title: "Analytics & Data for Creators",
+    description: "Read and leverage analytics data to optimize your content strategy.",
     category: "Skill",
-    level: "Menengah",
-    duration: "5 jam",
+    level: "Intermediate",
+    duration: "5 hours",
     lessons: 15,
     students: 720,
     rating: 4.5,
     instructor: "Sarah Chen",
     thumbnail: "linear-gradient(135deg, #0EA5E9 0%, #38BDF8 100%)",
     progress: 10,
-    tags: ["Analitik", "Data"],
+    tags: ["Analytics", "Data"],
   },
   {
     id: 6,
-    title: "Membangun Komunitas Online",
-    description: "Strategi membangun dan mengelola komuitas yang engaged di berbagai platform.",
-    category: "Komunitas",
-    level: "Menengah",
-    duration: "4 jam",
+    title: "Building Online Communities",
+    description: "Strategies to build and manage engaged communities across various platforms.",
+    category: "Community",
+    level: "Intermediate",
+    duration: "4 hours",
     lessons: 14,
     students: 430,
     rating: 4.4,
     instructor: "Rizky Pratama",
     thumbnail: "linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%)",
     progress: 0,
-    tags: ["Komunitas", "Engagement"],
+    tags: ["Community", "Engagement"],
   },
 ];
 
 const stats = [
-  { label: "Total Kursus", value: "6", icon: BookOpen },
-  { label: "Sedang Diikuti", value: "3", icon: Play },
-  { label: "Selesai", value: "1", icon: CheckCircle },
-  { label: "Jam Belajar", value: "18", icon: Clock },
+  { label: "Total Courses", value: "6", icon: BookOpen },
+  { label: "In Progress", value: "3", icon: Play },
+  { label: "Completed", value: "1", icon: CheckCircle },
+  { label: "Study Hours", value: "18", icon: Clock },
 ];
 
 const levelColors: Record<string, { bg: string; text: string }> = {
-  Pemula: { bg: "#DCFCE7", text: "#16A34A" },
-  Menengah: { bg: "#FEF3C7", text: "#D97706" },
-  Lanjutan: { bg: "#FEE2E2", text: "#DC2626" },
+  Beginner: { bg: "#DCFCE7", text: "#16A34A" },
+  Intermediate: { bg: "#FEF3C7", text: "#D97706" },
+  Advanced: { bg: "#FEE2E2", text: "#DC2626" },
 };
 
 export default function CreatorAcademy() {
@@ -134,7 +134,7 @@ export default function CreatorAcademy() {
           Creator Academy
         </h1>
         <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
-          Tingkatkan skill dan pengetahuanmu sebagai content creator.
+          Improve your skills and knowledge as a content creator.
         </p>
       </div>
 
@@ -164,32 +164,38 @@ export default function CreatorAcademy() {
 
       {/* Tabs & Search */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList variant="line" className="border-b w-full justify-start gap-0">
-          <TabsTrigger
-            value="all"
-            className="text-[14px] font-semibold px-4 py-2 rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--ch-primary)] data-[state=active]:text-[var(--ch-primary)] data-[state=active]:shadow-none"
-          >
-            Semua
-          </TabsTrigger>
-          <TabsTrigger
-            value="in-progress"
-            className="text-[14px] font-semibold px-4 py-2 rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--ch-primary)] data-[state=active]:text-[var(--ch-primary)] data-[state=active]:shadow-none"
-          >
-            Sedang Diikuti
-          </TabsTrigger>
-          <TabsTrigger
-            value="completed"
-            className="text-[14px] font-semibold px-4 py-2 rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--ch-primary)] data-[state=active]:text-[var(--ch-primary)] data-[state=active]:shadow-none"
-          >
-            Selesai
-          </TabsTrigger>
-          <TabsTrigger
-            value="new"
-            className="text-[14px] font-semibold px-4 py-2 rounded-none border-b-2 border-transparent data-[state=active]:border-[var(--ch-primary)] data-[state=active]:text-[var(--ch-primary)] data-[state=active]:shadow-none"
-          >
-            Belum Dicoba
-          </TabsTrigger>
-        </TabsList>
+        <div className="px-4 pt-3 pb-0 bg-[#0B1120] rounded-t-xl">
+          <div className="flex items-center gap-0 rounded-2xl overflow-hidden" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
+            <TabsTrigger
+              value="all"
+              className="flex items-center gap-2 text-[13px] font-semibold px-4 py-2.5 rounded-none border-0 data-[state=active]:bg-[var(--ch-orange)] data-[state=active]:text-white data-[state=active]:shadow-none text-slate-400 hover:text-white transition-colors"
+            >
+              <BookOpen className="w-4 h-4" />
+              All
+            </TabsTrigger>
+            <TabsTrigger
+              value="in-progress"
+              className="flex items-center gap-2 text-[13px] font-semibold px-4 py-2.5 rounded-none border-0 data-[state=active]:bg-[var(--ch-orange)] data-[state=active]:text-white data-[state=active]:shadow-none text-slate-400 hover:text-white transition-colors"
+            >
+              <Play className="w-4 h-4" />
+              In Progress
+            </TabsTrigger>
+            <TabsTrigger
+              value="completed"
+              className="flex items-center gap-2 text-[13px] font-semibold px-4 py-2.5 rounded-none border-0 data-[state=active]:bg-[var(--ch-orange)] data-[state=active]:text-white data-[state=active]:shadow-none text-slate-400 hover:text-white transition-colors"
+            >
+              <CheckCircle className="w-4 h-4" />
+              Completed
+            </TabsTrigger>
+            <TabsTrigger
+              value="new"
+              className="flex items-center gap-2 text-[13px] font-semibold px-4 py-2.5 rounded-none border-0 data-[state=active]:bg-[var(--ch-orange)] data-[state=active]:text-white data-[state=active]:shadow-none text-slate-400 hover:text-white transition-colors"
+            >
+              <Clock className="w-4 h-4" />
+              Not Started
+            </TabsTrigger>
+          </div>
+        </div>
 
         <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center gap-3">
           <div className="relative flex-1 max-w-sm w-full">
@@ -199,7 +205,7 @@ export default function CreatorAcademy() {
             />
             <input
               type="text"
-              placeholder="Cari kursus..."
+              placeholder="Search courses..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-3 py-2 text-[13px] rounded-lg border bg-white"
@@ -233,7 +239,7 @@ export default function CreatorAcademy() {
                         <div className="absolute top-2 right-2">
                           <Badge className="bg-white/90 text-[11px] font-bold" style={{ color: c.progress === 100 ? "#16A34A" : "#F97316" }}>
                             {c.progress === 100 ? (
-                              <span className="flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Selesai</span>
+                              <span className="flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Completed</span>
                             ) : (
                               `${c.progress}%`
                             )}
@@ -295,11 +301,11 @@ export default function CreatorAcademy() {
                           style={{ background: "var(--ch-primary)" }}
                         >
                           {c.progress > 0 && c.progress < 100 ? (
-                            <><Play className="w-3 h-3" /> Lanjutkan</>
+                            <><Play className="w-3 h-3" /> Continue</>
                           ) : c.progress === 100 ? (
-                            <><CheckCircle className="w-3 h-3" /> Selesai</>
+                            <><CheckCircle className="w-3 h-3" /> Completed</>
                           ) : (
-                            <><Play className="w-3 h-3" /> Mulai</>
+                            <><Play className="w-3 h-3" /> Start</>
                           )}
                         </button>
                       </div>
