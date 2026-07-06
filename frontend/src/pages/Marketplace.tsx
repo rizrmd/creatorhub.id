@@ -1814,7 +1814,7 @@ export default function Marketplace() {
         {activeTab === "creators" ? (
           <>
         {/* Filters row 1 */}
-        <div className="px-3 sm:px-4 pt-3 pb-0 bg-[#0B1120] flex flex-wrap items-center gap-2">
+        <div className="px-3 sm:px-4 pt-3 pb-2 bg-[#0B1120] flex flex-wrap items-center gap-2">
           <div className="relative w-full sm:flex-1 sm:min-w-48">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <Input
@@ -1851,7 +1851,7 @@ export default function Marketplace() {
         </div>
 
         {/* Filters row 2 — platform buttons */}
-        <div className="px-3 sm:px-4 pb-2 bg-[#0B1120] flex flex-wrap items-center gap-2">
+        <div className="px-3 sm:px-4 py-2 bg-[#0B1120] flex flex-wrap items-center gap-2">
           <div className="flex-1" />
 
           {/* Platform filter buttons — SVG icons from media-monitoring Data Sources */}
