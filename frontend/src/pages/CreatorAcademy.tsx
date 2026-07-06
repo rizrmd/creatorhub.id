@@ -224,7 +224,7 @@ export default function CreatorAcademy() {
                 return true;
               })
               .map((c) => {
-                const lc = levelColors[c.level] || levelColors.Pemula;
+                const lc = levelColors[c.level] || levelColors.Beginner;
                 return (
                   <Card
                     key={c.id}
@@ -283,7 +283,7 @@ export default function CreatorAcademy() {
                           <Clock className="w-3 h-3" /> {c.duration}
                         </span>
                         <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
-                          <FileText className="w-3 h-3" /> {c.lessons} pelajaran
+                          <FileText className="w-3 h-3" /> {c.lessons} lessons
                         </span>
                         <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
                           <Users className="w-3 h-3" /> {c.students}
@@ -294,7 +294,7 @@ export default function CreatorAcademy() {
                       </div>
                       <div className="pt-1 flex items-center justify-between">
                         <span className="text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
-                          oleh {c.instructor}
+                          by {c.instructor}
                         </span>
                         <button
                           className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-semibold rounded-lg text-white transition-opacity hover:opacity-90"
