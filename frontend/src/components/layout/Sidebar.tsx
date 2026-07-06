@@ -122,15 +122,15 @@ export default function Sidebar() {
           className="flex items-center shrink-0 overflow-hidden no-underline"
           style={{ padding: effectiveCollapsed ? "10px" : "12px 14px" }}
         >
-          <div className={cn("flex items-center gap-2", effectiveCollapsed ? "justify-center" : "")}>
+          <div className={cn("flex items-center gap-2.5", effectiveCollapsed ? "justify-center" : "")}>
             <img
               src="/favicon.png?v=9"
               alt="CreatorHub"
               className="shrink-0"
-              style={{ width: effectiveCollapsed ? 32 : 28, height: effectiveCollapsed ? 32 : 28 }}
+              style={{ width: effectiveCollapsed ? 36 : 34, height: effectiveCollapsed ? 36 : 34 }}
             />
             {!effectiveCollapsed && (
-              <span className="text-[14px] font-extrabold tracking-tight" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>CreatorHub.ID</span>
+              <span className="text-[16px] font-extrabold tracking-tight" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>CreatorHub.ID</span>
             )}
           </div>
         </Link>
