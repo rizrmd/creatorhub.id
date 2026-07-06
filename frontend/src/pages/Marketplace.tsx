@@ -2199,9 +2199,9 @@ export default function Marketplace() {
       )}
 
       {/* Campaign Brief Panel — desktop */}
-      <aside className="hidden xl:flex w-[312px] shrink-0 flex-col bg-[#111827] border-l border-white/10">
-        {/* Top: sticky services + Run Campaign */}
-        <div className="shrink-0 border-b border-white/10">
+      <aside className="hidden xl:flex w-[312px] shrink-0 flex-col bg-[#111827] border-l border-white/10 overflow-auto">
+        {/* Sticky top: services + Run Campaign + Invited Creators */}
+        <div className="sticky top-0 z-10 shrink-0 bg-[#111827] border-b border-white/10">
           {/* Platform services */}
           {activePlatforms.length > 0 && activePlatforms.map((platId) => {
             const services = PLATFORM_SERVICES[platId] ?? [];
@@ -2266,7 +2266,7 @@ export default function Marketplace() {
         </div>
 
         {/* Scrollable: selected creators */}
-        <div className="flex-1 overflow-auto p-4">
+        <div className="p-4">
           <div className={listView ? "flex flex-col gap-2" : "grid grid-cols-2 gap-2"}>
             {selectedCreators.map((c) => (
               <div key={c.id} className={`relative p-2.5 bg-white/5 rounded-xl text-center group ${listView ? "flex items-center gap-3 text-left" : ""}`}>
