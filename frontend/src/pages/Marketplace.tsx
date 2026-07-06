@@ -212,6 +212,7 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
   onCityClick?: (city: string) => void;
 }) {
   const catColor = CATEGORY_COLORS[creator.category] ?? "bg-white/10 text-slate-300";
+  const followersLabel = creator.followersText || formatFollowers(creator.followers);
 
   if (listView) {
     return (
@@ -269,7 +270,7 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
               })}
             </div>
             <div className="hidden sm:flex items-center gap-4 text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
-              <span className="font-semibold">{creator.followersText}</span>
+              <span className="font-semibold">{followersLabel} followers</span>
               <span className="font-semibold">{creator.engagementRate}% ER</span>
               <span className="font-bold whitespace-nowrap" style={{ color: "var(--ch-text)" }}>
                 {creator.priceText}
@@ -410,6 +411,18 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
             })}
           </div>
         )}
+
+        {/* Total followers */}
+        <div className="mt-2.5 flex items-center justify-between rounded-lg border px-2.5 py-2"
+          style={{ borderColor: "var(--ch-border)", background: "var(--ch-bg)" }}>
+          <span className="flex items-center gap-1.5 text-[11px] font-medium" style={{ color: "var(--ch-text-muted)" }}>
+            <Users className="w-3.5 h-3.5" />
+            Followers
+          </span>
+          <span className="text-[12px] font-bold" style={{ color: "var(--ch-text)" }}>
+            {followersLabel}
+          </span>
+        </div>
 
         {/* Price */}
         <div className="mt-2 text-[11px]" style={{ color: "var(--ch-text-soft)" }}>
