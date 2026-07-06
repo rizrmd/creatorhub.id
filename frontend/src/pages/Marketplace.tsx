@@ -2200,7 +2200,7 @@ export default function Marketplace() {
 
       {/* Campaign Brief Panel — desktop */}
       <aside className="hidden xl:flex w-[312px] shrink-0 flex-col bg-[#111827] border-l border-white/10">
-        {/* Top: sticky services + Run Campaign */}
+        {/* Top: services + Run Campaign */}
         <div className="shrink-0 border-b border-white/10">
           {/* Platform services */}
           {activePlatforms.length > 0 && activePlatforms.map((platId) => {
@@ -2243,26 +2243,6 @@ export default function Marketplace() {
             </div>
           )}
           {briefFooter}
-
-          {/* Invited Creators count card */}
-          {selectedCreators.length > 0 && (
-            <div className="px-4 pb-4">
-              <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 p-3 flex items-center justify-between">
-                <div>
-                  <p className="text-[12px] font-bold text-orange-400">Invited Creators</p>
-                  <p className="text-[18px] font-extrabold text-white">{selectedCreators.length}</p>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={clearSelection}
-                  className="text-[11px] font-semibold border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300 hover:border-red-500/50"
-                >
-                  Clear All
-                </Button>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Scrollable: selected creators */}
@@ -2288,6 +2268,26 @@ export default function Marketplace() {
             ))}
           </div>
         </div>
+
+        {/* Sticky bottom: Invited Creators card */}
+        {selectedCreators.length > 0 && (
+          <div className="shrink-0 p-3 border-t border-white/10 bg-[#111827]">
+            <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 p-3 flex items-center justify-between">
+              <div>
+                <p className="text-[12px] font-bold text-orange-400">Invited Creators</p>
+                <p className="text-[18px] font-extrabold text-white">{selectedCreators.length}</p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={clearSelection}
+                className="text-[11px] font-semibold border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300 hover:border-red-500/50"
+              >
+                Clear All
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Sticky bottom: creator count */}
         {selectedCreators.length > 0 && (
