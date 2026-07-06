@@ -2259,7 +2259,7 @@ export default function Marketplace() {
         {/* Scrollable: selected creators */}
         <div className="flex-1 overflow-auto p-4">
           {selectedCreators.length > 0 && (
-            <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2">Selected Creators</p>
+            <p className="text-[14px] font-bold uppercase tracking-wider mb-2" style={{ color: "var(--ch-primary)" }}>Selected Creators</p>
           )}
           <div className="grid grid-cols-2 gap-2">
             {selectedCreators.map((c) => (
@@ -2341,7 +2341,7 @@ export default function Marketplace() {
           {/* Scrollable: selected creators */}
           <div className="flex-1 overflow-auto p-4">
             {selectedCreators.length > 0 && (
-              <p className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--ch-text-muted)" }}>Selected Creators</p>
+              <p className="text-[14px] font-bold uppercase tracking-wider mb-2" style={{ color: "var(--ch-primary)" }}>Selected Creators</p>
             )}
             <div className="grid grid-cols-2 gap-2">
               {selectedCreators.map((c) => (
