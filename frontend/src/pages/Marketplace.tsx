@@ -243,7 +243,7 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <p className="text-[13px] font-semibold truncate" style={{ color: "var(--ch-text)" }}>{creator.name}</p>
+                <p className="text-[13px] font-semibold leading-tight" style={{ color: "var(--ch-text)" }}>{creator.name}</p>
                 {creator.verified && <CheckCircle style={{ width: 13, height: 13, color: "#2563EB", flexShrink: 0 }} />}
               </div>
               <div className="flex items-center gap-1.5 text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
@@ -377,7 +377,7 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
         {/* Name + city + category */}
         <div className="flex items-start justify-between gap-2 mb-1">
           <div className="min-w-0">
-            <p className="font-bold text-[14px] truncate leading-tight" style={{ color: "var(--ch-text)" }}>{creator.name}</p>
+            <p className="font-bold text-[14px] leading-tight" style={{ color: "var(--ch-text)" }}>{creator.name}</p>
             <p className="text-[12px] flex items-center gap-1 mt-0.5" style={{ color: "var(--ch-text-muted)" }}>
               <MapPin style={{ width: 11, height: 11 }} />
               <button
