@@ -2247,7 +2247,7 @@ export default function Marketplace() {
 
         {/* Scrollable: selected creators */}
         <div className="flex-1 overflow-auto p-4">
-          <div className={listView ? "flex flex-col gap-2 pb-24" : "grid grid-cols-2 gap-2 pb-24"}>
+          <div className={listView ? "flex flex-col gap-2 pb-16" : "grid grid-cols-2 gap-2 pb-16"}>
             {selectedCreators.map((c) => (
               <div key={c.id} className={`relative p-2.5 bg-white/5 rounded-xl text-center group ${listView ? "flex items-center gap-3 text-left" : ""}`}>
                 <button
@@ -2369,7 +2369,7 @@ export default function Marketplace() {
 
           {/* Scrollable: selected creators */}
           <div className="flex-1 overflow-auto p-4">
-            <div className={listView ? "flex flex-col gap-2 pb-24" : "grid grid-cols-2 gap-2 pb-24"}>
+          <div className={listView ? "flex flex-col gap-2 pb-16" : "grid grid-cols-2 gap-2 pb-16"}>
               {selectedCreators.map((c) => (
                 <div key={c.id} className={`relative p-2.5 bg-slate-50 rounded-xl text-center group ${listView ? "flex items-center gap-3 text-left" : ""}`}>
                   <button
