@@ -96,22 +96,6 @@ const FOLLOWERS_OPTIONS = [
   { label: "Amplifier (<1K)", value: "0-1000" },
 ];
 
-const ENGAGEMENT_OPTIONS = [
-  { label: "All", value: "all" },
-  { label: "< 3%", value: "0-3" },
-  { label: "3% – 4%", value: "3-4" },
-  { label: "4% – 5%", value: "4-5" },
-  { label: "5%+", value: "5-0" },
-];
-
-const PRICE_OPTIONS = [
-  { label: "All", value: "all" },
-  { label: "< $500", value: "0-7000000" },
-  { label: "$500 – $700", value: "7000000-10000000" },
-  { label: "$700 – $900", value: "10000000-13000000" },
-  { label: "$900+", value: "13000000-0" },
-];
-
 const DEFAULT_CREATOR_TIER = "1000-10000";
 const MARKETPLACE_STATE_KEY = "creatorhub.marketplace.state";
 
@@ -119,8 +103,6 @@ type MarketplaceStoredState = {
   filters?: CreatorListParams;
   search?: string;
   followersVal?: string;
-  engagementVal?: string;
-  priceVal?: string;
   listView?: boolean;
   activeTab?: string;
   scrollTop?: number;
@@ -1625,9 +1607,6 @@ export default function Marketplace() {
   }, []);
 
   const [followersVal, setFollowersVal] = useState(() => restoredStateRef.current?.followersVal ?? DEFAULT_CREATOR_TIER);
-  const [engagementVal, setEngagementVal] = useState(() => restoredStateRef.current?.engagementVal ?? "all");
-  const [priceVal, setPriceVal] = useState(() => restoredStateRef.current?.priceVal ?? "all");
-
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showMobileBrief, setShowMobileBrief] = useState(false);
   const [showCreateCampaign, setShowCreateCampaign] = useState(false);
@@ -1672,14 +1651,12 @@ export default function Marketplace() {
       filters,
       search,
       followersVal,
-      engagementVal,
-      priceVal,
       listView,
       activeTab,
       scrollTop,
     };
     window.sessionStorage.setItem(MARKETPLACE_STATE_KEY, JSON.stringify(state));
-  }, [activeTab, engagementVal, filters, followersVal, listView, priceVal, search]);
+  }, [activeTab, filters, followersVal, listView, search]);
 
   useEffect(() => () => saveMarketplaceState(), [saveMarketplaceState]);
 
@@ -1749,8 +1726,6 @@ export default function Marketplace() {
     setFilters({ page: 1, pageSize: 20, minFollowers: 1000, maxFollowers: 10000 });
     setSearch("");
     setFollowersVal(DEFAULT_CREATOR_TIER);
-    setEngagementVal("all");
-    setPriceVal("all");
     setActivePlatforms([]);
   };
 
@@ -1765,18 +1740,6 @@ export default function Marketplace() {
     setFollowersVal(val);
     const { min, max } = parseRange(val);
     setFilters((f) => ({ ...f, minFollowers: min, maxFollowers: max, page: 1 }));
-  };
-
-  const applyEngagement = (val: string) => {
-    setEngagementVal(val);
-    const { min, max } = parseRange(val);
-    setFilters((f) => ({ ...f, minEngagement: min, maxEngagement: max, page: 1 }));
-  };
-
-  const applyPrice = (val: string) => {
-    setPriceVal(val);
-    const { min, max } = parseRange(val);
-    setFilters((f) => ({ ...f, minPrice: min, maxPrice: max, page: 1 }));
   };
 
   const handleCreateCampaign = async () => {
@@ -1887,20 +1850,8 @@ export default function Marketplace() {
           </Select>
         </div>
 
-        {/* Filters row 2 */}
-        <div className="px-3 sm:px-4 py-2 bg-[#0B1120] flex flex-wrap items-center gap-2">
-          <Select value={engagementVal} onValueChange={applyEngagement}>
-            <SelectTrigger className="w-full sm:w-36"><SelectValue placeholder="Engagement" /></SelectTrigger>
-            <SelectContent>{ENGAGEMENT_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
-          </Select>
-
-          <Select value={priceVal} onValueChange={applyPrice}>
-            <SelectTrigger className="w-full sm:w-40"><SelectValue placeholder="Price" /></SelectTrigger>
-            <SelectContent>{PRICE_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
-          </Select>
-
-          <div className="flex-1" />
-
+        {/* Filters row 2 — platform buttons */}
+        <div className="px-3 sm:px-4 pb-2 bg-[#0B1120] flex flex-wrap items-center gap-2">
           {/* Platform filter buttons — SVG icons from media-monitoring Data Sources */}
           {[
             { id: "instagram", label: "Instagram", color: "#E1306C",
