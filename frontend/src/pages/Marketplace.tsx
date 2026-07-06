@@ -288,7 +288,6 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
             <div className="hidden md:flex items-center gap-1.5">
               {creator.platforms.map((p) => {
                 const pm = creator.platformMetrics?.find((m) => m.platform === p);
-                const followers = pm?.followers ?? 0;
                 const platformHandle = pm?.handle ?? creator.handle;
                 return (
                   <a
@@ -300,14 +299,13 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
                     className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border transition-colors hover:opacity-80 ${platformBg[p] ?? "bg-white/5 text-slate-300 border-white/5"}`}
                   >
                     {platformIcon(p)} <span className="capitalize">{p}</span>
-                    {followers > 0 && <span className="opacity-70">{formatFollowers(followers)}</span>}
                   </a>
                 );
               })}
             </div>
-            <div className="hidden sm:flex items-center gap-4 text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
+            <div className="hidden sm:flex items-center gap-2 text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
+              <span className="text-slate-600">|</span>
               <span className="font-semibold">{followersLabel} followers</span>
-              <span className="font-semibold">{creator.engagementRate}% ER</span>
               <span className="font-bold whitespace-nowrap" style={{ color: "var(--ch-text)" }}>
                 {creator.priceText}
               </span>
