@@ -45,6 +45,48 @@ const DEFAULT_CITIES: string[] = [
 ];
 const KABUPATEN_KOTA_URL = "https://gist.githubusercontent.com/ajie31/3144875bad9705e2b2b544909c022276/raw/Peta%20Indonesia%20Kota%20Kabupaten%20simplified.json";
 
+const PLATFORM_SERVICES: Record<string, string[]> = {
+  instagram: [
+    "Instagram Feed Post",
+    "Instagram Carousel Post",
+    "Instagram Story Post",
+    "Instagram Story Series",
+    "Instagram Reels Video",
+    "Instagram Collab Post",
+    "Instagram Product Review",
+    "Instagram Giveaway Post",
+    "Instagram Story Link / CTA",
+  ],
+  tiktok: [
+    "TikTok Video Post",
+    "TikTok Product Review",
+    "TikTok Unboxing Video",
+    "TikTok Tutorial Video",
+    "TikTok Storytelling Video",
+    "TikTok Challenge Video",
+    "TikTok Duet / Stitch",
+    "TikTok Shop Affiliate Video",
+  ],
+  youtube: [
+    "YouTube Dedicated Video",
+    "YouTube Shorts Video",
+    "YouTube Product Review",
+    "YouTube Tutorial Video",
+    "YouTube Video Integration",
+    "YouTube Community Post",
+    "YouTube Premiere",
+    "Pinned Comment Placement",
+    "Description Link Placement",
+  ],
+  x: [
+    "X Image Post",
+    "X Video Post",
+    "X Poll Post",
+    "X Hashtag Campaign",
+    "Pinned Post Placement",
+  ],
+};
+
 const FOLLOWERS_OPTIONS = [
   { label: "All Tiers", value: "all" },
   { label: "Mega (1M+)", value: "1000000-0" },
@@ -1517,6 +1559,11 @@ export default function Marketplace() {
   const [cityOptions, setCityOptions] = useState<string[]>(DEFAULT_CITIES);
   const [activePlatforms, setActivePlatforms] = useState<string[]>([]);
   const platformFilterActive = activePlatforms.length > 0;
+  const [selectedServices, setSelectedServices] = useState<Record<string, boolean>>({});
+
+  const toggleService = (svc: string) => {
+    setSelectedServices((prev) => ({ ...prev, [svc]: !prev[svc] }));
+  };
 
   useEffect(() => {
     fetch(KABUPATEN_KOTA_URL)
@@ -1682,11 +1729,6 @@ export default function Marketplace() {
       return;
     }
 
-    if (selectedIds.length >= 5) {
-      toast.error("Maksimal 5 kreator dalam satu brief.");
-      return;
-    }
-
     setSelectedCreatorsById((prev) => ({ ...prev, [creator.id]: creator }));
     setSelectedIds((prev) => [...prev, creator.id]);
   };
@@ -1710,6 +1752,7 @@ export default function Marketplace() {
     setActivePlatforms((prev) =>
       prev.includes(p) ? [] : [p]
     );
+    setSelectedServices({});
   };
 
   const applyFollowers = (val: string) => {
@@ -2179,7 +2222,7 @@ export default function Marketplace() {
         <div className="xl:hidden fixed bottom-0 left-0 right-0 z-30 p-3 bg-[#111827] border-t border-white/10 shadow-lg flex items-center gap-3">
           <div className="flex-1 min-w-0">
             <p className="text-sm font-bold truncate text-white">Campaign Brief</p>
-            <p className="text-xs text-slate-400">{selectedIds.length}/5 creators selected</p>
+            <p className="text-xs text-slate-400">{selectedIds.length} Creator{selectedIds.length !== 1 ? "s" : ""} Selected</p>
           </div>
           <Button size="sm" onClick={() => setShowMobileBrief(true)}>View Brief</Button>
         </div>
@@ -2189,7 +2232,7 @@ export default function Marketplace() {
       <aside className="hidden xl:flex w-[312px] shrink-0 flex-col bg-[#111827] border-l border-white/10">
         <div className="p-4 border-b border-white/10">
           <h2 className="font-bold text-[15px] text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Campaign Brief</h2>
-          <p className="text-[12px] mt-0.5 text-slate-400">{selectedIds.length}/5 creators selected</p>
+          <p className="text-[12px] mt-0.5 text-slate-400">{selectedIds.length} Creator{selectedIds.length !== 1 ? "s" : ""} Selected</p>
         </div>
 
         <div className="flex-1 overflow-auto p-4 space-y-3">
@@ -2197,6 +2240,28 @@ export default function Marketplace() {
             <div className="text-center py-12 text-slate-500">
               <p className="text-sm">No creators selected yet</p>
               <p className="text-xs mt-1">Click "Invite" or open creator profile</p>
+              {/* Show platform services when a platform is selected */}
+              {activePlatforms.length > 0 && activePlatforms.map((platId) => {
+                const services = PLATFORM_SERVICES[platId] ?? [];
+                if (services.length === 0) return null;
+                return (
+                  <div key={platId} className="mt-6 text-left space-y-2">
+                    <p className="text-[12px] font-semibold text-slate-400 uppercase tracking-wider mb-3">Available Services</p>
+                    {services.map((svc) => (
+                      <label key={svc} className="flex items-center gap-2.5 cursor-pointer group">
+                        <input
+                          type="checkbox"
+                          checked={!!selectedServices[svc]}
+                          onChange={() => toggleService(svc)}
+                          className="w-4 h-4 rounded border-2 cursor-pointer accent-orange-500 shrink-0"
+                          style={{ borderColor: "var(--ch-border)" }}
+                        />
+                        <span className="text-[12px] text-slate-400 group-hover:text-slate-300 transition-colors">{svc}</span>
+                      </label>
+                    ))}
+                  </div>
+                );
+              })}
             </div>
           ) : (
             selectedCreators.map((c) => (
@@ -2226,12 +2291,35 @@ export default function Marketplace() {
         <DialogContent className="max-w-lg p-0 gap-0 flex flex-col max-h-[85dvh]">
           <DialogHeader className="p-4 border-b shrink-0" style={{ borderColor: "var(--ch-border)" }}>
             <DialogTitle>Campaign Brief</DialogTitle>
-            <p className="text-[12px] mt-0.5" style={{ color: "var(--ch-text-muted)" }}>{selectedIds.length}/5 kreator dipilih</p>
+            <p className="text-[12px] mt-0.5" style={{ color: "var(--ch-text-muted)" }}>{selectedIds.length} Creator{selectedIds.length !== 1 ? "s" : ""} Selected</p>
           </DialogHeader>
           <div className="flex-1 overflow-auto p-4 space-y-3">
             {selectedCreators.length === 0 ? (
               <div className="text-center py-8 text-slate-400">
-                <p className="text-sm">Belum ada kreator dipilih</p>
+                <p className="text-sm">No creators selected yet</p>
+                <p className="text-xs mt-1">Click "Invite" or open creator profile</p>
+                {/* Show platform services when a platform is selected */}
+                {activePlatforms.length > 0 && activePlatforms.map((platId) => {
+                  const services = PLATFORM_SERVICES[platId] ?? [];
+                  if (services.length === 0) return null;
+                  return (
+                    <div key={platId} className="mt-6 text-left space-y-2">
+                      <p className="text-[12px] font-semibold text-slate-400 uppercase tracking-wider mb-3">Available Services</p>
+                      {services.map((svc) => (
+                        <label key={svc} className="flex items-center gap-2.5 cursor-pointer group">
+                          <input
+                            type="checkbox"
+                            checked={!!selectedServices[svc]}
+                            onChange={() => toggleService(svc)}
+                            className="w-4 h-4 rounded border-2 cursor-pointer accent-orange-500 shrink-0"
+                            style={{ borderColor: "var(--ch-border)" }}
+                          />
+                          <span className="text-[12px] text-slate-400 group-hover:text-slate-300 transition-colors">{svc}</span>
+                        </label>
+                      ))}
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               selectedCreators.map((c) => (
