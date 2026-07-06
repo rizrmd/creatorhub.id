@@ -203,10 +203,10 @@ const impactLevels = [
   { id: "medium", label: "Medium" }, { id: "low", label: "Low" },
 ];
 
-const inputStyle = { background: "var(--ch-surface)", border: "1px solid var(--ch-border)", color: "var(--ch-text)" };
-const labelStyle = { color: "var(--ch-text)" };
-const mutedStyle = { color: "var(--ch-text-muted)" };
-const cardStyle = { background: "var(--ch-surface)", border: "1px solid var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" };
+const inputStyle = { backgroundColor: "var(--ch-surface)", border: "1px solid var(--ch-border)", color: "var(--ch-text)" } as React.CSSProperties;
+const labelStyle = { color: "var(--ch-text)" } as React.CSSProperties;
+const mutedStyle = { color: "var(--ch-text-muted)" } as React.CSSProperties;
+const cardStyle = { backgroundColor: "var(--ch-surface)", border: "1px solid var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" } as React.CSSProperties;
 
 export default function MediaMonitoring() {
   const [activeTab, setActiveTab] = useState("setup");
