@@ -1938,15 +1938,18 @@ export default function Marketplace() {
           <Button size="sm" onClick={() => setShowAddCreator(true)} className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white">
             <UserPlus className="w-3.5 h-3.5" /> Add Creator
           </Button>
-          <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => setShowAdvanced(true)}>
+          <Button variant="outline" size="icon" className="h-9 w-9 relative group" onClick={() => setShowAdvanced(true)}>
             <SlidersHorizontal className="w-4 h-4" />
+            <span className="absolute -top-9 left-1/2 -translate-x-1/2 px-2 py-1 rounded-md text-[11px] font-medium bg-slate-800 text-white whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-200 group-hover:opacity-100">Filter results</span>
           </Button>
-          <div className="flex border border-white/10 rounded-md overflow-hidden">
-            <button onClick={() => setListView(false)} className={`p-2 ${!listView ? "bg-white/10 text-white" : "text-slate-400 hover:text-white"}`}>
+          <div className="flex border border-white/10 rounded-md overflow-hidden relative">
+            <button onClick={() => setListView(false)} className={`p-2 group relative ${!listView ? "bg-white/10 text-white" : "text-slate-400 hover:text-white"}`}>
               <LayoutGrid className="w-4 h-4" />
+              <span className="absolute -top-9 left-1/2 -translate-x-1/2 px-2 py-1 rounded-md text-[11px] font-medium bg-slate-800 text-white whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-200 group-hover:opacity-100">Show as grid</span>
             </button>
-            <button onClick={() => setListView(true)} className={`p-2 ${listView ? "bg-white/10 text-white" : "text-slate-400 hover:text-white"}`}>
+            <button onClick={() => setListView(true)} className={`p-2 group relative ${listView ? "bg-white/10 text-white" : "text-slate-400 hover:text-white"}`}>
               <List className="w-4 h-4" />
+              <span className="absolute -top-9 left-1/2 -translate-x-1/2 px-2 py-1 rounded-md text-[11px] font-medium bg-slate-800 text-white whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-200 group-hover:opacity-100">Show as list</span>
             </button>
           </div>
         </div>
