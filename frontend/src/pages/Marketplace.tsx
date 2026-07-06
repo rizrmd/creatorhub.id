@@ -2270,7 +2270,7 @@ export default function Marketplace() {
 
           {/* Sticky bottom: Invited Creators card */}
           {selectedCreators.length > 0 && (
-            <div className="sticky bottom-0 -mx-4 -mb-4 p-4 bg-[#111827] border-t border-white/10">
+            <div className="sticky bottom-0 -mx-4 p-4 bg-[#111827] border-t border-white/10">
               <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 p-3 flex items-center justify-between">
                 <div>
                   <p className="text-[12px] font-bold text-orange-400">Invited Creators</p>
@@ -2392,7 +2392,7 @@ export default function Marketplace() {
 
             {/* Sticky bottom: Invited Creators card */}
             {selectedCreators.length > 0 && (
-              <div className="sticky bottom-0 -mx-4 -mb-4 p-4 bg-white border-t" style={{ borderColor: "var(--ch-border)" }}>
+              <div className="sticky bottom-0 -mx-4 p-4 bg-white border-t" style={{ borderColor: "var(--ch-border)" }}>
                 <div className="rounded-xl border border-orange-500/20 bg-orange-50 p-3 flex items-center justify-between">
                   <div>
                     <p className="text-[12px] font-bold text-orange-400">Invited Creators</p>
