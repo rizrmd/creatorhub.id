@@ -48,7 +48,7 @@ export default function Dashboard() {
   const initials = displayName.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
 
   return (
-    <div className="min-h-full pb-8">
+    <div className="pb-8">
       {/* Profile Card */}
       <div className="px-4 md:px-8 pt-6 pb-5">
         <div className="rounded-2xl border overflow-hidden" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>

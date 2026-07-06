@@ -62,7 +62,6 @@
     color: var(--ch-text);
     font-family: 'Inter', system-ui, sans-serif;
     font-size: 14px;
-    zoom: 0.9;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }

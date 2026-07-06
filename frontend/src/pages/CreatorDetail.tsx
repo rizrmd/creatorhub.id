@@ -151,7 +151,7 @@ export default function CreatorDetail() {
   const photoSrc = resolveCreatorPhoto(creator.img, creator.imageUrl);
 
   return (
-    <div className="min-h-full pb-8">
+    <div className="pb-8">
       {/* Back button */}
       <div className="px-4 md:px-8 pt-4">
         <button
