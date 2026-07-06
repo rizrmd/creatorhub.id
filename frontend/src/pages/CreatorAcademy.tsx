@@ -212,16 +212,9 @@ export default function CreatorAcademy() {
           </div>
         </div>
 
-        <TabsContent value={activeTab} className="mt-4">
+        <TabsContent value="all" className="mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {filtered
-              .filter((c) => {
-                if (activeTab === "in-progress") return c.progress > 0 && c.progress < 100;
-                if (activeTab === "completed") return c.progress === 100;
-                if (activeTab === "new") return c.progress === 0;
-                return true;
-              })
-              .map((c) => {
+            {filtered.map((c) => {
                 const lc = levelColors[c.level] || levelColors.Beginner;
                 return (
                   <Card
@@ -305,6 +298,242 @@ export default function CreatorAcademy() {
                           ) : (
                             <><Play className="w-3 h-3" /> Start</>
                           )}
+                        </button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="in-progress" className="mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {filtered
+              .filter((c) => c.progress > 0 && c.progress < 100)
+              .map((c) => {
+                const lc = levelColors[c.level] || levelColors.Beginner;
+                return (
+                  <Card
+                    key={c.id}
+                    className="group cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.01] overflow-hidden"
+                  >
+                    <div
+                      className="h-32 flex items-center justify-center relative"
+                      style={{ background: c.thumbnail }}
+                    >
+                      <BookOpen className="w-10 h-10 text-white/80" />
+                      {c.progress > 0 && (
+                        <div className="absolute top-2 right-2">
+                          <Badge className="bg-white/90 text-[11px] font-bold" style={{ color: c.progress === 100 ? "#16A34A" : "#F97316" }}>
+                            {c.progress === 100 ? (
+                              <span className="flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Completed</span>
+                            ) : (
+                              `${c.progress}%`
+                            )}
+                          </Badge>
+                        </div>
+                      )}
+                    </div>
+                    <CardContent className="p-4 space-y-3">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span
+                          className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                          style={{ background: lc.bg, color: lc.text }}
+                        >
+                          {c.level}
+                        </span>
+                        <Badge variant="secondary" className="text-[10px]">
+                          {c.category}
+                        </Badge>
+                      </div>
+                      <p
+                        className="text-[14px] font-bold leading-tight line-clamp-2"
+                        style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                      >
+                        {c.title}
+                      </p>
+                      <p className="text-[12px] leading-relaxed line-clamp-2" style={{ color: "var(--ch-text-muted)" }}>
+                        {c.description}
+                      </p>
+                      {c.progress > 0 && c.progress < 100 && (
+                        <div className="space-y-1">
+                          <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                            <div
+                              className="h-full rounded-full transition-all"
+                              style={{ width: `${c.progress}%`, background: "var(--ch-primary)" }}
+                            />
+                          </div>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-3 pt-1">
+                        <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
+                          <Clock className="w-3 h-3" /> {c.duration}
+                        </span>
+                        <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
+                          <FileText className="w-3 h-3" /> {c.lessons} lessons
+                        </span>
+                        <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
+                          <Users className="w-3 h-3" /> {c.students}
+                        </span>
+                        <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
+                          <Star className="w-3 h-3 fill-amber-400 text-amber-400" /> {c.rating}
+                        </span>
+                      </div>
+                      <div className="pt-1 flex items-center justify-between">
+                        <span className="text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
+                          by {c.instructor}
+                        </span>
+                        <button
+                          className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-semibold rounded-lg text-white transition-opacity hover:opacity-90"
+                          style={{ background: "var(--ch-primary)" }}
+                        >
+                          <Play className="w-3 h-3" /> Continue
+                        </button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="completed" className="mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {filtered
+              .filter((c) => c.progress === 100)
+              .map((c) => {
+                const lc = levelColors[c.level] || levelColors.Beginner;
+                return (
+                  <Card
+                    key={c.id}
+                    className="group cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.01] overflow-hidden"
+                  >
+                    <div
+                      className="h-32 flex items-center justify-center relative"
+                      style={{ background: c.thumbnail }}
+                    >
+                      <BookOpen className="w-10 h-10 text-white/80" />
+                      <div className="absolute top-2 right-2">
+                        <Badge className="bg-white/90 text-[11px] font-bold text-green-600">
+                          <span className="flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Completed</span>
+                        </Badge>
+                      </div>
+                    </div>
+                    <CardContent className="p-4 space-y-3">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span
+                          className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                          style={{ background: lc.bg, color: lc.text }}
+                        >
+                          {c.level}
+                        </span>
+                        <Badge variant="secondary" className="text-[10px]">
+                          {c.category}
+                        </Badge>
+                      </div>
+                      <p
+                        className="text-[14px] font-bold leading-tight line-clamp-2"
+                        style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                      >
+                        {c.title}
+                      </p>
+                      <p className="text-[12px] leading-relaxed line-clamp-2" style={{ color: "var(--ch-text-muted)" }}>
+                        {c.description}
+                      </p>
+                      <div className="flex items-center gap-3 pt-1">
+                        <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
+                          <Clock className="w-3 h-3" /> {c.duration}
+                        </span>
+                        <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
+                          <FileText className="w-3 h-3" /> {c.lessons} lessons
+                        </span>
+                        <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
+                          <Users className="w-3 h-3" /> {c.students}
+                        </span>
+                        <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
+                          <Star className="w-3 h-3 fill-amber-400 text-amber-400" /> {c.rating}
+                        </span>
+                      </div>
+                      <div className="pt-1 flex items-center justify-between">
+                        <span className="text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
+                          by {c.instructor}
+                        </span>
+                        <button
+                          className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-semibold rounded-lg text-white transition-opacity hover:opacity-90"
+                          style={{ background: "var(--ch-primary)" }}
+                        >
+                          <CheckCircle className="w-3 h-3" /> Completed
+                        </button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="new" className="mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {filtered
+              .filter((c) => c.progress === 0)
+              .map((c) => {
+                const lc = levelColors[c.level] || levelColors.Beginner;
+                return (
+                  <Card
+                    key={c.id}
+                    className="group cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.01] overflow-hidden"
+                  >
+                    <div
+                      className="h-32 flex items-center justify-center relative"
+                      style={{ background: c.thumbnail }}
+                    >
+                      <BookOpen className="w-10 h-10 text-white/80" />
+                    </div>
+                    <CardContent className="p-4 space-y-3">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span
+                          className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                          style={{ background: lc.bg, color: lc.text }}
+                        >
+                          {c.level}
+                        </span>
+                        <Badge variant="secondary" className="text-[10px]">
+                          {c.category}
+                        </Badge>
+                      </div>
+                      <p
+                        className="text-[14px] font-bold leading-tight line-clamp-2"
+                        style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                      >
+                        {c.title}
+                      </p>
+                      <p className="text-[12px] leading-relaxed line-clamp-2" style={{ color: "var(--ch-text-muted)" }}>
+                        {c.description}
+                      </p>
+                      <div className="flex items-center gap-3 pt-1">
+                        <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
+                          <Clock className="w-3 h-3" /> {c.duration}
+                        </span>
+                        <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
+                          <FileText className="w-3 h-3" /> {c.lessons} lessons
+                        </span>
+                        <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
+                          <Users className="w-3 h-3" /> {c.students}
+                        </span>
+                        <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
+                          <Star className="w-3 h-3 fill-amber-400 text-amber-400" /> {c.rating}
+                        </span>
+                      </div>
+                      <div className="pt-1 flex items-center justify-between">
+                        <span className="text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
+                          by {c.instructor}
+                        </span>
+                        <button
+                          className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-semibold rounded-lg text-white transition-opacity hover:opacity-90"
+                          style={{ background: "var(--ch-primary)" }}
+                        >
+                          <Play className="w-3 h-3" /> Start
                         </button>
                       </div>
                     </CardContent>
