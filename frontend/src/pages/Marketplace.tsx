@@ -4,7 +4,7 @@ import {
   Instagram, Youtube, Users, Megaphone, TrendingUp,
   LayoutGrid, List, RotateCcw, X, MessageSquare, MapPin,
   Heart, User, Video, Building2, Mic,
-  UserPlus, Loader2, Link2,
+  UserPlus, Loader2, Link2, ChevronDown,
 } from "lucide-react";
 import * as topojson from "topojson-client";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -1560,6 +1560,7 @@ export default function Marketplace() {
   const [activePlatforms, setActivePlatforms] = useState<string[]>([]);
   const platformFilterActive = activePlatforms.length > 0;
   const [selectedServices, setSelectedServices] = useState<Record<string, boolean>>({});
+  const [servicesOpen, setServicesOpen] = useState(false);
 
   const toggleService = (svc: string) => {
     setSelectedServices((prev) => ({ ...prev, [svc]: !prev[svc] }));
@@ -2217,20 +2218,33 @@ export default function Marketplace() {
             const services = PLATFORM_SERVICES[platId] ?? [];
             if (services.length === 0) return null;
             return (
-              <div key={platId} className="p-4 text-left space-y-2">
-                <p className="text-[12px] font-semibold text-slate-400 uppercase tracking-wider mb-3">Available Services</p>
-                {services.map((svc) => (
-                  <label key={svc} className="flex items-center gap-2.5 cursor-pointer group">
-                    <input
-                      type="checkbox"
-                      checked={!!selectedServices[svc]}
-                      onChange={() => toggleService(svc)}
-                      className="w-4 h-4 rounded border-2 cursor-pointer accent-orange-500 shrink-0"
-                      style={{ borderColor: "var(--ch-border)" }}
-                    />
-                    <span className="text-[12px] text-slate-400 group-hover:text-slate-300 transition-colors">{svc}</span>
-                  </label>
-                ))}
+              <div key={platId} className="p-4 text-left">
+                <button
+                  onClick={() => setServicesOpen(!servicesOpen)}
+                  className="w-full flex items-center justify-between mb-3 cursor-pointer"
+                >
+                  <span className="text-[12px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-primary)" }}>Available Services</span>
+                  <ChevronDown
+                    className="w-4 h-4 shrink-0 transition-transform duration-200"
+                    style={{ color: "var(--ch-primary)", transform: servicesOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+                  />
+                </button>
+                {servicesOpen && (
+                  <div className="space-y-2">
+                    {services.map((svc) => (
+                      <label key={svc} className="flex items-center gap-2.5 cursor-pointer group">
+                        <input
+                          type="checkbox"
+                          checked={!!selectedServices[svc]}
+                          onChange={() => toggleService(svc)}
+                          className="w-4 h-4 rounded border-2 cursor-pointer accent-orange-500 shrink-0"
+                          style={{ borderColor: "var(--ch-border)" }}
+                        />
+                        <span className="text-[12px] text-slate-400 group-hover:text-slate-300 transition-colors">{svc}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
               </div>
             );
           })}
@@ -2284,20 +2298,33 @@ export default function Marketplace() {
               const services = PLATFORM_SERVICES[platId] ?? [];
               if (services.length === 0) return null;
               return (
-                <div key={platId} className="p-4 text-left space-y-2">
-                  <p className="text-[12px] font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--ch-text-muted)" }}>Available Services</p>
-                  {services.map((svc) => (
-                    <label key={svc} className="flex items-center gap-2.5 cursor-pointer group">
-                      <input
-                        type="checkbox"
-                        checked={!!selectedServices[svc]}
-                        onChange={() => toggleService(svc)}
-                        className="w-4 h-4 rounded border-2 cursor-pointer accent-orange-500 shrink-0"
-                        style={{ borderColor: "var(--ch-border)" }}
-                      />
-                      <span className="text-[12px] transition-colors" style={{ color: "var(--ch-text-muted)" }}>{svc}</span>
-                    </label>
-                  ))}
+                <div key={platId} className="p-4 text-left">
+                  <button
+                    onClick={() => setServicesOpen(!servicesOpen)}
+                    className="w-full flex items-center justify-between mb-3 cursor-pointer"
+                  >
+                    <span className="text-[12px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-primary)" }}>Available Services</span>
+                    <ChevronDown
+                      className="w-4 h-4 shrink-0 transition-transform duration-200"
+                      style={{ color: "var(--ch-primary)", transform: servicesOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+                    />
+                  </button>
+                  {servicesOpen && (
+                    <div className="space-y-2">
+                      {services.map((svc) => (
+                        <label key={svc} className="flex items-center gap-2.5 cursor-pointer group">
+                          <input
+                            type="checkbox"
+                            checked={!!selectedServices[svc]}
+                            onChange={() => toggleService(svc)}
+                            className="w-4 h-4 rounded border-2 cursor-pointer accent-orange-500 shrink-0"
+                            style={{ borderColor: "var(--ch-border)" }}
+                          />
+                          <span className="text-[12px] transition-colors" style={{ color: "var(--ch-text-muted)" }}>{svc}</span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })}
