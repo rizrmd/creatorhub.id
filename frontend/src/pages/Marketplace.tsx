@@ -1811,7 +1811,7 @@ export default function Marketplace() {
 
   return (
     <div className="flex flex-col xl:flex-row h-full bg-[#070B14]">
-      <div className={`flex-1 flex flex-col min-w-0 ${selectedIds.length > 0 ? "pb-20 xl:pb-0" : ""}`}>
+      <div className={`flex-1 flex flex-col min-w-0 min-h-0 overflow-hidden ${selectedIds.length > 0 ? "pb-20 xl:pb-0" : ""}`}>
         {/* Tabs */}
         <div className="px-4 pt-3 pb-0 bg-[#0B1120]">
           <div className="flex items-center gap-0 rounded-2xl overflow-hidden" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
@@ -1966,7 +1966,7 @@ export default function Marketplace() {
         </div>
 
         {/* Grid / List */}
-        <div className="p-3 sm:p-4">
+        <div className="flex-1 overflow-auto p-3 sm:p-4">
           {isLoading ? (
             <div className={listView ? "space-y-2" : "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3"}>
               {Array.from({ length: 9 }).map((_, i) => (
