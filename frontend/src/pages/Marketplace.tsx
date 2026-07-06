@@ -3,7 +3,7 @@ import {
   Search, SlidersHorizontal, Star, CheckCircle, Award,
   Instagram, Youtube, Users, Megaphone, TrendingUp,
   LayoutGrid, List, RotateCcw, X, Flame, MessageSquare, MapPin,
-  Heart, ArrowUpRight, User, Video, Building2,
+  Heart, User, Video, Building2, Mic,
   UserPlus, Loader2, Link2,
 } from "lucide-react";
 import * as topojson from "topojson-client";
@@ -37,12 +37,17 @@ const CATEGORIES = [
   { label: "Gaming", value: "gaming" },
   { label: "Parenting", value: "parent" },
 ];
-const DEFAULT_CITIES: string[] = [];
+const DEFAULT_CITIES: string[] = [
+  "Jakarta", "Bandung", "Surabaya", "Semarang", "Yogyakarta", "Medan",
+  "Makassar", "Denpasar", "Malang", "Palembang", "Manado", "Balikpapan",
+  "Banjarmasin", "Pontianak", "Padang", "Lampung", "Bogor", "Depok",
+  "Tangerang", "Bekasi", "Solo", "Maluku", "Papua", "Sulawesi",
+];
 const KABUPATEN_KOTA_URL = "https://gist.githubusercontent.com/ajie31/3144875bad9705e2b2b544909c022276/raw/Peta%20Indonesia%20Kota%20Kabupaten%20simplified.json";
 const PLATFORMS = ["instagram", "tiktok", "youtube", "facebook", "x", "linkedin"];
 
 const FOLLOWERS_OPTIONS = [
-  { label: "All", value: "all" },
+  { label: "All Tiers", value: "all" },
   { label: "Mega (1M+)", value: "1000000-0" },
   { label: "Makro (100K–1M)", value: "100000-1000000" },
   { label: "Mikro (10K–100K)", value: "10000-100000" },
@@ -123,8 +128,8 @@ const platformIcon = (p: string) => {
   if (p === "instagram") return <Instagram className="w-3 h-3" />;
   if (p === "youtube") return <Youtube className="w-3 h-3" />;
   if (p === "tiktok") return (
-    <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 0010.86 4.46v-7.2a8.16 8.16 0 005.58 2.19V11.2a4.83 4.83 0 01-3.77-1.7V2h3.77z"/>
+    <svg viewBox="0 0 24 24" className="w-3 h-3 fill-current">
+      <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
     </svg>
   );
   if (p === "facebook") return (
@@ -206,10 +211,11 @@ const platformBg: Record<string, string> = {
   linkedin:  "bg-blue-400/15 text-blue-300 border-blue-400/20",
 };
 
-function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFavorite, listView, onCityClick }: {
+function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFavorite, listView, onCityClick, onCategoryClick }: {
   creator: Creator; selected: boolean; favorited: boolean;
   onToggle: () => void; onCardClick: () => void; onFavorite: () => void; listView: boolean;
   onCityClick?: (city: string) => void;
+  onCategoryClick?: (category: string) => void;
 }) {
   const catColor = CATEGORY_COLORS[creator.category] ?? "bg-white/10 text-slate-300";
   const followersLabel = creator.followersText || formatFollowers(creator.followers);
@@ -246,7 +252,8 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
                   onClick={(e) => { e.stopPropagation(); onCityClick?.(creator.city); }}
                   className="hover:underline cursor-pointer text-left"
                 >{creator.city}</button>
-                <span className={`px-1.5 py-0 rounded-full text-[10px] font-medium capitalize ${catColor}`}>{creator.category}</span>
+                <span className={`px-1.5 py-0 rounded-full text-[10px] font-medium capitalize cursor-pointer hover:opacity-80 ${catColor}`}
+                  onClick={(e) => { e.stopPropagation(); onCategoryClick?.(creator.category); }}>{creator.category}</span>
               </div>
             </div>
             <div className="hidden md:flex items-center gap-1.5">
@@ -292,7 +299,7 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
                 border: "1.5px solid var(--ch-primary-100)",
               }}
             >
-              {selected ? "✓ Invited" : "Invite to Project"}
+              {selected ? "✓ Invited" : "Invite"}
             </button>
           </div>
         </div>
@@ -379,14 +386,21 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
               >{creator.city}</button>
             </p>
           </div>
-          <span className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize ${catColor}`}>
+          <button
+            onClick={(e) => { e.stopPropagation(); onCategoryClick?.(creator.category); }}
+            className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize cursor-pointer hover:opacity-80 ${catColor}`}
+          >
             {creator.category}
-          </span>
+          </button>
         </div>
 
-        {/* Social media links with followers */}
+        {/* Platform table */}
         {creator.platforms && creator.platforms.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mt-2.5">
+          <div className="mt-2.5 rounded-lg border overflow-hidden" style={{ borderColor: "var(--ch-border)", background: "var(--ch-bg)" }}>
+            <div className="flex items-center justify-between px-3 py-1.5 border-b" style={{ borderColor: "var(--ch-border)" }}>
+              <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Platform</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Followers</span>
+            </div>
             {creator.platforms.map((p) => {
               const pm = creator.platformMetrics?.find((m) => m.platform === p);
               const followers = pm?.followers ?? 0;
@@ -398,57 +412,43 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold border transition-colors hover:opacity-80 ${platformBg[p] ?? "bg-white/10 text-slate-300 border-white/10"}`}
+                  className="flex items-center justify-between px-3 py-2 border-t transition-colors hover:bg-white/5"
+                  style={{ borderColor: "var(--ch-border)" }}
                 >
-                  {platformIcon(p)}
-                  <span className="capitalize">{p}</span>
-                  {followers > 0 && (
-                    <span className="opacity-70">{formatFollowers(followers)}</span>
-                  )}
-                  <ArrowUpRight className="w-2.5 h-2.5 opacity-50" />
+                  <span className="flex items-center gap-2 text-[12px] font-semibold capitalize" style={{ color: "var(--ch-text)" }}>
+                    {platformIcon(p)}
+                    {p}
+                  </span>
+                  <span className="text-[12px] font-bold" style={{ color: "var(--ch-text)" }}>
+                    {followers > 0 ? formatFollowers(followers) : "–"}
+                  </span>
                 </a>
               );
             })}
           </div>
         )}
 
-        {/* Total followers */}
-        <div className="mt-2.5 flex items-center justify-between rounded-lg border px-2.5 py-2"
-          style={{ borderColor: "var(--ch-border)", background: "var(--ch-bg)" }}>
-          <span className="flex items-center gap-1.5 text-[11px] font-medium" style={{ color: "var(--ch-text-muted)" }}>
-            <Users className="w-3.5 h-3.5" />
-            Followers
-          </span>
-          <span className="text-[12px] font-bold" style={{ color: "var(--ch-text)" }}>
-            {followersLabel}
-          </span>
-        </div>
-
-        {/* Price */}
-        <div className="mt-2 text-[11px]" style={{ color: "var(--ch-text-soft)" }}>
-          <span className="font-semibold" style={{ color: "var(--ch-text)" }}>{creator.priceText}</span>
-        </div>
-
         {/* Actions */}
-        <div className="flex items-center justify-between mt-2.5">
+        <div className="flex items-center gap-2 mt-3">
           <button
             onClick={(e) => { e.stopPropagation(); onCardClick(); }}
-            className="text-[11px] font-semibold hover:underline"
-            style={{ color: "var(--ch-primary)" }}
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-semibold border transition-colors hover:bg-white/5"
+            style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
           >
-            Full Profile
+            <User className="w-3.5 h-3.5" />
+            Profile
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); onToggle(); }}
-            className="px-3.5 py-1.5 rounded-lg text-[12px] font-bold transition-all"
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-bold transition-all"
             style={selected ? {
               background: "var(--ch-primary)", color: "white", border: "none",
             } : {
-              background: "var(--ch-primary-50)", color: "var(--ch-primary)",
-              border: "1.5px solid var(--ch-primary-100)",
+              background: "var(--ch-primary)", color: "white",
             }}
           >
-            {selected ? "✓ Invited" : "Invite to Project"}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg>
+            {selected ? "Invited" : "Invite"}
           </button>
         </div>
       </div>
@@ -691,7 +691,7 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
               {selected ? (
                 <>Remove from Brief</>
               ) : (
-                <><User style={{ width: 16, height: 16 }} /> Invite to Project</>
+                <><User style={{ width: 16, height: 16 }} /> Invite</>
               )}
             </Button>
           </div>
@@ -1764,8 +1764,9 @@ export default function Marketplace() {
   const tabs = [
     { id: "creators", label: "Content Creators", icon: Users },
     { id: "homeless", label: "Homeless Media", icon: Megaphone },
-    { id: "live-shopping", label: "Live Shopping & Podcast Providers", icon: Video },
-    { id: "idn-network", label: "Indonesian Media Network", icon: Building2 },
+    { id: "podcast", label: "Podcast & Streaming", icon: Mic },
+    { id: "live-shopping", label: "Live Shopping", icon: Video },
+    { id: "publishers", label: "Media Publishers", icon: Building2 },
   ];
 
   return (
@@ -1781,7 +1782,7 @@ export default function Marketplace() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-1 px-4 py-2.5 text-[13px] font-semibold transition-all duration-200 relative ${
+                  className={`flex-1 flex items-center justify-center gap-1 px-4 py-2.5 text-[13px] font-semibold transition-all duration-200 relative ${
                     isActive
                       ? "text-white"
                       : "text-white/60 hover:text-white hover:bg-white/5"
@@ -1955,6 +1956,7 @@ export default function Marketplace() {
                   onFavorite={() => toggleFavorite(creator.id)}
                   listView={listView}
                   onCityClick={(city) => setFilters((f) => ({ ...f, city, page: 1 }))}
+                  onCategoryClick={(category) => setFilters((f) => ({ ...f, category, page: 1 }))}
                 />
               ))}
             </div>
@@ -1980,7 +1982,42 @@ export default function Marketplace() {
           </>
         ) : activeTab === "homeless" ? (
           <HomelessMediaTab />
-        ) : activeTab === "idn-network" ? (
+        ) : activeTab === "podcast" ? (
+          <div className="p-3 sm:p-4 space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+              {[
+                { name: "Deddy Corbuzier", handle: "@mastercorbuzier", platform: "YouTube", followers: "21.5M", category: "Podcast", viewers: "25K live", img: "https://i.pravatar.cc/150?u=deddy" },
+                { name: "Vincent Verhaag", handle: "@vincentverhaag", platform: "YouTube", followers: "3.2M", category: "Podcast", viewers: "8K live", img: "https://i.pravatar.cc/150?u=vincent" },
+                { name: "Jerome Polin", handle: "@jeromepolin", platform: "YouTube", followers: "11.7M", category: "Education", viewers: "9K live", img: "https://i.pravatar.cc/150?u=jerome" },
+                { name: "Reza Arap", handle: "@raffiahr", platform: "YouTube", followers: "14.6M", category: "Entertainment", viewers: "7K live", img: "https://i.pravatar.cc/150?u=reza" },
+                { name: "Bayu Skak", handle: "@bayuskak", platform: "YouTube", followers: "12.3M", category: "Comedy", viewers: "6K live", img: "https://i.pravatar.cc/150?u=bayu" },
+                { name: "Gritte Agatha", handle: "@gritteagatha", platform: "YouTube", followers: "5.8M", category: "Podcast", viewers: "4.5K live", img: "https://i.pravatar.cc/150?u=gritte" },
+              ].map((p, i) => (
+                <div key={i} className="rounded-xl border overflow-hidden hover:ring-2 hover:ring-orange-500/50 transition-all cursor-pointer" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
+                  <div className="relative h-40 overflow-hidden">
+                    <img src={p.img} alt={p.name} className="w-full h-full object-cover" />
+                    <div className="absolute top-2 left-2">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-500 text-white flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" /> LIVE
+                      </span>
+                    </div>
+                    <div className="absolute top-2 right-2">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-black/60 text-white">{p.viewers}</span>
+                    </div>
+                  </div>
+                  <div className="p-3">
+                    <p className="text-[13px] font-bold truncate" style={{ color: "var(--ch-text)" }}>{p.name}</p>
+                    <p className="text-[11px] truncate" style={{ color: "var(--ch-text-muted)" }}>{p.handle}</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>{p.platform}</span>
+                      <span className="text-[11px] font-semibold" style={{ color: "var(--ch-text)" }}>{p.followers}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : activeTab === "publishers" ? (
           <div className="p-3 sm:p-4 space-y-3">
             {/* Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
