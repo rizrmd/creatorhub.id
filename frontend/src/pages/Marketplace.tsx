@@ -2199,7 +2199,7 @@ export default function Marketplace() {
       )}
 
       {/* Campaign Brief Panel — desktop */}
-      <aside className="hidden xl:flex w-[312px] shrink-0 flex-col bg-[#111827] border-l border-white/10 overflow-auto">
+      <aside className="hidden xl:flex w-[312px] shrink-0 bg-[#111827] border-l border-white/10 overflow-auto">
         {/* Sticky top: services + Run Campaign + Invited Creators */}
         <div className="sticky top-0 z-10 shrink-0 bg-[#111827] border-b border-white/10">
           {/* Platform services */}
