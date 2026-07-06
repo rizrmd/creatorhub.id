@@ -1871,6 +1871,10 @@ export default function Marketplace() {
           </Select>
 
           <div className="flex-1" />
+
+          <Button variant="outline" size="sm" onClick={resetFilters} className="gap-1.5">
+            <RotateCcw className="w-3.5 h-3.5" /> Reset
+          </Button>
         </div>
 
         {/* Row 3: sticky results info + actions */}
@@ -1883,14 +1887,11 @@ export default function Marketplace() {
               {statsLoading ? "Loading..." : `Last updated: ${dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "–"}`}
             </p>
           </div>
-          <Button variant="outline" size="sm" onClick={resetFilters} className="gap-1.5">
-            <RotateCcw className="w-3.5 h-3.5" /> Reset
-          </Button>
 
-          {/* Platform filter buttons */}
+          {/* Platform filter buttons — rectangular to match Select style */}
           {[
             { id: "instagram", label: "Instagram", color: "#E1306C" },
-            { id: "tiktok", label: "TikTok", color: "#000000" },
+            { id: "tiktok", label: "TikTok", color: "#25F4EE" },
             { id: "youtube", label: "YouTube", color: "#FF0000" },
             { id: "x", label: "X", color: "#ffffff" },
           ].map((plat) => {
@@ -1899,12 +1900,12 @@ export default function Marketplace() {
               <button
                 key={plat.id}
                 onClick={() => togglePlatform(plat.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold border transition-all ${
+                className={`flex items-center gap-1.5 h-9 px-3 rounded-md text-[13px] font-medium border transition-all ${
                   active
-                    ? "border-white/30 text-white shadow-[0_0_12px_rgba(255,255,255,0.1)]"
+                    ? "border-white/30 text-white"
                     : "border-white/10 text-slate-400 hover:border-white/20 hover:text-slate-300"
                 }`}
-                style={active ? { background: plat.color + "22" } : {}}
+                style={active ? { background: plat.color + "18", borderColor: plat.color + "44" } : { background: "var(--ch-surface)" }}
               >
                 {platformIcon(plat.id)}
                 {plat.label}
