@@ -1852,6 +1852,8 @@ export default function Marketplace() {
 
         {/* Filters row 2 — platform buttons */}
         <div className="px-3 sm:px-4 pb-2 bg-[#0B1120] flex flex-wrap items-center gap-2">
+          <div className="flex-1" />
+
           {/* Platform filter buttons — SVG icons from media-monitoring Data Sources */}
           {[
             { id: "instagram", label: "Instagram", color: "#E1306C",
@@ -1889,9 +1891,16 @@ export default function Marketplace() {
             );
           })}
 
-          <Button variant="outline" size="sm" onClick={resetFilters} className="gap-1.5">
-            <RotateCcw className="w-3.5 h-3.5" /> Reset
-          </Button>
+          <button
+            onClick={resetFilters}
+            className="flex items-center gap-2 h-9 pl-1.5 pr-3 rounded-md text-[13px] font-medium border border-white/10 text-slate-400 hover:border-white/20 hover:text-slate-300 transition-all cursor-pointer"
+            style={{ background: "var(--ch-surface)" }}
+          >
+            <span className="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style={{ background: "#475569" }}>
+              <RotateCcw className="w-3.5 h-3.5 text-white" />
+            </span>
+            Reset
+          </button>
         </div>
 
         {/* Row 3: sticky results info + actions */}
