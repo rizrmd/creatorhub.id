@@ -1767,7 +1767,7 @@ export default function Marketplace() {
     .filter((creator): creator is Creator => Boolean(creator));
 
   const briefFooter = (
-    <div className="p-4 border-t border-white/10 space-y-3">
+    <div id="run-campaign-btn" className="p-4 border-t border-white/10 space-y-3">
       <Button className="w-full" onClick={() => { setShowMobileBrief(false); setShowCreateCampaign(true); }}>Run Campaign</Button>
     </div>
   );
@@ -2247,7 +2247,7 @@ export default function Marketplace() {
 
         {/* Scrollable: selected creators */}
         <div className="flex-1 overflow-auto p-4">
-          <div className={listView ? "flex flex-col gap-2" : "grid grid-cols-2 gap-2"}>
+          <div className={listView ? "flex flex-col gap-2 pb-24" : "grid grid-cols-2 gap-2 pb-24"}>
             {selectedCreators.map((c) => (
               <div key={c.id} className={`relative p-2.5 bg-white/5 rounded-xl text-center group ${listView ? "flex items-center gap-3 text-left" : ""}`}>
                 <button
@@ -2267,34 +2267,35 @@ export default function Marketplace() {
               </div>
             ))}
           </div>
-        </div>
 
-        {/* Sticky bottom: Invited Creators card */}
-        {selectedCreators.length > 0 && (
-          <div className="shrink-0 p-3 border-t border-white/10 bg-[#111827]">
-            <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 p-3 flex items-center justify-between">
-              <div>
-                <p className="text-[12px] font-bold text-orange-400">Invited Creators</p>
-                <p className="text-[18px] font-extrabold text-white">{selectedCreators.length}</p>
+          {/* Sticky bottom: Invited Creators card */}
+          {selectedCreators.length > 0 && (
+            <div className="sticky bottom-0 -mx-4 -mb-4 p-4 bg-[#111827] border-t border-white/10">
+              <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 p-3 flex items-center justify-between">
+                <div>
+                  <p className="text-[12px] font-bold text-orange-400">Invited Creators</p>
+                  <p className="text-[18px] font-extrabold text-white">{selectedCreators.length}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => document.getElementById('run-campaign-btn')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="text-[11px] font-semibold text-blue-400 hover:text-blue-300 transition-colors cursor-pointer"
+                  >
+                    ↑ Run Campaign
+                  </button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={clearSelection}
+                    className="text-[11px] font-semibold border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300 hover:border-red-500/50"
+                  >
+                    Clear All
+                  </Button>
+                </div>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={clearSelection}
-                className="text-[11px] font-semibold border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300 hover:border-red-500/50"
-              >
-                Clear All
-              </Button>
             </div>
-          </div>
-        )}
-
-        {/* Sticky bottom: creator count */}
-        {selectedCreators.length > 0 && (
-          <div className="shrink-0 p-3 border-t border-white/10 bg-[#111827]">
-            <p className="text-[13px] font-semibold text-white text-center">{selectedIds.length} Creator{selectedIds.length !== 1 ? "s" : ""} Invited</p>
-          </div>
-        )}
+          )}
+        </div>
       </aside>
 
       {/* Campaign Brief — mobile sheet */}
@@ -2368,7 +2369,7 @@ export default function Marketplace() {
 
           {/* Scrollable: selected creators */}
           <div className="flex-1 overflow-auto p-4">
-            <div className={listView ? "flex flex-col gap-2" : "grid grid-cols-2 gap-2"}>
+            <div className={listView ? "flex flex-col gap-2 pb-24" : "grid grid-cols-2 gap-2 pb-24"}>
               {selectedCreators.map((c) => (
                 <div key={c.id} className={`relative p-2.5 bg-slate-50 rounded-xl text-center group ${listView ? "flex items-center gap-3 text-left" : ""}`}>
                   <button
@@ -2388,14 +2389,35 @@ export default function Marketplace() {
                 </div>
               ))}
             </div>
-          </div>
 
-          {/* Sticky bottom: creator count */}
-          {selectedCreators.length > 0 && (
-            <div className="shrink-0 p-3 border-t" style={{ borderColor: "var(--ch-border)" }}>
-              <p className="text-[13px] font-semibold text-center" style={{ color: "var(--ch-text)" }}>{selectedIds.length} Creator{selectedIds.length !== 1 ? "s" : ""} Invited</p>
-            </div>
-          )}
+            {/* Sticky bottom: Invited Creators card */}
+            {selectedCreators.length > 0 && (
+              <div className="sticky bottom-0 -mx-4 -mb-4 p-4 bg-white border-t" style={{ borderColor: "var(--ch-border)" }}>
+                <div className="rounded-xl border border-orange-500/20 bg-orange-50 p-3 flex items-center justify-between">
+                  <div>
+                    <p className="text-[12px] font-bold text-orange-400">Invited Creators</p>
+                    <p className="text-[18px] font-extrabold text-slate-800">{selectedCreators.length}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => document.getElementById('run-campaign-btn')?.scrollIntoView({ behavior: 'smooth' })}
+                      className="text-[11px] font-semibold text-blue-500 hover:text-blue-400 transition-colors cursor-pointer"
+                    >
+                      ↑ Run Campaign
+                    </button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={clearSelection}
+                      className="text-[11px] font-semibold border-red-500/30 text-red-500 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/50"
+                    >
+                      Clear All
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
 
