@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { Toaster } from "sonner";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
@@ -7,9 +7,6 @@ import { BreadcrumbProvider } from "@/contexts/BreadcrumbContext";
 import { KreatorDataProvider } from "@/context/KreatorDataContext";
 
 export default function Layout() {
-  const { pathname } = useLocation();
-  const fullHeight = pathname === "/dashboard/messages" || pathname === "/dashboard/kreator/messages" || pathname === "/dashboard/marketplace";
-
   return (
     <SidebarProvider>
       <BreadcrumbProvider>
@@ -19,8 +16,10 @@ export default function Layout() {
         <Sidebar />
         <div className="flex-1 flex flex-col min-w-0 min-h-0 w-full">
           <Header />
-          <main className={fullHeight ? "flex-1 min-h-0 overflow-hidden" : "flex-1 min-h-0 overflow-auto"}>
-            <Outlet />
+          <main className="flex-1 min-h-0 flex flex-col">
+            <div className="flex-1 min-h-0 overflow-auto">
+              <Outlet />
+            </div>
           </main>
         </div>
       </div>
