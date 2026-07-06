@@ -1537,6 +1537,7 @@ export default function Marketplace() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectedCreatorsById, setSelectedCreatorsById] = useState<Record<string, Creator>>({});
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
+  const [showFavorites, setShowFavorites] = useState(false);
   const [listView, setListView] = useState(() => restoredStateRef.current?.listView ?? false);
   const [cityOptions, setCityOptions] = useState<string[]>(DEFAULT_CITIES);
   const [activePlatforms, setActivePlatforms] = useState<string[]>([]);
@@ -1641,9 +1642,15 @@ export default function Marketplace() {
     return merged;
   })();
 
-  const filteredCreators = activePlatforms.length > 0
-    ? creators.filter((c) => c.platforms?.some((p) => activePlatforms.includes(p)))
-    : creators;
+  const filteredCreators = (() => {
+    let result = activePlatforms.length > 0
+      ? creators.filter((c) => c.platforms?.some((p) => activePlatforms.includes(p)))
+      : creators;
+    if (showFavorites) {
+      result = result.filter((c) => favoriteIds.includes(c.id));
+    }
+    return result;
+  })();
   const saveMarketplaceState = useCallback(() => {
     if (typeof window === "undefined") return;
     const scrollTop = getMarketplaceScrollElement()?.scrollTop ?? 0;
@@ -1852,6 +1859,24 @@ export default function Marketplace() {
 
         {/* Filters row 2 — platform buttons */}
         <div className="px-3 sm:px-4 py-2 bg-[#0B1120] flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => setShowFavorites(!showFavorites)}
+            className={`flex items-center gap-2 h-9 pl-1.5 pr-3 rounded-md text-[13px] font-medium border transition-all ${
+              showFavorites
+                ? "border-orange-500/50 text-white"
+                : "border-white/10 text-slate-400 hover:border-white/20 hover:text-slate-300"
+            }`}
+            style={showFavorites
+              ? { background: "var(--ch-orange)", borderColor: "var(--ch-orange)" }
+              : { background: "var(--ch-surface)" }
+            }
+          >
+            <span className="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style={{ background: "#E11D48" }}>
+              <Heart className="w-3.5 h-3.5 text-white fill-white" />
+            </span>
+            Favorites
+          </button>
+
           <div className="flex-1" />
 
           {/* Platform filter buttons — SVG icons from media-monitoring Data Sources */}
