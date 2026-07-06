@@ -2238,7 +2238,7 @@ export default function Marketplace() {
             );
           })}
           {activePlatforms.length === 0 && (
-            <div className="p-4 text-center text-slate-500 text-[12px]">
+            <div className="p-4 text-center text-slate-500 text-[11px] leading-snug">
               <p>Select a platform above to see available services</p>
             </div>
           )}
@@ -2326,7 +2326,7 @@ export default function Marketplace() {
               );
             })}
             {activePlatforms.length === 0 && (
-              <div className="p-4 text-center text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
+              <div className="p-4 text-center text-[11px] leading-snug" style={{ color: "var(--ch-text-muted)" }}>
                 <p>Select a platform to see available services</p>
               </div>
             )}
