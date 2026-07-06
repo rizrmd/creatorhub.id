@@ -2261,6 +2261,7 @@ export default function Marketplace() {
                 </div>
                 <p className="text-[11px] font-semibold text-white truncate mt-1.5">{c.name}</p>
                 <p className="text-[10px] text-slate-500 truncate">{c.handle}</p>
+                <p className="text-[10px] text-slate-400 truncate">{c.followersText} followers</p>
               </div>
             ))}
           </div>
@@ -2329,6 +2330,7 @@ export default function Marketplace() {
                   </div>
                   <p className="text-[11px] font-semibold text-slate-800 truncate mt-1.5">{c.name}</p>
                   <p className="text-[10px] text-slate-500 truncate">{c.handle}</p>
+                  <p className="text-[10px] text-slate-400 truncate">{c.followersText} followers</p>
                 </div>
               ))}
             </div>
