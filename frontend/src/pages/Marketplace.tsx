@@ -1,8 +1,8 @@
 ﻿import { useState, useRef, useEffect, useCallback } from "react";
 import {
-  Search, SlidersHorizontal, Star, CheckCircle, Award,
+  Search, SlidersHorizontal, Star, CheckCircle,
   Instagram, Youtube, Users, Megaphone, TrendingUp,
-  LayoutGrid, List, RotateCcw, X, Flame, MessageSquare, MapPin,
+  LayoutGrid, List, RotateCcw, X, MessageSquare, MapPin,
   Heart, User, Video, Building2, Mic,
   UserPlus, Loader2, Link2,
 } from "lucide-react";
@@ -249,7 +249,6 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
                 <p className="text-[13px] font-semibold leading-tight" style={{ color: "var(--ch-text)" }}>{creator.name}</p>
-                {creator.verified && <CheckCircle style={{ width: 13, height: 13, color: "#2563EB", flexShrink: 0 }} />}
               </div>
               <div className="flex items-center gap-1.5 text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
                 <MapPin style={{ width: 11, height: 11 }} />
@@ -512,15 +511,6 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
                 <h2 className="text-xl font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                   {creator.name}
                 </h2>
-                {creator.verified && (
-                  <CheckCircle style={{ width: 20, height: 20, color: "#2563EB", flexShrink: 0, marginTop: 2 }} />
-                )}
-                {creator.topRated && (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold shrink-0"
-                    style={{ background: "var(--ch-orange-50)", color: "var(--ch-orange)" }}>
-                    <Award style={{ width: 12, height: 12 }} /> Top Rated
-                  </span>
-                )}
               </div>
 
               {/* Location + Category */}
@@ -1740,10 +1730,6 @@ export default function Marketplace() {
     setFilters((f) => ({ ...f, minPrice: min, maxPrice: max, page: 1 }));
   };
 
-  const toggleQuick = (key: "verified" | "topRated") => {
-    setFilters((f) => ({ ...f, [key]: f[key] ? undefined : true, page: 1 }));
-  };
-
   const handleCreateCampaign = async () => {
     if (!campaignForm.title) return;
     await createMutation.mutateAsync({
@@ -1885,24 +1871,6 @@ export default function Marketplace() {
           </Select>
 
           <div className="flex-1" />
-
-          {/* Quick filter toggles */}
-          <button
-            onClick={() => toggleQuick("topRated")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-              filters.topRated ? "bg-orange-500 border-orange-500 text-white" : "border-white/10 text-slate-400 hover:border-orange-500/50"
-            }`}
-          >
-            <Flame className="w-3.5 h-3.5" /> Top Rated
-          </button>
-          <button
-            onClick={() => toggleQuick("verified")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-              filters.verified ? "bg-blue-600 border-blue-600 text-white" : "border-white/10 text-slate-400 hover:border-blue-500/50"
-            }`}
-          >
-            <CheckCircle className="w-3.5 h-3.5" /> Verified Only
-          </button>
         </div>
 
         {/* Row 3: sticky results info + actions */}
