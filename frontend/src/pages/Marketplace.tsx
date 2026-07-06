@@ -2192,7 +2192,7 @@ export default function Marketplace() {
       {selectedIds.length > 0 && (
         <div className="xl:hidden fixed bottom-0 left-0 right-0 z-30 p-3 bg-[#111827] border-t border-white/10 shadow-lg flex items-center gap-3">
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold truncate text-white">{selectedIds.length} Creator{selectedIds.length !== 1 ? "s" : ""} Selected</p>
+            <p className="text-sm font-bold truncate text-white">{selectedIds.length} Creator{selectedIds.length !== 1 ? "s" : ""} Invited</p>
           </div>
           <Button size="sm" onClick={() => setShowMobileBrief(true)}>View Brief</Button>
         </div>
@@ -2243,21 +2243,30 @@ export default function Marketplace() {
             </div>
           )}
           {briefFooter}
+
+          {/* Invited Creators count card */}
+          {selectedCreators.length > 0 && (
+            <div className="px-4 pb-4">
+              <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 p-3 flex items-center justify-between">
+                <div>
+                  <p className="text-[12px] font-bold text-orange-400">Invited Creators</p>
+                  <p className="text-[18px] font-extrabold text-white">{selectedCreators.length}</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={clearSelection}
+                  className="text-[11px] font-semibold border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300 hover:border-red-500/50"
+                >
+                  Clear All
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Scrollable: selected creators */}
         <div className="flex-1 overflow-auto p-4">
-          {selectedCreators.length > 0 && (
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-[12px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-primary)" }}>Selected Creators</p>
-              <button
-                onClick={clearSelection}
-                className="text-[12px] font-semibold text-red-400 hover:text-red-300 transition-colors cursor-pointer"
-              >
-                Clear Selection
-              </button>
-            </div>
-          )}
           <div className={listView ? "flex flex-col gap-2" : "grid grid-cols-2 gap-2"}>
             {selectedCreators.map((c) => (
               <div key={c.id} className={`relative p-2.5 bg-white/5 rounded-xl text-center group ${listView ? "flex items-center gap-3 text-left" : ""}`}>
@@ -2283,7 +2292,7 @@ export default function Marketplace() {
         {/* Sticky bottom: creator count */}
         {selectedCreators.length > 0 && (
           <div className="shrink-0 p-3 border-t border-white/10 bg-[#111827]">
-            <p className="text-[13px] font-semibold text-white text-center">{selectedIds.length} Creator{selectedIds.length !== 1 ? "s" : ""} Selected</p>
+            <p className="text-[13px] font-semibold text-white text-center">{selectedIds.length} Creator{selectedIds.length !== 1 ? "s" : ""} Invited</p>
           </div>
         )}
       </aside>
@@ -2335,21 +2344,30 @@ export default function Marketplace() {
             <div className="p-4 border-t" style={{ borderColor: "var(--ch-border)" }}>
               <Button className="w-full" onClick={() => { setShowMobileBrief(false); setShowCreateCampaign(true); }}>Run Campaign</Button>
             </div>
+
+            {/* Invited Creators count card */}
+            {selectedCreators.length > 0 && (
+              <div className="px-4 pb-4">
+                <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 p-3 flex items-center justify-between">
+                  <div>
+                    <p className="text-[12px] font-bold text-orange-400">Invited Creators</p>
+                    <p className="text-[18px] font-extrabold text-white">{selectedCreators.length}</p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={clearSelection}
+                    className="text-[11px] font-semibold border-red-500/30 text-red-400 hover:bg-red-500/10 hover:text-red-300 hover:border-red-500/50"
+                  >
+                    Clear All
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Scrollable: selected creators */}
           <div className="flex-1 overflow-auto p-4">
-            {selectedCreators.length > 0 && (
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-[12px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-primary)" }}>Selected Creators</p>
-                <button
-                  onClick={clearSelection}
-                  className="text-[12px] font-semibold text-red-500 hover:text-red-400 transition-colors cursor-pointer"
-                >
-                  Clear Selection
-                </button>
-              </div>
-            )}
             <div className={listView ? "flex flex-col gap-2" : "grid grid-cols-2 gap-2"}>
               {selectedCreators.map((c) => (
                 <div key={c.id} className={`relative p-2.5 bg-slate-50 rounded-xl text-center group ${listView ? "flex items-center gap-3 text-left" : ""}`}>
@@ -2375,7 +2393,7 @@ export default function Marketplace() {
           {/* Sticky bottom: creator count */}
           {selectedCreators.length > 0 && (
             <div className="shrink-0 p-3 border-t" style={{ borderColor: "var(--ch-border)" }}>
-              <p className="text-[13px] font-semibold text-center" style={{ color: "var(--ch-text)" }}>{selectedIds.length} Creator{selectedIds.length !== 1 ? "s" : ""} Selected</p>
+              <p className="text-[13px] font-semibold text-center" style={{ color: "var(--ch-text)" }}>{selectedIds.length} Creator{selectedIds.length !== 1 ? "s" : ""} Invited</p>
             </div>
           )}
         </DialogContent>
