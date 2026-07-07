@@ -1,7 +1,7 @@
 ﻿import { useState, useEffect, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Users, MapPin, Share2, Tag, BarChart3, UsersRound, ChevronDown } from "lucide-react";
-import { MapContainer, TileLayer, GeoJSON, Marker, ScaleControl, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON, Marker, useMap } from "react-leaflet";
 import L from "leaflet";
 import type { FeatureCollection } from "geojson";
 import * as topojson from "topojson-client";
@@ -490,10 +490,10 @@ function ProvinceChoropleth({
         const count = provinceCounts.get(name) ?? 0;
         return {
           fillColor: getColor(count),
-          weight: 1.5,
-          opacity: 0.8,
-          color: "rgba(148,163,184,0.5)",
-          fillOpacity: count > 0 ? 0.7 : 0.25,
+          weight: 2,
+          opacity: 0.9,
+          color: "rgba(100,116,139,0.6)",
+          fillOpacity: count > 0 ? 0.65 : 0.15,
         };
       }}
       onEachFeature={(feature, layer) => {
@@ -520,9 +520,9 @@ function KabupatenGeoJson({ geoJsonData }: { geoJsonData: FeatureCollection | nu
       data={geoJsonData}
       style={() => ({
         fillColor: "transparent",
-        weight: 0.8,
-        opacity: 0.5,
-        color: "rgba(148,163,184,0.45)",
+        weight: 0.7,
+        opacity: 0.45,
+        color: "rgba(71,85,105,0.6)",
         fillOpacity: 0,
       })}
     />
@@ -551,18 +551,18 @@ function ProvinceLabels({ geoJsonData }: { geoJsonData: FeatureCollection | null
             iconSize: [200, 30],
             iconAnchor: [100, 15],
             html: `<div style="
-              color: #F8FAFC;
+              color: #CBD5E1;
               font-size: 11px;
               font-weight: 700;
               font-family: 'Plus Jakarta Sans', Inter, sans-serif;
-              text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 12px rgba(0,0,0,0.7);
+              text-shadow: 0 1px 4px rgba(0,0,0,0.95), 0 0 10px rgba(0,0,0,0.8);
               white-space: nowrap;
               display: block;
               text-align: center;
               pointer-events: none;
               letter-spacing: 0.5px;
               width: 200px;
-              opacity: 0.85;
+              opacity: 0.9;
             ">${l.name}</div>`,
           })}
         />
@@ -650,55 +650,6 @@ function JakartaRegions({
         );
       }}
     />
-  );
-}
-
-/* ---------- Kabupaten Name Labels ---------- */
-function KabupatenLabels({ jakartaGeoJson }: { jakartaGeoJson: FeatureCollection | null }) {
-  const labels = useMemo(() => {
-    if (!jakartaGeoJson) return [];
-    return jakartaGeoJson.features.map((f) => {
-      const rawName = f.properties?.NAME_2 || "";
-      const displayName = displayGadmName(rawName);
-      const centroid = computeCentroid(f.geometry);
-      const isMultiLine = displayName === "Kepulauan Seribu";
-      return { rawName, centroid, displayName, isMultiLine };
-    }).filter((l) => l.centroid);
-  }, [jakartaGeoJson]);
-
-  return (
-    <>
-      {labels.map((l) => {
-        const displayText = l.isMultiLine ? "Kabupaten\nKepulauan Seribu" : l.displayName;
-        const isMultiLine = displayText.includes("\n");
-        const lines = displayText.split("\n");
-        return (
-          <Marker
-            key={l.rawName}
-            position={l.centroid!}
-            icon={L.divIcon({
-              className: "",
-              iconSize: [200, 40],
-              iconAnchor: [100, 20],
-              html: `<div style="
-                color: white;
-                font-size: 15px;
-                font-weight: 800;
-                font-family: 'Plus Jakarta Sans', Inter, sans-serif;
-                text-shadow: 0 0 8px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,1), 2px 2px 6px rgba(0,0,0,0.8), -1px -1px 4px rgba(0,0,0,0.8);
-                white-space: ${isMultiLine ? 'pre-line' : 'nowrap'};
-                display: block;
-                text-align: center;
-                line-height: 1.3;
-                pointer-events: none;
-                letter-spacing: 0.3px;
-                width: 200px;
-              ">${lines.join('<br/>')}</div>`,
-            })}
-          />
-        );
-      })}
-    </>
   );
 }
 
@@ -1132,7 +1083,7 @@ export default function ServiceHub() {
         </div>
 
         {/* Map - full width */}
-        <div className="relative" style={{ height: "480px" }}>
+        <div className="relative" style={{ height: "500px", background: "#080E1A" }}>
             <MapContainer
               preferCanvas
               center={[-2.5, 118.0]}
@@ -1140,7 +1091,7 @@ export default function ServiceHub() {
               zoomControl={false}
               className="w-full h-full"
               scrollWheelZoom={true}
-              style={{ background: "#0F172A" }}
+              style={{ background: "#080E1A" }}
             >
               <TileLayer
                 attribution='&copy; <a href="https://carto.com/">CARTO</a>'
@@ -1150,10 +1101,7 @@ export default function ServiceHub() {
                 <>
                   <MapViewController center={[-2.5, 118.0]} zoom={5} province={selectedProvince} />
                   {selectedProvince === "DKI Jakarta" && jakartaGeoJson ? (
-                    <>
-                      <JakartaRegions jakartaGeoJson={jakartaGeoJson} creators={filteredCreators} />
-                      <KabupatenLabels jakartaGeoJson={jakartaGeoJson} />
-                    </>
+                    <JakartaRegions jakartaGeoJson={jakartaGeoJson} creators={filteredCreators} />
                   ) : (
                     provinceGeoJson && (
                       <>
@@ -1163,10 +1111,10 @@ export default function ServiceHub() {
                           onProvinceClick={setSelectedProvince}
                         />
                         <ProvinceLabels geoJsonData={provinceGeoJson} />
+                        {kabupatenGeoJson && <KabupatenGeoJson geoJsonData={kabupatenGeoJson} />}
                       </>
                     )
                   )}
-                  <ScaleControl position="bottomright" />
                 </>
               ) : (
                 provinceGeoJson && (
