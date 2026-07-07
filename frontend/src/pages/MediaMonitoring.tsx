@@ -283,26 +283,30 @@ export default function MediaMonitoring() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         {/* Tab Header */}
-        <div className="flex items-center gap-1 pb-4 overflow-x-auto px-1 rounded-xl" style={{ background: "#0B1120", border: "1px solid rgba(255,255,255,0.06)" }}>
-          {tabItems.map((tab) => {
-            const isActive = activeTab === tab.value;
-            const TabIcon = tab.icon;
-            return (
-              <button key={tab.value} onClick={() => setActiveTab(tab.value)}
-                className="flex items-center gap-1.5 px-4 py-2 text-[12px] font-semibold rounded-lg transition-all duration-150 whitespace-nowrap shrink-0"
-                style={isActive ? {
-                  background: "linear-gradient(135deg, #EA580C, #F97316)",
-                  color: "white",
-                  boxShadow: "0 2px 8px rgba(249,115,22,.3)",
-                } : {
-                  color: "var(--ch-text-muted)",
-                  background: "transparent",
-                  border: "none",
-                }}>
-                <TabIcon className="w-3.5 h-3.5" />{tab.label}
-              </button>
+        <div className="px-4 pt-3 pb-0" style={{ background: "#0B1120" }}>
+          <div className="flex items-center gap-0 rounded-2xl overflow-hidden" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
+            {tabItems.map((tab, i) => {
+              const isActive = activeTab === tab.value;
+              const TabIcon = tab.icon;
+              return (
+                <button key={tab.value} onClick={() => setActiveTab(tab.value)}
+                  className={`flex-1 flex items-center justify-center gap-1 px-4 py-2.5 text-[13px] font-semibold transition-all duration-200 relative ${
+                    isActive
+                      ? "text-white"
+                      : "text-white/60 hover:text-white hover:bg-white/5"
+                  }`}
+                  style={isActive ? {
+                    background: "#F97316",
+                    boxShadow: "0 4px 14px rgba(249,115,22,.35)",
+                  } : undefined}>
+                  <TabIcon className="w-4 h-4" />{tab.label}
+                  {i < tabItems.length - 1 && !isActive && (
+                    <span className="absolute right-0 top-1/2 -translate-y-1/2 w-px h-4 bg-white/10" />
+                  )}
+                </button>
             );
           })}
+          </div>
         </div>
 
         {/* Tab: Setup */}
