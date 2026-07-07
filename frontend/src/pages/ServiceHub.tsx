@@ -10,6 +10,7 @@ import { creatorsApi } from "@/lib/api";
 import type { Creator } from "@/types";
 
 const PROVINCE_URL = "https://gist.githubusercontent.com/ajie31/3144875bad9705e2b2b544909c022276/raw/Peta%20Indonesia%20Provinsi.json";
+const KABUPATEN_URL = "https://gist.githubusercontent.com/ajie31/3144875bad9705e2b2b544909c022276/raw/Peta%20Indonesia%20Kota%20Kabupaten%20simplified.json";
 const JAKARTA_GEOJSON_URL = "/jakarta-detailed.geo.json";
 
 const GADM_NAME_TO_DISPLAY: Record<string, string> = {
@@ -511,6 +512,23 @@ function ProvinceChoropleth({
   );
 }
 
+/* ---------- Kabupaten GeoJSON Layer ---------- */
+function KabupatenGeoJson({ geoJsonData }: { geoJsonData: FeatureCollection | null }) {
+  if (!geoJsonData) return null;
+  return (
+    <GeoJSON
+      data={geoJsonData}
+      style={() => ({
+        fillColor: "transparent",
+        weight: 0.5,
+        opacity: 0.4,
+        color: "rgba(148,163,184,0.35)",
+        fillOpacity: 0,
+      })}
+    />
+  );
+}
+
 /* ---------- Province Name Labels ---------- */
 function ProvinceLabels({ geoJsonData }: { geoJsonData: FeatureCollection | null }) {
   const labels = useMemo(() => {
@@ -915,6 +933,7 @@ function FilterSelect({ icon, value, onChange, options }: {
 export default function ServiceHub() {
   const [selectedProvince, setSelectedProvince] = useState<string | null>("DKI Jakarta");
   const [provinceGeoJson, setProvinceGeoJson] = useState<FeatureCollection | null>(null);
+  const [kabupatenGeoJson, setKabupatenGeoJson] = useState<FeatureCollection | null>(null);
   const [jakartaGeoJson, setJakartaGeoJson] = useState<FeatureCollection | null>(null);
   const [allCreators, setAllCreators] = useState<Creator[]>([]);
   const [loadingCreators, setLoadingCreators] = useState(true);
@@ -945,6 +964,12 @@ export default function ServiceHub() {
       .then((r) => r.json())
       .then((topo: any) => {
         setProvinceGeoJson(topojson.feature(topo, topo.objects.gadm36_IDN_1) as unknown as FeatureCollection);
+      })
+      .catch(() => {});
+    fetch(KABUPATEN_URL)
+      .then((r) => r.json())
+      .then((topo: any) => {
+        setKabupatenGeoJson(topojson.feature(topo, topo.objects.gadm36_IDN_2) as unknown as FeatureCollection);
       })
       .catch(() => {});
     fetch(JAKARTA_GEOJSON_URL)
@@ -1233,6 +1258,7 @@ export default function ServiceHub() {
                       onProvinceClick={setSelectedProvince}
                     />
                     <ProvinceLabels geoJsonData={provinceGeoJson} />
+                    {kabupatenGeoJson && <KabupatenGeoJson geoJsonData={kabupatenGeoJson} />}
                   </>
                 )
               )}
