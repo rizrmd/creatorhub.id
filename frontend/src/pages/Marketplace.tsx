@@ -1817,21 +1817,30 @@ export default function Marketplace() {
         {activeTab === "creators" ? (
           <>
         {/* Filters row 1 */}
-        <div className="px-3 sm:px-4 pt-3 pb-2 bg-[#0B1120] flex flex-wrap items-center gap-2">
+        <div className="px-3 sm:px-4 pt-3 pb-2 flex flex-wrap items-center gap-2" style={{ background: "#182337" }}>
           <div className="relative w-full sm:flex-1 sm:min-w-48">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <Input ref={searchRef} placeholder="Find Creators..." className="pl-9 bg-[#0F172A]" value={search} onChange={(e) => setSearch(e.target.value)} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#8B96AA" }} />
+            <Input ref={searchRef} placeholder="Find Creators..."
+              className="pl-9 mp-filter-input"
+              style={{ background: "#0B1220", borderColor: "#2A3850", color: "#E5EAF3" }}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </div>
 
           <Select value={followersVal} onValueChange={applyFollowers}>
-            <SelectTrigger className="w-full sm:w-36"><SelectValue placeholder="All Tiers" /></SelectTrigger>
+            <SelectTrigger className="w-full sm:w-36 mp-filter-select" style={{ background: "#0B1220", borderColor: "#2A3850", color: "#E5EAF3" }}>
+              <SelectValue placeholder="All Tiers" />
+            </SelectTrigger>
             <SelectContent>
               {FOLLOWERS_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
             </SelectContent>
           </Select>
 
           <Select value={filters.category ?? "all"} onValueChange={(v) => setFilters((f) => ({ ...f, category: v === "all" ? undefined : v, page: 1 }))}>
-            <SelectTrigger className="w-full sm:w-40"><SelectValue placeholder="Category" /></SelectTrigger>
+            <SelectTrigger className="w-full sm:w-40 mp-filter-select" style={{ background: "#0B1220", borderColor: "#2A3850", color: "#E5EAF3" }}>
+              <SelectValue placeholder="All Categories" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
               {CATEGORIES.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
@@ -1839,7 +1848,9 @@ export default function Marketplace() {
           </Select>
 
           <Select value={filters.city ?? "all"} onValueChange={(v) => setFilters((f) => ({ ...f, city: v === "all" ? undefined : v, page: 1 }))}>
-            <SelectTrigger className="w-full sm:w-40"><SelectValue placeholder="City" /></SelectTrigger>
+            <SelectTrigger className="w-full sm:w-40 mp-filter-select" style={{ background: "#0B1220", borderColor: "#2A3850", color: "#E5EAF3" }}>
+              <SelectValue placeholder="All Cities" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Cities</SelectItem>
               {cityOptions.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
@@ -1848,7 +1859,7 @@ export default function Marketplace() {
         </div>
 
         {/* Filters row 2 — platform buttons */}
-        <div className="px-3 sm:px-4 py-2 bg-[#0B1120] flex flex-wrap items-center gap-2">
+        <div className="px-3 sm:px-4 py-2 flex flex-wrap items-center gap-2" style={{ background: "#182337" }}>
           <button
             onClick={() => setShowFavorites(!showFavorites)}
             className={`flex items-center gap-2 h-9 pl-1.5 pr-3 rounded-md text-[13px] font-medium border transition-all ${

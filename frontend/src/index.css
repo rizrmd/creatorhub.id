@@ -202,3 +202,17 @@
   border: none !important;
   box-shadow: none !important;
 }
+
+.mp-filter-input:focus,
+.mp-filter-select:hover,
+.mp-filter-select:focus-within {
+  border-color: #FF7A1A !important;
+  outline: none;
+}
+.mp-filter-input::placeholder {
+  color: #8B96AA;
+}
+.mp-filter-select [data-slot="select-trigger"]:hover,
+.mp-filter-select [data-slot="select-trigger"]:focus {
+  border-color: #FF7A1A !important;
+}
