@@ -1009,7 +1009,7 @@ export default function ServiceHub() {
         </div>
 
         {/* Map - full width */}
-        <div className="relative" style={{ height: "500px", background: "#080E1A" }}>
+        <div className="relative overflow-hidden" style={{ height: "500px", background: "#080E1A", borderRadius: "12px" }}>
             <MapContainer
               preferCanvas
               center={[-2.5, 118.0]}

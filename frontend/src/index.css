@@ -221,3 +221,14 @@
   border-color: #FF7A1A !important;
   color: #E5EAF3 !important;
 }
+
+.leaflet-container {
+  outline: none !important;
+  border: none !important;
+}
+.leaflet-container:focus {
+  outline: none !important;
+}
+.leaflet-pane {
+  border: none !important;
+}
