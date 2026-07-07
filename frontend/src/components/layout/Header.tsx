@@ -129,7 +129,7 @@ export default function Header() {
       <div className="flex-1 flex items-center justify-center gap-4">
         <div className="hidden md:flex items-center gap-2">
           <span className="text-[12px] text-white/50 font-medium">Member of</span>
-          <img src="/logo-akci.png" alt="Asosiasi Konten Kreator Indonesia" className="h-6" />
+          <img src="/logo-akci.png" alt="Asosiasi Konten Kreator Indonesia" className="h-8" />
         </div>
         <span className="text-sm font-semibold text-white/70 hidden md:block">{dateStr} &bull; {dayStr} | {timeStr}</span>
       </div>
