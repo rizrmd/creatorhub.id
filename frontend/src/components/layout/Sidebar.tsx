@@ -124,7 +124,7 @@ export default function Sidebar() {
         >
           <div className={cn("flex items-center gap-3", effectiveCollapsed ? "justify-center" : "")}>
             <img
-              src="/favicon.png?v=13"
+              src="/favicon.png?v=14"
               alt="CreatorHub"
               className="shrink-0"
               style={{ width: effectiveCollapsed ? 38 : 40, height: effectiveCollapsed ? 38 : 40 }}
