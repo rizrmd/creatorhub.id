@@ -66,7 +66,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2.5">
-              <img src="/favicon.png?v=9" alt="CreatorHub" className="h-12 w-12" />
+              <img src="/favicon.png?v=10" alt="CreatorHub" className="h-12 w-12" />
               <span className="text-2xl font-extrabold text-white tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>CreatorHub.ID</span>
             </div>
             <div className="hidden md:flex items-center gap-7">
@@ -286,7 +286,7 @@ export default function Landing() {
             {/* Logo + Tagline */}
             <div className="md:col-span-2">
               <div className="flex items-center gap-2.5 mb-4">
-                <img src="/favicon.png?v=9" alt="CreatorHub" className="h-8 w-8" />
+                <img src="/favicon.png?v=10" alt="CreatorHub" className="h-8 w-8" />
                 <span className="text-lg font-extrabold text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>CreatorHub.ID</span>
               </div>
               <p className="text-sm font-semibold text-white mb-2">Create &bull; Connect &bull; Grow</p>
