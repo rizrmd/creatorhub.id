@@ -1784,7 +1784,7 @@ export default function Marketplace() {
     <div className="flex flex-col xl:flex-row h-full bg-[#070B14]">
       <div className={`flex-1 flex flex-col min-w-0 min-h-0 overflow-hidden ${selectedIds.length > 0 ? "pb-20 xl:pb-0" : ""}`}>
         {/* Tabs */}
-        <div className="px-4 pt-3 pb-0 bg-[#0B1120]">
+        <div className="px-4 pt-3 pb-0" style={{ background: "#182337" }}>
           <div className="flex items-center gap-0 rounded-2xl overflow-hidden" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
             {tabs.map((tab, i) => {
               const TabIcon = tab.icon;
