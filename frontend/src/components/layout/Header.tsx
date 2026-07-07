@@ -125,8 +125,12 @@ export default function Header() {
         <Menu style={{ width: 20, height: 20 }} />
       </button>
 
-      {/* Center — Date & Time */}
-      <div className="flex-1 flex items-center justify-center">
+      {/* Center — Member of + Date & Time */}
+      <div className="flex-1 flex items-center justify-center gap-4">
+        <div className="hidden md:flex items-center gap-2">
+          <span className="text-[12px] text-white/50 font-medium">Member of</span>
+          <img src="/logo-akci.png" alt="Asosiasi Konten Kreator Indonesia" className="h-6" />
+        </div>
         <span className="text-sm font-semibold text-white/70 hidden md:block">{dateStr} &bull; {dayStr} | {timeStr}</span>
       </div>
 
