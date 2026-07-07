@@ -490,10 +490,10 @@ function ProvinceChoropleth({
         const count = provinceCounts.get(name) ?? 0;
         return {
           fillColor: getColor(count),
-          weight: 1,
-          opacity: 0.6,
-          color: "rgba(148,163,184,0.3)",
-          fillOpacity: count > 0 ? 0.7 : 0.2,
+          weight: 1.5,
+          opacity: 0.8,
+          color: "rgba(148,163,184,0.5)",
+          fillOpacity: count > 0 ? 0.7 : 0.25,
         };
       }}
       onEachFeature={(feature, layer) => {
@@ -520,9 +520,9 @@ function KabupatenGeoJson({ geoJsonData }: { geoJsonData: FeatureCollection | nu
       data={geoJsonData}
       style={() => ({
         fillColor: "transparent",
-        weight: 0.5,
-        opacity: 0.4,
-        color: "rgba(148,163,184,0.35)",
+        weight: 0.8,
+        opacity: 0.5,
+        color: "rgba(148,163,184,0.45)",
         fillOpacity: 0,
       })}
     />
@@ -702,83 +702,6 @@ function KabupatenLabels({ jakartaGeoJson }: { jakartaGeoJson: FeatureCollection
   );
 }
 
-/* ---------- Tier Legend Card ---------- */
-function TierLegend({ creators, onBack }: { creators: Creator[]; onBack?: () => void }) {
-  const tiers: { label: string; color: string; min: number; max: number }[] = [
-    { label: "Amplifier", color: "#94A3B8", min: 0, max: 999 },
-    { label: "Nano", color: "#7c3aed", min: 1000, max: 9999 },
-    { label: "Micro", color: "#3b82f6", min: 10000, max: 99999 },
-    { label: "Macro", color: "#f97316", min: 100000, max: 999999 },
-    { label: "Mega", color: "#ef4444", min: 1000000, max: Infinity },
-  ];
-
-  const counts = useMemo(() => {
-    const result: Record<string, number> = { Amplifier: 0, Nano: 0, Micro: 0, Macro: 0, Mega: 0 };
-    for (const c of creators) {
-      const t = getTier(c.followers);
-      result[t] = (result[t] ?? 0) + 1;
-    }
-    return result;
-  }, [creators]);
-
-  const total = creators.length;
-
-  return (
-    <div
-      className="absolute z-[1000]"
-      style={{
-        top: 16,
-        right: 16,
-        background: "rgba(15,23,42,0.92)",
-        borderRadius: 12,
-        padding: "12px 16px",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
-        backdropFilter: "blur(12px)",
-        border: "1px solid rgba(255,255,255,0.1)",
-        fontFamily: "'Plus Jakarta Sans', Inter, sans-serif",
-      }}
-    >
-      <div style={{ fontWeight: 800, fontSize: 12, color: "#F1F5F9", marginBottom: 8, textAlign: "center" }}>Legend</div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px 20px" }}>
-        {tiers.slice(0, 3).map((t) => (
-          <div key={t.label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-            <div style={{
-              width: 8, height: 8, borderRadius: "50%", flexShrink: 0,
-              background: t.color,
-              boxShadow: `0 0 5px ${t.color}66`,
-            }} />
-            <span style={{ fontSize: 11, color: "#E2E8F0", fontWeight: 600, minWidth: 56 }}>{t.label}</span>
-            <span style={{ fontSize: 11, color: "#94A3B8", fontWeight: 500 }}>{(counts[t.label] ?? 0).toLocaleString()}</span>
-          </div>
-        ))}
-        {tiers.slice(3).map((t) => (
-          <div key={t.label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-            <div style={{
-              width: 8, height: 8, borderRadius: "50%", flexShrink: 0,
-              background: t.color,
-              boxShadow: `0 0 5px ${t.color}66`,
-            }} />
-            <span style={{ fontSize: 11, color: "#E2E8F0", fontWeight: 600, minWidth: 56 }}>{t.label}</span>
-            <span style={{ fontSize: 11, color: "#94A3B8", fontWeight: 500 }}>{(counts[t.label] ?? 0).toLocaleString()}</span>
-          </div>
-        ))}
-      </div>
-      <div style={{ marginTop: 8, paddingTop: 6, borderTop: "1px solid rgba(255,255,255,0.1)", fontSize: 11, fontWeight: 700, color: "#F1F5F9", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <span>Total: {total.toLocaleString()}</span>
-        {onBack && (
-          <button
-            type="button"
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onBack(); }}
-            style={{ fontSize: 10, fontWeight: 600, color: "#3B82F6", background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.2)", borderRadius: 6, padding: "2px 8px", cursor: "pointer", position: "relative", zIndex: 1001 }}
-          >
-            ← Back
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
-
 function MapViewController({ center, zoom, province }: { center: [number, number]; zoom: number; province?: string | null }) {
   const map = useMap();
   useEffect(() => {
@@ -936,7 +859,6 @@ export default function ServiceHub() {
   const [kabupatenGeoJson, setKabupatenGeoJson] = useState<FeatureCollection | null>(null);
   const [jakartaGeoJson, setJakartaGeoJson] = useState<FeatureCollection | null>(null);
   const [allCreators, setAllCreators] = useState<Creator[]>([]);
-  const [loadingCreators, setLoadingCreators] = useState(true);
 
   const [filterProvince, setFilterProvince] = useState<string>("all");
   const [filterPlatform, setFilterPlatform] = useState<string>("all");
@@ -947,13 +869,10 @@ export default function ServiceHub() {
   useEffect(() => {
     let cancelled = false;
     async function fetchAll() {
-      setLoadingCreators(true);
       try {
         const res = await creatorsApi.list({ page: 1, pageSize: 50000, verified: true });
-        if (!cancelled) { setAllCreators(res.data); setLoadingCreators(false); }
-      } catch {
-        if (!cancelled) setLoadingCreators(false);
-      }
+        if (!cancelled) setAllCreators(res.data);
+      } catch {}
     }
     fetchAll();
     return () => { cancelled = true; };
@@ -1263,19 +1182,6 @@ export default function ServiceHub() {
                 )
               )}
             </MapContainer>
-
-            {/* Loading overlay */}
-            {loadingCreators && (
-              <div className="absolute inset-0 z-[1001] flex items-center justify-center" style={{ background: "rgba(7,11,20,0.7)" }}>
-                <div className="flex items-center gap-2 text-sm font-semibold" style={{ color: "var(--ch-text-muted)" }}>
-                  <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
-                  Loading creators...
-                </div>
-              </div>
-            )}
-
-            {/* Tier legend */}
-            <TierLegend creators={selectedProvince ? selectedProvCreators : filteredCreators} onBack={selectedProvince ? () => setFilterProvince("all") : undefined} />
           </div>
 
         {/* Bottom analytics inside same card */}
