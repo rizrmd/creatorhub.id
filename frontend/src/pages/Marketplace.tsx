@@ -1823,7 +1823,7 @@ export default function Marketplace() {
             <Input
               ref={searchRef}
               placeholder="Find Creators..."
-              className="pl-9 bg-[#0C1524] text-slate-300 border-white/10"
+              className="pl-9 !h-auto !py-2 !text-[13px] !rounded-lg bg-[#0C1524] !text-slate-300 !border-white/10"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -2083,7 +2083,7 @@ export default function Marketplace() {
             {/* Search */}
             <div className="relative max-w-sm w-full">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <Input placeholder="Cari media nasional..." value={idnSearch} onChange={(e) => setIdnSearch(e.target.value)} className="pl-9 bg-[#0C1524] text-slate-300 border-white/10" />
+              <Input placeholder="Cari media nasional..." value={idnSearch} onChange={(e) => setIdnSearch(e.target.value)} className="pl-9 !h-auto !py-2 !text-[13px] !rounded-lg bg-[#0C1524] !text-slate-300 !border-white/10" />
             </div>
 
             {/* Table */}
