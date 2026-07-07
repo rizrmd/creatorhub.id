@@ -281,8 +281,7 @@ export default function MediaMonitoring() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         {/* Tab Header */}
-        <div className="px-4 pt-3 pb-0" style={{ background: "#0B1120" }}>
-          <div className="flex items-center gap-0 rounded-2xl overflow-hidden" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
+        <div className="flex items-center gap-0 rounded-2xl overflow-hidden" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
             {tabItems.map((tab, i) => {
               const isActive = activeTab === tab.value;
               const TabIcon = tab.icon;
@@ -305,7 +304,6 @@ export default function MediaMonitoring() {
             );
           })}
           </div>
-        </div>
 
         {/* Tab: Setup */}
         <TabsContent value="setup" className="mt-5">
