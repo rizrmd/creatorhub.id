@@ -462,38 +462,23 @@ function ProvinceChoropleth({
 }) {
   const map = useMap();
   const layerRef = useRef<any>(null);
-  const maxCount = useMemo(() => Math.max(...Array.from(provinceCounts.values()), 1), [provinceCounts]);
-
   useEffect(() => {
     map.setView([-2.5, 118.0], 5);
   }, [map, geoJsonData]);
 
   if (!geoJsonData) return null;
 
-  function getColor(count: number): string {
-    const ratio = count / maxCount;
-    if (ratio > 0.7) return "#1e40af";
-    if (ratio > 0.5) return "#2563eb";
-    if (ratio > 0.3) return "#3b82f6";
-    if (ratio > 0.1) return "#60a5fa";
-    if (ratio > 0) return "#93c5fd";
-    return "rgba(30,41,59,0.3)";
-  }
-
   return (
     <GeoJSON
       data={geoJsonData}
       ref={layerRef}
-      style={(feature) => {
-        if (!feature) return {};
-        const name = feature.properties?.NAME_1 || "";
-        const count = provinceCounts.get(name) ?? 0;
+      style={() => {
         return {
-          fillColor: getColor(count),
-          weight: 2,
-          opacity: 0.9,
-          color: "rgba(100,116,139,0.6)",
-          fillOpacity: count > 0 ? 0.65 : 0.15,
+          fillColor: "transparent",
+          weight: 1.5,
+          opacity: 0.7,
+          color: "rgba(100,116,139,0.5)",
+          fillOpacity: 0,
         };
       }}
       onEachFeature={(feature, layer) => {
