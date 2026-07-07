@@ -511,47 +511,6 @@ function ProvinceChoropleth({
   );
 }
 
-/* ---------- Province Name Labels ---------- */
-function ProvinceLabels({ geoJsonData }: { geoJsonData: FeatureCollection | null }) {
-  const labels = useMemo(() => {
-    if (!geoJsonData) return [];
-    return geoJsonData.features.map((f) => {
-      const name = f.properties?.NAME_1 || "";
-      const centroid = computeCentroid(f.geometry);
-      return { name, centroid };
-    }).filter((l) => l.centroid && l.name);
-  }, [geoJsonData]);
-
-  return (
-    <>
-      {labels.map((l) => (
-        <Marker
-          key={l.name}
-          position={l.centroid!}
-          icon={L.divIcon({
-            className: "",
-            iconSize: [200, 30],
-            iconAnchor: [100, 15],
-            html: `<div style="
-              color: white;
-              font-size: 12px;
-              font-weight: 800;
-              font-family: 'Plus Jakarta Sans', Inter, sans-serif;
-              text-shadow: 0 0 8px rgba(0,0,0,1), 0 0 4px rgba(0,0,0,1), 2px 2px 6px rgba(0,0,0,0.95), -1px -1px 4px rgba(0,0,0,0.95);
-              white-space: nowrap;
-              display: block;
-              text-align: center;
-              pointer-events: none;
-              letter-spacing: 0.4px;
-              width: 200px;
-            ">${l.name}</div>`,
-          })}
-        />
-      ))}
-    </>
-  );
-}
-
 /* ---------- Jakarta Region Choropleth ---------- */
 function JakartaRegions({
   jakartaGeoJson,
@@ -1217,7 +1176,6 @@ export default function ServiceHub() {
                           provinceCounts={provinceCounts}
                           onProvinceClick={setSelectedProvince}
                         />
-                        <ProvinceLabels geoJsonData={provinceGeoJson} />
                       </>
                     )
                   )}
@@ -1231,7 +1189,6 @@ export default function ServiceHub() {
                       provinceCounts={provinceCounts}
                       onProvinceClick={setSelectedProvince}
                     />
-                    <ProvinceLabels geoJsonData={provinceGeoJson} />
                   </>
                 )
               )}
