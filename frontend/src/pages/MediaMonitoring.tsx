@@ -316,13 +316,13 @@ export default function MediaMonitoring() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <label className="text-[13px] font-semibold" style={labelStyle}>Primary Keyword <span className="text-red-500">*</span></label>
-                      <input type="text" value={primaryKeyword} onChange={(e) => setPrimaryKeyword(e.target.value)} className="w-full px-3 py-2 text-[13px] rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[var(--ch-surface)] text-[var(--ch-text)]" />
+                      <input type="text" value={primaryKeyword} onChange={(e) => setPrimaryKeyword(e.target.value)} className="w-full px-3 py-2 text-[13px] rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[#1E293B] text-slate-200 border border-white/10" />
                       <p className="text-[11px]" style={mutedStyle}>The main keyword you want to monitor.</p>
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[13px] font-semibold" style={labelStyle}>Language</label>
                       <div className="relative">
-                        <select value={language} onChange={(e) => setLanguage(e.target.value)} className="w-full px-3 py-2 text-[13px] rounded-lg appearance-none pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[var(--ch-surface)] text-[var(--ch-text)]">
+                        <select value={language} onChange={(e) => setLanguage(e.target.value)} className="w-full px-3 py-2 text-[13px] rounded-lg appearance-none pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[#1E293B] text-slate-200 border border-white/10">
                           <option>Indonesian</option><option>English</option><option>Malay</option>
                         </select>
                         <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={mutedStyle} />
@@ -340,7 +340,7 @@ export default function MediaMonitoring() {
                       ))}
                     </div>
                     <div className="flex items-center gap-2">
-                      <input type="text" value={includeInput} onChange={(e) => setIncludeInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addIncludeKeyword(); } }} placeholder="Type a keyword and press Add" className="flex-1 px-3 py-2 text-[13px] rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[var(--ch-surface)] text-[var(--ch-text)]" />
+                      <input type="text" value={includeInput} onChange={(e) => setIncludeInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addIncludeKeyword(); } }} placeholder="Type a keyword and press Add" className="flex-1 px-3 py-2 text-[13px] rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[#1E293B] text-slate-200 border border-white/10" />
                       <button onClick={addIncludeKeyword} className="px-4 py-2 text-[12px] font-semibold rounded-lg text-white transition-colors hover:opacity-90" style={{ background: "var(--ch-orange)" }}>Add</button>
                     </div>
                     <p className="text-[11px]" style={mutedStyle}>Add one keyword then press comma before pressing Add.</p>
@@ -356,7 +356,7 @@ export default function MediaMonitoring() {
                       ))}
                     </div>
                     <div className="flex items-center gap-2">
-                      <input type="text" value={excludeInput} onChange={(e) => setExcludeInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addExcludeKeyword(); } }} placeholder="Type a keyword and press Add" className="flex-1 px-3 py-2 text-[13px] rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[var(--ch-surface)] text-[var(--ch-text)]" />
+                      <input type="text" value={excludeInput} onChange={(e) => setExcludeInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addExcludeKeyword(); } }} placeholder="Type a keyword and press Add" className="flex-1 px-3 py-2 text-[13px] rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[#1E293B] text-slate-200 border border-white/10" />
                       <button onClick={addExcludeKeyword} className="px-4 py-2 text-[12px] font-semibold rounded-lg text-white transition-colors hover:opacity-90" style={{ background: "var(--ch-orange)" }}>Add</button>
                     </div>
                     <p className="text-[11px]" style={mutedStyle}>Add one keyword then press comma before pressing Add.</p>
@@ -364,7 +364,7 @@ export default function MediaMonitoring() {
 
                   <div className="space-y-1.5">
                     <label className="text-[13px] font-semibold" style={labelStyle}>Monitoring Name</label>
-                    <input type="text" value={monitoringName} onChange={(e) => setMonitoringName(e.target.value)} className="w-full px-3 py-2 text-[13px] rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[var(--ch-surface)] text-[var(--ch-text)]" />
+                    <input type="text" value={monitoringName} onChange={(e) => setMonitoringName(e.target.value)} className="w-full px-3 py-2 text-[13px] rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[#1E293B] text-slate-200 border border-white/10" />
                     <p className="text-[11px]" style={mutedStyle}>Give your monitoring a recognizable name.</p>
                   </div>
 
@@ -407,7 +407,7 @@ export default function MediaMonitoring() {
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-medium" style={mutedStyle}>Crawl Frequency</label>
                     <div className="relative">
-                      <select value={crawlFrequency} onChange={(e) => setCrawlFrequency(e.target.value)} className="w-full px-3 py-2 text-[13px] rounded-lg appearance-none pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[var(--ch-surface)] text-[var(--ch-text)]">
+                      <select value={crawlFrequency} onChange={(e) => setCrawlFrequency(e.target.value)} className="w-full px-3 py-2 text-[13px] rounded-lg appearance-none pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[#1E293B] text-slate-200 border border-white/10">
                         <option>Real-time</option><option>Hourly</option><option>Daily</option><option>Weekly</option>
                       </select>
                       <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={mutedStyle} />
@@ -416,7 +416,7 @@ export default function MediaMonitoring() {
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-medium" style={mutedStyle}>Historical Data</label>
                     <div className="relative">
-                      <select value={historicalData} onChange={(e) => setHistoricalData(e.target.value)} className="w-full px-3 py-2 text-[13px] rounded-lg appearance-none pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[var(--ch-surface)] text-[var(--ch-text)]">
+                      <select value={historicalData} onChange={(e) => setHistoricalData(e.target.value)} className="w-full px-3 py-2 text-[13px] rounded-lg appearance-none pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[#1E293B] text-slate-200 border border-white/10">
                         <option>Last 7 Days</option><option>Last 30 Days</option><option>Last 90 Days</option><option>All Time</option>
                       </select>
                       <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={mutedStyle} />
@@ -434,11 +434,11 @@ export default function MediaMonitoring() {
             <div className="flex flex-wrap items-center gap-3">
               <div className="relative flex-1 min-w-[200px] max-w-xs">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={mutedStyle} />
-                <input type="text" placeholder="Search mentions..." className="w-full pl-9 pr-3 py-2 text-[13px] rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[var(--ch-surface)] text-[var(--ch-text)]" />
+                <input type="text" placeholder="Search mentions..." className="w-full pl-9 pr-3 py-2 text-[13px] rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[#1E293B] text-slate-200 border border-white/10" />
               </div>
               {[platforms, mentionTypes, sentimentTypes, impactLevels].map((opts, i) => (
                 <div key={i} className="relative">
-                  <select className="px-3 py-2 text-[12px] font-medium rounded-lg appearance-none pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[var(--ch-surface)] text-[var(--ch-text)]">
+                  <select className="px-3 py-2 text-[12px] font-medium rounded-lg appearance-none pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500 bg-[#1E293B] text-slate-200 border border-white/10">
                     {opts.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
                   </select>
                   <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={mutedStyle} />
