@@ -1,8 +1,7 @@
 ﻿import { useState, useEffect, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Users, MapPin, Share2, Tag, BarChart3, UsersRound, ChevronDown } from "lucide-react";
-import { MapContainer, TileLayer, GeoJSON, Marker, useMap } from "react-leaflet";
-import L from "leaflet";
+import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
 import type { FeatureCollection } from "geojson";
 import * as topojson from "topojson-client";
 import { PieChart, Pie, Cell, Tooltip as RechartsTooltip } from "recharts";
@@ -402,22 +401,6 @@ function getProvince(name: string): string {
   return name;
 }
 
-function computeCentroid(geometry: any): [number, number] | null {
-  if (!geometry) return null;
-  let allCoords: number[][] = [];
-  if (geometry.type === "Polygon") {
-    allCoords = geometry.coordinates[0];
-  } else if (geometry.type === "MultiPolygon") {
-    for (const polygon of geometry.coordinates) {
-      allCoords = allCoords.concat(polygon[0]);
-    }
-  }
-  if (!allCoords || allCoords.length === 0) return null;
-  let sumLng = 0, sumLat = 0;
-  for (const c of allCoords) { sumLng += c[0]; sumLat += c[1]; }
-  return [sumLat / allCoords.length, sumLng / allCoords.length];
-}
-
 function seededRandom(seed: number): () => number {
   let s = seed;
   return () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
@@ -511,48 +494,6 @@ function KabupatenGeoJson({ geoJsonData }: { geoJsonData: FeatureCollection | nu
         fillOpacity: 0,
       })}
     />
-  );
-}
-
-/* ---------- Province Name Labels ---------- */
-function ProvinceLabels({ geoJsonData }: { geoJsonData: FeatureCollection | null }) {
-  const labels = useMemo(() => {
-    if (!geoJsonData) return [];
-    return geoJsonData.features.map((f) => {
-      const name = f.properties?.NAME_1 || "";
-      const centroid = computeCentroid(f.geometry);
-      return { name, centroid };
-    }).filter((l) => l.centroid && l.name);
-  }, [geoJsonData]);
-
-  return (
-    <>
-      {labels.map((l) => (
-        <Marker
-          key={l.name}
-          position={l.centroid!}
-          icon={L.divIcon({
-            className: "",
-            iconSize: [200, 30],
-            iconAnchor: [100, 15],
-            html: `<div style="
-              color: #CBD5E1;
-              font-size: 11px;
-              font-weight: 700;
-              font-family: 'Plus Jakarta Sans', Inter, sans-serif;
-              text-shadow: 0 1px 4px rgba(0,0,0,0.95), 0 0 10px rgba(0,0,0,0.8);
-              white-space: nowrap;
-              display: block;
-              text-align: center;
-              pointer-events: none;
-              letter-spacing: 0.5px;
-              width: 200px;
-              opacity: 0.9;
-            ">${l.name}</div>`,
-          })}
-        />
-      ))}
-    </>
   );
 }
 
@@ -1095,7 +1036,6 @@ export default function ServiceHub() {
                           provinceCounts={provinceCounts}
                           onProvinceClick={setSelectedProvince}
                         />
-                        <ProvinceLabels geoJsonData={provinceGeoJson} />
                         {kabupatenGeoJson && <KabupatenGeoJson geoJsonData={kabupatenGeoJson} />}
                       </>
                     )
@@ -1109,7 +1049,6 @@ export default function ServiceHub() {
                       provinceCounts={provinceCounts}
                       onProvinceClick={setSelectedProvince}
                     />
-                    <ProvinceLabels geoJsonData={provinceGeoJson} />
                     {kabupatenGeoJson && <KabupatenGeoJson geoJsonData={kabupatenGeoJson} />}
                   </>
                 )
