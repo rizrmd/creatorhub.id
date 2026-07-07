@@ -68,7 +68,7 @@ export default function Login() {
 
         {/* Logo */}
         <div className="relative flex items-center gap-3">
-          <img src="/favicon.png?v=10" alt="CreatorHub" className="h-11 w-11" />
+          <img src="/favicon.png?v=11" alt="CreatorHub" className="h-11 w-11" />
           <span className="text-2xl font-extrabold text-white tracking-tight"
             style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             CreatorHub.ID
@@ -120,7 +120,7 @@ export default function Login() {
         <div className="w-full max-w-[400px]">
           {/* Mobile logo */}
           <div className="flex items-center justify-center gap-2.5 mb-8 lg:hidden">
-            <img src="/favicon.png?v=10" alt="CreatorHub" className="h-10 w-10" />
+            <img src="/favicon.png?v=11" alt="CreatorHub" className="h-10 w-10" />
             <span className="text-xl font-extrabold text-white tracking-tight"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
               CreatorHub.ID
