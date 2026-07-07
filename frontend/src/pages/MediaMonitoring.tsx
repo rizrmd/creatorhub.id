@@ -4,8 +4,8 @@ import {
   Search, X, ChevronDown, ExternalLink,
   Heart, MessageCircle, Eye, Share2, Play,
   CheckCircle, Info, Edit3, ThumbsUp, Minus, ThumbsDown,
-  Sparkles, Globe, TrendingUp, Layers, Shield, Download,
-  PieChart, Clock,
+  Sparkles, Globe, Layers, Shield, Download,
+  PieChart,
 } from "lucide-react";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 
@@ -247,9 +247,6 @@ export default function MediaMonitoring() {
     { value: "summary", icon: BarChart3, label: "Summary" },
     { value: "dataset", icon: FileText, label: "Dataset" },
     { value: "landscape", icon: Globe, label: "Conversation Landscape" },
-    { value: "sentiment", icon: TrendingUp, label: "General vs Substantive Sentiment" },
-    { value: "sentiment-heatmap", icon: Flame, label: "Sentiment Heatmap per Issue" },
-    { value: "social-heatmap", icon: Clock, label: "Social Conversation Heatmap" },
     { value: "risk-map", icon: Shield, label: "Public Issue Risk Map" },
   ];
 
@@ -1037,88 +1034,6 @@ export default function MediaMonitoring() {
                           </div>
                           <span className="text-[11px] shrink-0" style={mutedStyle}>{b.sentiment}</span>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* General vs Substantive Sentiment */}
-              {analysisTab === "sentiment" && (
-                <div className="space-y-6">
-                  <h2 className="text-[18px] font-bold" style={labelStyle}>General vs Substantive Sentiment</h2>
-                  <div className="rounded-xl p-6" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
-                    <div className="flex items-center gap-4 mb-4">
-                      <span className="flex items-center gap-1.5 text-[11px]" style={mutedStyle}><span className="w-3 h-3 rounded" style={{ background: "#64748B" }} /> General Sentiment</span>
-                      <span className="flex items-center gap-1.5 text-[11px]" style={mutedStyle}><span className="w-3 h-3 rounded" style={{ background: "var(--ch-orange)" }} /> Substantive Sentiment</span>
-                    </div>
-                    <div className="space-y-4">
-                      {[{ issue: "Traffic Congestion", general: 65, substantive: 82 }, { issue: "Flooding", general: 45, substantive: 78 }, { issue: "Protests", general: 30, substantive: 88 }, { issue: "Fires", general: 20, substantive: 65 }, { issue: "Accidents", general: 35, substantive: 72 }].map((s) => (
-                        <div key={s.issue} className="space-y-1.5">
-                          <div className="flex items-center justify-between">
-                            <span className="text-[12px] font-semibold" style={labelStyle}>{s.issue}</span>
-                            <span className="text-[11px]" style={mutedStyle}>General: {s.general}% · Substantive: {s.substantive}%</span>
-                          </div>
-                          <div className="flex gap-1 h-5">
-                            <div className="rounded" style={{ width: `${s.general}%`, background: "#64748B" }} />
-                            <div className="rounded" style={{ width: `${s.substantive}%`, background: "var(--ch-orange)" }} />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Sentiment Heatmap per Issue */}
-              {analysisTab === "sentiment-heatmap" && (
-                <div className="space-y-6">
-                  <h2 className="text-[18px] font-bold" style={labelStyle}>Sentiment Heatmap per Issue</h2>
-                  <div className="rounded-xl p-6" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
-                    <div className="grid grid-cols-4 gap-2 text-[11px]">
-                      <div />
-                      <div className="text-center font-semibold py-2" style={{ color: "#22C55E" }}>Positive</div>
-                      <div className="text-center font-semibold py-2" style={{ color: "#94A3B8" }}>Neutral</div>
-                      <div className="text-center font-semibold py-2" style={{ color: "#EF4444" }}>Negative</div>
-                      {[
-                        { issue: "Traffic", pos: 15, neu: 25, neg: 60 },
-                        { issue: "Flooding", pos: 10, neu: 20, neg: 70 },
-                        { issue: "Protests", pos: 8, neu: 15, neg: 77 },
-                        { issue: "Fires", pos: 5, neu: 30, neg: 65 },
-                        { issue: "Accidents", pos: 12, neu: 22, neg: 66 },
-                      ].map((r) => (
-                        <React.Fragment key={r.issue}>
-                          <div className="flex items-center font-semibold py-3" style={labelStyle}>{r.issue}</div>
-                          <div className="flex items-center justify-center py-3 rounded-lg font-bold" style={{ background: `rgba(34,197,94,${r.pos / 100})`, color: r.pos > 30 ? "white" : "#4ADE80" }}>{r.pos}%</div>
-                          <div className="flex items-center justify-center py-3 rounded-lg font-bold" style={{ background: `rgba(148,163,184,${r.neu / 100})`, color: r.neu > 30 ? "white" : "#CBD5E1" }}>{r.neu}%</div>
-                          <div className="flex items-center justify-center py-3 rounded-lg font-bold" style={{ background: `rgba(239,68,68,${r.neg / 100})`, color: r.neg > 30 ? "white" : "#FCA5A5" }}>{r.neg}%</div>
-                        </React.Fragment>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Social Conversation Heatmap */}
-              {analysisTab === "social-heatmap" && (
-                <div className="space-y-6">
-                  <h2 className="text-[18px] font-bold" style={labelStyle}>Social Conversation Heatmap</h2>
-                  <div className="rounded-xl p-6" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
-                    <div className="grid grid-cols-8 gap-1 text-[10px]">
-                      <div />
-                      {["06:00", "09:00", "12:00", "15:00", "18:00", "21:00", "00:00"].map((h) => (
-                        <div key={h} className="text-center py-1" style={mutedStyle}>{h}</div>
-                      ))}
-                      {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
-                        <React.Fragment key={day}>
-                          <div className="flex items-center font-semibold" style={labelStyle}>{day}</div>
-                          {[30, 75, 45, 60, 90, 40, 25, 15].map((v, i) => (
-                            <div key={i} className="h-8 rounded flex items-center justify-center text-[9px] font-bold"
-                              style={{ background: `rgba(249,115,22,${v / 100})`, color: v > 50 ? "white" : "var(--ch-text-muted)" }}>
-                              {v}
-                            </div>
-                          ))}
-                        </React.Fragment>
                       ))}
                     </div>
                   </div>
