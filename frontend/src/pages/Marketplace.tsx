@@ -1862,14 +1862,14 @@ export default function Marketplace() {
         <div className="px-3 sm:px-4 py-2 flex flex-wrap items-center gap-2" style={{ background: "#182337" }}>
           <button
             onClick={() => setShowFavorites(!showFavorites)}
-            className={`flex items-center gap-2 h-9 pl-1.5 pr-3 rounded-md text-[13px] font-medium border transition-all ${
+            className={`mp-platform-btn flex items-center gap-2 h-9 pl-1.5 pr-3 rounded-lg text-[13px] font-medium border transition-all duration-200 cursor-pointer ${
               showFavorites
-                ? "border-orange-500/50 text-white"
-                : "border-white/10 text-slate-400 hover:border-white/20 hover:text-slate-300"
+                ? "text-white"
+                : "hover:text-slate-200"
             }`}
             style={showFavorites
               ? { background: "var(--ch-orange)", borderColor: "var(--ch-orange)" }
-              : { background: "var(--ch-surface)" }
+              : { background: "#0F1B2D", borderColor: "#2A3850", color: "#8B96AA" }
             }
           >
             <span className="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style={{ background: "#E11D48" }}>
@@ -1896,14 +1896,14 @@ export default function Marketplace() {
               <button
                 key={plat.id}
                 onClick={() => togglePlatform(plat.id)}
-                className={`flex items-center gap-2 h-9 pl-1.5 pr-3 rounded-md text-[13px] font-medium border transition-all ${
+                className={`mp-platform-btn flex items-center gap-2 h-9 pl-1.5 pr-3 rounded-lg text-[13px] font-medium border transition-all duration-200 cursor-pointer ${
                   active
-                    ? "border-orange-500/50 text-white"
-                    : "border-white/10 text-slate-400 hover:border-white/20 hover:text-slate-300"
+                    ? "text-white"
+                    : "hover:text-slate-200"
                 }`}
                 style={active
                   ? { background: "var(--ch-orange)", borderColor: "var(--ch-orange)" }
-                  : { background: "var(--ch-surface)" }
+                  : { background: "#0F1B2D", borderColor: "#2A3850", color: "#8B96AA" }
                 }
               >
                 <span
@@ -1919,8 +1919,8 @@ export default function Marketplace() {
 
           <button
             onClick={resetFilters}
-            className="flex items-center gap-2 h-9 pl-1.5 pr-3 rounded-md text-[13px] font-medium border border-white/10 text-slate-400 hover:border-white/20 hover:text-slate-300 transition-all cursor-pointer"
-            style={{ background: "var(--ch-surface)" }}
+            className="mp-platform-btn flex items-center gap-2 h-9 pl-1.5 pr-3 rounded-lg text-[13px] font-medium border transition-all duration-200 cursor-pointer hover:text-slate-200"
+            style={{ background: "#0F1B2D", borderColor: "#2A3850", color: "#8B96AA" }}
           >
             <span className="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style={{ background: "#475569" }}>
               <RotateCcw className="w-3.5 h-3.5 text-white" />

@@ -216,3 +216,8 @@
 .mp-filter-select [data-slot="select-trigger"]:focus {
   border-color: #FF7A1A !important;
 }
+.mp-platform-btn:hover {
+  background: #142236 !important;
+  border-color: #FF7A1A !important;
+  color: #E5EAF3 !important;
+}
