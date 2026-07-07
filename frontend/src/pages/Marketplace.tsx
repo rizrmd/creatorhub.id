@@ -1820,13 +1820,7 @@ export default function Marketplace() {
         <div className="px-3 sm:px-4 pt-3 pb-2 bg-[#0B1120] flex flex-wrap items-center gap-2">
           <div className="relative w-full sm:flex-1 sm:min-w-48">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <Input
-              ref={searchRef}
-              placeholder="Find Creators..."
-              className="pl-9 !h-auto !py-2 !text-[13px] !rounded-lg bg-[#0C1524] !text-slate-300 !border-white/10"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+              <Input ref={searchRef} placeholder="Find Creators..." className="pl-9 bg-[#0F172A]" value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
 
           <Select value={followersVal} onValueChange={applyFollowers}>
@@ -2083,7 +2077,7 @@ export default function Marketplace() {
             {/* Search */}
             <div className="relative max-w-sm w-full">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <Input placeholder="Cari media nasional..." value={idnSearch} onChange={(e) => setIdnSearch(e.target.value)} className="pl-9 !h-auto !py-2 !text-[13px] !rounded-lg bg-[#0C1524] !text-slate-300 !border-white/10" />
+              <Input placeholder="Cari media nasional..." value={idnSearch} onChange={(e) => setIdnSearch(e.target.value)} className="pl-9 bg-[#0F172A]" />
             </div>
 
             {/* Table */}
