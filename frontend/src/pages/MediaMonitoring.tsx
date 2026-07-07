@@ -4,7 +4,7 @@ import {
   Search, X, ChevronDown, ExternalLink,
   Heart, MessageCircle, Eye, Share2, Play,
   CheckCircle, Info, Edit3, ThumbsUp, Minus, ThumbsDown,
-  Sparkles, Globe, Layers, Shield, Download,
+  Sparkles, Globe, Layers, Shield,
   PieChart,
 } from "lucide-react";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -237,7 +237,6 @@ export default function MediaMonitoring() {
     { value: "setup", icon: Settings, label: "Setup" },
     { value: "mentions", icon: MessageSquare, label: "Mentions" },
     { value: "overview", icon: PieChart, label: "Overview" },
-    { value: "dataset", icon: FileText, label: "Dataset" },
     { value: "analysis", icon: BarChart3, label: "Analysis" },
     { value: "clusters", icon: Layers, label: "Issue Clusters" },
     { value: "heatmap", icon: Flame, label: "Topical Heatmap" },
@@ -630,6 +629,30 @@ export default function MediaMonitoring() {
               </div>
             </div>
 
+            {/* Struktur Dataset */}
+            <div className="rounded-xl overflow-hidden" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
+              <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: "1px solid var(--ch-border)" }}>
+                <h3 className="text-[13px] font-bold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Struktur Dataset</h3>
+                <div className="w-16 h-0.5 rounded-full" style={{ background: "var(--ch-orange)" }} />
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4">
+                {[
+                  { platform: "TikTok", icon: "TT", count: "11.839", pct: "52,0%", bgColor: "#000" },
+                  { platform: "Facebook", icon: "FB", count: "2.098", pct: "9,2%", bgColor: "#1877F2" },
+                  { platform: "Instagram", icon: "IG", count: "5.774", pct: "25,3%", bgColor: "#E1306C" },
+                  { platform: "YouTube", icon: "YT", count: "3.074", pct: "13,5%", bgColor: "#FF0000" },
+                ].map((p) => (
+                  <div key={p.platform} className="rounded-xl p-4 text-center" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
+                    <span className="w-8 h-8 rounded-full inline-flex items-center justify-center text-[10px] font-bold text-white mb-2" style={{ background: p.bgColor }}>{p.icon}</span>
+                    <p className="text-[11px] font-medium" style={mutedStyle}>{p.platform}</p>
+                    <p className="text-[18px] font-bold mt-1" style={{ color: "var(--ch-text)" }}>{p.count}</p>
+                    <p className="text-[10px]" style={mutedStyle}>percakapan</p>
+                    <span className="inline-block mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold text-white" style={{ background: p.bgColor }}>{p.pct}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {/* Word Cloud + Hashtag Map + Share of Voice */}
             <div className="grid grid-cols-2 gap-4">
               <div className="rounded-xl overflow-hidden" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
@@ -716,135 +739,6 @@ export default function MediaMonitoring() {
                       <span className="text-[10px] font-bold" style={{ color: "var(--ch-orange)" }}>{item.pct}</span>
                     </div>
                   ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </TabsContent>
-
-        {/* Tab: Dataset */}
-        <TabsContent value="dataset" className="mt-5">
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-[18px] font-bold" style={labelStyle}>Struktur Dataset Gabungan</h2>
-              <button className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold rounded-lg" style={{ border: "1px solid var(--ch-border)", color: "var(--ch-text-muted)" }}>
-                <Download className="w-3.5 h-3.5" /> Export CSV
-              </button>
-            </div>
-
-            <div className="rounded-xl p-6" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="space-y-5">
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--ch-orange)" }}>
-                      <span className="text-[14px] font-bold text-white">01</span>
-                    </div>
-                    <div>
-                      <p className="text-[13px] leading-relaxed" style={{ color: "var(--ch-text)" }}>
-                        Dataset utama terdiri dari <span className="font-bold" style={{ color: "var(--ch-orange)" }}>23.077</span> percakapan publik lintas platform sebagai basis analisis terhadap keyword <span className="font-bold">'Jakarta'</span> dan kata kunci terkait.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--ch-orange)" }}>
-                      <span className="text-[14px] font-bold text-white">02</span>
-                    </div>
-                    <div>
-                      <p className="text-[13px] leading-relaxed" style={{ color: "var(--ch-text)" }}>
-                        Percakapan dihimpun dari hasil request pencarian data pada 4 platform utama: <span className="font-bold">TikTok 11.839 percakapan (52,0%)</span>, <span className="font-bold" style={{ color: "#1877F2" }}>Facebook 2.098 percakapan (9,2%)</span>, <span className="font-bold" style={{ color: "#E1306C" }}>Instagram 5.774 percakapan (25,3%)</span>, dan <span className="font-bold" style={{ color: "#FF0000" }}>YouTube 3.074 percakapan (13,5%)</span>.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "var(--ch-orange)" }}>
-                      <span className="text-[14px] font-bold text-white">03</span>
-                    </div>
-                    <div>
-                      <p className="text-[13px] leading-relaxed" style={{ color: "var(--ch-text)" }}>
-                        Dataset dihimpun berdasarkan konten publik yang relevan dengan keyword <span className="font-bold">'Jakarta'</span>, termasuk unggahan, komentar, caption, dan interaksi publik yang memiliki eksposur serta keterlibatan tinggi.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4">
-                    {[
-                      { platform: "TikTok", icon: "TT", count: "11.839", pct: "52,0%", bgColor: "#000" },
-                      { platform: "Facebook", icon: "FB", count: "2.098", pct: "9,2%", bgColor: "#1877F2" },
-                      { platform: "Instagram", icon: "IG", count: "5.774", pct: "25,3%", bgColor: "#E1306C" },
-                      { platform: "YouTube", icon: "YT", count: "3.074", pct: "13,5%", bgColor: "#FF0000" },
-                    ].map((p) => (
-                      <div key={p.platform} className="rounded-xl p-4 text-center" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
-                        <span className="w-8 h-8 rounded-full inline-flex items-center justify-center text-[10px] font-bold text-white mb-2" style={{ background: p.bgColor }}>{p.icon}</span>
-                        <p className="text-[11px] font-medium" style={mutedStyle}>{p.platform}</p>
-                        <p className="text-[18px] font-bold mt-1 text-white">{p.count}</p>
-                        <p className="text-[10px] text-white/60">percakapan</p>
-                        <span className="inline-block mt-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold text-white" style={{ background: p.bgColor }}>{p.pct}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="pt-5 mt-5" style={{ borderTop: "1px solid var(--ch-border)" }}>
-                    <p className="text-[12px] font-bold mb-3" style={labelStyle}>Sumber Penghimpunan Data</p>
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                      {[
-                        { icon: Search, label: "Request", sublabel: "Pencarian Data", color: "#3B82F6" },
-                        { icon: Globe, label: "Konten Publik", sublabel: "Lintas Platform", color: "#22C55E" },
-                        { icon: MessageSquare, label: "Percakapan Relevan", sublabel: "Keyword Jakarta", color: "#F97316" },
-                      ].map((step, i) => (
-                        <React.Fragment key={step.label}>
-                          <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
-                            <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: `${step.color}20` }}>
-                              <step.icon className="w-4 h-4" style={{ color: step.color }} />
-                            </div>
-                            <div>
-                              <span className="text-[11px] font-bold block" style={{ color: step.color }}>{step.label}</span>
-                              <span className="text-[9px] block" style={mutedStyle}>{step.sublabel}</span>
-                            </div>
-                          </div>
-                          {i < 2 && (
-                            <svg className="w-4 h-4 shrink-0" style={{ color: "var(--ch-text-muted)" }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                          )}
-                        </React.Fragment>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-col items-center justify-center">
-                  <div className="relative w-64 h-64">
-                    <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90">
-                      <circle cx="50" cy="50" r="35" fill="none" stroke="#000" strokeWidth="18" strokeDasharray="114.35 105.56" strokeDashoffset="0" />
-                      <circle cx="50" cy="50" r="35" fill="none" stroke="#E1306C" strokeWidth="18" strokeDasharray="55.64 164.27" strokeDashoffset="-114.35" />
-                      <circle cx="50" cy="50" r="35" fill="none" stroke="#FF0000" strokeWidth="18" strokeDasharray="29.69 190.22" strokeDashoffset="-170.00" />
-                      <circle cx="50" cy="50" r="35" fill="none" stroke="#1877F2" strokeWidth="18" strokeDasharray="20.23 199.68" strokeDashoffset="-199.69" />
-                    </svg>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-[28px] font-extrabold" style={{ color: "var(--ch-text)" }}>23.077</span>
-                      <span className="text-[10px] font-semibold uppercase tracking-wider" style={mutedStyle}>Percakapan Total</span>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3 mt-6 w-full max-w-xs">
-                    {[
-                      { platform: "TikTok", pct: "52,0%", color: "#000" },
-                      { platform: "Facebook", pct: "9,2%", color: "#1877F2" },
-                      { platform: "Instagram", pct: "25,3%", color: "#E1306C" },
-                      { platform: "YouTube", pct: "13,5%", color: "#FF0000" },
-                    ].map((l) => (
-                      <div key={l.platform} className="flex items-center gap-2">
-                        {l.color === "#000" ? (
-                          <span className="w-3 h-3 rounded-full shrink-0 border-2 border-white" style={{ background: l.color }} />
-                        ) : (
-                          <span className="w-3 h-3 rounded-full shrink-0" style={{ background: l.color }} />
-                        )}
-                        <span className="text-[12px] font-medium" style={labelStyle}>{l.platform}</span>
-                        <span className="text-[12px] font-bold ml-auto text-white">{l.pct}</span>
-                      </div>
-                    ))}
-                  </div>
                 </div>
               </div>
             </div>
