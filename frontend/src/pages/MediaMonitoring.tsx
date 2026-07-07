@@ -4,7 +4,7 @@ import {
   Search, X, ChevronDown, ExternalLink,
   Heart, MessageCircle, Eye, Share2, Play,
   CheckCircle, Info, Edit3, ThumbsUp, Minus, ThumbsDown,
-  Sparkles, Globe, TrendingUp, Layers, Shield, Radio, Download,
+  Sparkles, Globe, TrendingUp, Layers, Shield, Download,
   PieChart, Clock,
 } from "lucide-react";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -241,8 +241,6 @@ export default function MediaMonitoring() {
     { value: "clusters", icon: Layers, label: "Issue Clusters" },
     { value: "heatmap", icon: Flame, label: "Topical Heatmap" },
     { value: "reports", icon: FileText, label: "Reports" },
-    { value: "sources", icon: Radio, label: "Top Sources" },
-    { value: "wordcloud", icon: PieChart, label: "Wordcloud" },
   ];
 
   const analysisTabs = [
@@ -283,7 +281,7 @@ export default function MediaMonitoring() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         {/* Tab Header */}
-        <div className="px-4 pb-0" style={{ background: "#0B1120" }}>
+        <div className="px-4 pt-3 pb-0" style={{ background: "#0B1120" }}>
           <div className="flex items-center gap-0 rounded-2xl overflow-hidden" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)" }}>
             {tabItems.map((tab, i) => {
               const isActive = activeTab === tab.value;
@@ -1362,72 +1360,6 @@ export default function MediaMonitoring() {
               <FileText className="w-12 h-12 mx-auto" style={{ color: "var(--ch-border-strong)" }} />
               <p className="text-[14px] font-semibold" style={labelStyle}>Reports</p>
               <p className="text-[12px]" style={mutedStyle}>Coming soon — generate monitoring reports automatically.</p>
-            </div>
-          </div>
-        </TabsContent>
-
-        {/* Tab: Top Sources */}
-        <TabsContent value="sources" className="mt-5">
-          <div className="space-y-6">
-            <h2 className="text-[18px] font-bold" style={labelStyle}>Top Sources</h2>
-            <div className="rounded-xl p-5" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-              <div className="space-y-3">
-                {[
-                  { name: "Kompas TV", platform: "YouTube", reach: "12.1M", engagement: "4.2%", sentiment: "Negative", color: "#FF0000" },
-                  { name: "@infojakarta", platform: "X", reach: "5.4M", engagement: "3.8%", sentiment: "Negative", color: "#000" },
-                  { name: "MetroJakarta TV", platform: "YouTube", reach: "4.8M", engagement: "3.1%", sentiment: "Neutral", color: "#FF0000" },
-                  { name: "CNN Indonesia", platform: "YouTube", reach: "4.2M", engagement: "2.9%", sentiment: "Negative", color: "#FF0000" },
-                  { name: "@lambe_turah", platform: "Instagram", reach: "3.5M", engagement: "5.2%", sentiment: "Negative", color: "#E1306C" },
-                  { name: "TVOne News", platform: "YouTube", reach: "3.1M", engagement: "2.7%", sentiment: "Negative", color: "#FF0000" },
-                  { name: "@jaksel.info", platform: "Instagram", reach: "2.8M", engagement: "4.1%", sentiment: "Negative", color: "#E1306C" },
-                  { name: "@jakartakini", platform: "TikTok", reach: "2.4M", engagement: "6.8%", sentiment: "Negative", color: "#000" },
-                ].map((s, i) => (
-                  <div key={s.name} className="flex items-center gap-3 p-3 rounded-lg" style={{ background: "var(--ch-bg)", border: "1px solid var(--ch-border)" }}>
-                    <span className="text-[14px] font-bold w-6 text-center" style={mutedStyle}>{i + 1}</span>
-                    <span className="w-6 h-6 rounded-full flex items-center justify-center text-[7px] font-bold text-white shrink-0" style={{ background: s.color }}>{s.platform[0]}</span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[13px] font-semibold" style={labelStyle}>{s.name}</p>
-                      <p className="text-[11px]" style={mutedStyle}>{s.platform}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-[13px] font-bold" style={labelStyle}>{s.reach}</p>
-                      <p className="text-[10px]" style={mutedStyle}>{s.engagement} engagement</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </TabsContent>
-
-        {/* Tab: Wordcloud */}
-        <TabsContent value="wordcloud" className="mt-5">
-          <div className="space-y-6">
-            <h2 className="text-[18px] font-bold" style={labelStyle}>Wordcloud</h2>
-            <div className="rounded-xl p-8" style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-              <div className="flex flex-wrap items-center justify-center gap-3">
-                {[
-                  { word: "Jakarta", weight: 100 }, { word: "Macet", weight: 88 },
-                  { word: "Banjir", weight: 82 }, { word: "Transportasi", weight: 68 },
-                  { word: "Demo", weight: 62 }, { word: "Protes", weight: 55 },
-                  { word: "Kebakaran", weight: 50 }, { word: "Kecelakaan", weight: 45 },
-                  { word: "Kerusuhan", weight: 42 }, { word: "Cilandak", weight: 38 },
-                  { word: "Tebet", weight: 35 }, { word: "Kuningan", weight: 32 },
-                  { word: "Hujan", weight: 30 }, { word: "Banjir Rob", weight: 28 },
-                  { word: "Flyover", weight: 25 }, { word: "Drainase", weight: 22 },
-                  { word: "Contraflow", weight: 20 }, { word: "Evakuasi", weight: 18 },
-                  { word: "Lalu Lintas", weight: 40 }, { word: "Warga", weight: 36 },
-                ].map((w) => (
-                  <span key={w.word} className="font-bold transition-all hover:scale-110 cursor-default"
-                    style={{
-                      fontSize: `${Math.max(12, w.weight * 0.22)}px`,
-                      color: w.weight > 70 ? "var(--ch-orange)" : w.weight > 40 ? "var(--ch-text)" : "var(--ch-text-muted)",
-                      opacity: Math.max(0.5, w.weight / 100),
-                    }}>
-                    {w.word}
-                  </span>
-                ))}
-              </div>
             </div>
           </div>
         </TabsContent>
