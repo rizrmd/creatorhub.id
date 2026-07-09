@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
-import { Users, MapPin, Share2, Tag, BarChart3, UsersRound, ChevronDown, Mic } from "lucide-react";
+import { Users } from "lucide-react";
 import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
 import L from "leaflet";
 import type { FeatureCollection } from "geojson";
@@ -17,47 +17,6 @@ const GADM_NAME_TO_DISPLAY: Record<string, string> = {
   JakartaPusat: "Jakarta Pusat", JakartaSelatan: "Jakarta Selatan", JakartaBarat: "Jakarta Barat",
   JakartaTimur: "Jakarta Timur", JakartaUtara: "Jakarta Utara", KepulauanSeribu: "Kepulauan Seribu",
 };
-
-const PROVINCES_38 = [
-  "Aceh",
-  "Sumatera Utara",
-  "Sumatera Selatan",
-  "Sumatera Barat",
-  "Bengkulu",
-  "Riau",
-  "Kepulauan Riau",
-  "Jambi",
-  "Lampung",
-  "Kep. Bangka Belitung",
-  "Kalimantan Barat",
-  "Kalimantan Timur",
-  "Kalimantan Selatan",
-  "Kalimantan Tengah",
-  "Kalimantan Utara",
-  "Banten",
-  "DKI Jakarta",
-  "Jawa Barat",
-  "Jawa Tengah",
-  "DI Yogyakarta",
-  "Jawa Timur",
-  "Bali",
-  "Nusa Tenggara Timur",
-  "Nusa Tenggara Barat",
-  "Gorontalo",
-  "Sulawesi Barat",
-  "Sulawesi Tengah",
-  "Sulawesi Utara",
-  "Sulawesi Tenggara",
-  "Sulawesi Selatan",
-  "Maluku Utara",
-  "Maluku",
-  "Papua Barat",
-  "Papua",
-  "Papua Tengah",
-  "Papua Pegunungan",
-  "Papua Selatan",
-  "Papua Barat Daya",
-];
 
 const CITY_TO_PROVINCE: Record<string, string> = {
   // DKI Jakarta
@@ -703,7 +662,7 @@ function PodcastFacilityCards({ mapInstance, containerRef }: { mapInstance: L.Ma
       const pts = PODCAST_FACILITIES.map((f) => {
         const pt = mapInstance.latLngToContainerPoint([f.lat, f.lng]);
         return { f, x: pt.x, y: pt.y };
-      }      ).filter((p) => p.x > -220 && p.x < rect.width + 220 && p.y > -160 && p.y < rect.height + 160);
+      }).filter((p) => p.x > -120 && p.x < rect.width + 120 && p.y > -80 && p.y < rect.height + 80);
       setPositions(pts);
     };
     recalc();
@@ -879,34 +838,6 @@ function InsightsCard({ insights }: { insights: string[] }) {
   );
 }
 
-/* ---------- Filter Select ---------- */
-function FilterSelect({ icon, value, onChange, options }: {
-  icon: React.ReactNode;
-  value: string;
-  onChange: (v: string) => void;
-  options: { value: string; label: string }[];
-}) {
-  return (
-    <div className="relative">
-      <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-medium"
-        style={{ background: "var(--ch-surface)", border: "1px solid var(--ch-border)", color: value === "all" ? "var(--ch-text-muted)" : "#3B82F6" }}>
-        <span style={{ color: "#3B82F6" }}>{icon}</span>
-        <select
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="appearance-none bg-transparent outline-none cursor-pointer pr-1"
-          style={{ color: "inherit", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-        >
-          {options.map((o) => (
-            <option key={o.value} value={o.value}>{o.label}</option>
-          ))}
-        </select>
-        <ChevronDown className="w-3.5 h-3.5 shrink-0" style={{ color: "var(--ch-text-muted)" }} />
-      </div>
-    </div>
-  );
-}
-
 /* ---------- Main Component ---------- */
 export default function ServiceHub() {
   const [selectedProvince, setSelectedProvince] = useState<string | null>("DKI Jakarta");
@@ -915,12 +846,12 @@ export default function ServiceHub() {
   const [jakartaGeoJson, setJakartaGeoJson] = useState<FeatureCollection | null>(null);
   const [allCreators, setAllCreators] = useState<Creator[]>([]);
 
-  const [filterProvince, setFilterProvince] = useState<string>("all");
-  const [filterPlatform, setFilterPlatform] = useState<string>("all");
-  const [filterCategory, setFilterCategory] = useState<string>("all");
-  const [filterTier, setFilterTier] = useState<string>("all");
-  const [filterGender, setFilterGender] = useState<string>("all");
-  const [showPodcastFacilities, setShowPodcastFacilities] = useState(true);
+  const [filterProvince] = useState<string>("all");
+  const [filterPlatform] = useState<string>("all");
+  const [filterCategory] = useState<string>("all");
+  const [filterTier] = useState<string>("all");
+  const [filterGender] = useState<string>("all");
+  const [showPodcastFacilities] = useState(true);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const [podcastMapInstance, setPodcastMapInstance] = useState<L.Map | null>(null);
 
@@ -964,25 +895,6 @@ export default function ServiceHub() {
       counts.set(prov, (counts.get(prov) ?? 0) + 1);
     }
     return counts;
-  }, [allCreators]);
-
-  const platformOptions = useMemo(() => {
-    const set = new Set<string>();
-    for (const c of allCreators) for (const p of c.platforms) set.add(p.toLowerCase());
-    return Array.from(set).sort();
-  }, [allCreators]);
-
-  const categoryOptions = useMemo(() => {
-    const set = new Set<string>();
-    for (const c of allCreators) {
-      if (c.category) {
-        for (const cat of c.category.split(",")) {
-          const trimmed = cat.trim();
-          if (trimmed) set.add(trimmed);
-        }
-      }
-    }
-    return Array.from(set).sort();
   }, [allCreators]);
 
   const filteredCreators = useMemo(() => {
@@ -1159,57 +1071,13 @@ export default function ServiceHub() {
         </div>
       </div>
 
-      {/* Single unified card: Filters + Map + Analytics */}
+      {/* Single unified card: Map + Analytics */}
       <div className="rounded-xl border overflow-hidden" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-        {/* Filter Bar inside card */}
-        <div className="flex flex-wrap items-center gap-3 px-5 pt-4 pb-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
-          <FilterSelect icon={<MapPin className="w-4 h-4" />} value={filterProvince} onChange={setFilterProvince}
-            options={[
-              { value: "all", label: "All Indonesia" },
-              ...PROVINCES_38.map((p) => ({ value: p, label: p })),
-            ]} />
-          <FilterSelect icon={<Share2 className="w-4 h-4" />} value={filterPlatform} onChange={setFilterPlatform}
-            options={[{ value: "all", label: "All Platform" }, ...platformOptions.map((p) => ({ value: p, label: p.charAt(0).toUpperCase() + p.slice(1) }))]} />
-          <FilterSelect icon={<Tag className="w-4 h-4" />} value={filterCategory} onChange={setFilterCategory}
-            options={[{ value: "all", label: "All Category" }, ...categoryOptions.map((c) => ({ value: c, label: c }))]} />
-          <FilterSelect icon={<BarChart3 className="w-4 h-4" />} value={filterTier} onChange={setFilterTier}
-            options={[
-              { value: "all", label: "All Tier" },
-              { value: "amplifier", label: "Amplifier (<1K)" },
-              { value: "nano", label: "Nano (1K-10K)" },
-              { value: "micro", label: "Micro (10K-100K)" },
-              { value: "macro", label: "Macro (100K-1M)" },
-              { value: "mega", label: "Mega (>1M)" },
-            ]} />
-          <FilterSelect icon={<UsersRound className="w-4 h-4" />} value={filterGender} onChange={setFilterGender}
-            options={[
-              { value: "all", label: "All Gender" },
-              { value: "female", label: "Female" },
-              { value: "male", label: "Male" },
-            ]} />
-          <button
-            onClick={() => setShowPodcastFacilities(!showPodcastFacilities)}
-            className={`flex items-center gap-2 h-9 px-3 rounded-lg text-[13px] font-medium border transition-all duration-200 cursor-pointer ${
-              showPodcastFacilities
-                ? "text-white"
-                : "hover:text-slate-200"
-            }`}
-            style={showPodcastFacilities
-              ? { background: "#3B82F6", borderColor: "#3B82F6" }
-              : { background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }
-            }
-          >
-            <Mic className="w-4 h-4" />
-            Podcast Facilities
-          </button>
-        </div>
-
         {/* Map - full width */}
         <div ref={mapContainerRef} className="relative" style={{ height: "700px", background: "#080E1A", borderRadius: "12px" }}>
             <MapContainer
-              preferCanvas
               center={[-2.5, 118.0]}
-              zoom={4.5}
+              zoom={5}
               zoomControl={false}
               className="w-full h-full"
               scrollWheelZoom={true}
