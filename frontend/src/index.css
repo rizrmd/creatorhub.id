@@ -232,3 +232,20 @@
 .leaflet-pane {
   border: none !important;
 }
+
+/* Podcast facility markers */
+.podcast-facility-marker {
+  background: transparent !important;
+  border: none !important;
+}
+.podcast-glow-dot {
+  background: transparent !important;
+  border: none !important;
+}
+.podcast-connection-line {
+  animation: podcast-pulse 2s ease-in-out infinite;
+}
+@keyframes podcast-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}

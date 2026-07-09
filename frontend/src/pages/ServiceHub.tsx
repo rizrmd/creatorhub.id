@@ -1,7 +1,8 @@
 ﻿import { useState, useEffect, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
-import { Users, MapPin, Share2, Tag, BarChart3, UsersRound, ChevronDown } from "lucide-react";
-import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
+import { Users, MapPin, Share2, Tag, BarChart3, UsersRound, ChevronDown, Mic } from "lucide-react";
+import { MapContainer, TileLayer, GeoJSON, Marker, Polyline, useMap } from "react-leaflet";
+import L from "leaflet";
 import type { FeatureCollection } from "geojson";
 import * as topojson from "topojson-client";
 import { PieChart, Pie, Cell, Tooltip as RechartsTooltip } from "recharts";
@@ -425,6 +426,57 @@ const TIER_COLORS = ["#94A3B8", "#7c3aed", "#3B82F6", "#F97316", "#EF4444"];
 const PLATFORM_COLORS = ["#E4405F", "#000000", "#FF0000", "#1877F2", "#1DA1F2", "#94A3B8"];
 const GENDER_COLORS = ["#EC4899", "#3B82F6", "#94A3B8"];
 
+interface PodcastFacility {
+  province: string;
+  name: string;
+  location: string;
+  ketua: string;
+  lat: number;
+  lng: number;
+  avatarUrl: string;
+}
+
+const PODCAST_FACILITIES: PodcastFacility[] = [
+  { province: "Sumatera Utara", name: "Suara Sumut Studio", location: "Medan", ketua: "Andi Pratama Nasution", lat: 3.5952, lng: 98.6722, avatarUrl: "https://i.pravatar.cc/150?img=11" },
+  { province: "Riau", name: "Riau Podcast Hub", location: "Pekanbaru", ketua: "Rafiq Alfarizi", lat: 0.5071, lng: 101.4478, avatarUrl: "https://i.pravatar.cc/150?img=12" },
+  { province: "Sumatera Selatan", name: "Palembang Voice Lab", location: "Palembang", ketua: "Diah Ayu Lestari", lat: -2.9761, lng: 104.7754, avatarUrl: "https://i.pravatar.cc/150?img=5" },
+  { province: "Lampung", name: "Lampung Podcast Center", location: "Bandar Lampung", ketua: "M. Rizky Kurniawan", lat: -5.3971, lng: 105.2668, avatarUrl: "https://i.pravatar.cc/150?img=8" },
+  { province: "Banten", name: "Banten Creative Cast", location: "Serang", ketua: "Irfan Maulana", lat: -6.1153, lng: 106.1487, avatarUrl: "https://i.pravatar.cc/150?img=14" },
+  { province: "DKI Jakarta", name: "Jakarta Podcast Network", location: "Jakarta", ketua: "Reza Aditya Pratama", lat: -6.2088, lng: 106.8456, avatarUrl: "https://i.pravatar.cc/150?img=33" },
+  { province: "Jawa Barat", name: "Sunda Podcast Lab", location: "Bandung", ketua: "Tania Putri Maharani", lat: -6.9175, lng: 107.6191, avatarUrl: "https://i.pravatar.cc/150?img=23" },
+  { province: "DI Yogyakarta", name: "Jogja Podcast House", location: "Yogyakarta", ketua: "Arum Sekar Wulandari", lat: -7.7956, lng: 110.3695, avatarUrl: "https://i.pravatar.cc/150?img=25" },
+  { province: "Jawa Tengah", name: "Central Java Podcast Studio", location: "Semarang", ketua: "Bagas Wicaksono", lat: -6.9666, lng: 110.4196, avatarUrl: "https://i.pravatar.cc/150?img=15" },
+  { province: "Jawa Timur", name: "Jatim Podcast Space", location: "Surabaya", ketua: "Dimas Prasetyo", lat: -7.2575, lng: 112.7521, avatarUrl: "https://i.pravatar.cc/150?img=52" },
+  { province: "Bali", name: "Bali Audio Studio", location: "Denpasar", ketua: "Putu Gede Arimbawa", lat: -8.6500, lng: 115.2167, avatarUrl: "https://i.pravatar.cc/150?img=60" },
+  { province: "Nusa Tenggara Barat", name: "Lombok Podcast Hub", location: "Mataram", ketua: "Lalu Hamzanwadi", lat: -8.5833, lng: 116.1167, avatarUrl: "https://i.pravatar.cc/150?img=53" },
+  { province: "Kalimantan Barat", name: "PontiCast Studio", location: "Pontianak", ketua: "Yohana Sari Dewi", lat: -0.0263, lng: 109.3425, avatarUrl: "https://i.pravatar.cc/150?img=44" },
+  { province: "Kalimantan Tengah", name: "Kalteng Podcast Corner", location: "Palangka Raya", ketua: "Irwan Prasetya", lat: -2.2071, lng: 113.9213, avatarUrl: "https://i.pravatar.cc/150?img=47" },
+  { province: "Kalimantan Timur", name: "Samarinda Voice Lab", location: "Samarinda", ketua: "Angga Maulana", lat: -0.4948, lng: 117.1436, avatarUrl: "https://i.pravatar.cc/150?img=51" },
+  { province: "Sulawesi Utara", name: "Manado Podcast Hub", location: "Manado", ketua: "Vcky Christian Lumentut", lat: 1.4748, lng: 124.8421, avatarUrl: "https://i.pravatar.cc/150?img=59" },
+  { province: "Sulawesi Selatan", name: "Makassar Podcast Studio", location: "Makassar", ketua: "Andi Nurul Hikmah", lat: -5.1477, lng: 119.4327, avatarUrl: "https://i.pravatar.cc/150?img=45" },
+  { province: "Papua", name: "Jayapura Voice Studio", location: "Jayapura", ketua: "Septianora Waribrav", lat: -2.5916, lng: 140.6690, avatarUrl: "https://i.pravatar.cc/150?img=57" },
+];
+
+const PODCAST_CONNECTIONS: [number, number][][] = [
+  [[3.5952, 98.6722], [0.5071, 101.4478]],
+  [[0.5071, 101.4478], [-2.9761, 104.7754]],
+  [[-2.9761, 104.7754], [-5.3971, 105.2668]],
+  [[-5.3971, 105.2668], [-6.1153, 106.1487]],
+  [[-6.1153, 106.1487], [-6.2088, 106.8456]],
+  [[-6.2088, 106.8456], [-6.9175, 107.6191]],
+  [[-6.9175, 107.6191], [-7.7956, 110.3695]],
+  [[-7.7956, 110.3695], [-6.9666, 110.4196]],
+  [[-6.9666, 110.4196], [-7.2575, 112.7521]],
+  [[-7.2575, 112.7521], [-8.6500, 115.2167]],
+  [[-8.6500, 115.2167], [-8.5833, 116.1167]],
+  [[-6.2088, 106.8456], [-0.0263, 109.3425]],
+  [[-0.0263, 109.3425], [-2.2071, 113.9213]],
+  [[-2.2071, 113.9213], [-0.4948, 117.1436]],
+  [[-0.4948, 117.1436], [1.4748, 124.8421]],
+  [[-0.4948, 117.1436], [-5.1477, 119.4327]],
+  [[-5.1477, 119.4327], [-2.5916, 140.6690]],
+];
+
 function getTier(followers: number): string {
   if (followers >= 1000000) return "Mega";
   if (followers >= 100000) return "Macro";
@@ -591,6 +643,92 @@ function MapViewController({ center, zoom, province }: { center: [number, number
   return null;
 }
 
+/* ---------- Podcast Facilities Layer ---------- */
+function PodcastFacilityLayer() {
+  return (
+    <>
+      {/* Connection lines */}
+      {PODCAST_CONNECTIONS.map((coords, i) => (
+        <Polyline
+          key={i}
+          positions={coords}
+          pathOptions={{
+            color: "#3B82F6",
+            weight: 2,
+            opacity: 0.6,
+            dashArray: "8 4",
+            className: "podcast-connection-line",
+          }}
+        />
+      ))}
+
+      {/* Facility markers with full cards */}
+      {PODCAST_FACILITIES.map((f) => {
+        const waveformBars = Array.from({ length: 32 }).map(() => {
+          const h = Math.floor(Math.random() * 10) + 2;
+          return `<div style="flex:1;border-radius:2px;height:${h}px;background:linear-gradient(to top,rgba(59,130,246,0.8),rgba(147,197,253,0.6));"></div>`;
+        }).join("");
+
+        const html = `
+          <div style="width:220px;pointer-events:none;">
+            <div style="border-radius:8px;overflow:hidden;background:linear-gradient(135deg,rgba(15,23,42,0.95),rgba(30,41,59,0.95));border:1px solid rgba(59,130,246,0.5);box-shadow:0 0 20px rgba(59,130,246,0.3),0 0 40px rgba(59,130,246,0.1);backdrop-filter:blur(12px);">
+              <div style="padding:12px;">
+                <div style="display:flex;align-items:flex-start;gap:10px;">
+                  <div style="width:40px;height:40px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid rgba(59,130,246,0.6);box-shadow:0 0 10px rgba(59,130,246,0.4);">
+                    <img src="${f.avatarUrl}" style="width:100%;height:100%;object-fit:cover;" />
+                  </div>
+                  <div style="flex:1;min-width:0;">
+                    <div style="font-size:10px;font-weight:700;letter-spacing:0.05em;color:#60A5FA;">${f.province.toUpperCase()}</div>
+                    <div style="font-size:11px;font-weight:600;margin-top:2px;color:#F1F5F9;">${f.name}</div>
+                    <div style="font-size:10px;margin-top:2px;color:#94A3B8;">Lokasi: ${f.location}</div>
+                    <div style="font-size:10px;margin-top:2px;color:#94A3B8;">Ketua DPD AKKI: ${f.ketua}</div>
+                  </div>
+                </div>
+              </div>
+              <div style="height:16px;padding:0 8px;display:flex;align-items:flex-end;gap:2px;background:rgba(59,130,246,0.15);">
+                ${waveformBars}
+              </div>
+            </div>
+          </div>
+        `;
+
+        const icon = L.divIcon({
+          className: "podcast-facility-marker",
+          html,
+          iconSize: [220, 120],
+          iconAnchor: [110, 60],
+        });
+        return (
+          <Marker
+            key={f.province}
+            position={[f.lat, f.lng]}
+            icon={icon}
+            interactive={false}
+          />
+        );
+      })}
+
+      {/* Glow dots at city locations */}
+      {PODCAST_FACILITIES.map((f) => {
+        const dotIcon = L.divIcon({
+          className: "podcast-glow-dot",
+          html: `<div style="width:10px;height:10px;border-radius:50%;background:#3B82F6;box-shadow:0 0 12px #3B82F6,0 0 24px rgba(59,130,246,0.5);"></div>`,
+          iconSize: [10, 10],
+          iconAnchor: [5, 5],
+        });
+        return (
+          <Marker
+            key={`dot-${f.province}`}
+            position={[f.lat, f.lng]}
+            icon={dotIcon}
+            interactive={false}
+          />
+        );
+      })}
+    </>
+  );
+}
+
 /* ---------- Dashboard Cards ---------- */
 function DonutCard({ title, data, colors, total }: {
   title: string;
@@ -742,6 +880,7 @@ export default function ServiceHub() {
   const [filterCategory, setFilterCategory] = useState<string>("all");
   const [filterTier, setFilterTier] = useState<string>("all");
   const [filterGender, setFilterGender] = useState<string>("all");
+  const [showPodcastFacilities, setShowPodcastFacilities] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -1006,6 +1145,21 @@ export default function ServiceHub() {
               { value: "female", label: "Female" },
               { value: "male", label: "Male" },
             ]} />
+          <button
+            onClick={() => setShowPodcastFacilities(!showPodcastFacilities)}
+            className={`flex items-center gap-2 h-9 px-3 rounded-lg text-[13px] font-medium border transition-all duration-200 cursor-pointer ${
+              showPodcastFacilities
+                ? "text-white"
+                : "hover:text-slate-200"
+            }`}
+            style={showPodcastFacilities
+              ? { background: "#3B82F6", borderColor: "#3B82F6" }
+              : { background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text-muted)" }
+            }
+          >
+            <Mic className="w-4 h-4" />
+            Podcast Facilities
+          </button>
         </div>
 
         {/* Map - full width */}
@@ -1053,6 +1207,7 @@ export default function ServiceHub() {
                   </>
                 )
               )}
+              {showPodcastFacilities && <PodcastFacilityLayer />}
             </MapContainer>
           </div>
 
