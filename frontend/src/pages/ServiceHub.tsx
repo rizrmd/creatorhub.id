@@ -585,132 +585,42 @@ function MapViewController({ center, zoom, province }: { center: [number, number
 }
 
 /* ---------- Podcast Facilities Layer ---------- */
-function PodcastFacilityConnections() {
+function PodcastFacilityMarkers({ provinceCounts }: { provinceCounts: Map<string, number> }) {
   const map = useMap();
   useEffect(() => {
-    const labels = PODCAST_FACILITIES.map((f) => {
+    const markers = PODCAST_FACILITIES.map((f) => {
+      const anggota = provinceCounts.get(f.province) ?? 0;
+      const displayName = f.province === "DI Yogyakarta" ? "DPD DI Yogyakarta" : f.province;
       const icon = L.divIcon({
-        className: 'podcast-city-label',
-        html: `<span style="font-size:10px;color:rgba(255,255,255,0.75);font-family:'Inter',sans-serif;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,0.8);">${f.location}</span>`,
-        iconSize: [0, 0],
-        iconAnchor: [-12, 8],
+        className: 'podcast-marker',
+        html: `<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#1e3a5f,#0f172a);border:2px solid rgba(59,130,246,0.7);display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px rgba(59,130,246,0.5);cursor:pointer;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" x2="12" y1="19" y2="22"/>
+          </svg>
+        </div>`,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
       });
-      return L.marker([f.lat, f.lng], { icon, interactive: false }).addTo(map);
+      const marker = L.marker([f.lat, f.lng], { icon }).addTo(map);
+      marker.bindPopup(
+        `<div style="font-family:'Inter',sans-serif;padding:8px 12px;background:rgba(15,23,42,0.95);border:1px solid rgba(59,130,246,0.5);border-radius:10px;min-width:160px;box-shadow:0 0 20px rgba(59,130,246,0.3);">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.05em;color:#60A5FA;text-transform:uppercase;">${displayName}</div>
+          <div style="font-size:10px;color:#F1F5F9;margin-top:4px;">${f.name}</div>
+          <div style="font-size:10px;color:#60A5FA;margin-top:2px;font-weight:600;">Anggota: ${anggota}</div>
+        </div>`,
+        { className: 'podcast-popup', closeButton: false, offset: [0, -16] }
+      );
+      return marker;
     });
-    return () => { labels.forEach((l) => map.removeLayer(l)); };
-  }, [map]);
+    return () => { markers.forEach((m) => map.removeLayer(m)); };
+  }, [map, provinceCounts]);
   return null;
 }
 
-function PodcastFacilityDots() {
-  const map = useMap();
-  useEffect(() => {
-    const dots = PODCAST_FACILITIES.map((f) =>
-      L.circleMarker([f.lat, f.lng], {
-        radius: 5,
-        fillColor: "#3B82F6",
-        fillOpacity: 1,
-        color: "#3B82F6",
-        weight: 0,
-        className: "podcast-glow-dot",
-      }).addTo(map)
-    );
-    return () => { dots.forEach((d) => map.removeLayer(d)); };
-  }, [map]);
-  return null;
-}
-
-function PodcastFacilityMapLayer({ onMapReady }: { onMapReady: (map: L.Map) => void }) {
-  const map = useMap();
-  useEffect(() => {
-    onMapReady(map);
-  }, [map, onMapReady]);
-  return (
-    <>
-      <PodcastFacilityConnections />
-      <PodcastFacilityDots />
-    </>
-  );
-}
-
-function PodcastFacilityCards({ mapInstance, containerRef, provinceCounts }: { mapInstance: L.Map | null; containerRef: React.RefObject<HTMLDivElement | null>; provinceCounts: Map<string, number> }) {
-  const [dots, setDots] = useState<{ f: PodcastFacility; dotX: number; dotY: number }[]>([]);
-
-  useEffect(() => {
-    if (!mapInstance || !containerRef.current) return;
-    const recalc = () => {
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      const pts = PODCAST_FACILITIES.map((f) => {
-        const pt = mapInstance.latLngToContainerPoint([f.lat, f.lng]);
-        return { f, dotX: pt.x, dotY: pt.y };
-      }).filter((p) => p.dotX > -100 && p.dotX < rect.width + 100 && p.dotY > -100 && p.dotY < rect.height + 100);
-      setDots(pts);
-    };
-    recalc();
-    mapInstance.on("moveend zoomend", recalc);
-    return () => { mapInstance.off("moveend zoomend", recalc); };
-  }, [mapInstance, containerRef]);
-
-  if (!mapInstance) return null;
-
-  const CARD_W = 150;
-  const CARD_H = 48;
-
-  return (
-    <>
-      <svg style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 400, overflow: "visible", width: "100%", height: "100%" }}>
-        {dots.map((p) => {
-          const cx = p.f.cardX + CARD_W;
-          const cy = p.f.cardY + CARD_H / 2;
-          const midX = (cx + p.dotX) / 2;
-          const midY = (cy + p.dotY) / 2;
-          return (
-            <path
-              key={p.f.province}
-              d={`M ${cx} ${cy} Q ${midX} ${midY} ${p.dotX} ${p.dotY}`}
-              stroke="#3B82F6"
-              strokeWidth={1.5}
-              fill="none"
-              strokeDasharray="6 4"
-              opacity={0.5}
-            />
-          );
-        })}
-      </svg>
-      {PODCAST_FACILITIES.map((f) => {
-        const anggota = provinceCounts.get(f.province) ?? 0;
-        const displayName = f.province === "DI Yogyakarta" ? "DPD DI YOGYAKARTA" : f.province.toUpperCase();
-        return (
-          <div
-            key={f.province}
-            className="absolute pointer-events-none"
-            style={{
-              left: `${f.cardX}px`,
-              top: `${f.cardY}px`,
-              width: `${CARD_W}px`,
-              zIndex: 500,
-            }}
-          >
-            <div style={{
-              borderRadius: "8px",
-              overflow: "hidden",
-              background: "linear-gradient(135deg, rgba(15,23,42,0.95), rgba(30,41,59,0.95))",
-              border: "1px solid rgba(59,130,246,0.5)",
-              boxShadow: "0 0 20px rgba(59,130,246,0.3), 0 0 40px rgba(59,130,246,0.1)",
-              fontFamily: "'Inter', sans-serif",
-            }}>
-              <div className="p-1.5">
-                <div className="text-[8px] font-bold tracking-wider" style={{ color: "#60A5FA" }}>{displayName}</div>
-                <div className="text-[8px] mt-0.5" style={{ color: "#F1F5F9" }}>Nama: {f.name}</div>
-                <div className="text-[8px] mt-0.5 font-semibold" style={{ color: "#60A5FA" }}>Anggota: {anggota}</div>
-              </div>
-            </div>
-          </div>
-        );
-      })}
-    </>
-  );
+function PodcastFacilityMapLayer({ provinceCounts }: { provinceCounts: Map<string, number> }) {
+  return <PodcastFacilityMarkers provinceCounts={provinceCounts} />;
 }
 
 /* ---------- Dashboard Cards ---------- */
@@ -838,7 +748,6 @@ export default function ServiceHub() {
   const [filterGender] = useState<string>("all");
   const [showPodcastFacilities] = useState(true);
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const [podcastMapInstance, setPodcastMapInstance] = useState<L.Map | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -1102,9 +1011,8 @@ export default function ServiceHub() {
                   </>
                 )
               )}
-              {showPodcastFacilities && <PodcastFacilityMapLayer onMapReady={setPodcastMapInstance} />}
+              {showPodcastFacilities && <PodcastFacilityMapLayer provinceCounts={provinceCounts} />}
             </MapContainer>
-            {showPodcastFacilities && <PodcastFacilityCards mapInstance={podcastMapInstance} containerRef={mapContainerRef} provinceCounts={provinceCounts} />}
           </div>
 
         {/* Bottom analytics inside same card */}
