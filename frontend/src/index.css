@@ -234,11 +234,17 @@
 }
 
 /* Podcast facility markers */
-.podcast-facility-marker {
+.leaflet-marker-icon.podcast-facility-marker {
   background: transparent !important;
   border: none !important;
+  overflow: visible !important;
+  box-shadow: none !important;
 }
-.podcast-glow-dot {
+.leaflet-marker-icon.podcast-facility-marker img {
+  display: block;
+  border: none;
+}
+.leaflet-marker-icon.podcast-glow-dot {
   background: transparent !important;
   border: none !important;
 }
@@ -248,4 +254,10 @@
 @keyframes podcast-pulse {
   0%, 100% { opacity: 0.4; }
   50% { opacity: 0.8; }
+}
+.leaflet-marker-icon.podcast-facility-marker {
+  z-index: 1000 !important;
+}
+.leaflet-marker-icon.podcast-glow-dot {
+  z-index: 999 !important;
 }

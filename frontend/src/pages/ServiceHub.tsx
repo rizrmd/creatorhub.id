@@ -670,8 +670,8 @@ function PodcastFacilityLayer() {
         }).join("");
 
         const html = `
-          <div style="width:220px;pointer-events:none;">
-            <div style="border-radius:8px;overflow:hidden;background:linear-gradient(135deg,rgba(15,23,42,0.95),rgba(30,41,59,0.95));border:1px solid rgba(59,130,246,0.5);box-shadow:0 0 20px rgba(59,130,246,0.3),0 0 40px rgba(59,130,246,0.1);backdrop-filter:blur(12px);">
+          <div style="width:220px;pointer-events:none;font-family:'Inter',sans-serif;">
+            <div style="border-radius:8px;overflow:hidden;background:linear-gradient(135deg,rgba(15,23,42,0.95),rgba(30,41,59,0.95));border:1px solid rgba(59,130,246,0.5);box-shadow:0 0 20px rgba(59,130,246,0.3),0 0 40px rgba(59,130,246,0.1);">
               <div style="padding:12px;">
                 <div style="display:flex;align-items:flex-start;gap:10px;">
                   <div style="width:40px;height:40px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid rgba(59,130,246,0.6);box-shadow:0 0 10px rgba(59,130,246,0.4);">
@@ -695,8 +695,8 @@ function PodcastFacilityLayer() {
         const icon = L.divIcon({
           className: "podcast-facility-marker",
           html,
-          iconSize: [220, 120],
-          iconAnchor: [110, 60],
+          iconSize: [220, 130],
+          iconAnchor: [110, 65],
         });
         return (
           <Marker
