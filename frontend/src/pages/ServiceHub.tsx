@@ -920,7 +920,7 @@ export default function ServiceHub() {
   const [filterCategory, setFilterCategory] = useState<string>("all");
   const [filterTier, setFilterTier] = useState<string>("all");
   const [filterGender, setFilterGender] = useState<string>("all");
-  const [showPodcastFacilities, setShowPodcastFacilities] = useState(false);
+  const [showPodcastFacilities, setShowPodcastFacilities] = useState(true);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const [podcastMapInstance, setPodcastMapInstance] = useState<L.Map | null>(null);
 
