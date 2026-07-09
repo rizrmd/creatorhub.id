@@ -1,7 +1,7 @@
-﻿import { useState, useEffect, useMemo, useRef } from "react";
+﻿import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Users, MapPin, Share2, Tag, BarChart3, UsersRound, ChevronDown, Mic } from "lucide-react";
-import { MapContainer, TileLayer, GeoJSON, Marker, Polyline, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
 import L from "leaflet";
 import type { FeatureCollection } from "geojson";
 import * as topojson from "topojson-client";
@@ -644,87 +644,123 @@ function MapViewController({ center, zoom, province }: { center: [number, number
 }
 
 /* ---------- Podcast Facilities Layer ---------- */
-function PodcastFacilityLayer() {
+function PodcastFacilityConnections() {
+  const map = useMap();
+  useEffect(() => {
+    const lines = PODCAST_CONNECTIONS.map((coords) =>
+      L.polyline(coords as [number, number][], {
+        color: "#3B82F6",
+        weight: 2,
+        opacity: 0.6,
+        dashArray: "8 4",
+        className: "podcast-connection-line",
+      }).addTo(map)
+    );
+    return () => { lines.forEach((l) => map.removeLayer(l)); };
+  }, [map]);
+  return null;
+}
+
+function PodcastFacilityDots() {
+  const map = useMap();
+  useEffect(() => {
+    const dots = PODCAST_FACILITIES.map((f) =>
+      L.circleMarker([f.lat, f.lng], {
+        radius: 5,
+        fillColor: "#3B82F6",
+        fillOpacity: 1,
+        color: "#3B82F6",
+        weight: 0,
+        className: "podcast-glow-dot",
+      }).addTo(map)
+    );
+    return () => { dots.forEach((d) => map.removeLayer(d)); };
+  }, [map]);
+  return null;
+}
+
+function PodcastFacilityCards({ containerRef }: { containerRef: React.RefObject<HTMLDivElement | null> }) {
+  const map = useMap();
+  const [positions, setPositions] = useState<{ f: PodcastFacility; x: number; y: number }[]>([]);
+
+  const recalc = useCallback(() => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const pts = PODCAST_FACILITIES.map((f) => {
+      const pt = map.latLngToContainerPoint([f.lat, f.lng]);
+      return { f, x: pt.x, y: pt.y };
+    }).filter((p) => p.x > -100 && p.x < rect.width + 100 && p.y > -100 && p.y < rect.height + 100);
+    setPositions(pts);
+  }, [map, containerRef]);
+
+  useEffect(() => {
+    recalc();
+    map.on("moveend zoomend", recalc);
+    return () => { map.off("moveend zoomend", recalc); };
+  }, [map, recalc]);
+
   return (
     <>
-      {/* Connection lines */}
-      {PODCAST_CONNECTIONS.map((coords, i) => (
-        <Polyline
-          key={i}
-          positions={coords}
-          pathOptions={{
-            color: "#3B82F6",
-            weight: 2,
-            opacity: 0.6,
-            dashArray: "8 4",
-            className: "podcast-connection-line",
+      {positions.map((p) => (
+        <div
+          key={p.f.province}
+          className="absolute pointer-events-none"
+          style={{
+            left: `${p.x}px`,
+            top: `${p.y}px`,
+            transform: "translate(-50%, -50%)",
+            width: "220px",
+            zIndex: 500,
           }}
-        />
-      ))}
-
-      {/* Facility markers with full cards */}
-      {PODCAST_FACILITIES.map((f) => {
-        const waveformBars = Array.from({ length: 32 }).map(() => {
-          const h = Math.floor(Math.random() * 10) + 2;
-          return `<div style="flex:1;border-radius:2px;height:${h}px;background:linear-gradient(to top,rgba(59,130,246,0.8),rgba(147,197,253,0.6));"></div>`;
-        }).join("");
-
-        const html = `
-          <div style="width:220px;pointer-events:none;font-family:'Inter',sans-serif;">
-            <div style="border-radius:8px;overflow:hidden;background:linear-gradient(135deg,rgba(15,23,42,0.95),rgba(30,41,59,0.95));border:1px solid rgba(59,130,246,0.5);box-shadow:0 0 20px rgba(59,130,246,0.3),0 0 40px rgba(59,130,246,0.1);">
-              <div style="padding:12px;">
-                <div style="display:flex;align-items:flex-start;gap:10px;">
-                  <div style="width:40px;height:40px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid rgba(59,130,246,0.6);box-shadow:0 0 10px rgba(59,130,246,0.4);">
-                    <img src="${f.avatarUrl}" style="width:100%;height:100%;object-fit:cover;" />
-                  </div>
-                  <div style="flex:1;min-width:0;">
-                    <div style="font-size:10px;font-weight:700;letter-spacing:0.05em;color:#60A5FA;">${f.province.toUpperCase()}</div>
-                    <div style="font-size:11px;font-weight:600;margin-top:2px;color:#F1F5F9;">${f.name}</div>
-                    <div style="font-size:10px;margin-top:2px;color:#94A3B8;">Lokasi: ${f.location}</div>
-                    <div style="font-size:10px;margin-top:2px;color:#94A3B8;">Ketua DPD AKKI: ${f.ketua}</div>
-                  </div>
+        >
+          <div style={{
+            borderRadius: "8px",
+            overflow: "hidden",
+            background: "linear-gradient(135deg, rgba(15,23,42,0.95), rgba(30,41,59,0.95))",
+            border: "1px solid rgba(59,130,246,0.5)",
+            boxShadow: "0 0 20px rgba(59,130,246,0.3), 0 0 40px rgba(59,130,246,0.1)",
+            fontFamily: "'Inter', sans-serif",
+          }}>
+            <div className="p-3">
+              <div className="flex items-start gap-2.5">
+                <div className="w-10 h-10 rounded-full overflow-hidden shrink-0" style={{
+                  border: "2px solid rgba(59,130,246,0.6)",
+                  boxShadow: "0 0 10px rgba(59,130,246,0.4)",
+                }}>
+                  <img src={p.f.avatarUrl} alt={p.f.ketua} className="w-full h-full object-cover" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[10px] font-bold tracking-wider" style={{ color: "#60A5FA" }}>{p.f.province.toUpperCase()}</div>
+                  <div className="text-[11px] font-semibold mt-0.5" style={{ color: "#F1F5F9" }}>{p.f.name}</div>
+                  <div className="text-[10px] mt-0.5" style={{ color: "#94A3B8" }}>Lokasi: {p.f.location}</div>
+                  <div className="text-[10px] mt-0.5" style={{ color: "#94A3B8" }}>Ketua DPD AKKI: {p.f.ketua}</div>
                 </div>
               </div>
-              <div style="height:16px;padding:0 8px;display:flex;align-items:flex-end;gap:2px;background:rgba(59,130,246,0.15);">
-                ${waveformBars}
-              </div>
+            </div>
+            <div className="h-4 px-2 flex items-end gap-[2px]" style={{ background: "rgba(59,130,246,0.15)" }}>
+              {Array.from({ length: 32 }).map((_, i) => {
+                const h = Math.floor(((p.f.lat * 1000 + i * 17) % 10) + 2);
+                return (
+                  <div key={i} className="flex-1 rounded-sm" style={{
+                    height: `${h}px`,
+                    background: "linear-gradient(to top, rgba(59,130,246,0.8), rgba(147,197,253,0.6))",
+                  }} />
+                );
+              })}
             </div>
           </div>
-        `;
+        </div>
+      ))}
+    </>
+  );
+}
 
-        const icon = L.divIcon({
-          className: "podcast-facility-marker",
-          html,
-          iconSize: [220, 130],
-          iconAnchor: [110, 65],
-        });
-        return (
-          <Marker
-            key={f.province}
-            position={[f.lat, f.lng]}
-            icon={icon}
-            interactive={false}
-          />
-        );
-      })}
-
-      {/* Glow dots at city locations */}
-      {PODCAST_FACILITIES.map((f) => {
-        const dotIcon = L.divIcon({
-          className: "podcast-glow-dot",
-          html: `<div style="width:10px;height:10px;border-radius:50%;background:#3B82F6;box-shadow:0 0 12px #3B82F6,0 0 24px rgba(59,130,246,0.5);"></div>`,
-          iconSize: [10, 10],
-          iconAnchor: [5, 5],
-        });
-        return (
-          <Marker
-            key={`dot-${f.province}`}
-            position={[f.lat, f.lng]}
-            icon={dotIcon}
-            interactive={false}
-          />
-        );
-      })}
+function PodcastFacilityLayer({ containerRef }: { containerRef: React.RefObject<HTMLDivElement | null> }) {
+  return (
+    <>
+      <PodcastFacilityConnections />
+      <PodcastFacilityDots />
+      <PodcastFacilityCards containerRef={containerRef} />
     </>
   );
 }
@@ -881,6 +917,7 @@ export default function ServiceHub() {
   const [filterTier, setFilterTier] = useState<string>("all");
   const [filterGender, setFilterGender] = useState<string>("all");
   const [showPodcastFacilities, setShowPodcastFacilities] = useState(false);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -1163,7 +1200,7 @@ export default function ServiceHub() {
         </div>
 
         {/* Map - full width */}
-        <div className="relative overflow-hidden" style={{ height: "500px", background: "#080E1A", borderRadius: "12px" }}>
+        <div ref={mapContainerRef} className="relative overflow-hidden" style={{ height: "500px", background: "#080E1A", borderRadius: "12px" }}>
             <MapContainer
               preferCanvas
               center={[-2.5, 118.0]}
@@ -1207,7 +1244,7 @@ export default function ServiceHub() {
                   </>
                 )
               )}
-              {showPodcastFacilities && <PodcastFacilityLayer />}
+              {showPodcastFacilities && <PodcastFacilityLayer containerRef={mapContainerRef} />}
             </MapContainer>
           </div>
 
