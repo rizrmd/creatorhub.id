@@ -703,7 +703,7 @@ function PodcastFacilityCards({ mapInstance, containerRef }: { mapInstance: L.Ma
       const pts = PODCAST_FACILITIES.map((f) => {
         const pt = mapInstance.latLngToContainerPoint([f.lat, f.lng]);
         return { f, x: pt.x, y: pt.y };
-      }).filter((p) => p.x > -120 && p.x < rect.width + 120 && p.y > -80 && p.y < rect.height + 80);
+      }      ).filter((p) => p.x > -220 && p.x < rect.width + 220 && p.y > -160 && p.y < rect.height + 160);
       setPositions(pts);
     };
     recalc();
@@ -1205,11 +1205,11 @@ export default function ServiceHub() {
         </div>
 
         {/* Map - full width */}
-        <div ref={mapContainerRef} className="relative overflow-hidden" style={{ height: "500px", background: "#080E1A", borderRadius: "12px" }}>
+        <div ref={mapContainerRef} className="relative" style={{ height: "700px", background: "#080E1A", borderRadius: "12px" }}>
             <MapContainer
               preferCanvas
               center={[-2.5, 118.0]}
-              zoom={5}
+              zoom={4.5}
               zoomControl={false}
               className="w-full h-full"
               scrollWheelZoom={true}
