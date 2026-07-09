@@ -398,24 +398,24 @@ interface PodcastFacility {
 }
 
 const PODCAST_FACILITIES: PodcastFacility[] = [
-  { province: "Sumatera Utara", name: "Suara Sumut Studio", location: "Medan", ketua: "Andi Pratama Nasution", lat: 3.5952, lng: 98.6722, avatarUrl: "https://i.pravatar.cc/150?img=11", offsetX: 160, offsetY: -100 },
-  { province: "Riau", name: "Riau Podcast Hub", location: "Pekanbaru", ketua: "Rafiq Alfarizi", lat: 0.5071, lng: 101.4478, avatarUrl: "https://i.pravatar.cc/150?img=12", offsetX: -180, offsetY: 80 },
-  { province: "Sumatera Selatan", name: "Palembang Voice Lab", location: "Palembang", ketua: "Diah Ayu Lestari", lat: -2.9761, lng: 104.7754, avatarUrl: "https://i.pravatar.cc/150?img=5", offsetX: -200, offsetY: -40 },
-  { province: "Lampung", name: "Lampung Podcast Center", location: "Bandar Lampung", ketua: "M. Rizky Kurniawan", lat: -5.3971, lng: 105.2668, avatarUrl: "https://i.pravatar.cc/150?img=8", offsetX: -180, offsetY: 100 },
-  { province: "Banten", name: "Banten Creative Cast", location: "Serang", ketua: "Irfan Maulana", lat: -6.1153, lng: 106.1487, avatarUrl: "https://i.pravatar.cc/150?img=14", offsetX: -220, offsetY: 30 },
-  { province: "DKI Jakarta", name: "Jakarta Podcast Network", location: "Jakarta", ketua: "Reza Aditya Pratama", lat: -6.2088, lng: 106.8456, avatarUrl: "https://i.pravatar.cc/150?img=33", offsetX: -250, offsetY: -100 },
-  { province: "Jawa Barat", name: "Sunda Podcast Lab", location: "Bandung", ketua: "Tania Putri Maharani", lat: -6.9175, lng: 107.6191, avatarUrl: "https://i.pravatar.cc/150?img=23", offsetX: -250, offsetY: 100 },
+  { province: "Sumatera Utara", name: "Suara Sumut Studio", location: "Medan", ketua: "Andi Pratama Nasution", lat: 3.5952, lng: 98.6722, avatarUrl: "https://i.pravatar.cc/150?img=11", offsetX: 103, offsetY: -255 },
+  { province: "Riau", name: "Riau Podcast Hub", location: "Pekanbaru", ketua: "Rafiq Alfarizi", lat: 0.5071, lng: 101.4478, avatarUrl: "https://i.pravatar.cc/150?img=12", offsetX: -90, offsetY: -282 },
+  { province: "Sumatera Selatan", name: "Palembang Voice Lab", location: "Palembang", ketua: "Diah Ayu Lestari", lat: -2.9761, lng: 104.7754, avatarUrl: "https://i.pravatar.cc/150?img=5", offsetX: -136, offsetY: -325 },
+  { province: "Lampung", name: "Lampung Podcast Center", location: "Bandar Lampung", ketua: "M. Rizky Kurniawan", lat: -5.3971, lng: 105.2668, avatarUrl: "https://i.pravatar.cc/150?img=8", offsetX: -109, offsetY: -324 },
+  { province: "Banten", name: "Banten Creative Cast", location: "Serang", ketua: "Irfan Maulana", lat: -6.1153, lng: 106.1487, avatarUrl: "https://i.pravatar.cc/150?img=14", offsetX: -92, offsetY: -253 },
+  { province: "DKI Jakarta", name: "Jakarta Podcast Network", location: "Jakarta", ketua: "Reza Aditya Pratama", lat: -6.2088, lng: 106.8456, avatarUrl: "https://i.pravatar.cc/150?img=33", offsetX: -70, offsetY: -157 },
+  { province: "Jawa Barat", name: "Sunda Podcast Lab", location: "Bandung", ketua: "Tania Putri Maharani", lat: -6.9175, lng: 107.6191, avatarUrl: "https://i.pravatar.cc/150?img=23", offsetX: -250, offsetY: 200 },
   { province: "DI Yogyakarta", name: "Jogja Podcast House", location: "Yogyakarta", ketua: "Arum Sekar Wulandari", lat: -7.7956, lng: 110.3695, avatarUrl: "https://i.pravatar.cc/150?img=25", offsetX: -80, offsetY: 150 },
   { province: "Jawa Tengah", name: "Central Java Podcast Studio", location: "Semarang", ketua: "Bagas Wicaksono", lat: -6.9666, lng: 110.4196, avatarUrl: "https://i.pravatar.cc/150?img=15", offsetX: 250, offsetY: -40 },
   { province: "Jawa Timur", name: "Jatim Podcast Space", location: "Surabaya", ketua: "Dimas Prasetyo", lat: -7.2575, lng: 112.7521, avatarUrl: "https://i.pravatar.cc/150?img=52", offsetX: 250, offsetY: 60 },
   { province: "Bali", name: "Bali Audio Studio", location: "Denpasar", ketua: "Putu Gede Arimbawa", lat: -8.6500, lng: 115.2167, avatarUrl: "https://i.pravatar.cc/150?img=60", offsetX: 0, offsetY: 130 },
-  { province: "Nusa Tenggara Barat", name: "Lombok Podcast Hub", location: "Mataram", ketua: "Lalu Hamzanwadi", lat: -8.5833, lng: 116.1167, avatarUrl: "https://i.pravatar.cc/150?img=53", offsetX: 200, offsetY: 30 },
+  { province: "Nusa Tenggara Barat", name: "Lombok Podcast Hub", location: "Mataram", ketua: "Lalu Hamzanwadi", lat: -8.5833, lng: 116.1167, avatarUrl: "https://i.pravatar.cc/150?img=53", offsetX: 200, offsetY: 110 },
   { province: "Kalimantan Barat", name: "PontiCast Studio", location: "Pontianak", ketua: "Yohana Sari Dewi", lat: -0.0263, lng: 109.3425, avatarUrl: "https://i.pravatar.cc/150?img=44", offsetX: -180, offsetY: -80 },
   { province: "Kalimantan Tengah", name: "Kalteng Podcast Corner", location: "Palangka Raya", ketua: "Irwan Prasetya", lat: -2.2071, lng: 113.9213, avatarUrl: "https://i.pravatar.cc/150?img=47", offsetX: 0, offsetY: -120 },
   { province: "Kalimantan Timur", name: "Samarinda Voice Lab", location: "Samarinda", ketua: "Angga Maulana", lat: -0.4948, lng: 117.1436, avatarUrl: "https://i.pravatar.cc/150?img=51", offsetX: 180, offsetY: -80 },
   { province: "Sulawesi Utara", name: "Manado Podcast Hub", location: "Manado", ketua: "Vcky Christian Lumentut", lat: 1.4748, lng: 124.8421, avatarUrl: "https://i.pravatar.cc/150?img=59", offsetX: 160, offsetY: -100 },
-  { province: "Sulawesi Selatan", name: "Makassar Podcast Studio", location: "Makassar", ketua: "Andi Nurul Hikmah", lat: -5.1477, lng: 119.4327, avatarUrl: "https://i.pravatar.cc/150?img=45", offsetX: 0, offsetY: 130 },
-  { province: "Papua", name: "Jayapura Voice Studio", location: "Jayapura", ketua: "Septianora Waribrav", lat: -2.5916, lng: 140.6690, avatarUrl: "https://i.pravatar.cc/150?img=57", offsetX: 200, offsetY: -30 },
+  { province: "Sulawesi Selatan", name: "Makassar Podcast Studio", location: "Makassar", ketua: "Andi Nurul Hikmah", lat: -5.1477, lng: 119.4327, avatarUrl: "https://i.pravatar.cc/150?img=45", offsetX: 0, offsetY: -10 },
+  { province: "Papua", name: "Jayapura Voice Studio", location: "Jayapura", ketua: "Septianora Waribrav", lat: -2.5916, lng: 140.6690, avatarUrl: "https://i.pravatar.cc/150?img=57", offsetX: -100, offsetY: -30 },
 ];
 
 function getTier(followers: number): string {
@@ -641,8 +641,8 @@ function PodcastFacilityCards({ mapInstance, containerRef, provinceCounts }: { m
     const recalc = () => {
       if (!containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
-      const CARD_W = 170;
-      const CARD_H = 70;
+      const CARD_W = 150;
+      const CARD_H = 48;
       const pts = PODCAST_FACILITIES.map((f) => {
         const pt = mapInstance.latLngToContainerPoint([f.lat, f.lng]);
         const cx = pt.x + f.offsetX;
@@ -662,8 +662,8 @@ function PodcastFacilityCards({ mapInstance, containerRef, provinceCounts }: { m
 
   if (!mapInstance) return null;
 
-  const CARD_W = 170;
-  const CARD_H = 70;
+  const CARD_W = 150;
+  const CARD_H = 48;
   const halfW = CARD_W / 2;
   const halfH = CARD_H / 2;
 
@@ -699,6 +699,7 @@ function PodcastFacilityCards({ mapInstance, containerRef, provinceCounts }: { m
       </svg>
       {positions.map((p) => {
         const anggota = provinceCounts.get(p.f.province) ?? 0;
+        const displayName = p.f.province === "DI Yogyakarta" ? "DPD DI YOGYAKARTA" : p.f.province.toUpperCase();
         return (
           <div
             key={p.f.province}
@@ -719,22 +720,10 @@ function PodcastFacilityCards({ mapInstance, containerRef, provinceCounts }: { m
               boxShadow: "0 0 20px rgba(59,130,246,0.3), 0 0 40px rgba(59,130,246,0.1)",
               fontFamily: "'Inter', sans-serif",
             }}>
-              <div className="p-2">
-                <div className="flex items-start gap-2">
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[9px] font-bold tracking-wider" style={{ color: "#60A5FA" }}>{p.f.province.toUpperCase()}</div>
-                    <div className="text-[9px] mt-0.5" style={{ color: "#94A3B8" }}>Lokasi: {p.f.location}</div>
-                    <div className="text-[9px] mt-0.5" style={{ color: "#F1F5F9" }}>Nama: {p.f.name}</div>
-                    <div className="text-[9px] mt-0.5 truncate" style={{ color: "#94A3B8" }}>Ketua DPD AKKI: {p.f.ketua}</div>
-                    <div className="text-[9px] mt-0.5 font-semibold" style={{ color: "#60A5FA" }}>Anggota: {anggota} Konten Kreator</div>
-                  </div>
-                  <div className="w-8 h-8 rounded-full overflow-hidden shrink-0" style={{
-                    border: "2px solid rgba(59,130,246,0.6)",
-                    boxShadow: "0 0 10px rgba(59,130,246,0.4)",
-                  }}>
-                    <img src={p.f.avatarUrl} alt={p.f.ketua} className="w-full h-full object-cover" />
-                  </div>
-                </div>
+              <div className="p-1.5">
+                <div className="text-[8px] font-bold tracking-wider" style={{ color: "#60A5FA" }}>{displayName}</div>
+                <div className="text-[8px] mt-0.5" style={{ color: "#F1F5F9" }}>Nama: {p.f.name}</div>
+                <div className="text-[8px] mt-0.5 font-semibold" style={{ color: "#60A5FA" }}>Anggota: {anggota}</div>
               </div>
             </div>
           </div>
