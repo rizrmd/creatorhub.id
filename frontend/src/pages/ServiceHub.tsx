@@ -393,29 +393,29 @@ interface PodcastFacility {
   lat: number;
   lng: number;
   avatarUrl: string;
-  offsetX: number;
-  offsetY: number;
+  cardX: number;
+  cardY: number;
 }
 
 const PODCAST_FACILITIES: PodcastFacility[] = [
-  { province: "Sumatera Utara", name: "Suara Sumut Studio", location: "Medan", ketua: "Andi Pratama Nasution", lat: 3.5952, lng: 98.6722, avatarUrl: "https://i.pravatar.cc/150?img=11", offsetX: 103, offsetY: -255 },
-  { province: "Riau", name: "Riau Podcast Hub", location: "Pekanbaru", ketua: "Rafiq Alfarizi", lat: 0.5071, lng: 101.4478, avatarUrl: "https://i.pravatar.cc/150?img=12", offsetX: -90, offsetY: -282 },
-  { province: "Sumatera Selatan", name: "Palembang Voice Lab", location: "Palembang", ketua: "Diah Ayu Lestari", lat: -2.9761, lng: 104.7754, avatarUrl: "https://i.pravatar.cc/150?img=5", offsetX: -136, offsetY: -325 },
-  { province: "Lampung", name: "Lampung Podcast Center", location: "Bandar Lampung", ketua: "M. Rizky Kurniawan", lat: -5.3971, lng: 105.2668, avatarUrl: "https://i.pravatar.cc/150?img=8", offsetX: -109, offsetY: -324 },
-  { province: "Banten", name: "Banten Creative Cast", location: "Serang", ketua: "Irfan Maulana", lat: -6.1153, lng: 106.1487, avatarUrl: "https://i.pravatar.cc/150?img=14", offsetX: -92, offsetY: -253 },
-  { province: "DKI Jakarta", name: "Jakarta Podcast Network", location: "Jakarta", ketua: "Reza Aditya Pratama", lat: -6.2088, lng: 106.8456, avatarUrl: "https://i.pravatar.cc/150?img=33", offsetX: -70, offsetY: -157 },
-  { province: "Jawa Barat", name: "Sunda Podcast Lab", location: "Bandung", ketua: "Tania Putri Maharani", lat: -6.9175, lng: 107.6191, avatarUrl: "https://i.pravatar.cc/150?img=23", offsetX: -250, offsetY: 200 },
-  { province: "DI Yogyakarta", name: "Jogja Podcast House", location: "Yogyakarta", ketua: "Arum Sekar Wulandari", lat: -7.7956, lng: 110.3695, avatarUrl: "https://i.pravatar.cc/150?img=25", offsetX: -80, offsetY: 150 },
-  { province: "Jawa Tengah", name: "Central Java Podcast Studio", location: "Semarang", ketua: "Bagas Wicaksono", lat: -6.9666, lng: 110.4196, avatarUrl: "https://i.pravatar.cc/150?img=15", offsetX: 250, offsetY: -40 },
-  { province: "Jawa Timur", name: "Jatim Podcast Space", location: "Surabaya", ketua: "Dimas Prasetyo", lat: -7.2575, lng: 112.7521, avatarUrl: "https://i.pravatar.cc/150?img=52", offsetX: 250, offsetY: 60 },
-  { province: "Bali", name: "Bali Audio Studio", location: "Denpasar", ketua: "Putu Gede Arimbawa", lat: -8.6500, lng: 115.2167, avatarUrl: "https://i.pravatar.cc/150?img=60", offsetX: 0, offsetY: 130 },
-  { province: "Nusa Tenggara Barat", name: "Lombok Podcast Hub", location: "Mataram", ketua: "Lalu Hamzanwadi", lat: -8.5833, lng: 116.1167, avatarUrl: "https://i.pravatar.cc/150?img=53", offsetX: 200, offsetY: 110 },
-  { province: "Kalimantan Barat", name: "PontiCast Studio", location: "Pontianak", ketua: "Yohana Sari Dewi", lat: -0.0263, lng: 109.3425, avatarUrl: "https://i.pravatar.cc/150?img=44", offsetX: -180, offsetY: -80 },
-  { province: "Kalimantan Tengah", name: "Kalteng Podcast Corner", location: "Palangka Raya", ketua: "Irwan Prasetya", lat: -2.2071, lng: 113.9213, avatarUrl: "https://i.pravatar.cc/150?img=47", offsetX: 0, offsetY: -120 },
-  { province: "Kalimantan Timur", name: "Samarinda Voice Lab", location: "Samarinda", ketua: "Angga Maulana", lat: -0.4948, lng: 117.1436, avatarUrl: "https://i.pravatar.cc/150?img=51", offsetX: 180, offsetY: -80 },
-  { province: "Sulawesi Utara", name: "Manado Podcast Hub", location: "Manado", ketua: "Vcky Christian Lumentut", lat: 1.4748, lng: 124.8421, avatarUrl: "https://i.pravatar.cc/150?img=59", offsetX: 160, offsetY: -100 },
-  { province: "Sulawesi Selatan", name: "Makassar Podcast Studio", location: "Makassar", ketua: "Andi Nurul Hikmah", lat: -5.1477, lng: 119.4327, avatarUrl: "https://i.pravatar.cc/150?img=45", offsetX: 0, offsetY: -10 },
-  { province: "Papua", name: "Jayapura Voice Studio", location: "Jayapura", ketua: "Septianora Waribrav", lat: -2.5916, lng: 140.6690, avatarUrl: "https://i.pravatar.cc/150?img=57", offsetX: -100, offsetY: -30 },
+  { province: "Sumatera Utara", name: "Suara Sumut Studio", location: "Medan", ketua: "Andi Pratama Nasution", lat: 3.5952, lng: 98.6722, avatarUrl: "https://i.pravatar.cc/150?img=11", cardX: 10, cardY: 15 },
+  { province: "Riau", name: "Riau Podcast Hub", location: "Pekanbaru", ketua: "Rafiq Alfarizi", lat: 0.5071, lng: 101.4478, avatarUrl: "https://i.pravatar.cc/150?img=12", cardX: 10, cardY: 70 },
+  { province: "Sumatera Selatan", name: "Palembang Voice Lab", location: "Palembang", ketua: "Diah Ayu Lestari", lat: -2.9761, lng: 104.7754, avatarUrl: "https://i.pravatar.cc/150?img=5", cardX: 10, cardY: 125 },
+  { province: "Lampung", name: "Lampung Podcast Center", location: "Bandar Lampung", ketua: "M. Rizky Kurniawan", lat: -5.3971, lng: 105.2668, avatarUrl: "https://i.pravatar.cc/150?img=8", cardX: 10, cardY: 180 },
+  { province: "Banten", name: "Banten Creative Cast", location: "Serang", ketua: "Irfan Maulana", lat: -6.1153, lng: 106.1487, avatarUrl: "https://i.pravatar.cc/150?img=14", cardX: 10, cardY: 235 },
+  { province: "DKI Jakarta", name: "Jakarta Podcast Network", location: "Jakarta", ketua: "Reza Aditya Pratama", lat: -6.2088, lng: 106.8456, avatarUrl: "https://i.pravatar.cc/150?img=33", cardX: 10, cardY: 290 },
+  { province: "Jawa Barat", name: "Sunda Podcast Lab", location: "Bandung", ketua: "Tania Putri Maharani", lat: -6.9175, lng: 107.6191, avatarUrl: "https://i.pravatar.cc/150?img=23", cardX: 10, cardY: 345 },
+  { province: "DI Yogyakarta", name: "Jogja Podcast House", location: "Yogyakarta", ketua: "Arum Sekar Wulandari", lat: -7.7956, lng: 110.3695, avatarUrl: "https://i.pravatar.cc/150?img=25", cardX: 10, cardY: 400 },
+  { province: "Jawa Tengah", name: "Central Java Podcast Studio", location: "Semarang", ketua: "Bagas Wicaksono", lat: -6.9666, lng: 110.4196, avatarUrl: "https://i.pravatar.cc/150?img=15", cardX: 10, cardY: 455 },
+  { province: "Jawa Timur", name: "Jatim Podcast Space", location: "Surabaya", ketua: "Dimas Prasetyo", lat: -7.2575, lng: 112.7521, avatarUrl: "https://i.pravatar.cc/150?img=52", cardX: 10, cardY: 510 },
+  { province: "Bali", name: "Bali Audio Studio", location: "Denpasar", ketua: "Putu Gede Arimbawa", lat: -8.6500, lng: 115.2167, avatarUrl: "https://i.pravatar.cc/150?img=60", cardX: 10, cardY: 565 },
+  { province: "Nusa Tenggara Barat", name: "Lombok Podcast Hub", location: "Mataram", ketua: "Lalu Hamzanwadi", lat: -8.5833, lng: 116.1167, avatarUrl: "https://i.pravatar.cc/150?img=53", cardX: 10, cardY: 620 },
+  { province: "Kalimantan Barat", name: "PontiCast Studio", location: "Pontianak", ketua: "Yohana Sari Dewi", lat: -0.0263, lng: 109.3425, avatarUrl: "https://i.pravatar.cc/150?img=44", cardX: 980, cardY: 15 },
+  { province: "Kalimantan Tengah", name: "Kalteng Podcast Corner", location: "Palangka Raya", ketua: "Irwan Prasetya", lat: -2.2071, lng: 113.9213, avatarUrl: "https://i.pravatar.cc/150?img=47", cardX: 980, cardY: 70 },
+  { province: "Kalimantan Timur", name: "Samarinda Voice Lab", location: "Samarinda", ketua: "Angga Maulana", lat: -0.4948, lng: 117.1436, avatarUrl: "https://i.pravatar.cc/150?img=51", cardX: 980, cardY: 125 },
+  { province: "Sulawesi Utara", name: "Manado Podcast Hub", location: "Manado", ketua: "Vcky Christian Lumentut", lat: 1.4748, lng: 124.8421, avatarUrl: "https://i.pravatar.cc/150?img=59", cardX: 980, cardY: 180 },
+  { province: "Sulawesi Selatan", name: "Makassar Podcast Studio", location: "Makassar", ketua: "Andi Nurul Hikmah", lat: -5.1477, lng: 119.4327, avatarUrl: "https://i.pravatar.cc/150?img=45", cardX: 980, cardY: 235 },
+  { province: "Papua", name: "Jayapura Voice Studio", location: "Jayapura", ketua: "Septianora Waribrav", lat: -2.5916, lng: 140.6690, avatarUrl: "https://i.pravatar.cc/150?img=57", cardX: 980, cardY: 290 },
 ];
 
 function getTier(followers: number): string {
@@ -634,26 +634,18 @@ function PodcastFacilityMapLayer({ onMapReady }: { onMapReady: (map: L.Map) => v
 }
 
 function PodcastFacilityCards({ mapInstance, containerRef, provinceCounts }: { mapInstance: L.Map | null; containerRef: React.RefObject<HTMLDivElement | null>; provinceCounts: Map<string, number> }) {
-  const [positions, setPositions] = useState<{ f: PodcastFacility; dotX: number; dotY: number; cardX: number; cardY: number }[]>([]);
+  const [dots, setDots] = useState<{ f: PodcastFacility; dotX: number; dotY: number }[]>([]);
 
   useEffect(() => {
     if (!mapInstance || !containerRef.current) return;
     const recalc = () => {
       if (!containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
-      const CARD_W = 150;
-      const CARD_H = 48;
       const pts = PODCAST_FACILITIES.map((f) => {
         const pt = mapInstance.latLngToContainerPoint([f.lat, f.lng]);
-        const cx = pt.x + f.offsetX;
-        const cy = pt.y + f.offsetY;
-        return { f, dotX: pt.x, dotY: pt.y, cardX: cx, cardY: cy };
-      }).filter((p) => {
-        const inDot = p.dotX > -250 && p.dotX < rect.width + 250 && p.dotY > -200 && p.dotY < rect.height + 200;
-        const inCard = p.cardX > -CARD_W && p.cardX < rect.width + CARD_W && p.cardY > -CARD_H && p.cardY < rect.height + CARD_H;
-        return inDot || inCard;
-      });
-      setPositions(pts);
+        return { f, dotX: pt.x, dotY: pt.y };
+      }).filter((p) => p.dotX > -100 && p.dotX < rect.width + 100 && p.dotY > -100 && p.dotY < rect.height + 100);
+      setDots(pts);
     };
     recalc();
     mapInstance.on("moveend zoomend", recalc);
@@ -664,26 +656,15 @@ function PodcastFacilityCards({ mapInstance, containerRef, provinceCounts }: { m
 
   const CARD_W = 150;
   const CARD_H = 48;
-  const halfW = CARD_W / 2;
-  const halfH = CARD_H / 2;
 
   return (
     <>
       <svg style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 400, overflow: "visible", width: "100%", height: "100%" }}>
-        {positions.map((p) => {
-          const left = p.cardX - halfW;
-          const right = p.cardX + halfW;
-          const top = p.cardY - halfH;
-          const bottom = p.cardY + halfH;
-          const cx = Math.max(left, Math.min(p.dotX, right));
-          const cy = Math.max(top, Math.min(p.dotY, bottom));
-          const dx = p.dotX - cx;
-          const dy = p.dotY - cy;
-          const len = Math.sqrt(dx * dx + dy * dy) || 1;
-          const perpX = (-dy / len) * 20;
-          const perpY = (dx / len) * 20;
-          const midX = (cx + p.dotX) / 2 + perpX;
-          const midY = (cy + p.dotY) / 2 + perpY;
+        {dots.map((p) => {
+          const cx = p.f.cardX + CARD_W;
+          const cy = p.f.cardY + CARD_H / 2;
+          const midX = (cx + p.dotX) / 2;
+          const midY = (cy + p.dotY) / 2;
           return (
             <path
               key={p.f.province}
@@ -697,17 +678,16 @@ function PodcastFacilityCards({ mapInstance, containerRef, provinceCounts }: { m
           );
         })}
       </svg>
-      {positions.map((p) => {
-        const anggota = provinceCounts.get(p.f.province) ?? 0;
-        const displayName = p.f.province === "DI Yogyakarta" ? "DPD DI YOGYAKARTA" : p.f.province.toUpperCase();
+      {PODCAST_FACILITIES.map((f) => {
+        const anggota = provinceCounts.get(f.province) ?? 0;
+        const displayName = f.province === "DI Yogyakarta" ? "DPD DI YOGYAKARTA" : f.province.toUpperCase();
         return (
           <div
-            key={p.f.province}
+            key={f.province}
             className="absolute pointer-events-none"
             style={{
-              left: `${p.cardX}px`,
-              top: `${p.cardY}px`,
-              transform: "translate(-50%, -50%)",
+              left: `${f.cardX}px`,
+              top: `${f.cardY}px`,
               width: `${CARD_W}px`,
               zIndex: 500,
             }}
@@ -722,7 +702,7 @@ function PodcastFacilityCards({ mapInstance, containerRef, provinceCounts }: { m
             }}>
               <div className="p-1.5">
                 <div className="text-[8px] font-bold tracking-wider" style={{ color: "#60A5FA" }}>{displayName}</div>
-                <div className="text-[8px] mt-0.5" style={{ color: "#F1F5F9" }}>Nama: {p.f.name}</div>
+                <div className="text-[8px] mt-0.5" style={{ color: "#F1F5F9" }}>Nama: {f.name}</div>
                 <div className="text-[8px] mt-0.5 font-semibold" style={{ color: "#60A5FA" }}>Anggota: {anggota}</div>
               </div>
             </div>
