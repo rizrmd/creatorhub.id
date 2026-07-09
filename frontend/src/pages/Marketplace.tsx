@@ -1534,6 +1534,7 @@ export default function Marketplace() {
   const [selectedCreatorsById, setSelectedCreatorsById] = useState<Record<string, Creator>>({});
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [showFavorites, setShowFavorites] = useState(false);
+  const [sortByEr, setSortByEr] = useState(false);
   const [listView, setListView] = useState(() => restoredStateRef.current?.listView ?? false);
   const [cityOptions, setCityOptions] = useState<string[]>(DEFAULT_CITIES);
   const [activePlatforms, setActivePlatforms] = useState<string[]>([]);
@@ -1620,7 +1621,12 @@ export default function Marketplace() {
 
   const createMutation = useCreateCampaign();
 
-  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteCreators({ ...filters, search: debouncedSearch || undefined });
+  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteCreators({
+    ...filters,
+    search: debouncedSearch || undefined,
+    sortBy: sortByEr ? "engagement" : undefined,
+    sortDir: sortByEr ? "desc" : undefined,
+  });
   const { data: stats, isLoading: statsLoading, dataUpdatedAt } = useMarketplaceStats();
 
   const creators = (() => {
@@ -1876,6 +1882,24 @@ export default function Marketplace() {
               <Heart className="w-3.5 h-3.5 text-white fill-white" />
             </span>
             Favorites
+          </button>
+
+          <button
+            onClick={() => setSortByEr(!sortByEr)}
+            className={`mp-platform-btn flex items-center gap-2 h-9 pl-1.5 pr-3 rounded-lg text-[13px] font-medium border transition-all duration-200 cursor-pointer ${
+              sortByEr
+                ? "text-white"
+                : "hover:text-slate-200"
+            }`}
+            style={sortByEr
+              ? { background: "var(--ch-orange)", borderColor: "var(--ch-orange)" }
+              : { background: "#0F1B2D", borderColor: "#2A3850", color: "#8B96AA" }
+            }
+          >
+            <span className="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style={{ background: "#8B5CF6" }}>
+              <TrendingUp className="w-3.5 h-3.5 text-white" />
+            </span>
+            Highest Engagement Rate (ER)
           </button>
 
           <div className="flex-1" />
