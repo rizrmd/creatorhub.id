@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+﻿import { useState, useEffect, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Users, MapPin, Share2, Tag, BarChart3, UsersRound, ChevronDown, Mic } from "lucide-react";
 import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
@@ -679,25 +679,39 @@ function PodcastFacilityDots() {
   return null;
 }
 
-function PodcastFacilityCards({ containerRef }: { containerRef: React.RefObject<HTMLDivElement | null> }) {
+function PodcastFacilityMapLayer({ onMapReady }: { onMapReady: (map: L.Map) => void }) {
   const map = useMap();
+  useEffect(() => {
+    onMapReady(map);
+  }, [map, onMapReady]);
+  return (
+    <>
+      <PodcastFacilityConnections />
+      <PodcastFacilityDots />
+    </>
+  );
+}
+
+function PodcastFacilityCards({ mapInstance, containerRef }: { mapInstance: L.Map | null; containerRef: React.RefObject<HTMLDivElement | null> }) {
   const [positions, setPositions] = useState<{ f: PodcastFacility; x: number; y: number }[]>([]);
 
-  const recalc = useCallback(() => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const pts = PODCAST_FACILITIES.map((f) => {
-      const pt = map.latLngToContainerPoint([f.lat, f.lng]);
-      return { f, x: pt.x, y: pt.y };
-    }).filter((p) => p.x > -100 && p.x < rect.width + 100 && p.y > -100 && p.y < rect.height + 100);
-    setPositions(pts);
-  }, [map, containerRef]);
-
   useEffect(() => {
+    if (!mapInstance || !containerRef.current) return;
+    const recalc = () => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const pts = PODCAST_FACILITIES.map((f) => {
+        const pt = mapInstance.latLngToContainerPoint([f.lat, f.lng]);
+        return { f, x: pt.x, y: pt.y };
+      }).filter((p) => p.x > -120 && p.x < rect.width + 120 && p.y > -80 && p.y < rect.height + 80);
+      setPositions(pts);
+    };
     recalc();
-    map.on("moveend zoomend", recalc);
-    return () => { map.off("moveend zoomend", recalc); };
-  }, [map, recalc]);
+    mapInstance.on("moveend zoomend", recalc);
+    return () => { mapInstance.off("moveend zoomend", recalc); };
+  }, [mapInstance, containerRef]);
+
+  if (!mapInstance) return null;
 
   return (
     <>
@@ -751,16 +765,6 @@ function PodcastFacilityCards({ containerRef }: { containerRef: React.RefObject<
           </div>
         </div>
       ))}
-    </>
-  );
-}
-
-function PodcastFacilityLayer({ containerRef }: { containerRef: React.RefObject<HTMLDivElement | null> }) {
-  return (
-    <>
-      <PodcastFacilityConnections />
-      <PodcastFacilityDots />
-      <PodcastFacilityCards containerRef={containerRef} />
     </>
   );
 }
@@ -918,6 +922,7 @@ export default function ServiceHub() {
   const [filterGender, setFilterGender] = useState<string>("all");
   const [showPodcastFacilities, setShowPodcastFacilities] = useState(false);
   const mapContainerRef = useRef<HTMLDivElement>(null);
+  const [podcastMapInstance, setPodcastMapInstance] = useState<L.Map | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -1244,8 +1249,9 @@ export default function ServiceHub() {
                   </>
                 )
               )}
-              {showPodcastFacilities && <PodcastFacilityLayer containerRef={mapContainerRef} />}
+              {showPodcastFacilities && <PodcastFacilityMapLayer onMapReady={setPodcastMapInstance} />}
             </MapContainer>
+            {showPodcastFacilities && <PodcastFacilityCards mapInstance={podcastMapInstance} containerRef={mapContainerRef} />}
           </div>
 
         {/* Bottom analytics inside same card */}
