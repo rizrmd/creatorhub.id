@@ -6,6 +6,7 @@ import {
   Clock, ChevronDown, Loader2,
   Users, Instagram, Music, Youtube,
   Shield, Gauge, Cpu, Settings, ArrowDown, ExternalLink,
+  Search, Download, X,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { instagramPostsApi, type InstagramPost, type InstagramScrapeResult } from "@/lib/api";
@@ -178,7 +179,228 @@ const SKEMA_AMPLIFIERS = [
   { platform: "YouTube", color: "#FF0000", count: 150 },
 ];
 
+/* ───────────────────────── CONTENT PLAN TYPES ───────────────────────── */
+
+interface ContentPlanStep {
+  step: string;
+  person: string;
+  status: "Done" | "Processing" | "Not Done" | "No Need";
+  supervisor: string;
+  hasPreview?: boolean;
+  previewLabel?: string;
+  hasSchedule?: boolean;
+}
+
+interface ContentPlanItem {
+  no: number;
+  date: string;
+  platform: string;
+  creatorName: string;
+  creatorRole: string;
+  creatorAvatar: string;
+  contentCode: string;
+  caption: string;
+  hashtags: string;
+  fase: string;
+  contentPillar: string;
+  topic: string;
+  steps: ContentPlanStep[];
+}
+
 /* ═══════════════════════════════ COMPONENT ═══════════════════════════════ */
+
+function ContentProductionModal({ item, onClose }: { item: ContentPlanItem; onClose: () => void }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [caption, setCaption] = useState(item.caption);
+  const [hashtags, setHashtags] = useState(item.hashtags);
+
+  const statusColors: Record<string, { bg: string; color: string }> = {
+    "Done": { bg: "#166534", color: "#4ADE80" },
+    "Not Done": { bg: "#854D0E", color: "#FACC15" },
+    "No Need": { bg: "#334155", color: "#94A3B8" },
+    "Processing": { bg: "#92400E", color: "#FB923C" },
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70" onClick={onClose}>
+      <div className="rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl" style={{ background: "#0F172A", border: "1px solid #1E293B" }} onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
+        <div className="flex items-start justify-between p-5 border-b" style={{ borderColor: "#1E293B" }}>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full overflow-hidden shrink-0">
+              <img src={item.creatorAvatar} alt={item.creatorName} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+            </div>
+            <div>
+              <h2 className="text-[16px] font-bold" style={{ color: "#F1F5F9", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                Content Production Management: {item.contentCode}
+              </h2>
+              <p className="text-[12px]" style={{ color: "#94A3B8" }}>{item.creatorName}</p>
+              <p className="text-[11px]" style={{ color: "#64748B" }}>Konten Kreator / {item.creatorRole}</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-1.5 rounded-lg transition-colors hover:bg-white/10">
+            <X className="w-5 h-5" style={{ color: "#94A3B8" }} />
+          </button>
+        </div>
+
+        {/* Content Info */}
+        <div className="p-5 border-b" style={{ borderColor: "#1E293B" }}>
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "#64748B" }}>Target Posting</p>
+                <p className="text-[13px] font-semibold mt-0.5" style={{ color: "#F1F5F9" }}>{item.date}</p>
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "#64748B" }}>Target Platform</p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  {item.platform === "Instagram" && <Instagram className="w-4 h-4" style={{ color: "#E1306C" }} />}
+                  {item.platform === "TikTok" && <Music className="w-4 h-4" style={{ color: "#00F2EA" }} />}
+                  {item.platform === "YouTube" && <Youtube className="w-4 h-4" style={{ color: "#FF0000" }} />}
+                  {item.platform === "LinkedIn" && <span className="text-[12px] font-bold" style={{ color: "#0077B5" }}>in</span>}
+                  <span className="text-[12px] font-semibold" style={{ color: "#F1F5F9" }}>{item.platform}</span>
+                </div>
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "#64748B" }}>Fase</p>
+                <p className="text-[13px] font-semibold mt-0.5" style={{ color: "#F1F5F9" }}>{item.fase}</p>
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "#64748B" }}>Content Pillar</p>
+                <p className="text-[13px] font-semibold mt-0.5" style={{ color: "#F1F5F9" }}>{item.contentPillar}</p>
+              </div>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "#64748B" }}>Tema/Topik</p>
+                <p className="text-[14px] font-bold mt-0.5" style={{ color: "#60A5FA" }}>{item.topic}</p>
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "#64748B" }}>Caption</p>
+                {isEditing ? (
+                  <textarea
+                    value={caption}
+                    onChange={(e) => setCaption(e.target.value)}
+                    className="w-full mt-1 p-2 text-[13px] rounded-lg border resize-none"
+                    style={{ background: "#1E293B", borderColor: "#334155", color: "#F1F5F9" }}
+                    rows={3}
+                  />
+                ) : (
+                  <p className="text-[13px] mt-0.5 leading-relaxed" style={{ color: "#F1F5F9" }}>{caption}</p>
+                )}
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "#64748B" }}>Hashtags</p>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={hashtags}
+                    onChange={(e) => setHashtags(e.target.value)}
+                    className="w-full mt-1 p-2 text-[13px] rounded-lg border"
+                    style={{ background: "#1E293B", borderColor: "#334155", color: "#F1F5F9" }}
+                  />
+                ) : (
+                  <p className="text-[13px] mt-0.5" style={{ color: "#60A5FA" }}>{hashtags}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Production Steps Table */}
+        <div className="p-5">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b" style={{ borderColor: "#1E293B" }}>
+                <th className="text-left py-2.5 px-3 text-[10px] font-bold uppercase tracking-wider" style={{ color: "#64748B" }}>NO</th>
+                <th className="text-left py-2.5 px-3 text-[10px] font-bold uppercase tracking-wider" style={{ color: "#64748B" }}>ALUR PRODUKSI</th>
+                <th className="text-left py-2.5 px-3 text-[10px] font-bold uppercase tracking-wider" style={{ color: "#64748B" }}>PENANGGUNG JAWAB</th>
+                <th className="text-left py-2.5 px-3 text-[10px] font-bold uppercase tracking-wider" style={{ color: "#64748B" }}>STATUS</th>
+                <th className="text-left py-2.5 px-3 text-[10px] font-bold uppercase tracking-wider" style={{ color: "#64748B" }}>SUPERVISOR</th>
+              </tr>
+            </thead>
+            <tbody>
+              {item.steps.map((step, i) => {
+                const st = statusColors[step.status] || statusColors["Not Done"];
+                return (
+                  <Fragment key={i}>
+                    <tr className="border-b" style={{ borderColor: "#1E293B" }}>
+                      <td className="py-2.5 px-3 text-[12px] font-semibold" style={{ color: "#F1F5F9" }}>{i + 1}</td>
+                      <td className="py-2.5 px-3 text-[12px] font-semibold" style={{ color: "#F1F5F9" }}>{step.step}</td>
+                      <td className="py-2.5 px-3">
+                        <div className="flex flex-wrap gap-1">
+                          {step.person.split(", ").map((p) => (
+                            <span key={p} className="px-2 py-0.5 rounded text-[10px] font-semibold" style={{ background: "#1E3A5F", color: "#60A5FA" }}>
+                              {p}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="py-2.5 px-3">
+                        {step.hasSchedule ? (
+                          <input
+                            type="datetime-local"
+                            className="px-2.5 py-1.5 rounded text-[11px] font-semibold border"
+                            style={{ background: "#1E293B", borderColor: "#334155", color: "#F1F5F9" }}
+                          />
+                        ) : (
+                          <span className="px-2.5 py-1 rounded text-[10px] font-bold" style={{ background: st.bg, color: st.color }}>
+                            {step.status}
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-2.5 px-3 text-[11px]" style={{ color: "#94A3B8" }}>{step.supervisor}</td>
+                    </tr>
+                    {step.hasPreview && (
+                      <tr className="border-b" style={{ borderColor: "#1E293B" }}>
+                        <td colSpan={5} className="py-3 px-3">
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <p className="text-[11px] font-semibold" style={{ color: "#94A3B8" }}>{step.previewLabel}</p>
+                              <button className="flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold rounded transition-colors hover:bg-red-500/10" style={{ color: "#F87171", border: "1px solid #7F1D1D" }}>
+                                <Download className="w-3 h-3" /> Download Asset
+                              </button>
+                            </div>
+                            <div className="rounded-xl overflow-hidden border" style={{ borderColor: "#1E293B", maxWidth: "480px", background: "#1A2332" }}>
+                              <div className="flex items-center gap-3 p-3" style={{ background: "#1A3A2A" }}>
+                                <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ background: "#166534" }}>
+                                  <FileText className="w-5 h-5" style={{ color: "#22C55E" }} />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <p className="text-[12px] font-semibold truncate" style={{ color: "#4ADE80" }}>docs.google.com</p>
+                                  <p className="text-[11px] truncate mt-0.5" style={{ color: "#86EFAC" }}>Dokumen preview untuk langkah ini</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Footer */}
+        <div className="p-5 border-t flex items-center justify-between" style={{ borderColor: "#1E293B" }}>
+          <button
+            onClick={() => setIsEditing(!isEditing)}
+            className="flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold rounded-lg border transition-colors hover:bg-white/5"
+            style={{ borderColor: "#334155", color: "#94A3B8" }}
+          >
+            <FileText className="w-4 h-4" />
+            {isEditing ? "Batal Edit" : "Edit"}
+          </button>
+          <button className="flex items-center gap-1.5 px-4 py-2 text-[13px] font-semibold rounded-lg transition-colors hover:opacity-90" style={{ background: "#2563EB", color: "white" }}>
+            Save Progress
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function AnalyticsTab() {
   const [scrapeAccount, setScrapeAccount] = useState("jurnal.wargajakarta");
@@ -336,6 +558,8 @@ export default function ProjectDetail() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
   const [activeSubTab, setActiveSubTab] = useState("workstream");
+  const [contentPlanSearch, setContentPlanSearch] = useState("");
+  const [selectedContentItem, setSelectedContentItem] = useState<ContentPlanItem | null>(null);
 
   const project = PROJECTS_DATA[id || ""];
 
@@ -780,8 +1004,8 @@ export default function ProjectDetail() {
         {/* ═══ CONTENT PLAN TAB ═══ */}
         <TabsContent value="content-plan" className="mt-6 space-y-4">
           {(() => {
-            const contentPlan = [
-              { no: 1, date: "7 April 2025", platform: "TikTok", steps: [
+            const contentPlan: ContentPlanItem[] = [
+              { no: 1, date: "7 April 2025", platform: "TikTok", creatorName: "Budi Wijaya", creatorRole: "Content Creator", creatorAvatar: "/creators/jerome-polin.png", contentCode: "KONTEN-001", caption: "Tips memulai UMKM dari nol! Simak langkah-langkahnya di video ini. #UMKM #EkonomiKreatif", hashtags: "#UMKM #EkonomiKreatif #IndonesiaMaju", fase: "Awareness", contentPillar: "Edukasi", topic: "Edukasi Digitalisasi UMKM untuk Generasi Muda", steps: [
                 { step: "Pembuatan Script & Caption", person: "Content Writer", status: "Done", supervisor: "Editor in Chief" },
                 { step: "Storyboard & Visual Elements", person: "Content Writer", status: "Done", supervisor: "Editor in Chief" },
                 { step: "Script Approved by Client", person: "Content Writer, Editor in Chief", status: "Done", supervisor: "Project Manager" },
@@ -790,10 +1014,10 @@ export default function ProjectDetail() {
                 { step: "Review Konten", person: "Editor in Chief, Klien", status: "No Need", supervisor: "Digital Specialist" },
                 { step: "Revisi (jika ada)", person: "Video Editor, Graphic Designer", status: "No Need", supervisor: "Editor in Chief" },
                 { step: "Content Approved by", person: "Editor in Chief, Klien", status: "Done", supervisor: "Project Manager" },
-                { step: "Penjadwalan Posting", person: "Digital Strategist", status: "Processing", supervisor: "Project Manager" },
+                { step: "Penjadwalan Posting", person: "Digital Strategist", status: "Processing", supervisor: "Project Manager", hasSchedule: true },
                 { step: "Konten diposting", person: "Klien", status: "Not Done", supervisor: "Project Manager" },
               ]},
-              { no: 2, date: "5 April 2025", platform: "Instagram", steps: [
+              { no: 2, date: "5 April 2025", platform: "Instagram", creatorName: "Ani Suryani", creatorRole: "Content Creator", creatorAvatar: "/creators/rachel-vennya.png", contentCode: "KONTEN-002", caption: "Program Kementerian UMKM yang wajib diketahui oleh seluruh pelaku UMKM di Indonesia!", hashtags: "#KementerianUMKM #ProgramUMKM #UsahaMikro", fase: "Awareness", contentPillar: "Edukasi", topic: "Kampanye Program Prioritas Kementerian UMKM", steps: [
                 { step: "Pembuatan Script & Caption", person: "Content Writer", status: "Done", supervisor: "Editor in Chief" },
                 { step: "Storyboard & Visual Elements", person: "Content Writer", status: "Done", supervisor: "Editor in Chief" },
                 { step: "Script Approved by Client", person: "Content Writer, Editor in Chief", status: "Done", supervisor: "Project Manager" },
@@ -802,10 +1026,10 @@ export default function ProjectDetail() {
                 { step: "Review Konten", person: "Editor in Chief, Klien", status: "No Need", supervisor: "Digital Specialist" },
                 { step: "Revisi (jika ada)", person: "Video Editor, Graphic Designer", status: "No Need", supervisor: "Editor in Chief" },
                 { step: "Content Approved by", person: "Editor in Chief, Klien", status: "Done", supervisor: "Project Manager" },
-                { step: "Penjadwalan Posting", person: "Digital Strategist", status: "Not Done", supervisor: "Project Manager" },
+                { step: "Penjadwalan Posting", person: "Digital Strategist", status: "Not Done", supervisor: "Project Manager", hasSchedule: true },
                 { step: "Konten diposting", person: "Klien", status: "Not Done", supervisor: "Project Manager" },
               ]},
-              { no: 3, date: "6 April 2025", platform: "YouTube", steps: [
+              { no: 3, date: "6 April 2025", platform: "YouTube", creatorName: "Cahya Putra", creatorRole: "Video Producer", creatorAvatar: "/creators/fadil-jaidi.png", contentCode: "KONTEN-003", caption: "Tutorial lengkap digital marketing untuk UMKM. Mulai dari nol sampai bisa jualan online!", hashtags: "#DigitalMarketing #UMKM #TutorialJualanOnline", fase: "Education", contentPillar: "Tutorial", topic: "Tutorial Digital Marketing untuk Pelaku UMKM", steps: [
                 { step: "Pembuatan Script & Caption", person: "Content Writer", status: "Done", supervisor: "Editor in Chief" },
                 { step: "Storyboard & Visual Elements", person: "Content Writer", status: "Done", supervisor: "Editor in Chief" },
                 { step: "Script Approved by Client", person: "Content Writer, Editor in Chief", status: "Done", supervisor: "Project Manager" },
@@ -814,10 +1038,10 @@ export default function ProjectDetail() {
                 { step: "Review Konten", person: "Editor in Chief, Klien", status: "No Need", supervisor: "Digital Specialist" },
                 { step: "Revisi (jika ada)", person: "Video Editor, Graphic Designer", status: "No Need", supervisor: "Editor in Chief" },
                 { step: "Content Approved by", person: "Editor in Chief, Klien", status: "Done", supervisor: "Project Manager" },
-                { step: "Penjadwalan Posting", person: "Digital Strategist", status: "Not Done", supervisor: "Project Manager" },
+                { step: "Penjadwalan Posting", person: "Digital Strategist", status: "Not Done", supervisor: "Project Manager", hasSchedule: true },
                 { step: "Konten diposting", person: "Klien", status: "Not Done", supervisor: "Project Manager" },
               ]},
-              { no: 4, date: "7 April 2025", platform: "LinkedIn", steps: [
+              { no: 4, date: "7 April 2025", platform: "LinkedIn", creatorName: "Dewi Lestari", creatorRole: "Content Writer", creatorAvatar: "/creators/rahadi-wangsapermana.jpg", contentCode: "KONTEN-004", caption: "Analisis dampak program UMKM terhadap pertumbuhan ekonomi nasional. Data-driven insight untuk para pelaku usaha.", hashtags: "#EkonomiUMKM #PertumbuhanEkonomi #DataDriven", fase: "Engagement", contentPillar: "Insight", topic: "Insight Ekonomi: Dampak Program UMKM terhadap GDP", steps: [
                 { step: "Pembuatan Script & Caption", person: "Content Writer", status: "Not Done", supervisor: "Editor in Chief" },
                 { step: "Storyboard & Visual Elements", person: "Content Writer", status: "Not Done", supervisor: "Editor in Chief" },
                 { step: "Script Approved by Client", person: "Content Writer, Editor in Chief", status: "Not Done", supervisor: "Project Manager" },
@@ -826,10 +1050,10 @@ export default function ProjectDetail() {
                 { step: "Review Konten", person: "Editor in Chief, Klien", status: "No Need", supervisor: "Digital Specialist" },
                 { step: "Revisi (jika ada)", person: "Video Editor, Graphic Designer", status: "No Need", supervisor: "Editor in Chief" },
                 { step: "Content Approved by", person: "Editor in Chief, Klien", status: "Not Done", supervisor: "Project Manager" },
-                { step: "Penjadwalan Posting", person: "Digital Strategist", status: "Not Done", supervisor: "Project Manager" },
+                { step: "Penjadwalan Posting", person: "Digital Strategist", status: "Not Done", supervisor: "Project Manager", hasSchedule: true },
                 { step: "Konten diposting", person: "Klien", status: "Not Done", supervisor: "Project Manager" },
               ]},
-              { no: 5, date: "8 April 2025", platform: "TikTok", steps: [
+              { no: 5, date: "8 April 2025", platform: "TikTok", creatorName: "Eko Prasetyo", creatorRole: "Video Creator", creatorAvatar: "/creators/jerome-polin.png", contentCode: "KONTEN-005", caption: "Cerita sukses UMKM Indonesia yang Goes International! Inspirasinya luar biasa.", hashtags: "#UMKMIndonesia #Sukses #GoesInternational", fase: "Conversion", contentPillar: "Success Story", topic: "Success Story: UMKM Lokal yang Go Internasional", steps: [
                 { step: "Pembuatan Script & Caption", person: "Content Writer", status: "Not Done", supervisor: "Editor in Chief" },
                 { step: "Storyboard & Visual Elements", person: "Content Writer", status: "Not Done", supervisor: "Editor in Chief" },
                 { step: "Script Approved by Client", person: "Content Writer, Editor in Chief", status: "Not Done", supervisor: "Project Manager" },
@@ -838,130 +1062,149 @@ export default function ProjectDetail() {
                 { step: "Review Konten", person: "Editor in Chief, Klien", status: "No Need", supervisor: "Digital Specialist" },
                 { step: "Revisi (jika ada)", person: "Video Editor, Graphic Designer", status: "No Need", supervisor: "Editor in Chief" },
                 { step: "Content Approved by", person: "Editor in Chief, Klien", status: "Not Done", supervisor: "Project Manager" },
-                { step: "Penjadwalan Posting", person: "Digital Strategist", status: "Not Done", supervisor: "Project Manager" },
-                { step: "Konten diposting", person: "Klien", status: "Not Done", supervisor: "Project Manager" },
-              ]},
-              { no: 6, date: "Backup 1", platform: "Instagram", steps: [
-                { step: "Pembuatan Script & Caption", person: "Content Writer", status: "Not Done", supervisor: "Editor in Chief" },
-                { step: "Storyboard & Visual Elements", person: "Content Writer", status: "Not Done", supervisor: "Editor in Chief" },
-                { step: "Script Approved by Client", person: "Content Writer, Editor in Chief", status: "Not Done", supervisor: "Project Manager" },
-                { step: "Raw Materials (Video/Pictures)", person: "Videographer, Klien", status: "Not Done", supervisor: "Editor in Chief" },
-                { step: "Produksi Konten", person: "Graphic Designer, Video Editor", status: "Not Done", supervisor: "Editor in Chief" },
-                { step: "Review Konten", person: "Editor in Chief, Klien", status: "No Need", supervisor: "Digital Specialist" },
-                { step: "Revisi (jika ada)", person: "Video Editor, Graphic Designer", status: "No Need", supervisor: "Editor in Chief" },
-                { step: "Content Approved by", person: "Editor in Chief, Klien", status: "Not Done", supervisor: "Project Manager" },
-                { step: "Penjadwalan Posting", person: "Digital Strategist", status: "Not Done", supervisor: "Project Manager" },
-                { step: "Konten diposting", person: "Klien", status: "Not Done", supervisor: "Project Manager" },
-              ]},
-              { no: 7, date: "8 April 2025", platform: "YouTube", steps: [
-                { step: "Pembuatan Script & Caption", person: "Content Writer", status: "Not Done", supervisor: "Editor in Chief" },
-                { step: "Storyboard & Visual Elements", person: "Content Writer", status: "Not Done", supervisor: "Editor in Chief" },
-                { step: "Script Approved by Client", person: "Content Writer, Editor in Chief", status: "Not Done", supervisor: "Project Manager" },
-                { step: "Raw Materials (Video/Pictures)", person: "Videographer, Klien", status: "Not Done", supervisor: "Editor in Chief" },
-                { step: "Produksi Konten", person: "Graphic Designer, Video Editor", status: "Not Done", supervisor: "Editor in Chief" },
-                { step: "Review Konten", person: "Editor in Chief, Klien", status: "No Need", supervisor: "Digital Specialist" },
-                { step: "Revisi (jika ada)", person: "Video Editor, Graphic Designer", status: "No Need", supervisor: "Editor in Chief" },
-                { step: "Content Approved by", person: "Editor in Chief, Klien", status: "Not Done", supervisor: "Project Manager" },
-                { step: "Penjadwalan Posting", person: "Digital Strategist", status: "Not Done", supervisor: "Project Manager" },
-                { step: "Konten diposting", person: "Klien", status: "Not Done", supervisor: "Project Manager" },
-              ]},
-              { no: 8, date: "8 April 2025", platform: "TikTok", steps: [
-                { step: "Pembuatan Script & Caption", person: "Content Writer", status: "Not Done", supervisor: "Editor in Chief" },
-                { step: "Storyboard & Visual Elements", person: "Content Writer", status: "Not Done", supervisor: "Editor in Chief" },
-                { step: "Script Approved by Client", person: "Content Writer, Editor in Chief", status: "Not Done", supervisor: "Project Manager" },
-                { step: "Raw Materials (Video/Pictures)", person: "Editor in Chief", status: "Not Done", supervisor: "Editor in Chief" },
-                { step: "Proses Produksi Konten", person: "Graphic Designer, Video Editor", status: "Not Done", supervisor: "Editor in Chief" },
-                { step: "Review Konten", person: "Editor in Chief, Klien", status: "No Need", supervisor: "Digital Specialist" },
-                { step: "Revisi (jika ada)", person: "Video Editor, Graphic Designer", status: "No Need", supervisor: "Editor in Chief" },
-                { step: "Content Approved by", person: "Editor in Chief, Klien", status: "Not Done", supervisor: "Project Manager" },
-                { step: "Penjadwalan Posting", person: "Digital Strategist", status: "Not Done", supervisor: "Project Manager" },
+                { step: "Penjadwalan Posting", person: "Digital Strategist", status: "Not Done", supervisor: "Project Manager", hasSchedule: true },
                 { step: "Konten diposting", person: "Klien", status: "Not Done", supervisor: "Project Manager" },
               ]},
             ];
 
-            const statusColor = (s: string) => {
-              if (s === "Done") return { bg: "rgba(16,185,129,0.15)", text: "#10B981" };
-              if (s === "No Need") return { bg: "rgba(148,163,184,0.15)", text: "#94A3B8" };
-              if (s === "Processing") return { bg: "rgba(245,158,11,0.15)", text: "#F59E0B" };
-              return { bg: "rgba(239,68,68,0.15)", text: "#EF4444" };
+            const filtered = contentPlan.filter((c) =>
+              c.topic.toLowerCase().includes(contentPlanSearch.toLowerCase()) ||
+              c.platform.toLowerCase().includes(contentPlanSearch.toLowerCase()) ||
+              c.creatorName.toLowerCase().includes(contentPlanSearch.toLowerCase()) ||
+              c.contentCode.toLowerCase().includes(contentPlanSearch.toLowerCase())
+            );
+
+            const platformColor = (p: string) => {
+              if (p === "Instagram") return { bg: "rgba(225,48,108,0.15)", text: "#E1306C" };
+              if (p === "TikTok") return { bg: "rgba(0,242,234,0.15)", text: "#00F2EA" };
+              if (p === "YouTube") return { bg: "rgba(255,0,0,0.15)", text: "#FF0000" };
+              return { bg: "rgba(0,119,181,0.15)", text: "#0077B5" };
             };
+
+            const totalDone = contentPlan.filter((c) => c.steps.every((s) => s.status === "Done" || s.status === "No Need")).length;
+            const totalProcessing = contentPlan.filter((c) => c.steps.some((s) => s.status === "Processing")).length;
+            const totalPending = contentPlan.filter((c) => c.steps.some((s) => s.status === "Not Done")).length;
 
             return (
               <>
+                {/* Summary Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <div className="rounded-xl border p-3" style={{ background: "rgba(59,130,246,0.1)", borderColor: "var(--ch-border)" }}>
                     <p className="text-[20px] font-bold" style={{ color: "#3B82F6" }}>{contentPlan.length}</p>
                     <p className="text-[11px] font-medium" style={{ color: "var(--ch-text-muted)" }}>Total Konten</p>
                   </div>
                   <div className="rounded-xl border p-3" style={{ background: "rgba(16,185,129,0.1)", borderColor: "var(--ch-border)" }}>
-                    <p className="text-[20px] font-bold" style={{ color: "#10B981" }}>{contentPlan.filter((c) => c.steps.every((s) => s.status === "Done" || s.status === "No Need")).length}</p>
+                    <p className="text-[20px] font-bold" style={{ color: "#10B981" }}>{totalDone}</p>
                     <p className="text-[11px] font-medium" style={{ color: "var(--ch-text-muted)" }}>Selesai</p>
                   </div>
                   <div className="rounded-xl border p-3" style={{ background: "rgba(245,158,11,0.1)", borderColor: "var(--ch-border)" }}>
-                    <p className="text-[20px] font-bold" style={{ color: "#F59E0B" }}>{contentPlan.filter((c) => c.steps.some((s) => s.status === "Processing")).length}</p>
+                    <p className="text-[20px] font-bold" style={{ color: "#F59E0B" }}>{totalProcessing}</p>
                     <p className="text-[11px] font-medium" style={{ color: "var(--ch-text-muted)" }}>Processing</p>
                   </div>
                   <div className="rounded-xl border p-3" style={{ background: "rgba(239,68,68,0.1)", borderColor: "var(--ch-border)" }}>
-                    <p className="text-[20px] font-bold" style={{ color: "#EF4444" }}>{contentPlan.filter((c) => c.steps.some((s) => s.status === "Not Done")).length}</p>
+                    <p className="text-[20px] font-bold" style={{ color: "#EF4444" }}>{totalPending}</p>
                     <p className="text-[11px] font-medium" style={{ color: "var(--ch-text-muted)" }}>Belum Dikerjakan</p>
                   </div>
                 </div>
 
-                {contentPlan.map((content) => {
-                  const doneCount = content.steps.filter((s) => s.status === "Done").length;
-                  const totalSteps = content.steps.length;
-                  const progress = Math.round((doneCount / totalSteps) * 100);
-                  return (
-                    <div key={content.no} className="rounded-xl border overflow-hidden" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-                      <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: "var(--ch-border)" }}>
-                        <div className="flex items-center gap-3">
-                          <span className="w-8 h-8 rounded-lg flex items-center justify-center text-[13px] font-bold" style={{ background: "var(--ch-primary)", color: "#fff" }}>{content.no}</span>
-                          <div>
-                            <p className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>Konten {content.no}</p>
-                            <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>{content.date}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{
-                            background: content.platform === "TikTok" ? "rgba(0,0,0,0.15)" : content.platform === "Instagram" ? "rgba(225,48,108,0.15)" : content.platform === "YouTube" ? "rgba(255,0,0,0.15)" : "rgba(0,119,181,0.15)",
-                            color: content.platform === "TikTok" ? "#000" : content.platform === "Instagram" ? "#E1306C" : content.platform === "YouTube" ? "#FF0000" : "#0077B5",
-                          }}>{content.platform}</span>
-                          <div className="w-24 h-2 rounded-full bg-white/10 overflow-hidden">
-                            <div className="h-full rounded-full" style={{ width: `${progress}%`, background: progress === 100 ? "#10B981" : progress > 50 ? "#F59E0B" : "#EF4444" }} />
-                          </div>
-                          <span className="text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>{progress}%</span>
-                        </div>
-                      </div>
-                      <div className="overflow-x-auto">
-                        <table className="w-full">
-                          <thead>
-                            <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
-                              <th className="text-left px-4 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Alur Produksi</th>
-                              <th className="text-left px-4 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Penanggung Jawab</th>
-                              <th className="text-center px-4 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Status</th>
-                              <th className="text-left px-4 py-2 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Supervisor</th>
+                {/* Search Bar */}
+                <div className="flex items-center gap-3">
+                  <div className="relative flex-1 max-w-sm">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--ch-text-muted)" }} />
+                    <input
+                      type="text"
+                      placeholder="Cari konten, platform, kreator..."
+                      value={contentPlanSearch}
+                      onChange={(e) => setContentPlanSearch(e.target.value)}
+                      className="w-full pl-9 pr-3 py-2 text-[13px] rounded-lg border"
+                      style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)", color: "var(--ch-text)" }}
+                    />
+                  </div>
+                  <span className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
+                    {filtered.length} konten
+                  </span>
+                </div>
+
+                {/* Pipeline Table */}
+                <div className="rounded-xl border overflow-hidden" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b" style={{ borderColor: "var(--ch-border)" }}>
+                          <th className="text-left py-3 px-4 text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>No</th>
+                          <th className="text-left py-3 px-4 text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Platform</th>
+                          <th className="text-left py-3 px-4 text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Tema/Topik</th>
+                          <th className="text-left py-3 px-4 text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Konten Kreator</th>
+                          <th className="text-left py-3 px-4 text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Fase</th>
+                          <th className="text-left py-3 px-4 text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Progress</th>
+                          <th className="text-left py-3 px-4 text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filtered.map((content) => {
+                          const doneCount = content.steps.filter((s) => s.status === "Done").length;
+                          const totalSteps = content.steps.length;
+                          const progress = Math.round((doneCount / totalSteps) * 100);
+                          const pc = platformColor(content.platform);
+                          return (
+                            <tr key={content.no} className="border-b last:border-b-0 hover:bg-white/[0.02] transition-colors" style={{ borderColor: "var(--ch-border)" }}>
+                              <td className="py-3.5 px-4">
+                                <span className="text-[13px] font-bold" style={{ color: "var(--ch-text-muted)" }}>{content.no}</span>
+                              </td>
+                              <td className="py-3.5 px-4">
+                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: pc.bg, color: pc.text }}>
+                                  {content.platform}
+                                </span>
+                              </td>
+                              <td className="py-3.5 px-4">
+                                <p className="text-[13px] font-semibold" style={{ color: "var(--ch-text)" }}>{content.topic}</p>
+                                <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>{content.contentCode} · {content.date}</p>
+                              </td>
+                              <td className="py-3.5 px-4">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-7 h-7 rounded-full overflow-hidden shrink-0">
+                                    <img src={content.creatorAvatar} alt={content.creatorName} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                                  </div>
+                                  <div>
+                                    <p className="text-[12px] font-semibold" style={{ color: "var(--ch-text)" }}>{content.creatorName}</p>
+                                    <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{content.creatorRole}</p>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="py-3.5 px-4">
+                                <span className="text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>{content.fase}</span>
+                              </td>
+                              <td className="py-3.5 px-4">
+                                <div className="space-y-1 min-w-[120px]">
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-[11px] font-semibold" style={{ color: "var(--ch-text)" }}>{doneCount}/{totalSteps} Steps</span>
+                                    <span className="text-[11px] font-bold" style={{ color: progress === 100 ? "#10B981" : progress > 50 ? "#F59E0B" : "#EF4444" }}>{progress}%</span>
+                                  </div>
+                                  <div className="w-full h-1.5 rounded-full" style={{ background: "var(--ch-border)" }}>
+                                    <div className="h-full rounded-full" style={{ width: `${progress}%`, background: progress === 100 ? "#10B981" : progress > 50 ? "#F59E0B" : "#EF4444" }} />
+                                  </div>
+                                  <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>
+                                    {content.steps.some((s) => s.status === "Processing") ? "Processing" : content.steps.every((s) => s.status === "Done" || s.status === "No Need") ? "Selesai" : "Belum dikerjakan"}
+                                  </p>
+                                </div>
+                              </td>
+                              <td className="py-3.5 px-4">
+                                <button onClick={() => setSelectedContentItem(content)} className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold rounded-lg transition-colors hover:bg-white/10" style={{ color: "var(--ch-text-muted)", border: "1px solid var(--ch-border)" }}>
+                                  <Eye className="w-3 h-3" /> View
+                                </button>
+                              </td>
                             </tr>
-                          </thead>
-                          <tbody>
-                            {content.steps.map((s, i) => {
-                              const sc = statusColor(s.status);
-                              return (
-                                <tr key={i} className="border-b last:border-b-0 hover:bg-white/3 transition-colors" style={{ borderColor: "var(--ch-border)" }}>
-                                  <td className="px-4 py-2 text-[12px] font-medium" style={{ color: "var(--ch-text)" }}>{s.step}</td>
-                                  <td className="px-4 py-2 text-[11px]" style={{ color: "var(--ch-text-muted)" }}>{s.person}</td>
-                                  <td className="px-4 py-2 text-center">
-                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: sc.bg, color: sc.text }}>{s.status}</span>
-                                  </td>
-                                  <td className="px-4 py-2 text-[11px]" style={{ color: "var(--ch-text-muted)" }}>{s.supervisor}</td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  );
-                })}
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Detail Modal */}
+                {selectedContentItem && (
+                  <ContentProductionModal item={selectedContentItem} onClose={() => setSelectedContentItem(null)} />
+                )}
               </>
             );
           })()}
