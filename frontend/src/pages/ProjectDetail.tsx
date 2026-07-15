@@ -859,14 +859,12 @@ export default function ProjectDetail() {
                         <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>Video &bull; Carousel &bull; Reels &bull; Stories</p>
                       </div>
 
-                      {/* 3 arrows down */}
-                      <div className="flex justify-center gap-16">
-                        {[0,1,2].map((idx) => (
-                          <svg key={idx} width="16" height="18" viewBox="0 0 16 18">
-                            <line x1="8" y1="0" x2="8" y2="12" stroke="#F97316" strokeWidth="2" />
-                            <polygon points="3,12 8,18 13,12" fill="#F97316" />
-                          </svg>
-                        ))}
+                      {/* 1 arrow down */}
+                      <div className="flex justify-center">
+                        <svg width="20" height="24" viewBox="0 0 20 24">
+                          <line x1="10" y1="0" x2="10" y2="17" stroke="#F97316" strokeWidth="2" />
+                          <polygon points="4,17 10,24 16,17" fill="#F97316" />
+                        </svg>
                       </div>
 
                       {/* Shelter + Mikro + Nano */}
@@ -942,15 +940,22 @@ export default function ProjectDetail() {
                     </div>
 
                     {/* Right: Amplifications — aligned with Official Accounts */}
-                    <div className="xl:w-[280px] shrink-0 self-start">
-                      <div className="rounded-2xl border-2 p-4 w-full relative" style={{ borderColor: "rgba(139,92,246,0.5)", background: "rgba(15,23,42,0.6)", boxShadow: "0 0 30px rgba(139,92,246,0.15)" }}>
-                        {/* Arrow pointing left */}
-                        <div className="absolute top-1/2 -left-8 -translate-y-1/2">
-                          <svg width="28" height="20" viewBox="0 0 28 20">
-                            <line x1="0" y1="10" x2="22" y2="10" stroke="#8B5CF6" strokeWidth="2" />
-                            <polygon points="0,4 8,10 0,16" fill="#8B5CF6" />
-                          </svg>
-                        </div>
+                    <div className="xl:w-[280px] shrink-0 self-start flex items-center gap-3">
+                      {/* Arrow pointing LEFT to Official Accounts */}
+                      <div className="hidden xl:flex flex-col items-center shrink-0">
+                        <svg width="40" height="20" viewBox="0 0 40 20">
+                          <defs>
+                            <linearGradient id="arrowGrad" x1="0" y1="0" x2="1" y2="0">
+                              <stop offset="0%" stopColor="#8B5CF6" />
+                              <stop offset="100%" stopColor="#6366F1" />
+                            </linearGradient>
+                          </defs>
+                          <line x1="0" y1="10" x2="30" y2="10" stroke="url(#arrowGrad)" strokeWidth="2.5" />
+                          <polygon points="0,4 10,10 0,16" fill="#8B5CF6" />
+                        </svg>
+                      </div>
+                      {/* Amplifications card */}
+                      <div className="rounded-2xl border-2 p-4 w-full" style={{ borderColor: "rgba(139,92,246,0.5)", background: "rgba(15,23,42,0.6)", boxShadow: "0 0 30px rgba(139,92,246,0.15)" }}>
                         <div className="text-center mb-3">
                           <h3 className="text-[16px] font-extrabold tracking-wider" style={{ color: "#E1306C", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>AMPLIFICATIONS</h3>
                           <p className="text-[9px] font-bold uppercase tracking-widest mt-0.5" style={{ color: "#94A3B8" }}>Boost Engagements</p>
