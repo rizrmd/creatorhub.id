@@ -638,11 +638,11 @@ export default function ProjectDetail() {
         <TabsList variant="line" className="border-b w-full justify-start gap-0">
           {[
             { value: "overview", label: "Overview", icon: Eye },
-            { value: "content-plan", label: "Content Plan", icon: Calendar },
             { value: "influencers", label: "Influencers", icon: Users },
+            { value: "content-plan", label: "Content Plans", icon: Calendar },
             { value: "deliverables", label: "Content Posted", icon: FileText },
             { value: "analytics", label: "Media Monitoring", icon: BarChart3 },
-            { value: "files", label: "Files & Assets", icon: FolderOpen },
+            { value: "files", label: "Files & Documents", icon: FolderOpen },
             { value: "activity", label: "Activity Log", icon: Clock },
           ].map((tab) => (
             <TabsTrigger key={tab.value} value={tab.value}
