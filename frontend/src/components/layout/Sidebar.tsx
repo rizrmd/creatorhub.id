@@ -28,6 +28,7 @@ const brandNavItems: NavItem[] = [
   { to: "/dashboard",                    icon: LayoutDashboard, label: "Dashboard" },
   { to: "/dashboard/service-hub",        icon: Network,         label: "Homeless Media Hub" },
   { to: "/dashboard/creator-hub",        icon: FolderOpen,      label: "Creator Hub" },
+  { to: "/dashboard/creator-academy",    icon: GraduationCap,   label: "Creator Academy" },
   { to: "/dashboard/marketplace",        icon: Store,           label: "Marketplace" },
   { to: "/dashboard/projects",           icon: FolderKanban,    label: "Projects" },
   { to: "/dashboard/messages",           icon: MessageSquare,   label: "Messages" },
