@@ -790,7 +790,7 @@ export default function ProjectDetail() {
 
               {/* ═══ SKEMA GLORIFIKASI FLOWCHART ═══ */}
               {activeSubTab === "skema" && (
-                <div className="flex flex-col xl:flex-row gap-6">
+                <div className="flex flex-col xl:flex-row gap-10">
                   {/* Left: Main flowchart — constrained width to leave room for arrows + Amplifications */}
                   <div className="flex-1 xl:max-w-[75%] space-y-2">
                     <h2 className="text-[16px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Skema Glorifikasi, Kampanye & Edukasi</h2>
@@ -901,13 +901,18 @@ export default function ProjectDetail() {
                           <p className="text-[11px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>MIKRO (15)</p>
                         </div>
                         <p className="text-[8px] mb-1.5" style={{ color: "var(--ch-text-muted)" }}>TikTok: 10 &bull; Instagram: 5</p>
-                        <div className="grid grid-cols-5 gap-1">
-                          {[
-                            "klikbisnis","sentrakarya","ceritadagang","arusniaga","sobatusaha",
-                            "kawanlokal","pusatlapak","nadiniaga","terasbisnis","halousaha",
-                            "lenteraniaga","jawaralokal","arahusaha","poinniaga","orbitbisnis",
-                          ].map((u) => (
+                        {/* TikTok row */}
+                        <p className="text-[7px] font-bold mb-0.5" style={{ color: "#00F2EA" }}>TikTok</p>
+                        <div className="grid grid-cols-5 gap-1 mb-1.5">
+                          {["klikbisnis","sentrakarya","ceritadagang","arusniaga","sobatusaha","kawanlokal","pusatlapak","nadiniaga","terasbisnis","halousaha"].map((u) => (
                             <img key={u} src={`/profile-photos/${u}.jpeg`} alt={u} className="w-6 h-6 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                          ))}
+                        </div>
+                        {/* Instagram row */}
+                        <p className="text-[7px] font-bold mb-0.5" style={{ color: "#E1306C" }}>Instagram</p>
+                        <div className="grid grid-cols-5 gap-1">
+                          {["lenteraniaga","jawaralokal","arahusaha","poinniaga","orbitbisnis"].map((u) => (
+                            <img key={u} src={`/profile-photos/${u}.jpg`} alt={u} className="w-6 h-6 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                           ))}
                         </div>
                       </div>
@@ -920,16 +925,19 @@ export default function ProjectDetail() {
                           <p className="text-[11px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>NANO (40)</p>
                         </div>
                         <p className="text-[8px] mb-1.5" style={{ color: "var(--ch-text-muted)" }}>TikTok: 20 &bull; Instagram: 20</p>
-                        <div className="grid grid-cols-7 gap-0.5">
-                          {[
-                            "jakbrebes1928","veraa04_","novel.best.seller8","beatrixchan7","ferdhhyontop","keyzaa04_","anakmama",
-                            "khoiriyahap","ayycanss24","mama.ichacut","rivakah032","cyllabcdefghijk","reyhanz056","rindunay_",
-                            "jeryyv2","jennarxvender","jbceltastr","mey.sibal","lovelyy.v2","rachmanti_mantiie","meymey0519",
-                            "vt_nay","amelia_srswt","ilyiee","citracalinda","milaamirandaa09","3acsyaaa",
-                          ].map((u) => (
-                            <img key={u} src={`/profile-photos/${u}.jpg`} alt={u} className="w-6 h-6 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                        {/* TikTok row */}
+                        <p className="text-[7px] font-bold mb-0.5" style={{ color: "#00F2EA" }}>TikTok</p>
+                        <div className="grid grid-cols-10 gap-0.5 mb-1.5">
+                          {["jakbrebes1928","veraa04_","novel.best.seller8","beatrixchan7","ferdhhyontop","keyzaa04_","anakmama","khoiriyahap","ayycanss24","mama.ichacut","rivakah032","cyllabcdefghijk","reyhanz056","rindunay_","jeryyv2","jennarxvender","jbceltastr","mey.sibal","lovelyy.v2","rachmanti_mantiie"].map((u) => (
+                            <img key={u} src={`/profile-photos/${u}.jpg`} alt={u} className="w-5 h-5 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                           ))}
-                          <div className="w-6 h-6 rounded flex items-center justify-center text-[7px] font-bold" style={{ background: "var(--ch-border)", color: "var(--ch-text-muted)" }}>+25</div>
+                        </div>
+                        {/* Instagram row */}
+                        <p className="text-[7px] font-bold mb-0.5" style={{ color: "#E1306C" }}>Instagram</p>
+                        <div className="grid grid-cols-10 gap-0.5">
+                          {["meymey0519","vt_nay","amelia_srswt","ilyiee","citracalinda","milaamirandaa09","3acsyaaa","maryati2542","clara4calista4","parcia.cia","mahesagantengbangett","heraaharsaa","meyden1501","anjanizeina","minka.min9","mama.ichacut","rachmanti_mantiie","mey.sibal","lovelyy.v2","khoiriyahap"].map((u) => (
+                            <img key={u} src={`/profile-photos/${u}.jpg`} alt={u} className="w-5 h-5 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                          ))}
                         </div>
                       </div>
                     </div>
@@ -937,11 +945,6 @@ export default function ProjectDetail() {
 
                   {/* Right: Amplifications Card — positioned at Official Accounts level */}
                   <div className="xl:w-[260px] shrink-0 self-start flex flex-col mt-16">
-                    {/* Arrow LEFT to Official Accounts */}
-                    <svg width="50" height="20" viewBox="0 0 50 20" className="ml-auto mr-2 mb-1">
-                      <line x1="0" y1="10" x2="40" y2="10" stroke="#8B5CF6" strokeWidth="2" />
-                      <polygon points="0,4 10,10 0,16" fill="#8B5CF6" />
-                    </svg>
                     <div className="rounded-2xl border-2 p-4 w-full" style={{ borderColor: "rgba(139,92,246,0.5)", background: "rgba(15,23,42,0.6)", boxShadow: "0 0 30px rgba(139,92,246,0.15)" }}>
                       <div className="text-center mb-3">
                         <h3 className="text-[16px] font-extrabold tracking-wider" style={{ color: "#E1306C", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>AMPLIFICATIONS</h3>
@@ -963,7 +966,7 @@ export default function ProjectDetail() {
                       <div className="border-t border-dashed mb-3" style={{ borderColor: "rgba(255,255,255,0.15)" }} />
                       <div className="space-y-2">
                         {SKEMA_AMPLIFIERS.map((amp) => (
-                          <div key={amp.platform} className="rounded-lg border p-3 text-center"
+                          <div key={amp.platform} className="rounded-lg border p-3 text-center relative"
                             style={{ borderColor: `${amp.color}50`, background: `${amp.color}08`, boxShadow: `0 0 20px ${amp.color}15` }}>
                             <div className="flex items-center justify-center gap-1.5 mb-1">
                               {amp.platform === "Instagram" && <Instagram className="w-3.5 h-3.5" style={{ color: amp.color }} />}
@@ -973,17 +976,9 @@ export default function ProjectDetail() {
                             </div>
                             <p className="text-[28px] font-extrabold leading-none" style={{ color: amp.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{amp.count}</p>
                             <p className="text-[10px] font-semibold mt-1" style={{ color: "#E2E8F0" }}>Akun Amplifier</p>
-                            <p className="text-[9px]" style={{ color: "#64748B" }}>(100 – 1.000 Followers)</p>
                           </div>
                         ))}
                       </div>
-                    </div>
-                    {/* Arrow DOWN to Nano */}
-                    <div className="flex justify-center mt-1">
-                      <svg width="20" height="30" viewBox="0 0 20 30">
-                        <line x1="10" y1="0" x2="10" y2="22" stroke="#8B5CF6" strokeWidth="2" />
-                        <polygon points="5,22 10,30 15,22" fill="#8B5CF6" />
-                      </svg>
                     </div>
                   </div>
                 </div>
