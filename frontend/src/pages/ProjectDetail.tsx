@@ -935,48 +935,54 @@ export default function ProjectDetail() {
                     </div>
                   </div>
 
-                  {/* Right: Amplifications Card */}
-                  <div className="xl:w-[280px] shrink-0 rounded-2xl border-2 p-5 self-start" style={{ borderColor: "rgba(139,92,246,0.5)", background: "rgba(15,23,42,0.6)", boxShadow: "0 0 30px rgba(139,92,246,0.15)" }}>
-                    <div className="text-center mb-4">
-                      <h3 className="text-[18px] font-extrabold tracking-wider" style={{ color: "#E1306C", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>AMPLIFICATIONS</h3>
-                      <p className="text-[10px] font-bold uppercase tracking-widest mt-0.5" style={{ color: "#94A3B8" }}>Boost Engagements</p>
-                    </div>
-                    <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
-                      {[
-                        { label: "Likes", icon: "❤️", bg: "rgba(225,48,108,0.15)", border: "rgba(225,48,108,0.3)", color: "#E1306C" },
-                        { label: "Shares", icon: "🔗", bg: "rgba(59,130,246,0.15)", border: "rgba(59,130,246,0.3)", color: "#3B82F6" },
-                        { label: "Comments", icon: "💬", bg: "rgba(16,185,129,0.15)", border: "rgba(16,185,129,0.3)", color: "#10B981" },
-                        { label: "Mentions", icon: "@", bg: "rgba(249,115,22,0.15)", border: "rgba(249,115,22,0.3)", color: "#F97316" },
-                      ].map((pill) => (
-                        <span key={pill.label} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold"
-                          style={{ background: pill.bg, border: `1px solid ${pill.border}`, color: pill.color }}>
-                          {pill.icon} {pill.label}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="border-t border-dashed mb-4" style={{ borderColor: "rgba(255,255,255,0.15)" }} />
-                    <div className="space-y-3">
-                      {SKEMA_AMPLIFIERS.map((amp) => (
-                        <div key={amp.platform} className="rounded-xl border p-4 text-center"
-                          style={{ borderColor: `${amp.color}50`, background: `${amp.color}08`, boxShadow: `0 0 20px ${amp.color}15` }}>
-                          <div className="flex items-center justify-center gap-2 mb-2">
-                            {amp.platform === "Instagram" && <Instagram className="w-4 h-4" style={{ color: amp.color }} />}
-                            {amp.platform === "TikTok" && <Music className="w-4 h-4" style={{ color: amp.color }} />}
-                            {amp.platform === "YouTube" && <Youtube className="w-4 h-4" style={{ color: amp.color }} />}
-                            <p className="text-[12px] font-extrabold" style={{ color: amp.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Amplifier {amp.platform}</p>
+                  {/* Right: Amplifications Card with arrows */}
+                  <div className="xl:w-[280px] shrink-0 self-start flex flex-col items-center">
+                    {/* Arrow LEFT to Official Accounts */}
+                    <svg width="60" height="24" viewBox="0 0 60 24" className="mb-1">
+                      <line x1="0" y1="12" x2="50" y2="12" stroke="#8B5CF6" strokeWidth="2" />
+                      <polygon points="0,6 12,12 0,18" fill="#8B5CF6" />
+                    </svg>
+                    <div className="rounded-2xl border-2 p-5 w-full" style={{ borderColor: "rgba(139,92,246,0.5)", background: "rgba(15,23,42,0.6)", boxShadow: "0 0 30px rgba(139,92,246,0.15)" }}>
+                      <div className="text-center mb-4">
+                        <h3 className="text-[18px] font-extrabold tracking-wider" style={{ color: "#E1306C", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>AMPLIFICATIONS</h3>
+                        <p className="text-[10px] font-bold uppercase tracking-widest mt-0.5" style={{ color: "#94A3B8" }}>Boost Engagements</p>
+                      </div>
+                      <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
+                        {[
+                          { label: "Likes", icon: "❤️", bg: "rgba(225,48,108,0.15)", border: "rgba(225,48,108,0.3)", color: "#E1306C" },
+                          { label: "Shares", icon: "🔗", bg: "rgba(59,130,246,0.15)", border: "rgba(59,130,246,0.3)", color: "#3B82F6" },
+                          { label: "Comments", icon: "💬", bg: "rgba(16,185,129,0.15)", border: "rgba(16,185,129,0.3)", color: "#10B981" },
+                          { label: "Mentions", icon: "@", bg: "rgba(249,115,22,0.15)", border: "rgba(249,115,22,0.3)", color: "#F97316" },
+                        ].map((pill) => (
+                          <span key={pill.label} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold"
+                            style={{ background: pill.bg, border: `1px solid ${pill.border}`, color: pill.color }}>
+                            {pill.icon} {pill.label}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="border-t border-dashed mb-4" style={{ borderColor: "rgba(255,255,255,0.15)" }} />
+                      <div className="space-y-3">
+                        {SKEMA_AMPLIFIERS.map((amp) => (
+                          <div key={amp.platform} className="rounded-xl border p-4 text-center"
+                            style={{ borderColor: `${amp.color}50`, background: `${amp.color}08`, boxShadow: `0 0 20px ${amp.color}15` }}>
+                            <div className="flex items-center justify-center gap-2 mb-2">
+                              {amp.platform === "Instagram" && <Instagram className="w-4 h-4" style={{ color: amp.color }} />}
+                              {amp.platform === "TikTok" && <Music className="w-4 h-4" style={{ color: amp.color }} />}
+                              {amp.platform === "YouTube" && <Youtube className="w-4 h-4" style={{ color: amp.color }} />}
+                              <p className="text-[12px] font-extrabold" style={{ color: amp.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Amplifier {amp.platform}</p>
+                            </div>
+                            <p className="text-[32px] font-extrabold leading-none" style={{ color: amp.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{amp.count}</p>
+                            <p className="text-[11px] font-semibold mt-1" style={{ color: "#E2E8F0" }}>Akun Amplifier</p>
+                            <p className="text-[10px]" style={{ color: "#64748B" }}>(100 – 1.000 Followers)</p>
                           </div>
-                          <p className="text-[32px] font-extrabold leading-none" style={{ color: amp.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{amp.count}</p>
-                          <p className="text-[11px] font-semibold mt-1" style={{ color: "#E2E8F0" }}>Akun Amplifier</p>
-                          <p className="text-[10px]" style={{ color: "#64748B" }}>(100 – 1.000 Followers)</p>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                    <div className="flex justify-center mt-4">
-                      <svg width="40" height="30" viewBox="0 0 40 30">
-                        <line x1="0" y1="15" x2="30" y2="15" stroke="#8B5CF6" strokeWidth="2" />
-                        <polygon points="0,10 10,15 0,20" fill="#8B5CF6" />
-                      </svg>
-                    </div>
+                    {/* Arrow DOWN to Nano */}
+                    <svg width="24" height="40" viewBox="0 0 24 40" className="mt-1">
+                      <line x1="12" y1="0" x2="12" y2="30" stroke="#8B5CF6" strokeWidth="2" />
+                      <polygon points="6,30 12,40 18,30" fill="#8B5CF6" />
+                    </svg>
                   </div>
                 </div>
               )}
