@@ -909,7 +909,7 @@ export default function ProjectDetail() {
                         </div>
                         <p className="text-[7px] font-bold mb-0.5" style={{ color: "#E1306C" }}>Instagram</p>
                         <div className="grid grid-cols-5 gap-1">
-                          {["orbitbisnis","poin-niaga","arah-usaha","jawaralokal","lenteraniaga"].map((u) => (
+                          {["orbitbisnis2","poin-niaga","arah-usaha","jawaralokal","lenteraniaga"].map((u) => (
                             <img key={u} src={`/profile-photos/${u}.jpg`} alt={u} className="w-6 h-6 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                           ))}
                         </div>
@@ -943,15 +943,9 @@ export default function ProjectDetail() {
                     <div className="xl:w-[280px] shrink-0 self-start flex items-center gap-2">
                       {/* Arrow pointing LEFT from Amplifications to Official Accounts */}
                       <div className="hidden xl:flex items-center shrink-0">
-                        <svg width="50" height="30" viewBox="0 0 50 30">
-                          <defs>
-                            <linearGradient id="arrowLeft" x1="1" y1="0" x2="0" y2="0">
-                              <stop offset="0%" stopColor="#8B5CF6" stopOpacity="1" />
-                              <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0.4" />
-                            </linearGradient>
-                          </defs>
-                          <line x1="48" y1="15" x2="12" y2="15" stroke="url(#arrowLeft)" strokeWidth="3" strokeLinecap="round" />
-                          <polygon points="2,8 2,22 14,15" fill="#8B5CF6" />
+                        <svg width="40" height="28" viewBox="0 0 40 28">
+                          <line x1="38" y1="14" x2="10" y2="14" stroke="#F97316" strokeWidth="3" strokeLinecap="round" />
+                          <polygon points="2,6 2,22 14,14" fill="#F97316" />
                         </svg>
                       </div>
                       {/* Amplifications card */}
