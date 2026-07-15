@@ -26,16 +26,15 @@ interface NavItem {
 
 const brandNavItems: NavItem[] = [
   { to: "/dashboard",                    icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/dashboard/service-hub",        icon: Network,         label: "Service Hub" },
-  { to: "/dashboard/projects",           icon: FolderKanban,    label: "Projects" },
-  { to: "/dashboard/marketplace",        icon: Store,           label: "Marketplace" },
+  { to: "/dashboard/service-hub",        icon: Network,         label: "Homeless Media Hub" },
   { to: "/dashboard/creator-hub",        icon: FolderOpen,      label: "Creator Hub" },
+  { to: "/dashboard/marketplace",        icon: Store,           label: "Marketplace" },
+  { to: "/dashboard/projects",           icon: FolderKanban,    label: "Projects" },
+  { to: "/dashboard/messages",           icon: MessageSquare,   label: "Messages" },
   { to: "/dashboard/boost-ads",          icon: Rocket,          label: "Boost Ads" },
-  { to: "/dashboard/creator-academy",    icon: GraduationCap,   label: "Creator Academy" },
-  { to: "/dashboard/database",           icon: Database,        label: "Database" },
   { to: "/dashboard/media-monitoring",   icon: Radio,           label: "Media Monitoring" },
   { to: "/dashboard/ai-support",         icon: Sparkles,        label: "AI Support" },
-  { to: "/dashboard/messages",           icon: MessageSquare,   label: "Messages",   badge: 12 },
+  { to: "/dashboard/database",           icon: Database,        label: "Database" },
   { to: "/dashboard/payments",           icon: CreditCard,      label: "Payments" },
   { to: "/dashboard/settings",           icon: Settings,        label: "Settings" },
 ];
