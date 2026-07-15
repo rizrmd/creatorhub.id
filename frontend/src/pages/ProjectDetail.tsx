@@ -871,10 +871,10 @@ export default function ProjectDetail() {
                       <div className="grid grid-cols-3 gap-2">
                         {/* SHELTER */}
                         <div className="rounded-lg border p-2" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
-                          <div className="flex items-center gap-1.5 mb-2">
-                            <Music className="w-3 h-3" style={{ color: "#00F2EA" }} />
-                            <Instagram className="w-3 h-3" style={{ color: "#E1306C" }} />
-                            <p className="text-[11px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>SHELTER (3)</p>
+                        <div className="flex items-center gap-1.5 mb-2">
+                          <img src="/logo-tiktok.png" alt="TikTok" className="w-3.5 h-3.5 object-contain" />
+                          <img src="/logo-instagram.png" alt="Instagram" className="w-3.5 h-3.5 object-contain" />
+                          <p className="text-[11px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>SHELTER (3)</p>
                           </div>
                           <div className="space-y-1.5">
                             {[
@@ -896,8 +896,8 @@ export default function ProjectDetail() {
                         {/* MIKRO */}
                         <div className="rounded-lg border p-2" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
                           <div className="flex items-center gap-1.5 mb-1">
-                            <Music className="w-3 h-3" style={{ color: "#00F2EA" }} />
-                            <Instagram className="w-3 h-3" style={{ color: "#E1306C" }} />
+                            <img src="/logo-tiktok.png" alt="TikTok" className="w-3.5 h-3.5 object-contain" />
+                            <img src="/logo-instagram.png" alt="Instagram" className="w-3.5 h-3.5 object-contain" />
                             <p className="text-[11px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>MIKRO (15)</p>
                           </div>
                           <p className="text-[8px] mb-1.5" style={{ color: "var(--ch-text-muted)" }}>TikTok: 10 &bull; Instagram: 5</p>
@@ -918,8 +918,8 @@ export default function ProjectDetail() {
                         {/* NANO */}
                         <div className="rounded-lg border p-2" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
                           <div className="flex items-center gap-1.5 mb-1">
-                            <Music className="w-3 h-3" style={{ color: "#00F2EA" }} />
-                            <Instagram className="w-3 h-3" style={{ color: "#E1306C" }} />
+                            <img src="/logo-tiktok.png" alt="TikTok" className="w-3.5 h-3.5 object-contain" />
+                            <img src="/logo-instagram.png" alt="Instagram" className="w-3.5 h-3.5 object-contain" />
                             <p className="text-[11px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>NANO (40)</p>
                           </div>
                           <p className="text-[8px] mb-1.5" style={{ color: "var(--ch-text-muted)" }}>TikTok: 20 &bull; Instagram: 20</p>
