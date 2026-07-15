@@ -167,12 +167,6 @@ const SKEMA_CLIPPERS = {
   nano: { count: 40, ig: 20, tiktok: 20, followers: "1K – <10K" },
 };
 
-const SKEMA_SHELTERS = [
-  { platform: "Instagram", color: "#E1306C", followers: "100K+", type: "Akun Makro", kanal: ["Homeless Media", "Citizen Journalism"] },
-  { platform: "TikTok", color: "#00F2EA", followers: "450K+", kanal: ["Berita terkait UMKM", "Kementerian UMKM"] },
-  { platform: "YouTube", color: "#FF0000", followers: "500K+", kanal: ["Berita terkait UMKM"] },
-];
-
 const SKEMA_AMPLIFIERS = [
   { platform: "Instagram", color: "#E1306C", count: 150 },
   { platform: "TikTok", color: "#00F2EA", count: 150 },
@@ -888,60 +882,82 @@ export default function ProjectDetail() {
                     </div>
                   </div>
 
-                  {/* Tier 3 — Shelter + Amplifier per platform */}
-                  <div className="rounded-xl border overflow-hidden" style={{ background: "var(--ch-bg)", borderColor: "var(--ch-border)" }}>
-                    <p className="text-[10px] font-bold uppercase tracking-widest px-4 pt-4 pb-2" style={{ color: "#F97316" }}>Content Distribution</p>
-                    <div className="space-y-0">
-                      {SKEMA_SHELTERS.map((s) => {
-                        const amp = SKEMA_AMPLIFIERS.find((a) => a.platform === s.platform)!;
-                        return (
-                          <div key={s.platform} className="grid grid-cols-[1fr_50px_1fr] items-center border-t" style={{ borderColor: "var(--ch-border)" }}>
-                            {/* Shelter */}
-                            <div className="p-3">
-                              <div className="rounded-lg border p-3" style={{ borderColor: `${s.color}40`, background: `${s.color}08` }}>
-                                <div className="flex items-center gap-2 mb-1.5">
-                                  {s.platform === "Instagram" && <Instagram className="w-3.5 h-3.5" style={{ color: s.color }} />}
-                                  {s.platform === "TikTok" && <Music className="w-3.5 h-3.5" style={{ color: s.color }} />}
-                                  {s.platform === "YouTube" && <Youtube className="w-3.5 h-3.5" style={{ color: s.color }} />}
-                                  <p className="text-[11px] font-extrabold" style={{ color: s.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Shelter {s.platform}</p>
-                                </div>
-                                {s.type && <p className="text-[9px] font-bold uppercase" style={{ color: s.color }}>{s.type}</p>}
-                                <p className="text-[12px] font-bold" style={{ color: "var(--ch-text)" }}>{s.followers} Followers</p>
-                                <ul className="mt-1 space-y-0.5">
-                                  {s.kanal.map((k) => (
-                                    <li key={k} className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>• {k}</li>
-                                  ))}
-                                </ul>
-                              </div>
+                  {/* Tier 3 — Amplifications + Creator Avatars layout */}
+                  <div className="flex flex-col lg:flex-row items-stretch gap-4">
+                    {/* Left side — Creator Avatars */}
+                    <div className="flex flex-col items-center justify-center gap-3 shrink-0">
+                      <div className="relative">
+                        <div className="flex -space-x-3">
+                          {["#E1306C", "#00F2EA", "#FF0000", "#3B82F6", "#8B5CF6", "#F97316"].map((c, i) => (
+                            <div key={i} className="w-10 h-10 rounded-full border-2 flex items-center justify-center text-white text-[11px] font-bold"
+                              style={{ background: c, borderColor: "var(--ch-bg)", zIndex: 6 - i }}>
+                              {String.fromCharCode(65 + i)}
                             </div>
-
-                            {/* Arrow — from Amplifier to Shelter (right → left) */}
-                            <div className="flex items-center justify-center">
-                              <svg width="50" height="30" viewBox="0 0 50 30">
-                                <line x1="40" y1="15" x2="10" y2="15" stroke={s.color} strokeWidth="2" />
-                                <polygon points="10,10 0,15 10,20" fill={s.color} />
-                              </svg>
-                            </div>
-
-                            {/* Amplifier */}
-                            <div className="p-3">
-                              <div className="rounded-lg border p-3 text-center" style={{ borderColor: `${amp.color}40`, background: `${amp.color}08` }}>
-                                <div className="flex items-center justify-center gap-2 mb-1">
-                                  {amp.platform === "Instagram" && <Instagram className="w-3.5 h-3.5" style={{ color: amp.color }} />}
-                                  {amp.platform === "TikTok" && <Music className="w-3.5 h-3.5" style={{ color: amp.color }} />}
-                                  {amp.platform === "YouTube" && <Youtube className="w-3.5 h-3.5" style={{ color: amp.color }} />}
-                                  <p className="text-[11px] font-extrabold" style={{ color: amp.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Amplifier {amp.platform}</p>
-                                </div>
-                                <p className="text-[22px] font-extrabold leading-none" style={{ color: amp.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{amp.count}</p>
-                                <p className="text-[10px] font-semibold mt-0.5" style={{ color: "var(--ch-text-muted)" }}>Akun Amplifier</p>
-                                <p className="text-[9px]" style={{ color: "var(--ch-text-muted)" }}>(100 – 1.000 Followers)</p>
-                              </div>
-                            </div>
+                          ))}
+                          <div className="w-10 h-10 rounded-full border-2 flex items-center justify-center text-[11px] font-bold"
+                            style={{ background: "var(--ch-surface)", borderColor: "var(--ch-bg)", color: "var(--ch-text-muted)", zIndex: 0 }}>
+                            +25
                           </div>
-                        );
-                      })}
+                        </div>
+                      </div>
+                      {/* Arrow pointing left */}
+                      <svg width="40" height="30" viewBox="0 0 40 30">
+                        <line x1="0" y1="15" x2="30" y2="15" stroke="#F97316" strokeWidth="2" />
+                        <polygon points="0,10 10,15 0,20" fill="#F97316" />
+                      </svg>
                     </div>
-                    <p className="text-[10px] text-center py-3 italic border-t" style={{ color: "var(--ch-text-muted)", borderColor: "var(--ch-border)" }}>Likes, Comments, Shares, Mentions</p>
+
+                    {/* Right side — Amplifications Card */}
+                    <div className="flex-1 rounded-2xl border-2 p-5" style={{ borderColor: "rgba(139,92,246,0.5)", background: "rgba(15,23,42,0.6)", boxShadow: "0 0 30px rgba(139,92,246,0.15)" }}>
+                      <div className="text-center mb-4">
+                        <h3 className="text-[18px] font-extrabold tracking-wider" style={{ color: "#E1306C", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>AMPLIFICATIONS</h3>
+                        <p className="text-[10px] font-bold uppercase tracking-widest mt-0.5" style={{ color: "#94A3B8" }}>Boost Engagements</p>
+                      </div>
+
+                      {/* Pills */}
+                      <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
+                        {[
+                          { label: "Likes", icon: "❤️", bg: "rgba(225,48,108,0.15)", border: "rgba(225,48,108,0.3)", color: "#E1306C" },
+                          { label: "Shares", icon: "🔗", bg: "rgba(59,130,246,0.15)", border: "rgba(59,130,246,0.3)", color: "#3B82F6" },
+                          { label: "Comments", icon: "💬", bg: "rgba(16,185,129,0.15)", border: "rgba(16,185,129,0.3)", color: "#10B981" },
+                          { label: "Mentions", icon: "@", bg: "rgba(249,115,22,0.15)", border: "rgba(249,115,22,0.3)", color: "#F97316" },
+                        ].map((pill) => (
+                          <span key={pill.label} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold"
+                            style={{ background: pill.bg, border: `1px solid ${pill.border}`, color: pill.color }}>
+                            {pill.icon} {pill.label}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Dashed separator */}
+                      <div className="border-t border-dashed mb-4" style={{ borderColor: "rgba(255,255,255,0.15)" }} />
+
+                      {/* Amplifier cards stacked */}
+                      <div className="space-y-3">
+                        {SKEMA_AMPLIFIERS.map((amp) => (
+                          <div key={amp.platform} className="rounded-xl border p-4 text-center"
+                            style={{ borderColor: `${amp.color}50`, background: `${amp.color}08`, boxShadow: `0 0 20px ${amp.color}15` }}>
+                            <div className="flex items-center justify-center gap-2 mb-2">
+                              {amp.platform === "Instagram" && <Instagram className="w-4 h-4" style={{ color: amp.color }} />}
+                              {amp.platform === "TikTok" && <Music className="w-4 h-4" style={{ color: amp.color }} />}
+                              {amp.platform === "YouTube" && <Youtube className="w-4 h-4" style={{ color: amp.color }} />}
+                              <p className="text-[12px] font-extrabold" style={{ color: amp.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Amplifier {amp.platform}</p>
+                            </div>
+                            <p className="text-[32px] font-extrabold leading-none" style={{ color: amp.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{amp.count}</p>
+                            <p className="text-[11px] font-semibold mt-1" style={{ color: "#E2E8F0" }}>Akun Amplifier</p>
+                            <p className="text-[10px]" style={{ color: "#64748B" }}>(100 – 1.000 Followers)</p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Arrow pointing left */}
+                      <div className="flex justify-center mt-4">
+                        <svg width="40" height="30" viewBox="0 0 40 30">
+                          <line x1="0" y1="15" x2="30" y2="15" stroke="#8B5CF6" strokeWidth="2" />
+                          <polygon points="0,10 10,15 0,20" fill="#8B5CF6" />
+                        </svg>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
