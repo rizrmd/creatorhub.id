@@ -901,18 +901,18 @@ export default function ProjectDetail() {
                             <p className="text-[11px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>MIKRO (15)</p>
                           </div>
                           <p className="text-[8px] mb-1.5" style={{ color: "var(--ch-text-muted)" }}>TikTok: 10 &bull; Instagram: 5</p>
-                          <p className="text-[7px] font-bold mb-0.5" style={{ color: "#00F2EA" }}>TikTok</p>
-                          <div className="grid grid-cols-5 gap-1 mb-1.5">
-                            {["klikbisnis","sentrakarya","ceritadagang","arusniaga","sobatusaha","kawanlokal","pusatlapak","nadiniaga","terasbisnis","halousaha"].map((u) => (
-                              <img key={u} src={`/profile-photos/${u}.jpeg`} alt={u} className="w-6 h-6 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                            ))}
-                          </div>
-                          <p className="text-[7px] font-bold mb-0.5" style={{ color: "#E1306C" }}>Instagram</p>
-                          <div className="grid grid-cols-5 gap-1">
-                            {["lenteraniaga","jawaralokal","arahusaha","poinniaga","orbitbisnis"].map((u) => (
-                              <img key={u} src={`/profile-photos/${u}.jpg`} alt={u} className="w-6 h-6 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                            ))}
-                          </div>
+                        <p className="text-[7px] font-bold mb-0.5" style={{ color: "#00F2EA" }}>TikTok</p>
+                        <div className="grid grid-cols-5 gap-1 mb-1.5">
+                          {["nadiniaga","pusatlapak","klikbisnis","sentrakarya","arusniaga","sobatusaha","kawanlokal","ceritadagang","terasbisnis","halousaha"].map((u) => (
+                            <img key={u} src={`/profile-photos/${u}.jpeg`} alt={u} className="w-6 h-6 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                          ))}
+                        </div>
+                        <p className="text-[7px] font-bold mb-0.5" style={{ color: "#E1306C" }}>Instagram</p>
+                        <div className="grid grid-cols-5 gap-1">
+                          {["orbitbisnis","poin-niaga","arah-usaha","jawaralokal","lenteraniaga"].map((u) => (
+                            <img key={u} src={`/profile-photos/${u}.jpg`} alt={u} className="w-6 h-6 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                          ))}
+                        </div>
                         </div>
 
                         {/* NANO */}
@@ -923,35 +923,35 @@ export default function ProjectDetail() {
                             <p className="text-[11px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>NANO (40)</p>
                           </div>
                           <p className="text-[8px] mb-1.5" style={{ color: "var(--ch-text-muted)" }}>TikTok: 20 &bull; Instagram: 20</p>
-                          <p className="text-[7px] font-bold mb-0.5" style={{ color: "#00F2EA" }}>TikTok</p>
-                          <div className="grid grid-cols-10 gap-0.5 mb-1.5">
-                            {["jakbrebes1928","veraa04_","novel.best.seller8","beatrixchan7","ferdhhyontop","keyzaa04_","anakmama","khoiriyahap","ayycanss24","mama.ichacut","rivakah032","cyllabcdefghijk","reyhanz056","rindunay_","jeryyv2","jennarxvender","jbceltastr","mey.sibal","lovelyy.v2","rachmanti_mantiie"].map((u) => (
+                        <p className="text-[7px] font-bold mb-0.5" style={{ color: "#00F2EA" }}>TikTok</p>
+                        <div className="grid grid-cols-10 gap-0.5 mb-1.5">
+                          {["jakbrebes1928","veraa04_","novel.best.seller8","beatrixchan7","ferdhhyontop","keyzaa04_","anakmama","khoiriyahap","cerita.bucin1","ayycanss24","mama.ichacut","rivakah032","cyllabcdefghijk","reyhanz056","rindunay_","jeryyv2","jennarxvender","jbceltastr","mey.sibal","ageaa21"].map((u) => (
+                              <img key={u} src={`/profile-photos/${u}.jpeg`} alt={u} className="w-5 h-5 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                            ))}
+                        </div>
+                        <p className="text-[7px] font-bold mb-0.5" style={{ color: "#E1306C" }}>Instagram</p>
+                        <div className="grid grid-cols-10 gap-0.5">
+                          {["lovelyy.v2","rachmanti_mantiie","meymey0519","vt_nay","rindunay_","amelia_srswt","ilyiee","citracalinda","milaamirandaa09","3acsyaaa","maryati2542","clara4calista4","parcia.cia","mahesagantengbangett","heraaharsaa","meyden1501","anjanizeina","minka.min9","bebyze3_","ara.anak.baik"].map((u) => (
                               <img key={u} src={`/profile-photos/${u}.jpg`} alt={u} className="w-5 h-5 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                             ))}
-                          </div>
-                          <p className="text-[7px] font-bold mb-0.5" style={{ color: "#E1306C" }}>Instagram</p>
-                          <div className="grid grid-cols-10 gap-0.5">
-                            {["meymey0519","vt_nay","amelia_srswt","ilyiee","citracalinda","milaamirandaa09","3acsyaaa","maryati2542","clara4calista4","parcia.cia","mahesagantengbangett","heraaharsaa","meyden1501","anjanizeina","minka.min9","mama.ichacut","rachmanti_mantiie","mey.sibal","lovelyy.v2","khoiriyahap"].map((u) => (
-                              <img key={u} src={`/profile-photos/${u}.jpg`} alt={u} className="w-5 h-5 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                            ))}
-                          </div>
+                        </div>
                         </div>
                       </div>
                     </div>
 
                     {/* Right: Amplifications — aligned with Official Accounts */}
-                    <div className="xl:w-[280px] shrink-0 self-start flex items-center gap-3">
-                      {/* Arrow pointing LEFT to Official Accounts */}
-                      <div className="hidden xl:flex flex-col items-center shrink-0">
-                        <svg width="40" height="20" viewBox="0 0 40 20">
+                    <div className="xl:w-[280px] shrink-0 self-start flex items-center gap-2">
+                      {/* Arrow pointing LEFT from Amplifications to Official Accounts */}
+                      <div className="hidden xl:flex items-center shrink-0">
+                        <svg width="50" height="30" viewBox="0 0 50 30">
                           <defs>
-                            <linearGradient id="arrowGrad" x1="0" y1="0" x2="1" y2="0">
-                              <stop offset="0%" stopColor="#8B5CF6" />
-                              <stop offset="100%" stopColor="#6366F1" />
+                            <linearGradient id="arrowLeft" x1="1" y1="0" x2="0" y2="0">
+                              <stop offset="0%" stopColor="#8B5CF6" stopOpacity="1" />
+                              <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0.4" />
                             </linearGradient>
                           </defs>
-                          <line x1="0" y1="10" x2="30" y2="10" stroke="url(#arrowGrad)" strokeWidth="2.5" />
-                          <polygon points="0,4 10,10 0,16" fill="#8B5CF6" />
+                          <line x1="48" y1="15" x2="12" y2="15" stroke="url(#arrowLeft)" strokeWidth="3" strokeLinecap="round" />
+                          <polygon points="2,8 2,22 14,15" fill="#8B5CF6" />
                         </svg>
                       </div>
                       {/* Amplifications card */}
