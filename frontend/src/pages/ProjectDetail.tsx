@@ -1453,19 +1453,19 @@ export default function ProjectDetail() {
 
           {/* Shelter Accounts */}
           {[
-            { section: "Shelter (100K+)", titleColor: "#3B82F6", items: [
-              { username: "jurnal.wargajakarta", handle: "jurnal.wargajakarta", followers: "123K", status: "Active", badge: "Homeless Media", categories: ["Umum", "UMKM Focused"], desc: "Media informasi cepat seputar UMKM, program kementerian, dan berita ekonomi nasional", photo: "/profile-photos/jurnal-warga-jakarta.jpg" },
-              { username: "kilas_umkm", handle: "kilas_umkm", followers: "447.1K", status: "Active", badge: "Homeless Media", categories: ["Bisnis", "UMKM Focused"], desc: "Kanal hiburan dan informasi ringan seputar dunia UMKM Indonesia", photo: "/profile-photos/kilas-umkm.jpg" },
-              { username: "umkmhits", handle: "umkmhits", followers: "510K", status: "Active", badge: "Homeless Media", categories: ["UMKM Focused"], desc: "Konten organik dan potongan video panjang tentang cerita sukses UMKM", photo: "/profile-photos/umkm-hits.jpg" },
+            { section: "Shelter (100K+)", titleColor: "#3B82F6", gridCols: "lg:grid-cols-3", items: [
+              { username: "jurnal.wargajakarta", handle: "jurnal.wargajakarta", followers: "123K", status: "Active", badge: "Homeless Media", categories: ["UMKM Focused"], desc: "Media informasi cepat seputar UMKM, program kementerian, dan berita ekonomi nasional", photo: "/profile-photos/jurnal-warga-jakarta.jpg" },
+                { username: "kilas_umkm", handle: "kilas_umkm", followers: "447.1K", status: "Active", badge: "Homeless Media", categories: ["Bisnis"], desc: "Kanal hiburan dan informasi ringan seputar dunia UMKM Indonesia", photo: "/profile-photos/kilas-umkm.jpg" },
+                { username: "umkmhits", handle: "umkmhits", followers: "510K", status: "Active", badge: "Homeless Media", categories: ["UMKM Focused"], desc: "Konten organik dan potongan video panjang tentang cerita sukses UMKM", photo: "/profile-photos/umkm-hits.jpg" },
             ]},
-            { section: "Mikro (10K+) Instagram", titleColor: "#10B981", items: [
+            { section: "Mikro (10K+) Instagram", titleColor: "#10B981", gridCols: "xl:grid-cols-4", items: [
               { username: "orbitbisnis2", handle: "orbitbisnis2", followers: "16.1K", status: "Active", badge: "Homeless Media", categories: ["Bisnis", "UMKM Focused"], desc: "Tips & trik bisnis online untuk pelaku UMKM", photo: "/profile-photos/orbitbisnis2.jpg" },
-              { username: "poin_niaga", handle: "poin_niaga", followers: "12.2K", status: "Active", badge: "Homeless Media", categories: ["Bisnis", "UMKM Focused"], desc: "Informasi peluang usaha dan berita UMKM terkini", photo: "/profile-photos/poin-niaga.jpg" },
-              { username: "arah_usaha", handle: "arah_usaha", followers: "15.4K", status: "Active", badge: "Homeless Media", categories: ["Bisnis", "UMKM Focused"], desc: "Panduan strategi pengembangan usaha kecil menengah", photo: "/profile-photos/arah-usaha.jpg" },
-              { username: "jawaraloka_", handle: "jawaralokal_", followers: "14.4K", status: "Active", badge: "Homeless Media", categories: ["UMKM Focused"], desc: "Inspirasi dan cerita sukses UMKM lokal Indonesia", photo: "/profile-photos/jawaralokal.jpg" },
-              { username: "lenteraniaga1", handle: "lenteraniaga_", followers: "14.5K", status: "Active", badge: "Homeless Media", categories: ["Bisnis", "UMKM Focused"], desc: "Edukasi digital marketing untuk pelaku UMKM", photo: "/profile-photos/lenteraniaga.jpg" },
+                { username: "poin_niaga", handle: "poin_niaga", followers: "12.2K", status: "Active", badge: "Homeless Media", categories: ["Bisnis", "UMKM Focused"], desc: "Informasi peluang usaha dan berita UMKM terkini", photo: "/profile-photos/poin-niaga.jpg" },
+                { username: "arah_usaha", handle: "arah_usaha", followers: "15.4K", status: "Active", badge: "Homeless Media", categories: ["Bisnis", "UMKM Focused"], desc: "Panduan strategi pengembangan usaha kecil menengah", photo: "/profile-photos/arah-usaha.jpg" },
+                { username: "jawaraloka_", handle: "jawaralokal_", followers: "14.4K", status: "Active", badge: "Homeless Media", categories: ["UMKM Focused"], desc: "Inspirasi dan cerita sukses UMKM lokal Indonesia", photo: "/profile-photos/jawaralokal.jpg" },
+                { username: "lenteraniaga1", handle: "lenteraniaga_", followers: "14.5K", status: "Active", badge: "Homeless Media", categories: ["Bisnis", "UMKM Focused"], desc: "Edukasi digital marketing untuk pelaku UMKM", photo: "/profile-photos/lenteraniaga.jpg" },
             ]},
-            { section: "Mikro (10K+) TikTok", titleColor: "#F97316", items: [
+            { section: "Mikro (10K+) TikTok", titleColor: "#F97316", gridCols: "xl:grid-cols-4", items: [
               { username: "nadiniaga0", handle: "nadiniaga0", followers: "25K", status: "Active", badge: "Homeless Media", categories: ["Bisnis"], desc: "Tips jualan online dan strategi pemasaran digital", photo: "/profile-photos/nadiniaga.jpeg" },
               { username: "pusatlapak1", handle: "pusatlapak1", followers: "10.5K", status: "Active", badge: "Homeless Media", categories: ["Bisnis"], desc: "Review produk UMKM dan rekomendasi tools bisnis", photo: "/profile-photos/pusatlapak.jpeg" },
               { username: "klikbisnis1", handle: "klikbisnis1", followers: "73.2K", status: "Active", badge: "Homeless Media", categories: ["Bisnis", "UMKM Focused"], desc: "Berita dan tren bisnis UMKM terbaru", photo: "/profile-photos/klikbisnis.jpeg" },
@@ -1477,7 +1477,7 @@ export default function ProjectDetail() {
               { username: "terasbisnis", handle: "terasbisnis", followers: "21.8K", status: "Active", badge: "Homeless Media", categories: ["Bisnis"], desc: "Ide usaha kreatif dan strategi pemasaran offline", photo: "/profile-photos/terasbisnis.jpeg" },
               { username: "halousaha", handle: "halousaha", followers: "17.4K", status: "Active", badge: "Homeless Media", categories: ["Bisnis", "UMKM Focused"], desc: "Panduan memulai usaha dari rumah untuk pemula", photo: "/profile-photos/halousaha.jpeg" },
             ]},
-            { section: "Nano (1K+) TikTok", titleColor: "#8B5CF6", items: [
+            { section: "Nano (1K+) TikTok", titleColor: "#8B5CF6", gridCols: "xl:grid-cols-4", items: [
               { username: "jakbrebes1928", handle: "jakbrebes1928", followers: "1.2K", status: "Active", badge: "Clipper", categories: ["Bisnis"], desc: "Tips usaha kecil-kecilan", photo: "/profile-photos/jakbrebes1928.jpeg" },
               { username: "vera04_", handle: "veraa04_", followers: "1.5K", status: "Active", badge: "Clipper", categories: ["UMKM Focused"], desc: "Inspirasi UMKM lokal", photo: "/profile-photos/veraa04_.jpeg" },
               { username: "novel.best.seller8", handle: "novel.best.seller8", followers: "2.1K", status: "Active", badge: "Clipper", categories: ["Umum"], desc: "Review produk UMKM viral", photo: "/profile-photos/novel.best.seller8.jpeg" },
@@ -1504,7 +1504,7 @@ export default function ProjectDetail() {
               <div className="px-4 py-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
                 <p className="text-[13px] font-bold" style={{ color: section.titleColor }}>{section.section}</p>
               </div>
-              <div className="p-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 items-stretch">
+              <div className={`p-3 grid grid-cols-1 sm:grid-cols-2 gap-3 items-stretch ${section.gridCols}`}>
                 {section.items.map((r) => (
                   <div key={r.handle} className="rounded-xl border overflow-hidden hover:scale-[1.01] transition-all flex flex-col" style={{ borderColor: "var(--ch-border)", background: "var(--ch-bg)" }}>
                     <div className="p-3.5 flex flex-col flex-1">
@@ -1518,17 +1518,14 @@ export default function ProjectDetail() {
                           </div>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <p className="text-[13px] font-bold truncate" style={{ color: "var(--ch-text)" }}>@{r.handle}</p>
-                          </div>
-                          <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Status:</span>
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(16,185,129,0.15)", color: "#10B981" }}>{r.status}</span>
-                          </div>
+                          <p className="text-[13px] font-bold truncate" style={{ color: "var(--ch-text)" }}>@{r.handle}</p>
+                          <p className="text-[14px] font-extrabold mt-0.5" style={{ color: "var(--ch-text)" }}>{r.followers} <span className="text-[11px] font-medium" style={{ color: "var(--ch-text-muted)" }}>followers</span></p>
                         </div>
-                        <span className="text-[10px] font-bold px-2 py-1 rounded-md shrink-0" style={{ background: "rgba(59,130,246,0.15)", color: "#3B82F6" }}>{r.badge}</span>
+                        <div className="flex flex-col items-end gap-1 shrink-0">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(16,185,129,0.15)", color: "#10B981" }}>Status: {r.status}</span>
+                          <span className="text-[10px] font-bold px-2 py-1 rounded-md" style={{ background: "rgba(59,130,246,0.15)", color: "#3B82F6" }}>{r.badge}</span>
+                        </div>
                       </div>
-                      <p className="text-[14px] font-extrabold mb-1.5" style={{ color: "var(--ch-text)" }}>{r.followers} <span className="text-[12px] font-medium" style={{ color: "var(--ch-text-muted)" }}>followers</span></p>
                       <div className="flex flex-wrap gap-1.5 mb-2">
                         {r.categories.map((cat) => (
                           <span key={cat} className="text-[10px] font-bold px-2 py-0.5 rounded-md" style={{
