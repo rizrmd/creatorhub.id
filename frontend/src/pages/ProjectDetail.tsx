@@ -790,194 +790,200 @@ export default function ProjectDetail() {
 
               {/* ═══ SKEMA GLORIFIKASI FLOWCHART ═══ */}
               {activeSubTab === "skema" && (
-                <div className="flex flex-col xl:flex-row gap-10">
-                  {/* Left: Main flowchart — constrained width to leave room for arrows + Amplifications */}
-                  <div className="flex-1 xl:max-w-[75%] space-y-2">
-                    <h2 className="text-[16px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Skema Glorifikasi, Kampanye & Edukasi</h2>
+                <div className="space-y-3">
+                  <h2 className="text-[16px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Skema Glorifikasi, Kampanye & Edukasi</h2>
 
-                    {/* Tim Humas bar */}
-                    <div className="rounded-lg border p-2.5 text-center" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
-                      <p className="text-[13px] font-extrabold mb-1.5" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Tim Humas Kementerian UMKM</p>
-                      <div className="flex items-center justify-center gap-5 flex-wrap">
-                        {[
-                          { icon: "🎬", label: "Raw Video" },
-                          { icon: "📋", label: "Editorial Agenda" },
-                          { icon: "📅", label: "Schedule Kegiatan" },
-                          { icon: "📄", label: "Press Release" },
-                        ].map((item) => (
-                          <span key={item.label} className="flex items-center gap-1 text-[11px] font-semibold" style={{ color: "var(--ch-text)" }}>
-                            <span>{item.icon}</span> {item.label}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Arrow down */}
-                    <div className="flex justify-center"><ArrowDown className="w-4 h-4" style={{ color: "#F97316" }} /></div>
-
-                    {/* Official Accounts */}
-                    <div className="rounded-lg border-2 p-3" style={{ borderColor: "#F97316", background: "rgba(249,115,22,0.04)" }}>
-                      <div className="text-center mb-2">
-                        <p className="text-[13px] font-extrabold tracking-wider" style={{ color: "#F97316", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>OFFICIAL ACCOUNTS</p>
-                        <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>Dikelola oleh Tim Humas Kementerian UMKM</p>
-                      </div>
-                      <div className="grid grid-cols-3 gap-2">
-                        {[
-                          { name: "Menteri UMKM", realName: "Maman Abdurrahman", posts: "626", followers: "98.2K", following: "2,046", role: "Politician", photo: "/client-logos/maman-abdurrahman.jpg" },
-                          { name: "Kementerian UMKM", realName: "#KitaUMKM", posts: "1,502", followers: "113K", following: "92", role: "Government Official", sub: "Akun Resmi Kementerian UMKM RI", photo: "/client-logos/logo-kementerian-umkm.jpg", highlight: true },
-                          { name: "Wakil Menteri UMKM", realName: "Helvi Moraza", posts: "748", followers: "11.6K", following: "962", role: "Politician", sub: "Wakil Menteri UMKM RI", photo: "/client-logos/helvi-moraza.jpg" },
-                        ].map((acc) => (
-                          <div key={acc.name} className="rounded-lg border p-2 text-center" style={{ borderColor: acc.highlight ? "#F97316" : "var(--ch-border)", background: acc.highlight ? "rgba(249,115,22,0.08)" : "var(--ch-surface)", borderWidth: acc.highlight ? "2px" : "1px" }}>
-                            <div className="w-10 h-10 rounded-full mx-auto mb-1 overflow-hidden border-2" style={{ borderColor: acc.highlight ? "#F97316" : "var(--ch-border)" }}>
-                              <img src={acc.photo} alt={acc.name} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; (e.target as HTMLImageElement).nextElementSibling?.classList.remove("hidden"); }} />
-                              <div className="w-full h-full hidden items-center justify-center text-[14px] font-bold" style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>
-                                {acc.name[0]}
-                              </div>
-                            </div>
-                            <p className="text-[11px] font-extrabold" style={{ color: acc.highlight ? "#F97316" : "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{acc.name}</p>
-                            {acc.highlight && <p className="text-[10px] font-bold" style={{ color: "#F97316" }}>{acc.realName}</p>}
-                            <p className="text-[9px] mt-0.5" style={{ color: "var(--ch-text-muted)" }}>
-                              <span className="font-bold" style={{ color: "var(--ch-text)" }}>{acc.posts}</span> posts &nbsp;
-                              <span className="font-bold" style={{ color: "var(--ch-text)" }}>{acc.followers}</span> followers &nbsp;
-                              <span className="font-bold" style={{ color: "var(--ch-text)" }}>{acc.following}</span> following
-                            </p>
-                            <p className="text-[9px] font-semibold mt-0.5" style={{ color: "#3B82F6" }}>{acc.role}</p>
-                            {acc.sub && <p className="text-[8px] mt-0.5" style={{ color: "var(--ch-text-muted)" }}>{acc.sub}</p>}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Konten Didistribusikan */}
-                    <div className="rounded-lg border p-2 text-center" style={{ borderColor: "#F97316", background: "rgba(249,115,22,0.04)" }}>
-                      <div className="flex items-center justify-center gap-1.5">
-                        <span className="text-[14px]">▶</span>
-                        <p className="text-[12px] font-extrabold" style={{ color: "#F97316", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Konten Didistribusikan</p>
-                      </div>
-                      <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>Video &bull; Carousel &bull; Reels &bull; Stories</p>
-                    </div>
-
-                    {/* 3 arrows down */}
-                    <div className="flex justify-center gap-16">
-                      {[0,1,2].map((idx) => (
-                        <svg key={idx} width="16" height="18" viewBox="0 0 16 18">
-                          <line x1="8" y1="0" x2="8" y2="12" stroke="#F97316" strokeWidth="2" />
-                          <polygon points="3,12 8,18 13,12" fill="#F97316" />
-                        </svg>
+                  {/* Tim Humas — full width */}
+                  <div className="rounded-lg border p-3 text-center" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
+                    <p className="text-[13px] font-extrabold mb-1.5" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Tim Humas Kementerian UMKM</p>
+                    <div className="flex items-center justify-center gap-6 flex-wrap">
+                      {[
+                        { icon: "🎬", label: "Raw Video" },
+                        { icon: "📋", label: "Editorial Agenda" },
+                        { icon: "📅", label: "Schedule Kegiatan" },
+                        { icon: "📄", label: "Press Release" },
+                      ].map((item) => (
+                        <span key={item.label} className="flex items-center gap-1.5 text-[12px] font-semibold" style={{ color: "var(--ch-text)" }}>
+                          <span>{item.icon}</span> {item.label}
+                        </span>
                       ))}
-                    </div>
-
-                    {/* 3 bottom sections */}
-                    <div className="grid grid-cols-3 gap-2">
-                      {/* SHELTER */}
-                      <div className="rounded-lg border p-2" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
-                        <div className="flex items-center gap-1.5 mb-2">
-                          <Music className="w-3 h-3" style={{ color: "#00F2EA" }} />
-                          <Instagram className="w-3 h-3" style={{ color: "#E1306C" }} />
-                          <p className="text-[11px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>SHELTER (3)</p>
-                        </div>
-                        <div className="space-y-1.5">
-                          {[
-                            { handle: "jurnal.wargajakarta", followers: "123K", photo: "/profile-photos/jurnal-warga-jakarta.jpg" },
-                            { handle: "kilas_umkm", followers: "447.1K", photo: "/profile-photos/kilas-umkm.jpg" },
-                            { handle: "umkmhits", followers: "510K", photo: "/profile-photos/umkm-hits.jpg" },
-                          ].map((s) => (
-                            <div key={s.handle} className="flex items-center gap-1.5 p-1.5 rounded border" style={{ borderColor: "var(--ch-border)" }}>
-                              <img src={s.photo} alt={s.handle} className="w-6 h-6 rounded object-cover shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                              <div className="min-w-0">
-                                <p className="text-[9px] font-bold truncate" style={{ color: "var(--ch-text)" }}>@{s.handle}</p>
-                                <p className="text-[8px]" style={{ color: "var(--ch-text-muted)" }}>{s.followers} followers</p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* MIKRO */}
-                      <div className="rounded-lg border p-2" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <Music className="w-3 h-3" style={{ color: "#00F2EA" }} />
-                          <Instagram className="w-3 h-3" style={{ color: "#E1306C" }} />
-                          <p className="text-[11px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>MIKRO (15)</p>
-                        </div>
-                        <p className="text-[8px] mb-1.5" style={{ color: "var(--ch-text-muted)" }}>TikTok: 10 &bull; Instagram: 5</p>
-                        {/* TikTok row */}
-                        <p className="text-[7px] font-bold mb-0.5" style={{ color: "#00F2EA" }}>TikTok</p>
-                        <div className="grid grid-cols-5 gap-1 mb-1.5">
-                          {["klikbisnis","sentrakarya","ceritadagang","arusniaga","sobatusaha","kawanlokal","pusatlapak","nadiniaga","terasbisnis","halousaha"].map((u) => (
-                            <img key={u} src={`/profile-photos/${u}.jpeg`} alt={u} className="w-6 h-6 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                          ))}
-                        </div>
-                        {/* Instagram row */}
-                        <p className="text-[7px] font-bold mb-0.5" style={{ color: "#E1306C" }}>Instagram</p>
-                        <div className="grid grid-cols-5 gap-1">
-                          {["lenteraniaga","jawaralokal","arahusaha","poinniaga","orbitbisnis"].map((u) => (
-                            <img key={u} src={`/profile-photos/${u}.jpg`} alt={u} className="w-6 h-6 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* NANO */}
-                      <div className="rounded-lg border p-2" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <Music className="w-3 h-3" style={{ color: "#00F2EA" }} />
-                          <Instagram className="w-3 h-3" style={{ color: "#E1306C" }} />
-                          <p className="text-[11px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>NANO (40)</p>
-                        </div>
-                        <p className="text-[8px] mb-1.5" style={{ color: "var(--ch-text-muted)" }}>TikTok: 20 &bull; Instagram: 20</p>
-                        {/* TikTok row */}
-                        <p className="text-[7px] font-bold mb-0.5" style={{ color: "#00F2EA" }}>TikTok</p>
-                        <div className="grid grid-cols-10 gap-0.5 mb-1.5">
-                          {["jakbrebes1928","veraa04_","novel.best.seller8","beatrixchan7","ferdhhyontop","keyzaa04_","anakmama","khoiriyahap","ayycanss24","mama.ichacut","rivakah032","cyllabcdefghijk","reyhanz056","rindunay_","jeryyv2","jennarxvender","jbceltastr","mey.sibal","lovelyy.v2","rachmanti_mantiie"].map((u) => (
-                            <img key={u} src={`/profile-photos/${u}.jpg`} alt={u} className="w-5 h-5 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                          ))}
-                        </div>
-                        {/* Instagram row */}
-                        <p className="text-[7px] font-bold mb-0.5" style={{ color: "#E1306C" }}>Instagram</p>
-                        <div className="grid grid-cols-10 gap-0.5">
-                          {["meymey0519","vt_nay","amelia_srswt","ilyiee","citracalinda","milaamirandaa09","3acsyaaa","maryati2542","clara4calista4","parcia.cia","mahesagantengbangett","heraaharsaa","meyden1501","anjanizeina","minka.min9","mama.ichacut","rachmanti_mantiie","mey.sibal","lovelyy.v2","khoiriyahap"].map((u) => (
-                            <img key={u} src={`/profile-photos/${u}.jpg`} alt={u} className="w-5 h-5 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                          ))}
-                        </div>
-                      </div>
                     </div>
                   </div>
 
-                  {/* Right: Amplifications Card — positioned at Official Accounts level */}
-                  <div className="xl:w-[260px] shrink-0 self-start flex flex-col mt-16">
-                    <div className="rounded-2xl border-2 p-4 w-full" style={{ borderColor: "rgba(139,92,246,0.5)", background: "rgba(15,23,42,0.6)", boxShadow: "0 0 30px rgba(139,92,246,0.15)" }}>
-                      <div className="text-center mb-3">
-                        <h3 className="text-[16px] font-extrabold tracking-wider" style={{ color: "#E1306C", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>AMPLIFICATIONS</h3>
-                        <p className="text-[9px] font-bold uppercase tracking-widest mt-0.5" style={{ color: "#94A3B8" }}>Boost Engagements</p>
-                      </div>
-                      <div className="flex flex-wrap items-center justify-center gap-1.5 mb-3">
-                        {[
-                          { label: "Likes", icon: "❤️", bg: "rgba(225,48,108,0.15)", border: "rgba(225,48,108,0.3)", color: "#E1306C" },
-                          { label: "Shares", icon: "🔗", bg: "rgba(59,130,246,0.15)", border: "rgba(59,130,246,0.3)", color: "#3B82F6" },
-                          { label: "Comments", icon: "💬", bg: "rgba(16,185,129,0.15)", border: "rgba(16,185,129,0.3)", color: "#10B981" },
-                          { label: "Mentions", icon: "@", bg: "rgba(249,115,22,0.15)", border: "rgba(249,115,22,0.3)", color: "#F97316" },
-                        ].map((pill) => (
-                          <span key={pill.label} className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold"
-                            style={{ background: pill.bg, border: `1px solid ${pill.border}`, color: pill.color }}>
-                            {pill.icon} {pill.label}
-                          </span>
-                        ))}
-                      </div>
-                      <div className="border-t border-dashed mb-3" style={{ borderColor: "rgba(255,255,255,0.15)" }} />
-                      <div className="space-y-2">
-                        {SKEMA_AMPLIFIERS.map((amp) => (
-                          <div key={amp.platform} className="rounded-lg border p-3 text-center relative"
-                            style={{ borderColor: `${amp.color}50`, background: `${amp.color}08`, boxShadow: `0 0 20px ${amp.color}15` }}>
-                            <div className="flex items-center justify-center gap-1.5 mb-1">
-                              {amp.platform === "Instagram" && <Instagram className="w-3.5 h-3.5" style={{ color: amp.color }} />}
-                              {amp.platform === "TikTok" && <Music className="w-3.5 h-3.5" style={{ color: amp.color }} />}
-                              {amp.platform === "YouTube" && <Youtube className="w-3.5 h-3.5" style={{ color: amp.color }} />}
-                              <p className="text-[11px] font-extrabold" style={{ color: amp.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Amplifier {amp.platform}</p>
+                  {/* Arrow down — full width */}
+                  <div className="flex justify-center"><ArrowDown className="w-4 h-4" style={{ color: "#F97316" }} /></div>
+
+                  {/* Two columns: Left flowchart + Right Amplifications */}
+                  <div className="flex flex-col xl:flex-row gap-8">
+                    {/* Left: Official Accounts → Konten → Arrows → Shelter/Mikro/Nano */}
+                    <div className="flex-1 space-y-2">
+                      {/* Official Accounts */}
+                      <div className="rounded-lg border-2 p-3" style={{ borderColor: "#F97316", background: "rgba(249,115,22,0.04)" }}>
+                        <div className="text-center mb-2">
+                          <p className="text-[13px] font-extrabold tracking-wider" style={{ color: "#F97316", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>OFFICIAL ACCOUNTS</p>
+                          <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>Dikelola oleh Tim Humas Kementerian UMKM</p>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2">
+                          {[
+                            { name: "Menteri UMKM", realName: "Maman Abdurrahman", posts: "626", followers: "98.2K", following: "2,046", role: "Politician", photo: "/client-logos/maman-abdurrahman.jpg" },
+                            { name: "Kementerian UMKM", realName: "#KitaUMKM", posts: "1,502", followers: "113K", following: "92", role: "Government Official", sub: "Akun Resmi Kementerian UMKM RI", photo: "/client-logos/logo-kementerian-umkm.jpg", highlight: true },
+                            { name: "Wakil Menteri UMKM", realName: "Helvi Moraza", posts: "748", followers: "11.6K", following: "962", role: "Politician", sub: "Wakil Menteri UMKM RI", photo: "/client-logos/helvi-moraza.jpg" },
+                          ].map((acc) => (
+                            <div key={acc.name} className="rounded-lg border p-2 text-center" style={{ borderColor: acc.highlight ? "#F97316" : "var(--ch-border)", background: acc.highlight ? "rgba(249,115,22,0.08)" : "var(--ch-surface)", borderWidth: acc.highlight ? "2px" : "1px" }}>
+                              <div className="w-10 h-10 rounded-full mx-auto mb-1 overflow-hidden border-2" style={{ borderColor: acc.highlight ? "#F97316" : "var(--ch-border)" }}>
+                                <img src={acc.photo} alt={acc.name} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; (e.target as HTMLImageElement).nextElementSibling?.classList.remove("hidden"); }} />
+                                <div className="w-full h-full hidden items-center justify-center text-[14px] font-bold" style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>
+                                  {acc.name[0]}
+                                </div>
+                              </div>
+                              <p className="text-[11px] font-extrabold" style={{ color: acc.highlight ? "#F97316" : "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{acc.name}</p>
+                              {acc.highlight && <p className="text-[10px] font-bold" style={{ color: "#F97316" }}>{acc.realName}</p>}
+                              <p className="text-[9px] mt-0.5" style={{ color: "var(--ch-text-muted)" }}>
+                                <span className="font-bold" style={{ color: "var(--ch-text)" }}>{acc.posts}</span> posts &nbsp;
+                                <span className="font-bold" style={{ color: "var(--ch-text)" }}>{acc.followers}</span> followers &nbsp;
+                                <span className="font-bold" style={{ color: "var(--ch-text)" }}>{acc.following}</span> following
+                              </p>
+                              <p className="text-[9px] font-semibold mt-0.5" style={{ color: "#3B82F6" }}>{acc.role}</p>
+                              {acc.sub && <p className="text-[8px] mt-0.5" style={{ color: "var(--ch-text-muted)" }}>{acc.sub}</p>}
                             </div>
-                            <p className="text-[28px] font-extrabold leading-none" style={{ color: amp.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{amp.count}</p>
-                            <p className="text-[10px] font-semibold mt-1" style={{ color: "#E2E8F0" }}>Akun Amplifier</p>
-                          </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Konten Didistribusikan */}
+                      <div className="rounded-lg border p-2 text-center" style={{ borderColor: "#F97316", background: "rgba(249,115,22,0.04)" }}>
+                        <div className="flex items-center justify-center gap-1.5">
+                          <span className="text-[14px]">▶</span>
+                          <p className="text-[12px] font-extrabold" style={{ color: "#F97316", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Konten Didistribusikan</p>
+                        </div>
+                        <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>Video &bull; Carousel &bull; Reels &bull; Stories</p>
+                      </div>
+
+                      {/* 3 arrows down */}
+                      <div className="flex justify-center gap-16">
+                        {[0,1,2].map((idx) => (
+                          <svg key={idx} width="16" height="18" viewBox="0 0 16 18">
+                            <line x1="8" y1="0" x2="8" y2="12" stroke="#F97316" strokeWidth="2" />
+                            <polygon points="3,12 8,18 13,12" fill="#F97316" />
+                          </svg>
                         ))}
+                      </div>
+
+                      {/* Shelter + Mikro + Nano */}
+                      <div className="grid grid-cols-3 gap-2">
+                        {/* SHELTER */}
+                        <div className="rounded-lg border p-2" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
+                          <div className="flex items-center gap-1.5 mb-2">
+                            <Music className="w-3 h-3" style={{ color: "#00F2EA" }} />
+                            <Instagram className="w-3 h-3" style={{ color: "#E1306C" }} />
+                            <p className="text-[11px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>SHELTER (3)</p>
+                          </div>
+                          <div className="space-y-1.5">
+                            {[
+                              { handle: "jurnal.wargajakarta", followers: "123K", photo: "/profile-photos/jurnal-warga-jakarta.jpg" },
+                              { handle: "kilas_umkm", followers: "447.1K", photo: "/profile-photos/kilas-umkm.jpg" },
+                              { handle: "umkmhits", followers: "510K", photo: "/profile-photos/umkm-hits.jpg" },
+                            ].map((s) => (
+                              <div key={s.handle} className="flex items-center gap-1.5 p-1.5 rounded border" style={{ borderColor: "var(--ch-border)" }}>
+                                <img src={s.photo} alt={s.handle} className="w-6 h-6 rounded object-cover shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                                <div className="min-w-0">
+                                  <p className="text-[9px] font-bold truncate" style={{ color: "var(--ch-text)" }}>@{s.handle}</p>
+                                  <p className="text-[8px]" style={{ color: "var(--ch-text-muted)" }}>{s.followers} followers</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* MIKRO */}
+                        <div className="rounded-lg border p-2" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <Music className="w-3 h-3" style={{ color: "#00F2EA" }} />
+                            <Instagram className="w-3 h-3" style={{ color: "#E1306C" }} />
+                            <p className="text-[11px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>MIKRO (15)</p>
+                          </div>
+                          <p className="text-[8px] mb-1.5" style={{ color: "var(--ch-text-muted)" }}>TikTok: 10 &bull; Instagram: 5</p>
+                          <p className="text-[7px] font-bold mb-0.5" style={{ color: "#00F2EA" }}>TikTok</p>
+                          <div className="grid grid-cols-5 gap-1 mb-1.5">
+                            {["klikbisnis","sentrakarya","ceritadagang","arusniaga","sobatusaha","kawanlokal","pusatlapak","nadiniaga","terasbisnis","halousaha"].map((u) => (
+                              <img key={u} src={`/profile-photos/${u}.jpeg`} alt={u} className="w-6 h-6 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                            ))}
+                          </div>
+                          <p className="text-[7px] font-bold mb-0.5" style={{ color: "#E1306C" }}>Instagram</p>
+                          <div className="grid grid-cols-5 gap-1">
+                            {["lenteraniaga","jawaralokal","arahusaha","poinniaga","orbitbisnis"].map((u) => (
+                              <img key={u} src={`/profile-photos/${u}.jpg`} alt={u} className="w-6 h-6 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* NANO */}
+                        <div className="rounded-lg border p-2" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <Music className="w-3 h-3" style={{ color: "#00F2EA" }} />
+                            <Instagram className="w-3 h-3" style={{ color: "#E1306C" }} />
+                            <p className="text-[11px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>NANO (40)</p>
+                          </div>
+                          <p className="text-[8px] mb-1.5" style={{ color: "var(--ch-text-muted)" }}>TikTok: 20 &bull; Instagram: 20</p>
+                          <p className="text-[7px] font-bold mb-0.5" style={{ color: "#00F2EA" }}>TikTok</p>
+                          <div className="grid grid-cols-10 gap-0.5 mb-1.5">
+                            {["jakbrebes1928","veraa04_","novel.best.seller8","beatrixchan7","ferdhhyontop","keyzaa04_","anakmama","khoiriyahap","ayycanss24","mama.ichacut","rivakah032","cyllabcdefghijk","reyhanz056","rindunay_","jeryyv2","jennarxvender","jbceltastr","mey.sibal","lovelyy.v2","rachmanti_mantiie"].map((u) => (
+                              <img key={u} src={`/profile-photos/${u}.jpg`} alt={u} className="w-5 h-5 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                            ))}
+                          </div>
+                          <p className="text-[7px] font-bold mb-0.5" style={{ color: "#E1306C" }}>Instagram</p>
+                          <div className="grid grid-cols-10 gap-0.5">
+                            {["meymey0519","vt_nay","amelia_srswt","ilyiee","citracalinda","milaamirandaa09","3acsyaaa","maryati2542","clara4calista4","parcia.cia","mahesagantengbangett","heraaharsaa","meyden1501","anjanizeina","minka.min9","mama.ichacut","rachmanti_mantiie","mey.sibal","lovelyy.v2","khoiriyahap"].map((u) => (
+                              <img key={u} src={`/profile-photos/${u}.jpg`} alt={u} className="w-5 h-5 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right: Amplifications — aligned with Official Accounts */}
+                    <div className="xl:w-[280px] shrink-0 self-start">
+                      <div className="rounded-2xl border-2 p-4 w-full relative" style={{ borderColor: "rgba(139,92,246,0.5)", background: "rgba(15,23,42,0.6)", boxShadow: "0 0 30px rgba(139,92,246,0.15)" }}>
+                        {/* Arrow pointing left */}
+                        <div className="absolute top-1/2 -left-8 -translate-y-1/2">
+                          <svg width="28" height="20" viewBox="0 0 28 20">
+                            <line x1="0" y1="10" x2="22" y2="10" stroke="#8B5CF6" strokeWidth="2" />
+                            <polygon points="0,4 8,10 0,16" fill="#8B5CF6" />
+                          </svg>
+                        </div>
+                        <div className="text-center mb-3">
+                          <h3 className="text-[16px] font-extrabold tracking-wider" style={{ color: "#E1306C", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>AMPLIFICATIONS</h3>
+                          <p className="text-[9px] font-bold uppercase tracking-widest mt-0.5" style={{ color: "#94A3B8" }}>Boost Engagements</p>
+                        </div>
+                        <div className="flex flex-wrap items-center justify-center gap-1.5 mb-3">
+                          {[
+                            { label: "Likes", icon: "❤️", bg: "rgba(225,48,108,0.15)", border: "rgba(225,48,108,0.3)", color: "#E1306C" },
+                            { label: "Shares", icon: "🔗", bg: "rgba(59,130,246,0.15)", border: "rgba(59,130,246,0.3)", color: "#3B82F6" },
+                            { label: "Comments", icon: "💬", bg: "rgba(16,185,129,0.15)", border: "rgba(16,185,129,0.3)", color: "#10B981" },
+                            { label: "Mentions", icon: "@", bg: "rgba(249,115,22,0.15)", border: "rgba(249,115,22,0.3)", color: "#F97316" },
+                          ].map((pill) => (
+                            <span key={pill.label} className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold"
+                              style={{ background: pill.bg, border: `1px solid ${pill.border}`, color: pill.color }}>
+                              {pill.icon} {pill.label}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="border-t border-dashed mb-3" style={{ borderColor: "rgba(255,255,255,0.15)" }} />
+                        <div className="space-y-2">
+                          {SKEMA_AMPLIFIERS.map((amp) => (
+                            <div key={amp.platform} className="rounded-lg border p-3 text-center"
+                              style={{ borderColor: `${amp.color}50`, background: `${amp.color}08`, boxShadow: `0 0 20px ${amp.color}15` }}>
+                              <div className="flex items-center justify-center gap-1.5 mb-1">
+                                {amp.platform === "Instagram" && <Instagram className="w-3.5 h-3.5" style={{ color: amp.color }} />}
+                                {amp.platform === "TikTok" && <Music className="w-3.5 h-3.5" style={{ color: amp.color }} />}
+                                {amp.platform === "YouTube" && <Youtube className="w-3.5 h-3.5" style={{ color: amp.color }} />}
+                                <p className="text-[11px] font-extrabold" style={{ color: amp.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Amplifier {amp.platform}</p>
+                              </div>
+                              <p className="text-[28px] font-extrabold leading-none" style={{ color: amp.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{amp.count}</p>
+                              <p className="text-[10px] font-semibold mt-1" style={{ color: "#E2E8F0" }}>Akun Amplifier</p>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
