@@ -1499,6 +1499,28 @@ export default function ProjectDetail() {
               { username: "jbceltastr", handle: "jbceltastr", followers: "1.1K", status: "Active", badge: "Clipper", categories: ["Bisnis"], desc: "Review tools bisnis", photo: "/profile-photos/jbceltastr.jpeg" },
               { username: "mey.sibal", handle: "mey.sibal", followers: "1.8K", status: "Active", badge: "Clipper", categories: ["UMKM Focused"], desc: "Kreasi produk kreatif", photo: "/profile-photos/mey.sibal.jpeg" },
             ]},
+            { section: "Nano (1K+) Instagram", titleColor: "#E1306C", gridCols: "xl:grid-cols-4", items: [
+              { username: "Lovelyy.v2", handle: "lovelyy.v2", followers: "1.2K", status: "Active", badge: "Clipper", categories: ["Bisnis"], desc: "Inspirasi gaya hidup dan tips bisnis kreatif", photo: "/profile-photos/lovelyy.v2.jpg" },
+              { username: "rachmanti_mantiie", handle: "rachmanti_mantiie", followers: "1.1K", status: "Active", badge: "Clipper", categories: ["Bisnis"], desc: "Konten edukasi dan motivasi usaha", photo: "/profile-photos/rachmanti_mantiie.jpg" },
+              { username: "meymey0519", handle: "meymey0519", followers: "1K", status: "Active", badge: "Clipper", categories: ["UMKM Focused"], desc: "Tips jualan dan inspirasi UMKM", photo: "/profile-photos/meymey0519.jpg" },
+              { username: "vt_nay", handle: "vt_nay", followers: "1.3K", status: "Active", badge: "Clipper", categories: ["Bisnis"], desc: "Strategi pemasaran digital untuk UMKM", photo: "/profile-photos/vt_nay.jpg" },
+              { username: "rindunay_", handle: "rindunay_", followers: "1.4K", status: "Active", badge: "Clipper", categories: ["UMKM Focused"], desc: "Inspirasi produk lokal dan UMKM", photo: "/profile-photos/rindunay_.jpg" },
+              { username: "amelia_srswt", handle: "amelia_srswt", followers: "1.1K", status: "Active", badge: "Clipper", categories: ["Bisnis"], desc: "Tips branding dan strategi jualan", photo: "/profile-photos/amelia_srswt.jpg" },
+              { username: "ilyiee", handle: "ilyiee", followers: "1K", status: "Active", badge: "Clipper", categories: ["UMKM Focused"], desc: "Konten kreatif seputar UMKM lokal", photo: "/profile-photos/ilyiee.jpg" },
+              { username: "citracalinda", handle: "citracalinda", followers: "1.2K", status: "Active", badge: "Clipper", categories: ["Bisnis"], desc: "Tips usaha dari rumah untuk pemula", photo: "/profile-photos/citracalinda.jpg" },
+              { username: "milaamirandaa09", handle: "milaamirandaa09", followers: "1.1K", status: "Active", badge: "Clipper", categories: ["UMKM Focused"], desc: "Inspirasi produk kreatif lokal", photo: "/profile-photos/milaamirandaa09.jpg" },
+              { username: "3acsyaaa", handle: "3acsyaaa", followers: "1.3K", status: "Active", badge: "Clipper", categories: ["Bisnis"], desc: "Strategi pemasaran online untuk UMKM", photo: "/profile-photos/3acsyaaa.jpg" },
+              { username: "maryati2542", handle: "maryati2542", followers: "1K", status: "Active", badge: "Clipper", categories: ["UMKM Focused"], desc: "Tips pengelolaan keuangan usaha kecil", photo: "/profile-photos/maryati2542.jpg" },
+              { username: "clara4calista4", handle: "clara4calista4", followers: "1.1K", status: "Active", badge: "Clipper", categories: ["Bisnis"], desc: "Inspirasi bisnis kreatif untuk pemula", photo: "/profile-photos/clara4calista4.jpg" },
+              { username: "parcia.cia", handle: "parcia.cia", followers: "1K", status: "Active", badge: "Clipper", categories: ["UMKM Focused"], desc: "Konten edukasi seputar dunia UMKM", photo: "/profile-photos/parcia.cia.jpg" },
+              { username: "mahesagantengbangett", handle: "mahesagantengbangett", followers: "1.2K", status: "Active", badge: "Clipper", categories: ["Bisnis"], desc: "Tips berjualan online dan brand building", photo: "/profile-photos/mahesagantengbangett.jpg" },
+              { username: "heraaharsaa", handle: "heraaharsaa", followers: "1.5K", status: "Active", badge: "Clipper", categories: ["UMKM Focused"], desc: "Inspirasi produk lokal dan tips usaha", photo: "/profile-photos/heraaharsaa.jpg" },
+              { username: "meyden1501", handle: "meyden1501", followers: "1.1K", status: "Active", badge: "Clipper", categories: ["Bisnis"], desc: "Strategi digital marketing untuk UMKM", photo: "/profile-photos/meyden1501.jpg" },
+              { username: "ara anak baik", handle: "ara.anak.baik", followers: "1K", status: "Active", badge: "Clipper", categories: ["UMKM Focused"], desc: "Konten kreatif dan inspirasi usaha", photo: "" },
+              { username: "bebyze3_", handle: "bebyze3_", followers: "1.2K", status: "Active", badge: "Clipper", categories: ["Bisnis"], desc: "Tips jualan laris dan branding produk", photo: "" },
+              { username: "anjanizeina", handle: "anjanizeina", followers: "1.3K", status: "Active", badge: "Clipper", categories: ["UMKM Focused"], desc: "Inspirasi produk lokal dan UMKM", photo: "/profile-photos/anjanizeina.jpg" },
+              { username: "Minka.min9", handle: "minka.min9", followers: "1K", status: "Active", badge: "Clipper", categories: ["Bisnis"], desc: "Tips usaha kecil dan pengelolaan keuangan", photo: "/profile-photos/minka.min9.jpg" },
+            ]},
           ].map((section) => (
             <div key={section.section} className="rounded-xl border overflow-hidden" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
               <div className="px-4 py-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
