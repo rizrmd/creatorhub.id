@@ -882,8 +882,8 @@ export default function ProjectDetail() {
                               { handle: "kilas_umkm", followers: "447.1K", photo: "/profile-photos/kilas-umkm.jpg" },
                               { handle: "umkmhits", followers: "510K", photo: "/profile-photos/umkm-hits.jpg" },
                             ].map((s) => (
-                              <div key={s.handle} className="flex items-center gap-1.5 p-1.5 rounded border" style={{ borderColor: "var(--ch-border)" }}>
-                                <img src={s.photo} alt={s.handle} className="w-6 h-6 rounded object-cover shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                            <div key={s.handle} className="flex items-center gap-1.5 p-1.5 rounded border" style={{ borderColor: "var(--ch-border)" }}>
+                              <img src={s.photo} alt={s.handle} className="w-10 h-10 rounded-full object-cover shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                                 <div className="min-w-0">
                                   <p className="text-[9px] font-bold truncate" style={{ color: "var(--ch-text)" }}>@{s.handle}</p>
                                   <p className="text-[8px]" style={{ color: "var(--ch-text-muted)" }}>{s.followers} followers</p>
@@ -904,13 +904,13 @@ export default function ProjectDetail() {
                         <p className="text-[7px] font-bold mb-0.5" style={{ color: "#00F2EA" }}>TikTok</p>
                         <div className="grid grid-cols-5 gap-1 mb-1.5">
                           {["nadiniaga","pusatlapak","klikbisnis","sentrakarya","arusniaga","sobatusaha","kawanlokal","ceritadagang","terasbisnis","halousaha"].map((u) => (
-                            <img key={u} src={`/profile-photos/${u}.jpeg`} alt={u} className="w-6 h-6 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                            <img key={u} src={`/profile-photos/${u}.jpeg`} alt={u} className="w-10 h-10 rounded-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                           ))}
                         </div>
                         <p className="text-[7px] font-bold mb-0.5" style={{ color: "#E1306C" }}>Instagram</p>
                         <div className="grid grid-cols-5 gap-1">
                           {["orbitbisnis2","poin-niaga","arah-usaha","jawaralokal","lenteraniaga"].map((u) => (
-                            <img key={u} src={`/profile-photos/${u}.jpg`} alt={u} className="w-6 h-6 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                            <img key={u} src={`/profile-photos/${u}.jpg`} alt={u} className="w-10 h-10 rounded-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                           ))}
                         </div>
                         </div>
@@ -926,13 +926,13 @@ export default function ProjectDetail() {
                         <p className="text-[7px] font-bold mb-0.5" style={{ color: "#00F2EA" }}>TikTok</p>
                         <div className="grid grid-cols-10 gap-0.5 mb-1.5">
                           {["jakbrebes1928","veraa04_","novel.best.seller8","beatrixchan7","ferdhhyontop","keyzaa04_","anakmama","khoiriyahap","cerita.bucin1","ayycanss24","mama.ichacut","rivakah032","cyllabcdefghijk","reyhanz056","rindunay_","jeryyv2","jennarxvender","jbceltastr","mey.sibal","ageaa21"].map((u) => (
-                              <img key={u} src={`/profile-photos/${u}.jpeg`} alt={u} className="w-5 h-5 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                              <img key={u} src={`/profile-photos/${u}.jpeg`} alt={u} className="w-10 h-10 rounded-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                             ))}
                         </div>
                         <p className="text-[7px] font-bold mb-0.5" style={{ color: "#E1306C" }}>Instagram</p>
                         <div className="grid grid-cols-10 gap-0.5">
                           {["lovelyy.v2","rachmanti_mantiie","meymey0519","vt_nay","rindunay_","amelia_srswt","ilyiee","citracalinda","milaamirandaa09","3acsyaaa","maryati2542","clara4calista4","parcia.cia","mahesagantengbangett","heraaharsaa","meyden1501","anjanizeina","minka.min9","bebyze3_","ara.anak.baik"].map((u) => (
-                              <img key={u} src={`/profile-photos/${u}.jpg`} alt={u} className="w-5 h-5 rounded object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                              <img key={u} src={`/profile-photos/${u}.jpg`} alt={u} className="w-10 h-10 rounded-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                             ))}
                         </div>
                         </div>
