@@ -790,9 +790,9 @@ export default function ProjectDetail() {
 
               {/* ═══ SKEMA GLORIFIKASI FLOWCHART ═══ */}
               {activeSubTab === "skema" && (
-                <div className="flex flex-col xl:flex-row gap-3">
-                  {/* Left: Main flowchart */}
-                  <div className="flex-1 space-y-2">
+                <div className="flex flex-col xl:flex-row gap-6">
+                  {/* Left: Main flowchart — constrained width to leave room for arrows + Amplifications */}
+                  <div className="flex-1 xl:max-w-[75%] space-y-2">
                     <h2 className="text-[16px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Skema Glorifikasi, Kampanye & Edukasi</h2>
 
                     {/* Tim Humas bar */}
@@ -936,7 +936,12 @@ export default function ProjectDetail() {
                   </div>
 
                   {/* Right: Amplifications Card — positioned at Official Accounts level */}
-                  <div className="xl:w-[260px] shrink-0 self-start flex flex-col">
+                  <div className="xl:w-[260px] shrink-0 self-start flex flex-col mt-16">
+                    {/* Arrow LEFT to Official Accounts */}
+                    <svg width="50" height="20" viewBox="0 0 50 20" className="ml-auto mr-2 mb-1">
+                      <line x1="0" y1="10" x2="40" y2="10" stroke="#8B5CF6" strokeWidth="2" />
+                      <polygon points="0,4 10,10 0,16" fill="#8B5CF6" />
+                    </svg>
                     <div className="rounded-2xl border-2 p-4 w-full" style={{ borderColor: "rgba(139,92,246,0.5)", background: "rgba(15,23,42,0.6)", boxShadow: "0 0 30px rgba(139,92,246,0.15)" }}>
                       <div className="text-center mb-3">
                         <h3 className="text-[16px] font-extrabold tracking-wider" style={{ color: "#E1306C", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>AMPLIFICATIONS</h3>
