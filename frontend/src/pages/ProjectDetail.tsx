@@ -635,8 +635,8 @@ export default function ProjectDetail() {
             { value: "overview", label: "Overview", icon: Eye },
             { value: "content-plan", label: "Content Plan", icon: Calendar },
             { value: "influencers", label: "Influencers", icon: Users },
-            { value: "deliverables", label: "Deliverables", icon: FileText },
-            { value: "analytics", label: "Analytics", icon: BarChart3 },
+            { value: "deliverables", label: "Content Posted", icon: FileText },
+            { value: "analytics", label: "Media Monitoring", icon: BarChart3 },
             { value: "files", label: "Files & Assets", icon: FolderOpen },
             { value: "activity", label: "Activity Log", icon: Clock },
           ].map((tab) => (
