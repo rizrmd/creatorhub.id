@@ -945,7 +945,7 @@ export default function ProjectDetail() {
                       <div className="hidden xl:flex items-center shrink-0">
                         <svg width="40" height="28" viewBox="0 0 40 28">
                           <line x1="38" y1="14" x2="10" y2="14" stroke="#F97316" strokeWidth="3" strokeLinecap="round" />
-                          <polygon points="2,6 2,22 14,14" fill="#F97316" />
+                          <polygon points="14,6 14,22 2,14" fill="#F97316" />
                         </svg>
                       </div>
                       {/* Amplifications card */}
