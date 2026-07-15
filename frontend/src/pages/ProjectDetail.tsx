@@ -1504,10 +1504,10 @@ export default function ProjectDetail() {
               <div className="px-4 py-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
                 <p className="text-[13px] font-bold" style={{ color: section.titleColor }}>{section.section}</p>
               </div>
-              <div className="p-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+              <div className="p-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 items-stretch">
                 {section.items.map((r) => (
-                  <div key={r.handle} className="rounded-xl border overflow-hidden hover:scale-[1.01] transition-all" style={{ borderColor: "var(--ch-border)", background: "var(--ch-bg)" }}>
-                    <div className="p-3.5">
+                  <div key={r.handle} className="rounded-xl border overflow-hidden hover:scale-[1.01] transition-all flex flex-col" style={{ borderColor: "var(--ch-border)", background: "var(--ch-bg)" }}>
+                    <div className="p-3.5 flex flex-col flex-1">
                       <div className="flex items-start gap-3 mb-2.5">
                         <div className="relative shrink-0">
                           {r.photo ? (
@@ -1537,8 +1537,8 @@ export default function ProjectDetail() {
                           }}>{cat}</span>
                         ))}
                       </div>
-                      <p className="text-[11px] leading-relaxed mb-3" style={{ color: "var(--ch-text-muted)" }}>{r.desc}</p>
-                      <button className="w-full py-2 rounded-lg text-[12px] font-bold text-white transition-opacity hover:opacity-90" style={{ background: "linear-gradient(135deg, #6366F1, #8B5CF6)" }}>
+                      <p className="text-[11px] leading-relaxed mb-3 flex-1" style={{ color: "var(--ch-text-muted)" }}>{r.desc}</p>
+                      <button className="w-full py-2 rounded-lg text-[12px] font-bold text-white transition-opacity hover:opacity-90 mt-auto" style={{ background: "linear-gradient(135deg, #6366F1, #8B5CF6)" }}>
                         Lihat Profile {'>'}
                       </button>
                     </div>
