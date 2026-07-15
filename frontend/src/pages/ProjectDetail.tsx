@@ -912,14 +912,13 @@ export default function ProjectDetail() {
                         {/* MIKRO */}
                         <div className="rounded-lg border p-2" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
                           <p className="text-[11px] font-extrabold py-0.5" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>MIKRO (15)</p>
-                          <p className="text-[9px] mb-1.5" style={{ color: "var(--ch-text-muted)" }}>TikTok: 10 &bull; Instagram: 5</p>
-                          <p className="text-[9px] font-bold mb-1 flex items-center gap-1" style={{ color: "#00F2EA" }}><LogoCircle bg="#000000" size="w-3.5 h-3.5"><TikTokLogo size="w-2 h-2" /></LogoCircle> TikTok <span className="font-normal">(10)</span></p>
+                          <p className="text-[11px] font-bold py-1 flex items-center gap-1" style={{ color: "#FFFFFF" }}><LogoCircle bg="#000000" size="w-4 h-4"><TikTokLogo size="w-2.5 h-2.5" /></LogoCircle> TikTok <span className="font-normal">(10)</span></p>
                         <div className="grid grid-cols-5 gap-1 mb-1.5">
                           {["nadiniaga","pusatlapak","klikbisnis","sentrakarya","arusniaga","sobatusaha","kawanlokal","ceritadagang","terasbisnis","halousaha"].map((u) => (
                             <img key={u} src={`/profile-photos/${u}.jpeg`} alt={u} className="w-10 h-10 rounded-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                           ))}
                         </div>
-                          <p className="text-[9px] font-bold mb-1 flex items-center gap-1" style={{ color: "#E1306C" }}><LogoCircle bg="linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)" size="w-3.5 h-3.5"><InstaLogo size="w-2 h-2" /></LogoCircle> Instagram <span className="font-normal">(5)</span></p>
+                          <p className="text-[11px] font-bold py-1 flex items-center gap-1" style={{ color: "#FFFFFF" }}><LogoCircle bg="linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)" size="w-4 h-4"><InstaLogo size="w-2.5 h-2.5" /></LogoCircle> Instagram <span className="font-normal">(5)</span></p>
                         <div className="grid grid-cols-5 gap-1">
                           {["orbitbisnis2","poin-niaga","arah-usaha","jawaralokal","lenteraniaga"].map((u) => (
                             <img key={u} src={`/profile-photos/${u}.jpg`} alt={u} className="w-10 h-10 rounded-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
@@ -930,19 +929,15 @@ export default function ProjectDetail() {
                         {/* NANO */}
                         <div className="rounded-lg border p-2" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="w-6 h-6 rounded-full flex items-center justify-center shrink-0" style={{ background: "#000000" }}>
-                              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
-                            </span>
                             <p className="text-[11px] font-extrabold py-0.5" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>NANO (40)</p>
                           </div>
-                          <p className="text-[9px] mb-1.5" style={{ color: "var(--ch-text-muted)" }}>TikTok: 20 &bull; Instagram: 20</p>
-                          <p className="text-[9px] font-bold mb-1 flex items-center gap-1" style={{ color: "#00F2EA" }}><LogoCircle bg="#000000" size="w-3.5 h-3.5"><TikTokLogo size="w-2 h-2" /></LogoCircle> TikTok <span className="font-normal">(20)</span></p>
+                          <p className="text-[11px] font-bold py-1 flex items-center gap-1" style={{ color: "#FFFFFF" }}><LogoCircle bg="#000000" size="w-4 h-4"><TikTokLogo size="w-2.5 h-2.5" /></LogoCircle> TikTok <span className="font-normal">(20)</span></p>
                         <div className="grid grid-cols-5 gap-1 mb-1.5">
                           {["jakbrebes1928","veraa04_","novel.best.seller8","beatrixchan7","ferdhhyontop","keyzaa04_","anakmama","khoiriyahap","cerita.bucin1","ayycanss24","mama.ichacut","rivakah032","cyllabcdefghijk","reyhanz056","rindunay_","jeryyv2","jennarxvender","jbceltastr","mey.sibal","ageaa21"].map((u) => (
                               <img key={u} src={`/profile-photos/${u}.jpeg`} alt={u} className="w-10 h-10 rounded-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                             ))}
                         </div>
-                        <p className="text-[9px] font-bold mb-1 flex items-center gap-1" style={{ color: "#E1306C" }}><LogoCircle bg="linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)" size="w-3.5 h-3.5"><InstaLogo size="w-2 h-2" /></LogoCircle> Instagram <span className="font-normal">(20)</span></p>
+                          <p className="text-[11px] font-bold py-1 flex items-center gap-1" style={{ color: "#FFFFFF" }}><LogoCircle bg="linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)" size="w-4 h-4"><InstaLogo size="w-2.5 h-2.5" /></LogoCircle> Instagram <span className="font-normal">(20)</span></p>
                         <div className="grid grid-cols-5 gap-1">
                           {["lovelyy.v2","rachmanti_mantiie","meymey0519","vt_nay","rindunay_","amelia_srswt","ilyiee","citracalinda","milaamirandaa09","3acsyaaa","maryati2542","clara4calista4","parcia.cia","mahesagantengbangett","heraaharsaa","meyden1501","anjanizeina","minka.min9","bebyze3_","ara.anak.baik"].map((u) => (
                               <img key={u} src={`/profile-photos/${u}.jpg`} alt={u} className="w-10 h-10 rounded-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
