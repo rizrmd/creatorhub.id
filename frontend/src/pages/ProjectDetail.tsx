@@ -924,13 +924,13 @@ export default function ProjectDetail() {
                           </div>
                           <p className="text-[8px] mb-1.5" style={{ color: "var(--ch-text-muted)" }}>TikTok: 20 &bull; Instagram: 20</p>
                         <p className="text-[7px] font-bold mb-0.5" style={{ color: "#00F2EA" }}>TikTok</p>
-                        <div className="grid grid-cols-10 gap-0.5 mb-1.5">
+                        <div className="grid grid-cols-5 gap-1 mb-1.5">
                           {["jakbrebes1928","veraa04_","novel.best.seller8","beatrixchan7","ferdhhyontop","keyzaa04_","anakmama","khoiriyahap","cerita.bucin1","ayycanss24","mama.ichacut","rivakah032","cyllabcdefghijk","reyhanz056","rindunay_","jeryyv2","jennarxvender","jbceltastr","mey.sibal","ageaa21"].map((u) => (
                               <img key={u} src={`/profile-photos/${u}.jpeg`} alt={u} className="w-10 h-10 rounded-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                             ))}
                         </div>
                         <p className="text-[7px] font-bold mb-0.5" style={{ color: "#E1306C" }}>Instagram</p>
-                        <div className="grid grid-cols-10 gap-0.5">
+                        <div className="grid grid-cols-5 gap-1">
                           {["lovelyy.v2","rachmanti_mantiie","meymey0519","vt_nay","rindunay_","amelia_srswt","ilyiee","citracalinda","milaamirandaa09","3acsyaaa","maryati2542","clara4calista4","parcia.cia","mahesagantengbangett","heraaharsaa","meyden1501","anjanizeina","minka.min9","bebyze3_","ara.anak.baik"].map((u) => (
                               <img key={u} src={`/profile-photos/${u}.jpg`} alt={u} className="w-10 h-10 rounded-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                             ))}
