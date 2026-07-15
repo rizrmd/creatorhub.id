@@ -31,10 +31,20 @@ func (h *CreatorHandler) List(w http.ResponseWriter, r *http.Request) {
 		SortDir:  q.Get("sortDir"),
 	}
 	if v := q.Get("page"); v != "" {
-		params.Page, _ = strconv.Atoi(v)
+		p, err := strconv.Atoi(v)
+		if err != nil || p < 1 {
+			writeError(w, http.StatusBadRequest, "invalid page parameter")
+			return
+		}
+		params.Page = p
 	}
 	if v := q.Get("pageSize"); v != "" {
-		params.PageSize, _ = strconv.Atoi(v)
+		ps, err := strconv.Atoi(v)
+		if err != nil || ps < 1 {
+			writeError(w, http.StatusBadRequest, "invalid pageSize parameter")
+			return
+		}
+		params.PageSize = ps
 	}
 	if v := q.Get("minFollowers"); v != "" {
 		params.MinFollowers, _ = strconv.ParseInt(v, 10, 64)
@@ -98,6 +108,7 @@ func (h *CreatorHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *CreatorHandler) ScrapeSocial(w http.ResponseWriter, r *http.Request) {
+	limitBody(w, r)
 	var req models.ScrapeRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeError(w, http.StatusBadRequest, "invalid request body")
@@ -113,6 +124,7 @@ func (h *CreatorHandler) ScrapeSocial(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *CreatorHandler) Create(w http.ResponseWriter, r *http.Request) {
+	limitBody(w, r)
 	var req models.CreateCreatorRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeError(w, http.StatusBadRequest, "invalid request body")
@@ -150,4 +162,8 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 
 func writeError(w http.ResponseWriter, status int, msg string) {
 	writeJSON(w, status, map[string]string{"error": msg})
+}
+
+func limitBody(w http.ResponseWriter, r *http.Request) {
+	r.Body = http.MaxBytesReader(w, r.Body, 1<<20) // 1 MB
 }

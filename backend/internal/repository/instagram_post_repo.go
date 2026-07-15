@@ -65,6 +65,9 @@ func (r *InstagramPostRepository) ListByAccount(ctx context.Context, account str
 		}
 		posts = append(posts, p)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("list posts rows: %w", err)
+	}
 	return posts, nil
 }
 

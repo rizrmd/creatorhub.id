@@ -43,6 +43,9 @@ func (r *CampaignRepository) List(ctx context.Context) ([]models.Campaign, error
 		c.Deliverables = &d
 		campaigns = append(campaigns, c)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	return campaigns, nil
 }
 
@@ -105,9 +108,12 @@ func (r *CampaignRepository) Update(ctx context.Context, id string, req models.U
 	return &c, err
 }
 
-func (r *CampaignRepository) Delete(ctx context.Context, id string) error {
-	_, err := r.db.Exec(ctx, `DELETE FROM campaigns WHERE id = $1`, id)
-	return err
+func (r *CampaignRepository) Delete(ctx context.Context, id string) (int64, error) {
+	tag, err := r.db.Exec(ctx, `DELETE FROM campaigns WHERE id = $1`, id)
+	if err != nil {
+		return 0, err
+	}
+	return tag.RowsAffected(), nil
 }
 
 func (r *CampaignRepository) AddCreator(ctx context.Context, campaignID, creatorID string) error {
@@ -118,9 +124,12 @@ func (r *CampaignRepository) AddCreator(ctx context.Context, campaignID, creator
 	return err
 }
 
-func (r *CampaignRepository) RemoveCreator(ctx context.Context, campaignID, creatorID string) error {
-	_, err := r.db.Exec(ctx, `
+func (r *CampaignRepository) RemoveCreator(ctx context.Context, campaignID, creatorID string) (int64, error) {
+	tag, err := r.db.Exec(ctx, `
 		DELETE FROM campaign_creators WHERE campaign_id = $1 AND creator_id = $2`,
 		campaignID, creatorID)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return tag.RowsAffected(), nil
 }

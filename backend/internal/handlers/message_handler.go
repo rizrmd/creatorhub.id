@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 
@@ -28,11 +29,16 @@ func (h *MessageHandler) ListChannels(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *MessageHandler) CreateChannel(w http.ResponseWriter, r *http.Request) {
+	limitBody(w, r)
 	var body struct {
 		CreatorID string `json:"creatorId"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		writeError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+	if strings.TrimSpace(body.CreatorID) == "" {
+		writeError(w, http.StatusBadRequest, "creatorId is required")
 		return
 	}
 	ch, err := h.repo.CreateChannel(r.Context(), body.CreatorID)
@@ -55,12 +61,18 @@ func (h *MessageHandler) ListMessages(w http.ResponseWriter, r *http.Request) {
 
 func (h *MessageHandler) SendMessage(w http.ResponseWriter, r *http.Request) {
 	channelID := chi.URLParam(r, "channelId")
+	limitBody(w, r)
 	var req models.SendMessageRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeError(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
-	msg, err := h.repo.SendMessage(r.Context(), channelID, "user-1", "user", req.Content)
+	if strings.TrimSpace(req.Content) == "" {
+		writeError(w, http.StatusBadRequest, "message content is required")
+		return
+	}
+	senderID := "user"
+	msg, err := h.repo.SendMessage(r.Context(), channelID, senderID, "user", req.Content)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, err.Error())
 		return

@@ -562,7 +562,7 @@ export default function BoostAds() {
                 {CAMPAIGNS_DATA.map((c) => {
                   const pct = Math.round((c.spent / c.budget) * 100);
                   return (
-                    <tr key={c.id} className="border-b transition-colors hover:bg-slate-50"
+                    <tr key={c.id} className="border-b transition-colors hover:bg-white/5"
                       style={{ borderColor: "var(--ch-border)" }}>
                       <td className="px-4 py-4">
                         <p className="text-[13px] font-semibold" style={{ color: "var(--ch-text)" }}>{c.name}</p>

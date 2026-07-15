@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
@@ -38,6 +37,9 @@ func (r *MediaNetworkRepository) ListGroups(ctx context.Context) ([]models.Media
 			return nil, fmt.Errorf("scan group: %w", err)
 		}
 		groups = append(groups, g)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("list groups rows: %w", err)
 	}
 	return groups, nil
 }
@@ -137,58 +139,37 @@ func (r *MediaNetworkRepository) BulkUpdateOutlets(ctx context.Context, outlets 
 		return 0, nil
 	}
 
-	// Build batch update query
-	setClauses := []string{}
-	args := []interface{}{}
-	argIdx := 1
+	tx, err := r.db.Begin(ctx)
+	if err != nil {
+		return 0, fmt.Errorf("bulk update begin tx: %w", err)
+	}
+	defer tx.Rollback(ctx)
 
 	for i, o := range outlets {
 		_ = i
-		setClauses = append(setClauses, fmt.Sprintf(`
+		_, err := tx.Exec(ctx, `
 			UPDATE media_outlets SET
-				total_brands = COALESCE(NULLIF($%d::integer, 0), total_brands),
-				harga_agency = NULLIF($%d, '') ?? harga_agency,
-				harga_rate_card = NULLIF($%d, '') ?? harga_rate_card,
-				google_news = $%d,
-				instagram_handle = NULLIF($%d, '') ?? instagram_handle,
-				instagram_followers = NULLIF($%d, '') ?? instagram_followers,
-				facebook_handle = NULLIF($%d, '') ?? facebook_handle,
-				facebook_followers = NULLIF($%d, '') ?? facebook_followers,
-				threads_handle = NULLIF($%d, '') ?? threads_handle,
-				threads_followers = NULLIF($%d, '') ?? threads_followers,
-				tiktok_handle = NULLIF($%d, '') ?? tiktok_handle,
-				tiktok_followers = NULLIF($%d, '') ?? tiktok_followers,
-				twitter_handle = NULLIF($%d, '') ?? twitter_handle,
-				twitter_followers = NULLIF($%d, '') ?? twitter_followers,
-				youtube_handle = NULLIF($%d, '') ?? youtube_handle,
-				youtube_followers = NULLIF($%d, '') ?? youtube_followers,
-				genre = NULLIF($%d, '') ?? genre,
-				keterangan = NULLIF($%d, '') ?? keterangan,
+				total_brands = COALESCE(NULLIF($1::integer, 0), total_brands),
+				harga_agency = COALESCE(NULLIF($2, ''), harga_agency),
+				harga_rate_card = COALESCE(NULLIF($3, ''), harga_rate_card),
+				google_news = $4,
+				instagram_handle = COALESCE(NULLIF($5, ''), instagram_handle),
+				instagram_followers = COALESCE(NULLIF($6, ''), instagram_followers),
+				facebook_handle = COALESCE(NULLIF($7, ''), facebook_handle),
+				facebook_followers = COALESCE(NULLIF($8, ''), facebook_followers),
+				threads_handle = COALESCE(NULLIF($9, ''), threads_handle),
+				threads_followers = COALESCE(NULLIF($10, ''), threads_followers),
+				tiktok_handle = COALESCE(NULLIF($11, ''), tiktok_handle),
+				tiktok_followers = COALESCE(NULLIF($12, ''), tiktok_followers),
+				twitter_handle = COALESCE(NULLIF($13, ''), twitter_handle),
+				twitter_followers = COALESCE(NULLIF($14, ''), twitter_followers),
+				youtube_handle = COALESCE(NULLIF($15, ''), youtube_handle),
+				youtube_followers = COALESCE(NULLIF($16, ''), youtube_followers),
+				genre = COALESCE(NULLIF($17, ''), genre),
+				keterangan = COALESCE(NULLIF($18, ''), keterangan),
 				updated_at = NOW()
-			WHERE id = $%d
+			WHERE id = $19
 		`,
-			argIdx,     // total_brands
-			argIdx+1,   // harga_agency
-			argIdx+2,   // harga_rate_card
-			argIdx+3,   // google_news
-			argIdx+4,   // instagram_handle
-			argIdx+5,   // instagram_followers
-			argIdx+6,   // facebook_handle
-			argIdx+7,   // facebook_followers
-			argIdx+8,   // threads_handle
-			argIdx+9,   // threads_followers
-			argIdx+10,  // tiktok_handle
-			argIdx+11,  // tiktok_followers
-			argIdx+12,  // twitter_handle
-			argIdx+13,  // twitter_followers
-			argIdx+14,  // youtube_handle
-			argIdx+15,  // youtube_followers
-			argIdx+16,  // genre
-			argIdx+17,  // keterangan
-			argIdx+18,  // WHERE id
-		))
-
-		args = append(args,
 			derefInt(o.TotalBrands),
 			derefStr(o.HargaAgency),
 			derefStr(o.HargaRateCard),
@@ -209,13 +190,13 @@ func (r *MediaNetworkRepository) BulkUpdateOutlets(ctx context.Context, outlets 
 			derefStr(o.Keterangan),
 			o.ID,
 		)
-		argIdx += 19
+		if err != nil {
+			return 0, fmt.Errorf("bulk update outlet %s: %w", o.ID, err)
+		}
 	}
 
-	fullQuery := strings.Join(setClauses, ";\n")
-	_, err := r.db.Exec(ctx, fullQuery, args...)
-	if err != nil {
-		return 0, fmt.Errorf("bulk update: %w", err)
+	if err := tx.Commit(ctx); err != nil {
+		return 0, fmt.Errorf("bulk update commit: %w", err)
 	}
 
 	return len(outlets), nil

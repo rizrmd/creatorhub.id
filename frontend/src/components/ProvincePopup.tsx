@@ -49,7 +49,6 @@ function CreatorAvatar({ creator, size = "md" }: { creator: Creator; size?: "sm"
 
   return (
     <>
-      {hasPhoto && <img src={`/creators/${creator.img}`} alt={creator.name} className="hidden" />}
       <div className={`${sizeClasses} rounded-full bg-gradient-to-br ${getAvatarColor(creator.name)} flex items-center justify-center text-white font-bold ring-2 ring-[var(--ch-surface)] shrink-0`}>
         {creator.name[0]}
       </div>

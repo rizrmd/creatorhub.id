@@ -21,7 +21,9 @@ export function useCreateCampaign() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: CreateCampaignRequest) => campaignsApi.create(data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["campaigns"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["campaigns"] });
+    },
   });
 }
 
@@ -30,7 +32,10 @@ export function useUpdateCampaign() {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<Campaign> }) =>
       campaignsApi.update(id, data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["campaigns"] }),
+    onSuccess: (_data, variables) => {
+      qc.invalidateQueries({ queryKey: ["campaigns"] });
+      qc.invalidateQueries({ queryKey: ["campaign", variables.id] });
+    },
   });
 }
 
@@ -38,6 +43,8 @@ export function useDeleteCampaign() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => campaignsApi.delete(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["campaigns"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["campaigns"] });
+    },
   });
 }

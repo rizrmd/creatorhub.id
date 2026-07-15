@@ -36,14 +36,19 @@ function readStoredUser(): AuthUser | null {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(() => readStoredUser());
-  const [isLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const login = async (data: LoginRequest) => {
-    const res = await authApi.login(data);
-    localStorage.setItem("auth_token", res.token);
-    localStorage.setItem("ch_role", roleFromAuth(res.user.role));
-    setUser(res.user);
-    return res.user;
+    setIsLoading(true);
+    try {
+      const res = await authApi.login(data);
+      localStorage.setItem("auth_token", res.token);
+      localStorage.setItem("ch_role", roleFromAuth(res.user.role));
+      setUser(res.user);
+      return res.user;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const logout = () => {

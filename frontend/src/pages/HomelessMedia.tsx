@@ -41,10 +41,10 @@ export default function HomelessMedia() {
   });
 
   const totalFollowers = HOMELESS_MEDIA.reduce((sum, m) => {
-    const f = m.followers.replace(/[+MmKk\s]/g, "").toLowerCase();
-    if (f.includes("m")) return sum + parseFloat(f) * 1000000;
-    if (f.includes("k")) return sum + parseFloat(f) * 1000;
-    return sum + parseFloat(f) || 0;
+    const raw = m.followers.replace(/[+\s]/g, "");
+    if (/M$/i.test(raw)) return sum + parseFloat(raw) * 1_000_000;
+    if (/K$/i.test(raw)) return sum + parseFloat(raw) * 1_000;
+    return sum + parseFloat(raw) || 0;
   }, 0);
 
   return (

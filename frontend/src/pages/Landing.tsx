@@ -317,9 +317,9 @@ export default function Landing() {
               <h4 className="text-sm font-bold text-white mb-4">For Creators</h4>
               <ul className="space-y-2.5 text-sm">
                 <li><Link to="/login" className="hover:text-white transition-colors">Sign Up</Link></li>
-                <li><Link to="\/dashboard" className="hover:text-white transition-colors">Creator Service Hub</Link></li>
+                <li><Link to="/dashboard" className="hover:text-white transition-colors">Creator Service Hub</Link></li>
                 <li><Link to="/dashboard/campaigns" className="hover:text-white transition-colors">Find Campaigns</Link></li>
-                <li><Link to="\/dashboard" className="hover:text-white transition-colors">Creator Community</Link></li>
+                <li><Link to="/dashboard" className="hover:text-white transition-colors">Creator Community</Link></li>
               </ul>
             </div>
 
@@ -327,7 +327,7 @@ export default function Landing() {
             <div>
               <h4 className="text-sm font-bold text-white mb-4">For Brands</h4>
               <ul className="space-y-2.5 text-sm">
-                <li><Link to="\/dashboard" className="hover:text-white transition-colors">Brand Service Hub</Link></li>
+                <li><Link to="/dashboard" className="hover:text-white transition-colors">Brand Service Hub</Link></li>
                 <li><Link to="/dashboard/campaigns" className="hover:text-white transition-colors">Launch Campaign</Link></li>
                 <li><Link to="/dashboard/marketplace" className="hover:text-white transition-colors">Find Creators</Link></li>
                 <li><Link to="/dashboard/projects" className="hover:text-white transition-colors">Track Performance</Link></li>

@@ -6,6 +6,7 @@ import {
   LayoutDashboard, BarChart3, DollarSign, Award, Trophy, MessageSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 /* ───────────────────── Campaigns Data ───────────────────── */
 
@@ -463,6 +464,7 @@ function CampaignCard({ campaign }: { campaign: CampaignItem }) {
 /* ───────────────────── Overview Tab ───────────────────── */
 
 function OverviewTab() {
+  const { user } = useAuth();
   const [videoTab, setVideoTab] = useState("semua");
 
   const videoTabs = ["Semua", "Pending", "Approved", "Rejected", "Need Action", "Deleted"];
@@ -473,7 +475,7 @@ function OverviewTab() {
     <div className="space-y-6">
       {/* Welcome */}
       <h1 className="text-xl md:text-[22px] font-extrabold tracking-[-0.5px]" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-        Selamat datang, Muhamad Al Azhari
+        Selamat datang, {user?.name ?? "User"}
       </h1>
 
       {/* Stats Cards */}

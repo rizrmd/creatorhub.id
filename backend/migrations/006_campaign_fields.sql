@@ -22,3 +22,6 @@ ALTER TABLE campaigns
     DROP COLUMN IF EXISTS deliverables_completed,
     DROP COLUMN IF EXISTS deliverables_in_review,
     DROP COLUMN IF EXISTS hue;
+
+ALTER TABLE campaigns ADD CONSTRAINT campaigns_status_check
+    CHECK (status IN ('draft', 'active', 'completed', 'paused', 'in-review', 'archived'));

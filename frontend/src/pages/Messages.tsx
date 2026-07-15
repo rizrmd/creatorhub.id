@@ -43,6 +43,7 @@ export default function Messages() {
   const [readChannelIds, setReadChannelIds] = useState<Set<string>>(new Set());
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const autoReplyTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const { data: channels, isLoading: loadingChannels } = useChatChannels();
   const { data: messages, isLoading: loadingMessages } = useMessages(activeChannelId ?? "");
@@ -68,6 +69,12 @@ export default function Messages() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  useEffect(() => {
+    return () => {
+      if (autoReplyTimerRef.current) clearTimeout(autoReplyTimerRef.current);
+    };
+  }, []);
+
   const openChannel = (channelId: string) => {
     setActiveChannelId(channelId);
     setReadChannelIds((prev) => new Set([...prev, channelId]));
@@ -84,7 +91,8 @@ export default function Messages() {
     setDraft("");
     setAttachment(null);
     const channelId = activeChannelId;
-    setTimeout(() => {
+    if (autoReplyTimerRef.current) clearTimeout(autoReplyTimerRef.current);
+    autoReplyTimerRef.current = setTimeout(() => {
       const reply = AUTO_REPLIES[Math.floor(Math.random() * AUTO_REPLIES.length)];
       const fakeMsg: Message = {
         id: `auto-${Date.now()}`,

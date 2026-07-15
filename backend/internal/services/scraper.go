@@ -82,7 +82,7 @@ func doHTTPGet(url string, extraHeaders map[string]string) ([]byte, int, error) 
 		return nil, 0, err
 	}
 	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(io.LimitReader(resp.Body, 10<<20))
 	if err != nil {
 		return nil, resp.StatusCode, err
 	}
@@ -140,7 +140,7 @@ func scrapeYouTubeOEmbed(handle string) *ScrapeResult {
 		return &ScrapeResult{Success: false}
 	}
 	defer resp.Body.Close()
-	body, _ := io.ReadAll(resp.Body)
+	body, _ := io.ReadAll(io.LimitReader(resp.Body, 10<<20))
 
 	var oembed struct {
 		Title   string `json:"title"`
@@ -302,7 +302,7 @@ func scrapeTikTokTikHub(handle, apiKey string) *ScrapeResult {
 		return &ScrapeResult{Success: false}
 	}
 	defer resp.Body.Close()
-	body, _ := io.ReadAll(resp.Body)
+	body, _ := io.ReadAll(io.LimitReader(resp.Body, 10<<20))
 
 	var tikhubResp struct {
 		Code    int    `json:"code"`
@@ -483,64 +483,6 @@ func scrapeTikTokHTML(handle string) *ScrapeResult {
 	result.Success = result.ProfilePictureURL != "" || result.FollowerCount > 0
 	if !result.Success {
 		result.Error = "could not extract profile data"
-	}
-
-	return result
-}
-
-func parseTikTokJSON(jsonStr string, handle string) *ScrapeResult {
-	var data map[string]interface{}
-	if err := json.Unmarshal([]byte(jsonStr), &data); err != nil {
-		return &ScrapeResult{Success: false, Error: "failed to parse TikTok data"}
-	}
-
-	// Universal data format
-	if defaultScope, ok := data["__DEFAULT_SCOPE__"].(map[string]interface{}); ok {
-		if userDetail, ok := defaultScope["webapp.user-detail"].(map[string]interface{}); ok {
-			if userInfo, ok := userDetail["userInfo"].(map[string]interface{}); ok {
-				return extractTikTokUser(userInfo, handle)
-			}
-		}
-	}
-
-	// SIGI_STATE format
-	if userModule, ok := data["UserModule"].(map[string]interface{}); ok {
-		if users, ok := userModule["users"].(map[string]interface{}); ok {
-			if userData, ok := users[handle].(map[string]interface{}); ok {
-				return extractTikTokUser(userData, handle)
-			}
-		}
-	}
-
-	return &ScrapeResult{Success: false, Error: "could not find user data"}
-}
-
-func extractTikTokUser(userInfo map[string]interface{}, handle string) *ScrapeResult {
-	result := &ScrapeResult{Success: true, DisplayName: handle}
-
-	if user, ok := userInfo["user"].(map[string]interface{}); ok {
-		for _, key := range []string{"avatarLarger", "avatarMedium", "avatarThumb"} {
-			if val, exists := user[key]; exists {
-				if avatar, ok := val.(string); ok && avatar != "" {
-					result.ProfilePictureURL = avatar
-					break
-				}
-			}
-		}
-		if nickname, ok := user["nickname"].(string); ok && nickname != "" {
-			result.DisplayName = nickname
-		}
-	}
-
-	if stats, ok := userInfo["stats"].(map[string]interface{}); ok {
-		if fc, ok := stats["followerCount"].(float64); ok {
-			result.FollowerCount = int64(fc)
-		}
-	}
-
-	if result.ProfilePictureURL == "" {
-		result.Success = false
-		result.Error = "could not extract profile picture"
 	}
 
 	return result

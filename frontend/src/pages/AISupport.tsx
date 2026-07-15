@@ -33,12 +33,19 @@ export default function AISupport() {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const aiReplyTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const activeChat = chats.find((c) => c.id === activeChatId);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [activeChat?.messages]);
+
+  useEffect(() => {
+    return () => {
+      if (aiReplyTimerRef.current) clearTimeout(aiReplyTimerRef.current);
+    };
+  }, []);
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -59,7 +66,8 @@ export default function AISupport() {
     setInput("");
     setIsTyping(true);
 
-    setTimeout(() => {
+    if (aiReplyTimerRef.current) clearTimeout(aiReplyTimerRef.current);
+    aiReplyTimerRef.current = setTimeout(() => {
       const aiMsg: Message = {
         id: Date.now() + 1,
         role: "assistant",

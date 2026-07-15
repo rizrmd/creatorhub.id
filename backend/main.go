@@ -5,8 +5,11 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"strings"
+	"syscall"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -125,9 +128,32 @@ func main() {
 	r.Handle("/*", spaHandler(cfg.StaticDir))
 
 	log.Printf("CreatorHub running on http://localhost:%s (static: %s)", cfg.Port, cfg.StaticDir)
-	if err := http.ListenAndServe(":"+cfg.Port, r); err != nil {
-		log.Fatal(err)
+
+	srv := &http.Server{
+		Addr:         ":" + cfg.Port,
+		Handler:      r,
+		ReadTimeout:  15 * time.Second,
+		WriteTimeout: 15 * time.Second,
+		IdleTimeout:  60 * time.Second,
 	}
+
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("listen error: %v", err)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	log.Println("Shutting down server...")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatalf("server forced shutdown: %v", err)
+	}
+	log.Println("Server exited")
 }
 
 // ensureAdminUser creates the default admin account if no users exist.
@@ -146,7 +172,7 @@ func ensureAdminUser(ctx context.Context, repo *repository.UserRepository) error
 	if err := repo.Create(ctx, "admin@creatorhub.id", "Administrator", "admin", string(hash)); err != nil {
 		return err
 	}
-	log.Println("Admin user created: admin@creatorhub.id / Admin123!")
+	log.Println("Admin user created: admin@creatorhub.id (see deployment docs for initial password)")
 	return nil
 }
 

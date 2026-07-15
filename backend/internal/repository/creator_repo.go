@@ -185,6 +185,9 @@ func (r *CreatorRepository) List(ctx context.Context, params models.CreatorListP
 		c.FollowersText = formatFollowers(c.Followers)
 		creators = append(creators, c)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 
 	totalPages := int((total + int64(params.PageSize) - 1) / int64(params.PageSize))
 

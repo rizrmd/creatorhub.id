@@ -12,6 +12,8 @@ const NOTIFICATIONS = [
   { id: 3, who: "Analytics",     action: "weekly report available", target: "",           time: "5 hours ago", unread: false, iconBg: "#FEF3C7", iconFg: "#B45309", icon: "chart" },
 ];
 
+type NotifItem = typeof NOTIFICATIONS[number];
+
 const MESSAGE_THREADS = [
   { id: 1, name: "Tasya Farasya", online: true,  last: "Ready, when will the brief be sent?",  time: "2m", unread: 2 },
   { id: 2, name: "Jerome Polin",  online: true,  last: "Noted, I'll review it",               time: "1h", unread: 0 },
@@ -49,6 +51,7 @@ export default function Header() {
   const [showMessages, setShowMessages] = useState(false);
   const [showProfile, setShowProfile]   = useState(false);
   const [msgSearch, setMsgSearch]       = useState("");
+  const [notifications, setNotifications] = useState<NotifItem[]>(NOTIFICATIONS);
   const [now, setNow] = useState(new Date());
 
   const notifRef   = useRef<HTMLDivElement>(null);
@@ -105,7 +108,7 @@ export default function Header() {
     (t) => !msgSearch || t.name.toLowerCase().includes(msgSearch.toLowerCase())
   );
 
-  const unreadNotif = NOTIFICATIONS.filter((n) => n.unread).length;
+  const unreadNotif = notifications.filter((n) => n.unread).length;
   const unreadMsg   = MESSAGE_THREADS.reduce((s, t) => s + t.unread, 0);
 
   const dateStr = now.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
@@ -226,11 +229,14 @@ export default function Header() {
               style={{ boxShadow: "var(--ch-shadow-lg)" }}>
               <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
                 <p className="text-sm font-bold text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Notifications</p>
-                <button className="text-xs font-semibold hover:underline" style={{ color: "var(--ch-primary)" }} onClick={() => setShowNotif(false)}>
+                <button className="text-xs font-semibold hover:underline" style={{ color: "var(--ch-primary)" }} onClick={() => {
+                  setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })));
+                  setShowNotif(false);
+                }}>
                   Mark all read
                 </button>
               </div>
-              {NOTIFICATIONS.map((n) => (
+              {notifications.map((n) => (
                 <div key={n.id}
                   className="flex items-start gap-3 px-4 py-3 border-b border-white/10 cursor-pointer transition-colors hover:bg-white/5"
                   style={{ background: n.unread ? "rgba(37,99,235,.08)" : "transparent" }}

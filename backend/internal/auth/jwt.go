@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"log"
 	"os"
 	"time"
 
@@ -13,6 +14,7 @@ func secret() []byte {
 	if s := os.Getenv("JWT_SECRET"); s != "" {
 		return []byte(s)
 	}
+	log.Println("WARNING: JWT_SECRET not set, using default insecure secret. Set JWT_SECRET in production!")
 	return []byte("creatorhub-secret-change-in-production")
 }
 

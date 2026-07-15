@@ -15,9 +15,6 @@ export default defineConfig({
       "/api": {
         target: "https://creatorhub.id",
         changeOrigin: true,
-        headers: {
-          Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGNyZWF0b3JodWIuaWQiLCJleHAiOjE3ODE5NTAyMTIsImlhdCI6MTc4MTg2MzgxMiwibmFtZSI6IkFkbWluaXN0cmF0b3IiLCJyb2xlIjoiYWRtaW4iLCJzdWIiOiIzOTZkNTM2MC03Y2IwLTRlNWMtYWE3OC1lNTJhZGJhODBjODEifQ.6jlXVxY16HCCUj3xmcNWcbTjVpuReLzGxLemu6vX4KM",
-        },
       },
     },
   },

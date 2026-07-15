@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Save, Bell, Shield, User, Camera, ChevronRight, Copy, RefreshCw,
   Eye, EyeOff, Users, Palette, Zap, CreditCard, Globe,
@@ -85,9 +85,16 @@ export default function Settings() {
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (avatarUrl) URL.revokeObjectURL(avatarUrl);
     setAvatarUrl(URL.createObjectURL(file));
     toast.success("Profile photo changed successfully");
   };
+
+  useEffect(() => {
+    return () => {
+      if (avatarUrl) URL.revokeObjectURL(avatarUrl);
+    };
+  }, [avatarUrl]);
 
   const handleUpdateSecurity = () => {
     if (!currentPw || !newPw || !confirmPw) { toast.error("Semua field harus diisi"); return; }
@@ -152,8 +159,8 @@ export default function Settings() {
 
       <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
         {/* Sidebar tabs */}
-        <div className="lg:w-52 shrink-0 bg-white border border-[var(--ch-border)] rounded-xl p-2 flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible"
-          style={{ borderColor: "var(--ch-border)" }}>
+        <div className="lg:w-52 shrink-0 border rounded-xl p-2 flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible"
+          style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
           {TABS.map((t) => {
             const Icon = t.icon;
             const active = activeTab === t.key;

@@ -49,6 +49,9 @@ func (r *MessageRepository) ListChannels(ctx context.Context) ([]models.ChatChan
 		}
 		channels = append(channels, ch)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	return channels, nil
 }
 
@@ -84,6 +87,9 @@ func (r *MessageRepository) ListMessages(ctx context.Context, channelID string) 
 			return nil, err
 		}
 		msgs = append(msgs, m)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 	return msgs, nil
 }
