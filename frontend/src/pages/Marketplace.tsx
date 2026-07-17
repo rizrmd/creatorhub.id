@@ -1271,25 +1271,31 @@ interface HomelessMedia {
   handle: string;
   platform: string;
   followers: string;
+  followersNum: number;
   region: string;
   category: string;
   engagementRate: string;
   price: string;
   verified: boolean;
   hue: number;
+  imageUrl: string;
 }
 
 const HOMELESS_MEDIA_DATA: HomelessMedia[] = [
-  { id: "hm1", name: "Jakarta Keras", handle: "jakarta.keras", platform: "instagram", followers: "5.8M", region: "DKI Jakarta", category: "News", engagementRate: "3.2", price: "Rp 15.000.000", verified: true, hue: 210 },
-  { id: "hm2", name: "Jakarta Zone", handle: "jakartazoone", platform: "instagram", followers: "3M", region: "DKI Jakarta", category: "Lifestyle", engagementRate: "4.1", price: "Rp 12.000.000", verified: true, hue: 200 },
-  { id: "hm3", name: "Info Depok", handle: "infodepok_id", platform: "instagram", followers: "893K", region: "Jabodetabek", category: "News", engagementRate: "5.2", price: "Rp 8.000.000", verified: true, hue: 180 },
-  { id: "hm4", name: "Lambe Turah", handle: "lambe_turah", platform: "instagram", followers: "12.8M", region: "Regional", category: "Entertainment", engagementRate: "2.8", price: "Rp 25.000.000", verified: true, hue: 220 },
-  { id: "hm5", name: "City Of Bandung", handle: "cityofbdg", platform: "instagram", followers: "157K", region: "Jawa Barat", category: "Travel", engagementRate: "6.1", price: "Rp 4.000.000", verified: false, hue: 150 },
-  { id: "hm6", name: "Ini Surabaya", handle: "ini_surabaya", platform: "instagram", followers: "529K", region: "Jawa Timur", category: "News", engagementRate: "4.5", price: "Rp 6.000.000", verified: true, hue: 240 },
-  { id: "hm7", name: "Makasar Info", handle: "omsottamks", platform: "instagram", followers: "400K", region: "Sulawesi", category: "News", engagementRate: "3.9", price: "Rp 5.500.000", verified: true, hue: 260 },
-  { id: "hm8", name: "Info Banjarmasin", handle: "info_kejadian_banjarmasin", platform: "instagram", followers: "346K", region: "Kalimantan", category: "News", engagementRate: "5.0", price: "Rp 5.000.000", verified: false, hue: 130 },
-  { id: "hm9", name: "Palembang Info", handle: "palembanginfo", platform: "instagram", followers: "298K", region: "Sumatra", category: "News", engagementRate: "4.3", price: "Rp 4.500.000", verified: false, hue: 100 },
-  { id: "hm10", name: "Tabanan Update", handle: "tabanan_update", platform: "instagram", followers: "178K", region: "Bali", category: "Travel", engagementRate: "5.8", price: "Rp 3.500.000", verified: false, hue: 50 },
+  { id: "hm1", name: "Jakarta Keras", handle: "jakarta.keras", platform: "instagram", followers: "5.8M", followersNum: 5800000, region: "DKI Jakarta", category: "News", engagementRate: "3.2", price: "Rp 15.000.000", verified: true, hue: 210, imageUrl: "/homeless-media/jakarta.keras.jpg" },
+  { id: "hm2", name: "Jakarta Zone", handle: "jakartazoone", platform: "instagram", followers: "3M", followersNum: 3000000, region: "DKI Jakarta", category: "Lifestyle", engagementRate: "4.1", price: "Rp 12.000.000", verified: true, hue: 200, imageUrl: "/homeless-media/jakartazoone.jpg" },
+  { id: "hm3", name: "Jakarta Terkini", handle: "jakarta.terkini", platform: "instagram", followers: "2M", followersNum: 2000000, region: "DKI Jakarta", category: "News", engagementRate: "3.8", price: "Rp 10.000.000", verified: true, hue: 190, imageUrl: "/homeless-media/jakarta.terkini.jpg" },
+  { id: "hm4", name: "Mood Jakarta", handle: "mood.jakarta", platform: "instagram", followers: "1.2M", followersNum: 1200000, region: "DKI Jakarta", category: "Lifestyle", engagementRate: "4.5", price: "Rp 8.000.000", verified: true, hue: 170, imageUrl: "/homeless-media/mood.jakarta.jpg" },
+  { id: "hm5", name: "Jakut Info", handle: "jakut.info", platform: "instagram", followers: "630K", followersNum: 630000, region: "DKI Jakarta", category: "News", engagementRate: "5.2", price: "Rp 6.000.000", verified: true, hue: 220, imageUrl: "/homeless-media/jakut.info.jpg" },
+  { id: "hm6", name: "Warga Jakbar", handle: "warga.jakbar", platform: "instagram", followers: "343K", followersNum: 343000, region: "DKI Jakarta", category: "News", engagementRate: "5.8", price: "Rp 5.000.000", verified: false, hue: 160, imageUrl: "/homeless-media/warga.jakbar.jpg" },
+  { id: "hm7", name: "Info Jakarta Pusat", handle: "info_jakartapusat", platform: "instagram", followers: "197K", followersNum: 197000, region: "DKI Jakarta", category: "News", engagementRate: "6.1", price: "Rp 4.000.000", verified: false, hue: 140, imageUrl: "/homeless-media/info_jakartapusat.jpg" },
+  { id: "hm8", name: "Jakarta Pusat Info", handle: "jakartapusat.info", platform: "instagram", followers: "256K", followersNum: 256000, region: "DKI Jakarta", category: "News", engagementRate: "5.5", price: "Rp 4.500.000", verified: false, hue: 230, imageUrl: "/homeless-media/jakartapusat.info.jpg" },
+  { id: "hm9", name: "Info Jakarta Barat", handle: "info.jakartabarat", platform: "instagram", followers: "139K", followersNum: 139000, region: "DKI Jakarta", category: "News", engagementRate: "6.3", price: "Rp 3.500.000", verified: false, hue: 120, imageUrl: "/homeless-media/info.jakartabarat.jpg" },
+  { id: "hm10", name: "Jakarta Barat 24 Jam", handle: "jakartabarat24jam", platform: "instagram", followers: "144K", followersNum: 144000, region: "DKI Jakarta", category: "News", engagementRate: "6.0", price: "Rp 3.500.000", verified: false, hue: 110, imageUrl: "/homeless-media/jakartabarat24jam.jpg" },
+  { id: "hm11", name: "Info JKT 24", handle: "infojkt24", platform: "instagram", followers: "457K", followersNum: 457000, region: "DKI Jakarta", category: "News", engagementRate: "4.8", price: "Rp 5.500.000", verified: true, hue: 250, imageUrl: "/homeless-media/infojkt24.jpg" },
+  { id: "hm12", name: "Jakarta Infonesia", handle: "jakarta.infonesia", platform: "instagram", followers: "226K", followersNum: 226000, region: "DKI Jakarta", category: "News", engagementRate: "5.6", price: "Rp 4.000.000", verified: false, hue: 200, imageUrl: "/homeless-media/jakarta.infonesia.jpg" },
+  { id: "hm13", name: "Info Jakarta Timur", handle: "info_jakartatimur", platform: "instagram", followers: "257K", followersNum: 257000, region: "DKI Jakarta", category: "News", engagementRate: "5.4", price: "Rp 4.500.000", verified: false, hue: 180, imageUrl: "/homeless-media/info_jakartatimur.jpg" },
+  { id: "hm14", name: "Jakartaselatan24jam", handle: "jakartaselatan24jam", platform: "instagram", followers: "154K", followersNum: 154000, region: "DKI Jakarta", category: "News", engagementRate: "5.9", price: "Rp 3.500.000", verified: false, hue: 130, imageUrl: "/homeless-media/jakartaselatan24jam.jpg" },
 ];
 
 const HM_REGIONS = ["Semua", "DKI Jakarta", "Jabodetabek", "Regional", "Jawa Barat", "Jawa Tengah", "Jawa Timur", "Sumatra", "Sulawesi", "Kalimantan", "Bali"];
@@ -1297,6 +1303,7 @@ const HM_REGIONS = ["Semua", "DKI Jakarta", "Jabodetabek", "Regional", "Jawa Bar
 function HomelessMediaTab() {
   const [search, setSearch] = useState("");
   const [regionFilter, setRegionFilter] = useState("Semua");
+  const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
 
   const filtered = HOMELESS_MEDIA_DATA.filter((m) => {
     const matchSearch = m.name.toLowerCase().includes(search.toLowerCase()) || m.handle.toLowerCase().includes(search.toLowerCase());
@@ -1304,12 +1311,9 @@ function HomelessMediaTab() {
     return matchSearch && matchRegion;
   });
 
-  const totalFollowers = HOMELESS_MEDIA_DATA.reduce((sum, m) => {
-    const f = m.followers.replace(/[+MmKk\s]/g, "").toLowerCase();
-    if (f.includes("m")) return sum + parseFloat(f) * 1000000;
-    if (f.includes("k")) return sum + parseFloat(f) * 1000;
-    return sum + parseFloat(f) || 0;
-  }, 0);
+  const totalFollowers = HOMELESS_MEDIA_DATA.reduce((sum, m) => sum + m.followersNum, 0);
+
+  const avgEr = (HOMELESS_MEDIA_DATA.reduce((sum, m) => sum + parseFloat(m.engagementRate), 0) / HOMELESS_MEDIA_DATA.length).toFixed(1);
 
   return (
     <div className="flex flex-col h-full">
@@ -1348,7 +1352,7 @@ function HomelessMediaTab() {
               <TrendingUp className="w-5 h-5" style={{ color: "#8B5CF6" }} />
             </div>
             <div>
-              <p className="text-[18px] font-bold" style={{ color: "var(--ch-text)" }}>4.5%</p>
+              <p className="text-[18px] font-bold" style={{ color: "var(--ch-text)" }}>{avgEr}%</p>
               <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>Avg ER</p>
             </div>
           </div>
@@ -1386,25 +1390,46 @@ function HomelessMediaTab() {
             return (
               <div
                 key={m.id}
-                className="rounded-[14px] overflow-hidden border transition-all cursor-pointer"
+                className="rounded-[14px] overflow-hidden border transition-all"
                 style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; (e.currentTarget as HTMLElement).style.boxShadow = "var(--ch-shadow-md)"; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLElement).style.boxShadow = "var(--ch-shadow-sm)"; }}
               >
-                {/* Photo header */}
+                {/* Photo header with profile image */}
                 <div className="relative w-full h-[140px] overflow-hidden" style={{ background: gradientBg }}>
-                  <div className="absolute inset-0 flex items-center justify-center text-4xl font-bold text-white/30 select-none">
+                  <img
+                    src={m.imageUrl}
+                    alt={m.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => { e.currentTarget.style.display = "none"; }}
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center text-4xl font-bold text-white/30 select-none pointer-events-none">
                     {m.name[0]}
                   </div>
                   {m.verified && (
-                    <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500 text-white">
+                    <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500 text-white shadow">
                       <CheckCircle className="w-3 h-3" /> Verified
                     </div>
                   )}
-                  <div className="absolute top-2 right-2">
-                    <button className="p-1.5 rounded-full bg-black/30 hover:bg-black/50 transition-colors">
-                      <Heart className="w-3.5 h-3.5 text-white/70" />
+                  <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setFavoriteIds((prev) => prev.includes(m.id) ? prev.filter((x) => x !== m.id) : [...prev, m.id]); }}
+                      className="p-1.5 rounded-full bg-black/30 backdrop-blur-sm hover:bg-black/50 transition-colors"
+                    >
+                      <Heart className="w-3.5 h-3.5" style={{ color: favoriteIds.includes(m.id) ? "#EF4444" : "#94A3B8", fill: favoriteIds.includes(m.id) ? "#EF4444" : "none" }} />
                     </button>
+                  </div>
+                  {/* Instagram icon badge */}
+                  <div className="absolute bottom-2 left-2">
+                    <a
+                      href={`https://www.instagram.com/${m.handle}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/40 backdrop-blur-sm text-white text-[10px] font-semibold hover:bg-black/60 transition-colors"
+                    >
+                      <Instagram className="w-3 h-3" />
+                      Instagram
+                    </a>
                   </div>
                 </div>
 
@@ -1413,7 +1438,13 @@ function HomelessMediaTab() {
                   <div className="flex items-center gap-1.5 mb-1">
                     <p className="text-[13px] font-semibold truncate" style={{ color: "var(--ch-text)" }}>{m.name}</p>
                   </div>
-                  <p className="text-[11px] mb-2" style={{ color: "var(--ch-text-muted)" }}>@{m.handle}</p>
+                  <a
+                    href={`https://www.instagram.com/${m.handle}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[11px] mb-2 inline-block hover:underline"
+                    style={{ color: "var(--ch-text-muted)" }}
+                  >@{m.handle}</a>
 
                   <div className="flex items-center gap-1.5 mb-2">
                     <span className="px-1.5 py-0.5 rounded-full text-[10px] font-medium" style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>{m.category}</span>
@@ -1427,9 +1458,21 @@ function HomelessMediaTab() {
 
                   <div className="flex items-center justify-between pt-2 border-t" style={{ borderColor: "var(--ch-border)" }}>
                     <span className="text-[12px] font-bold" style={{ color: "var(--ch-text)" }}>{m.price}</span>
-                    <button className="px-3 py-1.5 rounded-lg text-[11px] font-bold" style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)", border: "1.5px solid var(--ch-primary-100)" }}>
-                      View Details
-                    </button>
+                    <div className="flex items-center gap-1.5">
+                      <a
+                        href={`https://www.instagram.com/${m.handle}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-2.5 py-1.5 rounded-lg text-[11px] font-bold border transition-colors hover:bg-white/5"
+                        style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+                      >
+                        <Instagram className="w-3 h-3 inline mr-1" />
+                        Visit
+                      </a>
+                      <button className="px-3 py-1.5 rounded-lg text-[11px] font-bold" style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)", border: "1.5px solid var(--ch-primary-100)" }}>
+                        Invite
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
