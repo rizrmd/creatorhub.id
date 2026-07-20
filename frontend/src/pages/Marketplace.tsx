@@ -1298,187 +1298,306 @@ const HOMELESS_MEDIA_DATA: HomelessMedia[] = [
   { id: "hm14", name: "Jakartaselatan24jam", handle: "jakartaselatan24jam", platform: "instagram", followers: "154K", followersNum: 154000, region: "DKI Jakarta", category: "News", engagementRate: "5.9", price: "Rp 3.500.000", verified: false, hue: 130, imageUrl: "/homeless-media/jakartaselatan24jam.jpg" },
 ];
 
-const HM_REGIONS = ["Semua", "DKI Jakarta", "Jabodetabek", "Regional", "Jawa Barat", "Jawa Tengah", "Jawa Timur", "Sumatra", "Sulawesi", "Kalimantan", "Bali"];
-
 function HomelessMediaTab() {
   const [search, setSearch] = useState("");
-  const [regionFilter, setRegionFilter] = useState("Semua");
+  const [regionFilter, setRegionFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
+  const [showFavorites, setShowFavorites] = useState(false);
+  const [sortByEr, setSortByEr] = useState(false);
+  const [listView, setListView] = useState(false);
+
+  const HM_CATEGORIES = Array.from(new Set(HOMELESS_MEDIA_DATA.map((m) => m.category))).sort();
+  const HM_REGION_OPTIONS = ["all", ...Array.from(new Set(HOMELESS_MEDIA_DATA.map((m) => m.region))).sort()];
 
   const filtered = HOMELESS_MEDIA_DATA.filter((m) => {
     const matchSearch = m.name.toLowerCase().includes(search.toLowerCase()) || m.handle.toLowerCase().includes(search.toLowerCase());
-    const matchRegion = regionFilter === "Semua" || m.region === regionFilter;
-    return matchSearch && matchRegion;
+    const matchRegion = regionFilter === "all" || m.region === regionFilter;
+    const matchCategory = categoryFilter === "all" || m.category === categoryFilter;
+    const matchFav = !showFavorites || favoriteIds.includes(m.id);
+    return matchSearch && matchRegion && matchCategory && matchFav;
+  }).sort((a, b) => {
+    if (sortByEr) return parseFloat(b.engagementRate) - parseFloat(a.engagementRate);
+    return 0;
   });
 
-  const totalFollowers = HOMELESS_MEDIA_DATA.reduce((sum, m) => sum + m.followersNum, 0);
-
-  const avgEr = (HOMELESS_MEDIA_DATA.reduce((sum, m) => sum + parseFloat(m.engagementRate), 0) / HOMELESS_MEDIA_DATA.length).toFixed(1);
+  const toggleFavorite = (id: string) => {
+    setFavoriteIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
+  };
 
   return (
     <div className="flex flex-col h-full">
-      {/* Stats */}
-      <div className="px-3 pt-2.5 pb-2 border-b border-white/5">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-1.5">
-          <div className="rounded-xl p-3 flex items-center gap-3" style={{ background: "var(--ch-surface)" }}>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(249,115,22,0.1)" }}>
-              <Megaphone className="w-5 h-5" style={{ color: "#F97316" }} />
-            </div>
-            <div>
-              <p className="text-[18px] font-bold" style={{ color: "var(--ch-text)" }}>{HOMELESS_MEDIA_DATA.length}</p>
-              <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>Total Media</p>
-            </div>
-          </div>
-          <div className="rounded-xl p-3 flex items-center gap-3" style={{ background: "var(--ch-surface)" }}>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(16,185,129,0.1)" }}>
-              <Users className="w-5 h-5" style={{ color: "#10B981" }} />
-            </div>
-            <div>
-              <p className="text-[18px] font-bold" style={{ color: "var(--ch-text)" }}>{(totalFollowers / 1000000).toFixed(1)}M</p>
-              <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>Total Followers</p>
-            </div>
-          </div>
-          <div className="rounded-xl p-3 flex items-center gap-3" style={{ background: "var(--ch-surface)" }}>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(59,130,246,0.1)" }}>
-              <MapPin className="w-5 h-5" style={{ color: "#3B82F6" }} />
-            </div>
-            <div>
-              <p className="text-[18px] font-bold" style={{ color: "var(--ch-text)" }}>{new Set(HOMELESS_MEDIA_DATA.map(m => m.region)).size}</p>
-              <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>Regions</p>
-            </div>
-          </div>
-          <div className="rounded-xl p-3 flex items-center gap-3" style={{ background: "var(--ch-surface)" }}>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(139,92,246,0.1)" }}>
-              <TrendingUp className="w-5 h-5" style={{ color: "#8B5CF6" }} />
-            </div>
-            <div>
-              <p className="text-[18px] font-bold" style={{ color: "var(--ch-text)" }}>{avgEr}%</p>
-              <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>Avg ER</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="px-3 sm:px-4 pt-3 pb-0 bg-[#0B1120] flex flex-wrap items-center gap-2">
+      {/* Filters row 1 */}
+      <div className="px-3 sm:px-4 pt-3 pb-2 flex flex-wrap items-center gap-2" style={{ background: "#182337" }}>
         <div className="relative w-full sm:flex-1 sm:min-w-48">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#8B96AA" }} />
           <input
             type="text"
-            placeholder="Find Homeless Media..."
+            placeholder="Find Creators..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-9 pr-3 py-2 text-[13px] rounded-lg border"
-            style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)", background: "var(--ch-surface)" }}
+            style={{ background: "#0B1220", borderColor: "#2A3850", color: "#E5EAF3" }}
           />
         </div>
+
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          className="px-3 py-2 text-[13px] font-semibold rounded-lg border cursor-pointer"
+          style={{ background: "#0B1220", borderColor: "#2A3850", color: "#E5EAF3" }}
+        >
+          <option value="all">All Categories</option>
+          {HM_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+        </select>
+
         <select
           value={regionFilter}
           onChange={(e) => setRegionFilter(e.target.value)}
           className="px-3 py-2 text-[13px] font-semibold rounded-lg border cursor-pointer"
-          style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)", background: "var(--ch-surface)" }}
+          style={{ background: "#0B1220", borderColor: "#2A3850", color: "#E5EAF3" }}
         >
-          {HM_REGIONS.map((r) => <option key={r} value={r}>{r}</option>)}
+          <option value="all">All Cities</option>
+          {HM_REGION_OPTIONS.filter((r) => r !== "all").map((r) => <option key={r} value={r}>{r}</option>)}
         </select>
       </div>
 
-      {/* Card Grid */}
+      {/* Filters row 2 — quick filter pills */}
+      <div className="px-3 sm:px-4 py-2 flex flex-wrap items-center gap-2" style={{ background: "#182337" }}>
+        <button
+          onClick={() => setShowFavorites(!showFavorites)}
+          className={`flex items-center gap-2 h-9 pl-1.5 pr-3 rounded-lg text-[13px] font-medium border transition-all duration-200 cursor-pointer ${
+            showFavorites ? "text-white" : "hover:text-slate-200"
+          }`}
+          style={showFavorites
+            ? { background: "var(--ch-orange)", borderColor: "var(--ch-orange)" }
+            : { background: "#0F1B2D", borderColor: "#2A3850", color: "#8B96AA" }
+          }
+        >
+          <span className="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style={{ background: "#E11D48" }}>
+            <Heart className="w-3.5 h-3.5 text-white fill-white" />
+          </span>
+          Favorites
+        </button>
+
+        <button
+          onClick={() => setSortByEr(!sortByEr)}
+          className={`flex items-center gap-2 h-9 pl-1.5 pr-3 rounded-lg text-[13px] font-medium border transition-all duration-200 cursor-pointer ${
+            sortByEr ? "text-white" : "hover:text-slate-200"
+          }`}
+          style={sortByEr
+            ? { background: "var(--ch-orange)", borderColor: "var(--ch-orange)" }
+            : { background: "#0F1B2D", borderColor: "#2A3850", color: "#8B96AA" }
+          }
+        >
+          <span className="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style={{ background: "#8B5CF6" }}>
+            <TrendingUp className="w-3.5 h-3.5 text-white" />
+          </span>
+          Highest Engagement Rate (ER)
+        </button>
+
+        <button
+          onClick={() => { setCategoryFilter("all"); setRegionFilter("all"); setSearch(""); setShowFavorites(false); setSortByEr(false); }}
+          className="flex items-center gap-2 h-9 pl-1.5 pr-3 rounded-lg text-[13px] font-medium border transition-all duration-200 cursor-pointer hover:text-slate-200"
+          style={{ background: "#0F1B2D", borderColor: "#2A3850", color: "#8B96AA" }}
+        >
+          <span className="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style={{ background: "#475569" }}>
+            <RotateCcw className="w-3.5 h-3.5 text-white" />
+          </span>
+          Reset
+        </button>
+
+        <div className="flex-1" />
+      </div>
+
+      {/* Row 3: results info + actions */}
+      <div className="sticky top-0 z-30 px-3 sm:px-4 py-2 bg-[#0B1120]/95 backdrop-blur border-b border-white/10 shadow-[0_10px_28px_rgba(0,0,0,0.28)] flex flex-wrap items-center gap-2">
+        <div className="flex-1 min-w-[200px]">
+          <p className="text-sm font-bold text-white">{filtered.length} Homeless Media</p>
+          <p className="text-[10px] text-slate-500">Last updated: {new Date().toLocaleString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
+        </div>
+        <div className="flex border border-white/10 rounded-md relative">
+          <button onClick={() => setListView(false)} className={`p-2 group relative ${!listView ? "bg-white/10 text-white" : "text-slate-400 hover:text-white"}`}>
+            <LayoutGrid className="w-4 h-4" />
+          </button>
+          <button onClick={() => setListView(true)} className={`p-2 group relative ${listView ? "bg-white/10 text-white" : "text-slate-400 hover:text-white"}`}>
+            <List className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Card Grid / List */}
       <div className="flex-1 overflow-auto p-3 sm:p-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3">
-          {filtered.map((m) => {
-            const gradientBg = `hsl(${m.hue}, 55%, 45%)`;
-            return (
-              <div
-                key={m.id}
-                className="rounded-[14px] overflow-hidden border transition-all"
-                style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; (e.currentTarget as HTMLElement).style.boxShadow = "var(--ch-shadow-md)"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLElement).style.boxShadow = "var(--ch-shadow-sm)"; }}
-              >
-                {/* Photo header with profile image */}
-                <div className="relative w-full h-[140px] overflow-hidden" style={{ background: gradientBg }}>
-                  <img
-                    src={m.imageUrl}
-                    alt={m.name}
-                    className="w-full h-full object-cover"
-                    onError={(e) => { e.currentTarget.style.display = "none"; }}
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center text-4xl font-bold text-white/30 select-none pointer-events-none">
-                    {m.name[0]}
-                  </div>
-                  {m.verified && (
-                    <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500 text-white shadow">
-                      <CheckCircle className="w-3 h-3" /> Verified
-                    </div>
-                  )}
-                  <div className="absolute top-2 right-2 flex items-center gap-1.5">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setFavoriteIds((prev) => prev.includes(m.id) ? prev.filter((x) => x !== m.id) : [...prev, m.id]); }}
-                      className="p-1.5 rounded-full bg-black/30 backdrop-blur-sm hover:bg-black/50 transition-colors"
-                    >
-                      <Heart className="w-3.5 h-3.5" style={{ color: favoriteIds.includes(m.id) ? "#EF4444" : "#94A3B8", fill: favoriteIds.includes(m.id) ? "#EF4444" : "none" }} />
-                    </button>
-                  </div>
-                  {/* Instagram icon badge */}
-                  <div className="absolute bottom-2 left-2">
-                    <a
-                      href={`https://www.instagram.com/${m.handle}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/40 backdrop-blur-sm text-white text-[10px] font-semibold hover:bg-black/60 transition-colors"
-                    >
-                      <Instagram className="w-3 h-3" />
-                      Instagram
-                    </a>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="p-3">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <p className="text-[13px] font-semibold truncate" style={{ color: "var(--ch-text)" }}>{m.name}</p>
-                  </div>
-                  <a
-                    href={`https://www.instagram.com/${m.handle}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[11px] mb-2 inline-block hover:underline"
-                    style={{ color: "var(--ch-text-muted)" }}
-                  >@{m.handle}</a>
-
-                  <div className="flex items-center gap-1.5 mb-2">
-                    <span className="px-1.5 py-0.5 rounded-full text-[10px] font-medium" style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>{m.category}</span>
-                    <span className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{m.region}</span>
-                  </div>
-
-                  <div className="flex items-center gap-3 text-[11px] mb-2" style={{ color: "var(--ch-text-muted)" }}>
-                    <span className="font-semibold">{m.followers} followers</span>
-                    <span className="font-semibold">{m.engagementRate}% ER</span>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-2 border-t" style={{ borderColor: "var(--ch-border)" }}>
-                    <span className="text-[12px] font-bold" style={{ color: "var(--ch-text)" }}>{m.price}</span>
-                    <div className="flex items-center gap-1.5">
+        {listView ? (
+          <div className="space-y-2">
+            {filtered.map((m) => {
+              const gradientBg = `hsl(${m.hue}, 55%, 45%)`;
+              return (
+                <div
+                  key={m.id}
+                  className="transition-all rounded-[14px] border"
+                  style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}
+                >
+                  <div className="p-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 relative flex items-center justify-center font-semibold text-[14px]"
+                        style={{ background: gradientBg, color: "white" }}>
+                        {m.imageUrl && (
+                          <img src={m.imageUrl} alt={m.name} className="w-full h-full object-cover absolute inset-0"
+                            onError={(e) => { e.currentTarget.style.display = "none"; }} />
+                        )}
+                        {m.name[0]}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <p className="text-[13px] font-semibold leading-tight" style={{ color: "var(--ch-text)" }}>{m.name}</p>
+                          {m.verified && <CheckCircle className="w-3.5 h-3.5" style={{ color: "#10B981" }} />}
+                        </div>
+                        <div className="flex items-center gap-1.5 text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
+                          <MapPin style={{ width: 11, height: 11 }} />
+                          <span>{m.region}</span>
+                          <span className="px-1.5 py-0 rounded-full text-[10px] font-medium" style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>{m.category}</span>
+                        </div>
+                      </div>
+                      <div className="hidden sm:flex items-center gap-2 text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
+                        <span className="font-semibold">{m.followers} followers</span>
+                        <span className="font-semibold">{m.engagementRate}% ER</span>
+                        <span className="font-bold whitespace-nowrap" style={{ color: "var(--ch-text)" }}>{m.price}</span>
+                      </div>
+                      <button
+                        onClick={() => toggleFavorite(m.id)}
+                        className="p-1.5 rounded-full hover:bg-white/10 transition-colors shrink-0"
+                      >
+                        <Heart style={{ width: 14, height: 14, color: favoriteIds.includes(m.id) ? "#EF4444" : "#94A3B8", fill: favoriteIds.includes(m.id) ? "#EF4444" : "none" }} />
+                      </button>
                       <a
                         href={`https://www.instagram.com/${m.handle}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-2.5 py-1.5 rounded-lg text-[11px] font-bold border transition-colors hover:bg-white/5"
+                        className="px-3 py-1.5 rounded-lg text-[12px] font-bold border transition-colors hover:bg-white/5 shrink-0"
                         style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
                       >
-                        <Instagram className="w-3 h-3 inline mr-1" />
-                        Visit
+                        <Instagram className="w-3 h-3 inline mr-1" /> Visit
                       </a>
-                      <button className="px-3 py-1.5 rounded-lg text-[11px] font-bold" style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)", border: "1.5px solid var(--ch-primary-100)" }}>
+                      <button className="px-3 py-1.5 rounded-lg text-[12px] font-bold shrink-0"
+                        style={{ background: "var(--ch-primary)", color: "white" }}>
                         Invite
                       </button>
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+            {filtered.map((m) => {
+              const gradientBg = `hsl(${m.hue}, 60%, 85%)`;
+              return (
+                <div
+                  key={m.id}
+                  className="rounded-[14px] overflow-hidden border transition-all"
+                  style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; (e.currentTarget as HTMLElement).style.boxShadow = "var(--ch-shadow-md)"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLElement).style.boxShadow = "var(--ch-shadow-sm)"; }}
+                >
+                  {/* Photo header — 220px */}
+                  <div className="relative w-full overflow-hidden" style={{ height: 220, background: gradientBg }}>
+                    <img
+                      src={m.imageUrl}
+                      alt={m.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => { e.currentTarget.style.display = "none"; }}
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center text-5xl font-bold text-white/40 pointer-events-none select-none">
+                      {m.name[0]}
+                    </div>
+
+                    {/* Verified chip — top-left */}
+                    {m.verified && (
+                      <div className="absolute top-2.5 left-2.5 flex items-center gap-1 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow"
+                        style={{ background: "var(--ch-primary)" }}>
+                        <CheckCircle style={{ width: 10, height: 10 }} /> Verified
+                      </div>
+                    )}
+
+                    {/* Heart — top-right */}
+                    <button
+                      onClick={(e) => { e.stopPropagation(); toggleFavorite(m.id); }}
+                      className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center transition-colors hover:scale-110"
+                      style={{ boxShadow: "var(--ch-shadow-sm)" }}
+                    >
+                      <Heart style={{ width: 14, height: 14, color: favoriteIds.includes(m.id) ? "#EF4444" : "#94A3B8", fill: favoriteIds.includes(m.id) ? "#EF4444" : "none" }} />
+                    </button>
+                  </div>
+
+                  {/* Card body */}
+                  <div className="p-3.5">
+                    {/* Name */}
+                    <p className="font-bold text-[14px] leading-tight mb-1" style={{ color: "var(--ch-text)" }}>{m.name}</p>
+
+                    {/* City + category */}
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <p className="text-[12px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}>
+                        <MapPin style={{ width: 11, height: 11 }} />
+                        {m.region}
+                      </p>
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize ${getCategoryColor(m.category.toLowerCase())}`}>
+                        {m.category}
+                      </span>
+                    </div>
+
+                    {/* Platform table */}
+                    <div className="mt-2.5 rounded-lg border overflow-hidden" style={{ borderColor: "var(--ch-border)", background: "var(--ch-bg)" }}>
+                      <div className="flex items-center justify-between px-3 py-1.5 border-b" style={{ borderColor: "var(--ch-border)" }}>
+                        <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Platform</span>
+                        <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Followers</span>
+                      </div>
+                      <a
+                        href={`https://www.instagram.com/${m.handle}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="flex items-center justify-between px-3 py-2 border-t transition-colors hover:bg-white/5"
+                        style={{ borderColor: "var(--ch-border)" }}
+                      >
+                        <span className="flex items-center gap-2 text-[12px] font-semibold capitalize" style={{ color: "var(--ch-text)" }}>
+                          <Instagram className="w-3 h-3" />
+                          Instagram
+                        </span>
+                        <span className="text-[12px] font-bold" style={{ color: "var(--ch-text)" }}>
+                          {m.followers}
+                        </span>
+                      </a>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-2 mt-3">
+                      <a
+                        href={`https://www.instagram.com/${m.handle}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-semibold border transition-colors hover:bg-white/5"
+                        style={{ borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+                      >
+                        <User className="w-3.5 h-3.5" />
+                        Profile
+                      </a>
+                      <button
+                        className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-bold transition-all"
+                        style={{ background: "var(--ch-primary)", color: "white" }}
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg>
+                        Invite
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
         {filtered.length === 0 && (
           <div className="text-center py-12 text-slate-500">
             <Megaphone className="w-10 h-10 mx-auto mb-3 opacity-30" />
