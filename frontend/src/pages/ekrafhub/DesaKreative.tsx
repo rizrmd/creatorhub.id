@@ -474,7 +474,12 @@ export default function DesaKreative() {
                 formatter={(value, _name, props: any) => [`${value} desa`, props.payload.name]}
                 labelFormatter={() => ""}
               />
-              <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={40}>
+              <Bar
+                dataKey="count"
+                radius={[4, 4, 0, 0]}
+                maxBarSize={40}
+                label={{ position: "top", fontSize: 11, fontWeight: 700, fill: "#3B82F6", offset: 4 }}
+              >
                 {PROVINCE_DATA.map((entry) => (
                   <Cell key={entry.name} fill="#3B82F6" />
                 ))}
