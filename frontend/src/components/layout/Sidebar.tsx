@@ -157,16 +157,6 @@ export default function Sidebar() {
           </div>
         )}
 
-        {/* EkrafHub workspace pill */}
-        {effectiveRole === "ekrafhub" && !effectiveCollapsed && (
-          <div className="px-2.5 pt-2">
-            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-semibold" style={{ background: "#EEF2FF", color: "#4338CA" }}>
-              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 inline-block" />
-              EkrafHub workspace
-            </div>
-          </div>
-        )}
-
         {/* Nav */}
         <nav
           className="flex-1 overflow-y-auto min-h-0 flex flex-col gap-px"

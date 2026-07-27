@@ -128,12 +128,6 @@ export default function Header() {
         <Menu style={{ width: 20, height: 20 }} />
       </button>
 
-      {/* Member of AKCI */}
-      <div className="hidden lg:flex items-center gap-2 shrink-0 ml-2">
-        <span className="text-[12px] text-white/50 font-medium">Member of</span>
-        <img src="/logo-akci.png" alt="Asosiasi Konten Kreator Indonesia" className="h-10 w-auto" />
-      </div>
-
       {/* Center — Date & Time */}
       <div className="flex-1 flex items-center justify-center">
         <span className="text-sm font-semibold text-white/70 hidden md:block">{dateStr} &bull; {dayStr} | {timeStr}</span>
