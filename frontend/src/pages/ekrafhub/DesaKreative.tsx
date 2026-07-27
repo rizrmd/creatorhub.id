@@ -73,7 +73,7 @@ function createMarkerIcon(p: ProvincePoint, isSelected: boolean): L.DivIcon {
   const size = getMarkerSize(p.count);
   const hasLine = Math.abs(p.lat - p.markerLat) > 0.3 || Math.abs(p.lng - p.markerLng) > 0.3;
   const html = `
-    <div style="position:relative;cursor:pointer;${isSelected ? "z-index:9999;" : ""}">
+    <div style="position:relative;cursor:pointer;display:flex;flex-direction:column;align-items:center;${isSelected ? "z-index:9999;" : ""}">
       <div style="
         width:${size}px;height:${size}px;border-radius:50%;
         background:${isSelected ? "#FB923C" : "#F97316"};
@@ -85,8 +85,15 @@ function createMarkerIcon(p: ProvincePoint, isSelected: boolean): L.DivIcon {
         transition:transform 0.15s,box-shadow 0.15s;
         ${isSelected ? "transform:scale(1.15);box-shadow:0 4px 16px rgba(249,115,22,0.5);" : ""}
       ">${p.count}</div>
+      <div style="
+        margin-top:2px;
+        font-size:9px;font-weight:700;color:#F97316;
+        text-shadow:0 1px 3px rgba(0,0,0,0.8),0 0 8px rgba(0,0,0,0.6);
+        white-space:nowrap;letter-spacing:0.2px;
+        font-family:'Plus Jakarta Sans',sans-serif;
+      ">${p.name}</div>
       ${hasLine ? `<div style="
-        position:absolute;top:50%;left:50%;
+        position:absolute;top:${size / 2}px;left:50%;
         width:6px;height:6px;border-radius:50%;
         background:rgba(249,115,22,0.5);
         transform:translate(-50%,-50%);
@@ -96,8 +103,8 @@ function createMarkerIcon(p: ProvincePoint, isSelected: boolean): L.DivIcon {
   return L.divIcon({
     html,
     className: "",
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
+    iconSize: [size + 20, size + 20],
+    iconAnchor: [(size + 20) / 2, size / 2],
   });
 }
 
