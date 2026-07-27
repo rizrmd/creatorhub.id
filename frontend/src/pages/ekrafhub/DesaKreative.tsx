@@ -45,10 +45,10 @@ const PROVINCE_DATA: ProvincePoint[] = [
   { name: "Gorontalo", count: 4, lat: 0.5435, lng: 123.0568, markerLat: 0.5435, markerLng: 123.0568, region: "Sulawesi" },
   { name: "Maluku", count: 5, lat: -3.2385, lng: 130.1453, markerLat: -3.2385, markerLng: 130.1453, region: "Maluku & Papua" },
   { name: "Maluku Utara", count: 4, lat: 1.5710, lng: 127.8088, markerLat: 1.5710, markerLng: 127.8088, region: "Maluku & Papua" },
-  { name: "Papua", count: 5, lat: -4.2699, lng: 138.0804, markerLat: -4.2699, markerLng: 138.0804, region: "Maluku & Papua" },
-  { name: "Papua Barat", count: 4, lat: -1.3361, lng: 133.1747, markerLat: -1.3361, markerLng: 133.1747, region: "Maluku & Papua" },
-  { name: "Papua Barat Daya", count: 4, lat: -0.8615, lng: 131.2608, markerLat: -0.8615, markerLng: 131.2608, region: "Maluku & Papua" },
-  { name: "Papua Tengah", count: 4, lat: -3.6964, lng: 136.6098, markerLat: -3.6964, markerLng: 136.6098, region: "Maluku & Papua" },
+  { name: "Papua", count: 5, lat: -3.0, lng: 139.5, markerLat: -3.0, markerLng: 139.5, region: "Maluku & Papua" },
+  { name: "Papua Barat", count: 4, lat: -1.5, lng: 133.5, markerLat: -1.5, markerLng: 133.5, region: "Maluku & Papua" },
+  { name: "Papua Barat Daya", count: 4, lat: -0.9, lng: 131.5, markerLat: -0.9, markerLng: 131.5, region: "Maluku & Papua" },
+  { name: "Papua Tengah", count: 4, lat: -3.5, lng: 136.0, markerLat: -3.5, markerLng: 136.0, region: "Maluku & Papua" },
 ];
 
 const TOTAL_DESA = PROVINCE_DATA.reduce((s, p) => s + p.count, 0);
