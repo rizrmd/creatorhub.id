@@ -169,7 +169,7 @@ export default function Sidebar() {
             <NavLink
               key={to}
               to={to}
-              end={to === "/dashboard" || to === "/dashboard/kreator/home"}
+              end={to === "/dashboard" || to === "/dashboard/kreator/home" || to === "/dashboard/ekrafhub"}
               title={effectiveCollapsed ? label : undefined}
               className={({ isActive }) =>
                 cn(
