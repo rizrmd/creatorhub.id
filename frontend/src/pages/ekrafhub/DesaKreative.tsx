@@ -372,7 +372,6 @@ export default function DesaKreative() {
                               <div className="min-w-0">
                                 <p className="text-[12px] font-bold text-white">{v.name}</p>
                                 <p className="text-[10px] text-white/40 mt-0.5">{v.location}</p>
-                                <p className="text-[10px] text-white/50 mt-1 leading-relaxed">{v.desc}</p>
                               </div>
                             </div>
                           </div>
