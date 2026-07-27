@@ -62,6 +62,27 @@ const REGION_COLORS: Record<string, string> = {
   "Maluku & Papua": "#F59E0B",
 };
 
+interface Village {
+  name: string;
+  location: string;
+  desc: string;
+}
+
+const PROVINCE_VILLAGES: Record<string, Village[]> = {
+  "Aceh": [
+    { name: "Gampong Nusa", location: "Aceh Besar", desc: "Terkenal dengan pengelolaan Gampong Nusa berbasis masyarakat, kerajinan daur ulang sampah, dan homestay ramah lingkungan." },
+    { name: "Desa Wisata Jaboi", location: "Sabang", desc: "Masuk dalam Desa Wisata Jaboi dengan daya tarik wisata vulkanik, pemandian air panas, serta atraksi budaya lokal." },
+    { name: "Gampong Lampulo", location: "Banda Aceh", desc: "Menampilkan keunikan Gampong Lampulo berupa situs sejarah kapal di atas rumah pascabencana tsunami." },
+    { name: "Desa Iboih", location: "Sabang", desc: "Destinasi Desa Wisata Iboih yang mendunia dengan konservasi bahari dan keindahan bawah lautnya." },
+    { name: "Gampong Ulee Lhue", location: "Banda Aceh", desc: "Wilayah pesisir kreatif Gampong Ulee Lhue dengan pusat kuliner, dermaga, dan wisata religi." },
+    { name: "Desa Alue Jang", location: "Aceh Jaya", desc: "Menawarkan keindahan Desa Wisata Alue Jang berupa air terjun Ceuraceu Emboen dan Goa Walet yang dikelola secara kreatif." },
+    { name: "Desa Aneuk Laot", location: "Sabang", desc: "Kawasan Desa Wisata Aneuk Laot yang menonjolkan panorama danau serta tradisi budaya lokal." },
+    { name: "Desa Suak Timah", location: "Aceh Barat", desc: "Dikenal melalui sejarah perjuangan dan potensi wisata bahari pantainya." },
+    { name: "Desa Geunteut", location: "Aceh Besar", desc: "Sentra inovasi pertanian dan penyulingan minyak nilam lokal yang produktif." },
+    { name: "Desa Ulee Nyeue", location: "Aceh Utara", desc: "Desa kreatif Desa Wisata Wisata Cado Kacho sebagai tempat singgah istimewa pelintas jalur nasional." },
+  ],
+};
+
 function getMarkerSize(count: number): number {
   if (count >= 20) return 34;
   if (count >= 10) return 28;
@@ -321,7 +342,7 @@ export default function DesaKreative() {
 
               {/* Selected province popup */}
               {selectedProvince && (
-                <div className="absolute top-4 right-4 z-[1000] rounded-xl border p-4 w-64"
+                <div className="absolute top-4 right-4 z-[1000] rounded-xl border p-4 w-80 max-h-[80vh] overflow-y-auto"
                   style={{ background: "rgba(15,23,42,0.95)", borderColor: "rgba(249,115,22,0.4)", boxShadow: "0 8px 32px rgba(0,0,0,0.5)" }}>
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
@@ -335,15 +356,35 @@ export default function DesaKreative() {
                     </button>
                   </div>
                   <p className="text-[15px] font-extrabold text-white mb-1">{selectedProvince.name}</p>
-                  <div className="flex items-baseline gap-1.5">
+                  <div className="flex items-baseline gap-1.5 mb-3">
                     <span className="text-[28px] font-extrabold" style={{ color: "#F97316" }}>{selectedProvince.count}</span>
                     <span className="text-[12px] text-white/50">desa/kelurahan</span>
                   </div>
-                  <div className="mt-3 pt-3 border-t border-white/10">
-                    <p className="text-[10px] text-white/40">
-                      Koordinat: {selectedProvince.lat.toFixed(2)}°, {selectedProvince.lng.toFixed(2)}°
-                    </p>
-                  </div>
+                  {PROVINCE_VILLAGES[selectedProvince.name] && (
+                    <div className="border-t border-white/10 pt-3">
+                      <p className="text-[11px] font-bold text-white/60 mb-2 uppercase tracking-wider">Desa/Kelurahan Kreatif</p>
+                      <div className="space-y-2">
+                        {PROVINCE_VILLAGES[selectedProvince.name].map((v, i) => (
+                          <div key={i} className="rounded-lg p-2.5" style={{ background: "rgba(255,255,255,0.05)" }}>
+                            <div className="flex items-start gap-2">
+                              <span className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold"
+                                style={{ background: "#F97316", color: "#fff" }}>{i + 1}</span>
+                              <div className="min-w-0">
+                                <p className="text-[12px] font-bold text-white">{v.name}</p>
+                                <p className="text-[10px] text-white/40 mt-0.5">{v.location}</p>
+                                <p className="text-[10px] text-white/50 mt-1 leading-relaxed">{v.desc}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {!PROVINCE_VILLAGES[selectedProvince.name] && (
+                    <div className="border-t border-white/10 pt-3">
+                      <p className="text-[11px] text-white/30 italic">Data desa kreatif belum tersedia</p>
+                    </div>
+                  )}
                 </div>
               )}
 
