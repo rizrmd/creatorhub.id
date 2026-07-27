@@ -1,11 +1,12 @@
 import { createContext, useContext, useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 
-export type Role = "brand" | "kreator" | "media_monitoring";
+export type Role = "brand" | "kreator" | "media_monitoring" | "ekrafhub";
 
 export function roleFromAuth(role?: string): Role {
   if (role === "kreator") return "kreator";
   if (role === "media_monitoring") return "media_monitoring";
+  if (role === "ekrafhub") return "ekrafhub";
   return "brand";
 }
 
@@ -37,6 +38,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
 
   const isKreatorAccount = user?.role === "kreator";
   const isMediaMonitoringAccount = user?.role === "media_monitoring";
+  const isEkrafHubAccount = user?.role === "ekrafhub";
 
   useEffect(() => {
     if (!user) return;
@@ -45,11 +47,11 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("ch_role", next);
   }, [user?.id, user?.role]);
 
-  const effectiveRole: Role = isKreatorAccount ? "kreator" : isMediaMonitoringAccount ? "media_monitoring" : role;
-  const canSwitchRole = !isKreatorAccount && !isMediaMonitoringAccount;
+  const effectiveRole: Role = isKreatorAccount ? "kreator" : isMediaMonitoringAccount ? "media_monitoring" : isEkrafHubAccount ? "ekrafhub" : role;
+  const canSwitchRole = !isKreatorAccount && !isMediaMonitoringAccount && !isEkrafHubAccount;
 
   const setRole = (newRole: Role) => {
-    if (isKreatorAccount || isMediaMonitoringAccount) return;
+    if (isKreatorAccount || isMediaMonitoringAccount || isEkrafHubAccount) return;
     localStorage.setItem("ch_role", newRole);
     setRoleState(newRole);
   };

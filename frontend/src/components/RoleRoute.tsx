@@ -16,6 +16,9 @@ export function BrandRoute({ children }: { children: React.ReactNode }) {
   if (effectiveRole === "media_monitoring") {
     return <Navigate to="/dashboard/media-monitoring" replace />;
   }
+  if (effectiveRole === "ekrafhub") {
+    return <Navigate to="/dashboard/ekrafhub" replace />;
+  }
   return <>{children}</>;
 }
 
@@ -33,6 +36,14 @@ export function KreatorRoute({ children }: { children: React.ReactNode }) {
 export function MediaMonitoringRoute({ children }: { children: React.ReactNode }) {
   const { effectiveRole } = useRole();
   if (effectiveRole !== "media_monitoring" && effectiveRole !== "brand") {
+    return <Navigate to="/dashboard/marketplace" replace />;
+  }
+  return <>{children}</>;
+}
+
+export function EkrafHubRoute({ children }: { children: React.ReactNode }) {
+  const { effectiveRole } = useRole();
+  if (effectiveRole !== "ekrafhub") {
     return <Navigate to="/dashboard/marketplace" replace />;
   }
   return <>{children}</>;

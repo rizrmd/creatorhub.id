@@ -1,6 +1,6 @@
 ﻿import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
-import { BrandRoute, KreatorRoute, MediaMonitoringRoute } from "@/components/RoleRoute";
+import { BrandRoute, KreatorRoute, MediaMonitoringRoute, EkrafHubRoute } from "@/components/RoleRoute";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
@@ -39,6 +39,8 @@ import CreatorSettings from "@/pages/kreator/CreatorSettings";
 import CreatorSearch from "@/pages/kreator/CreatorSearch";
 import BrandSearch from "@/pages/BrandSearch";
 import CreatorAcademy from "@/pages/CreatorAcademy";
+import EkrafHubDashboard from "@/pages/ekrafhub/EkrafHubDashboard";
+import EkrafHubPlaceholder from "@/pages/ekrafhub/EkrafHubPlaceholder";
 
 export default function App() {
   return (
@@ -81,7 +83,17 @@ export default function App() {
           <Route path="creator-academy" element={<CreatorAcademy />} />
           <Route path="messages" element={<BrandRoute><Messages /></BrandRoute>} />
           <Route path="payments" element={<BrandRoute><Payments /></BrandRoute>} />
-          <Route path="settings" element={<BrandRoute><Settings /></BrandRoute>} />
+            <Route path="settings" element={<BrandRoute><Settings /></BrandRoute>} />
+          <Route path="ekrafhub">
+            <Route index element={<EkrafHubRoute><EkrafHubDashboard /></EkrafHubRoute>} />
+            <Route path="desa-kreative" element={<EkrafHubRoute><EkrafHubPlaceholder title="Desa Kreative" description="Creative villages network management - Coming soon" /></EkrafHubRoute>} />
+            <Route path="creative-hub" element={<EkrafHubRoute><EkrafHubPlaceholder title="Creative Hub" description="Creative hub management - Coming soon" /></EkrafHubRoute>} />
+            <Route path="creative-indonesia" element={<EkrafHubRoute><EkrafHubPlaceholder title="Creative by Indonesia" description="Indonesian creative content - Coming soon" /></EkrafHubRoute>} />
+            <Route path="marketplace" element={<EkrafHubRoute><Marketplace /></EkrafHubRoute>} />
+            <Route path="boost-ads" element={<EkrafHubRoute><BoostAds /></EkrafHubRoute>} />
+            <Route path="media-monitoring" element={<EkrafHubRoute><MediaMonitoring /></EkrafHubRoute>} />
+            <Route path="settings" element={<EkrafHubRoute><Settings /></EkrafHubRoute>} />
+          </Route>
           <Route path="kreator">
             <Route index element={<Navigate to="/dashboard/kreator/home" replace />} />
             <Route path="home" element={<KreatorRoute><CreatorHome /></KreatorRoute>} />

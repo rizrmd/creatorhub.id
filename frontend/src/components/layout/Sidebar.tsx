@@ -5,7 +5,7 @@ import {
   MessageSquare, CreditCard, Settings, HelpCircle,
   Rocket, Briefcase, Coins, Network,
   Lightbulb, User, Home, Mail, Database, FolderOpen, Sparkles,
-  LayoutDashboard, GraduationCap, type LucideIcon,
+  LayoutDashboard, GraduationCap, Sprout, Building2, Globe2, type LucideIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -56,14 +56,26 @@ const kreatorNavItems: NavItem[] = [
   { to: "/dashboard/kreator/settings",    icon: Settings,      label: "Settings" },
 ];
 
+const ekrafHubNavItems: NavItem[] = [
+  { to: "/dashboard/ekrafhub",                    icon: LayoutDashboard, label: "Dashboard" },
+  { to: "/dashboard/ekrafhub/desa-kreative",      icon: Sprout,         label: "Desa Kreative" },
+  { to: "/dashboard/ekrafhub/creative-hub",       icon: Building2,       label: "Creative Hub" },
+  { to: "/dashboard/ekrafhub/creative-indonesia", icon: Globe2,          label: "Creative by Indonesia" },
+  { to: "/dashboard/ekrafhub/marketplace",        icon: Store,           label: "Marketplace" },
+  { to: "/dashboard/ekrafhub/boost-ads",          icon: Rocket,          label: "Boost Ads" },
+  { to: "/dashboard/ekrafhub/media-monitoring",   icon: Radio,           label: "Media Monitoring" },
+  { to: "/dashboard/ekrafhub/settings",           icon: Settings,        label: "Setting" },
+];
+
 export default function Sidebar() {
   const { pathname } = useLocation();
   const { mobileOpen, closeMobile } = useSidebar();
   const kreatorStats = useKreatorStatsOptional();
   const { effectiveRole } = useRole();
   const isKreatorView = effectiveRole === "kreator";
-  const navActiveBg = isKreatorView ? "#16A34A" : "#F97316";
-  const navActiveShadow = isKreatorView ? "0 4px 14px rgba(22,163,74,.35)" : "0 4px 14px rgba(249,115,22,.35)";
+  const isEkrafHubView = effectiveRole === "ekrafhub";
+  const navActiveBg = isKreatorView ? "#16A34A" : isEkrafHubView ? "#6366F1" : "#F97316";
+  const navActiveShadow = isKreatorView ? "0 4px 14px rgba(22,163,74,.35)" : isEkrafHubView ? "0 4px 14px rgba(99,102,241,.35)" : "0 4px 14px rgba(249,115,22,.35)";
   const effectiveCollapsed = false;
   const [showSupport, setShowSupport] = useState(false);
   const [supportForm, setSupportForm] = useState({ email: "", message: "" });
@@ -72,7 +84,7 @@ export default function Sidebar() {
     closeMobile();
   }, [pathname, closeMobile]);
 
-  const navItems = effectiveRole === "kreator" ? kreatorNavItems : effectiveRole === "media_monitoring" ? mediaMonitoringNavItems : brandNavItems;
+  const navItems = effectiveRole === "kreator" ? kreatorNavItems : effectiveRole === "media_monitoring" ? mediaMonitoringNavItems : effectiveRole === "ekrafhub" ? ekrafHubNavItems : brandNavItems;
 
   const resolveBadge = (item: NavItem) => {
     if (item.badgeKey && kreatorStats) {
@@ -141,6 +153,16 @@ export default function Sidebar() {
             <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-semibold" style={{ background: "#DCFCE7", color: "#15803D" }}>
               <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
               Creator workspace
+            </div>
+          </div>
+        )}
+
+        {/* EkrafHub workspace pill */}
+        {effectiveRole === "ekrafhub" && !effectiveCollapsed && (
+          <div className="px-2.5 pt-2">
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-semibold" style={{ background: "#EEF2FF", color: "#4338CA" }}>
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 inline-block" />
+              EkrafHub workspace
             </div>
           </div>
         )}
