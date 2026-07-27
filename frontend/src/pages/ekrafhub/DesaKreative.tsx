@@ -117,6 +117,19 @@ function MapViewController() {
   const map = useMap();
   useEffect(() => {
     map.setView([-2.5, 118.0], 5);
+    // Enable Ctrl + scroll to zoom
+    map.scrollWheelZoom.enable();
+    const container = map.getContainer();
+    const onWheel = (e: WheelEvent) => {
+      if (!e.ctrlKey) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+    container.addEventListener("wheel", onWheel, { passive: false });
+    return () => {
+      container.removeEventListener("wheel", onWheel);
+    };
   }, [map]);
   return null;
 }
@@ -241,7 +254,7 @@ export default function DesaKreative() {
                 ref={mapRef}
                 center={[-2.5, 118.0]}
                 zoom={5}
-                scrollWheelZoom={false}
+                scrollWheelZoom={true}
                 style={{ height: "100%", width: "100%", background: "#0B1120" }}
                 zoomControl={false}
                 attributionControl={false}
