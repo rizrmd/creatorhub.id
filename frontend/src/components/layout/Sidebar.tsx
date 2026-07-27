@@ -73,9 +73,8 @@ export default function Sidebar() {
   const kreatorStats = useKreatorStatsOptional();
   const { effectiveRole } = useRole();
   const isKreatorView = effectiveRole === "kreator";
-  const isEkrafHubView = effectiveRole === "ekrafhub";
-  const navActiveBg = isKreatorView ? "#16A34A" : isEkrafHubView ? "#6366F1" : "#F97316";
-  const navActiveShadow = isKreatorView ? "0 4px 14px rgba(22,163,74,.35)" : isEkrafHubView ? "0 4px 14px rgba(99,102,241,.35)" : "0 4px 14px rgba(249,115,22,.35)";
+  const navActiveBg = isKreatorView ? "#16A34A" : "#F97316";
+  const navActiveShadow = isKreatorView ? "0 4px 14px rgba(22,163,74,.35)" : "0 4px 14px rgba(249,115,22,.35)";
   const effectiveCollapsed = false;
   const [showSupport, setShowSupport] = useState(false);
   const [supportForm, setSupportForm] = useState({ email: "", message: "" });

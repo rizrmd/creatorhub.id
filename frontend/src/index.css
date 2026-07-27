@@ -271,3 +271,14 @@
     z-index: 10;
   }
 }
+
+/* Desa Kreative map tooltip */
+.leaflet-tooltip.desa-kreative-tooltip {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+.leaflet-tooltip.desa-kreative-tooltip::before {
+  border-top-color: transparent !important;
+}
