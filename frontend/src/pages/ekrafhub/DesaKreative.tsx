@@ -21,35 +21,34 @@ interface ProvincePoint {
 const PROVINCE_DATA: ProvincePoint[] = [
   { name: "Aceh", count: 10, lat: 4.6951, lng: 96.7494, markerLat: 5.5, markerLng: 95.5, region: "Sumatera" },
   { name: "Sumatera Utara", count: 10, lat: 2.1154, lng: 99.5451, markerLat: 3.2, markerLng: 98.5, region: "Sumatera" },
-  { name: "Sumatera Barat", count: 4, lat: -0.7399, lng: 100.8000, markerLat: 0.3, markerLng: 99.5, region: "Sumatera" },
-  { name: "Riau", count: 5, lat: 1.7600, lng: 102.2700, markerLat: 2.8, markerLng: 101.5, region: "Sumatera" },
-  { name: "Jambi", count: 4, lat: -1.4852, lng: 102.4381, markerLat: -0.8, markerLng: 101.5, region: "Sumatera" },
+  { name: "Sumatera Barat", count: 7, lat: -0.7399, lng: 100.8000, markerLat: 0.3, markerLng: 99.5, region: "Sumatera" },
+  { name: "Riau", count: 4, lat: 1.7600, lng: 102.2700, markerLat: 2.8, markerLng: 101.5, region: "Sumatera" },
   { name: "Sumatera Selatan", count: 4, lat: -3.3194, lng: 103.9144, markerLat: -2.5, markerLng: 103.0, region: "Sumatera" },
+  { name: "Kep. Bangka Belitung", count: 4, lat: -2.7411, lng: 106.4406, markerLat: -2.2, markerLng: 105.8, region: "Sumatera" },
   { name: "Bengkulu", count: 5, lat: -3.5778, lng: 102.3464, markerLat: -3.8, markerLng: 101.2, region: "Sumatera" },
-  { name: "Lampung", count: 4, lat: -4.5586, lng: 105.4068, markerLat: -5.0, markerLng: 104.5, region: "Sumatera" },
-  { name: "Kep. Bangka Belitung", count: 5, lat: -2.7411, lng: 106.4406, markerLat: -2.2, markerLng: 105.8, region: "Sumatera" },
-  { name: "DKI Jakarta", count: 24, lat: -6.2088, lng: 106.8456, markerLat: -5.0, markerLng: 105.5, region: "Jawa" },
+  { name: "Lampung", count: 5, lat: -4.5586, lng: 105.4068, markerLat: -5.0, markerLng: 104.5, region: "Sumatera" },
   { name: "Banten", count: 5, lat: -6.4058, lng: 106.0640, markerLat: -6.8, markerLng: 105.2, region: "Jawa" },
   { name: "Jawa Barat", count: 12, lat: -6.9175, lng: 107.6191, markerLat: -7.2, markerLng: 108.5, region: "Jawa" },
-  { name: "Jawa Tengah", count: 9, lat: -7.1510, lng: 110.1403, markerLat: -7.8, markerLng: 110.8, region: "Jawa" },
-  { name: "DI Yogyakarta", count: 15, lat: -7.7972, lng: 110.3688, markerLat: -8.3, markerLng: 109.8, region: "Jawa" },
+  { name: "Jawa Tengah", count: 24, lat: -7.1510, lng: 110.1403, markerLat: -7.8, markerLng: 110.8, region: "Jawa" },
+  { name: "DI Yogyakarta", count: 9, lat: -7.7972, lng: 110.3688, markerLat: -8.3, markerLng: 109.8, region: "Jawa" },
   { name: "Jawa Timur", count: 9, lat: -7.5361, lng: 112.2384, markerLat: -7.8, markerLng: 113.2, region: "Jawa" },
   { name: "Bali", count: 4, lat: -8.3405, lng: 115.0920, markerLat: -8.8, markerLng: 114.5, region: "Bali & Nusa Tenggara" },
-  { name: "Nusa Tenggara Barat", count: 6, lat: -8.6529, lng: 117.3616, markerLat: -8.8, markerLng: 116.8, region: "Bali & Nusa Tenggara" },
-  { name: "Nusa Tenggara Timur", count: 6, lat: -8.6574, lng: 121.0794, markerLat: -8.5, markerLng: 122.0, region: "Bali & Nusa Tenggara" },
+  { name: "Nusa Tenggara Barat", count: 5, lat: -8.6529, lng: 117.3616, markerLat: -8.8, markerLng: 116.8, region: "Bali & Nusa Tenggara" },
+  { name: "Nusa Tenggara Timur", count: 4, lat: -8.6574, lng: 121.0794, markerLat: -8.5, markerLng: 122.0, region: "Bali & Nusa Tenggara" },
   { name: "Kalimantan Barat", count: 4, lat: -0.2788, lng: 111.4753, markerLat: 0.5, markerLng: 109.8, region: "Kalimantan" },
-  { name: "Kalimantan Tengah", count: 4, lat: -1.6383, lng: 113.3824, markerLat: -2.2, markerLng: 112.5, region: "Kalimantan" },
-  { name: "Kalimantan Selatan", count: 4, lat: -3.0926, lng: 115.2838, markerLat: -3.5, markerLng: 114.5, region: "Kalimantan" },
+  { name: "Kalimantan Selatan", count: 5, lat: -3.0926, lng: 115.2838, markerLat: -3.5, markerLng: 114.5, region: "Kalimantan" },
   { name: "Kalimantan Timur", count: 4, lat: 0.5071, lng: 116.4194, markerLat: 1.0, markerLng: 115.5, region: "Kalimantan" },
   { name: "Kalimantan Utara", count: 4, lat: 2.8377, lng: 116.5687, markerLat: 3.5, markerLng: 115.8, region: "Kalimantan" },
   { name: "Sulawesi Utara", count: 4, lat: 0.6247, lng: 123.9750, markerLat: 1.2, markerLng: 123.2, region: "Sulawesi" },
-  { name: "Sulawesi Tengah", count: 4, lat: -1.4300, lng: 121.4456, markerLat: -1.8, markerLng: 120.5, region: "Sulawesi" },
-  { name: "Sulawesi Selatan", count: 5, lat: -3.6688, lng: 119.9741, markerLat: -4.2, markerLng: 119.2, region: "Sulawesi" },
-  { name: "Sulawesi Tenggara", count: 4, lat: -4.1449, lng: 122.1748, markerLat: -4.5, markerLng: 123.0, region: "Sulawesi" },
+  { name: "Sulawesi Selatan", count: 6, lat: -3.6688, lng: 119.9741, markerLat: -4.2, markerLng: 119.2, region: "Sulawesi" },
+  { name: "Sulawesi Tenggara", count: 6, lat: -4.1449, lng: 122.1748, markerLat: -4.5, markerLng: 123.0, region: "Sulawesi" },
   { name: "Gorontalo", count: 4, lat: 0.5435, lng: 123.0568, markerLat: 0.8, markerLng: 122.2, region: "Sulawesi" },
-  { name: "Maluku", count: 4, lat: -3.2385, lng: 130.1453, markerLat: -3.5, markerLng: 129.2, region: "Maluku & Papua" },
-  { name: "Maluku Utara", count: 5, lat: 1.5710, lng: 127.8088, markerLat: 2.0, markerLng: 127.0, region: "Maluku & Papua" },
+  { name: "Maluku", count: 5, lat: -3.2385, lng: 130.1453, markerLat: -3.5, markerLng: 129.2, region: "Maluku & Papua" },
+  { name: "Maluku Utara", count: 4, lat: 1.5710, lng: 127.8088, markerLat: 2.0, markerLng: 127.0, region: "Maluku & Papua" },
   { name: "Papua", count: 5, lat: -4.2699, lng: 138.0804, markerLat: -4.5, markerLng: 137.0, region: "Maluku & Papua" },
+  { name: "Papua Barat", count: 4, lat: -1.3361, lng: 133.1747, markerLat: -1.0, markerLng: 132.5, region: "Maluku & Papua" },
+  { name: "Papua Barat Daya", count: 4, lat: -0.8615, lng: 131.2608, markerLat: -0.5, markerLng: 130.5, region: "Maluku & Papua" },
+  { name: "Papua Tengah", count: 4, lat: -3.6964, lng: 136.6098, markerLat: -3.3, markerLng: 135.5, region: "Maluku & Papua" },
 ];
 
 const TOTAL_DESA = PROVINCE_DATA.reduce((s, p) => s + p.count, 0);
@@ -443,7 +442,7 @@ export default function DesaKreative() {
         <div className="px-2 pb-4" style={{ height: 380 }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
-              data={[...PROVINCE_DATA].sort((a, b) => b.count - a.count)}
+              data={PROVINCE_DATA}
               margin={{ top: 8, right: 12, left: 0, bottom: 55 }}
             >
               <XAxis
@@ -476,7 +475,7 @@ export default function DesaKreative() {
                 labelFormatter={() => ""}
               />
               <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={40}>
-                {[...PROVINCE_DATA].sort((a, b) => b.count - a.count).map((entry) => (
+                {PROVINCE_DATA.map((entry) => (
                   <Cell key={entry.name} fill="#3B82F6" />
                 ))}
               </Bar>
