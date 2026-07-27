@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, GeoJSON, Polyline, useMap, useMapEvents } from
 import L from "leaflet";
 import type { FeatureCollection } from "geojson";
 import * as topojson from "topojson-client";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { Sprout, TrendingUp, MapPin, X } from "lucide-react";
 
 const PROVINCE_URL = "https://gist.githubusercontent.com/ajie31/3144875bad9705e2b2b544909c022276/raw/Peta%20Indonesia%20Provinsi.json";
@@ -419,6 +420,68 @@ export default function DesaKreative() {
               ))}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Bar Chart */}
+      <div className="mt-6 rounded-xl border overflow-hidden"
+        style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+        <div className="px-5 py-4 border-b" style={{ borderColor: "var(--ch-border)" }}>
+          <h2 className="text-[15px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            Peta Sebaran Usulan Pilot Project Desa/Kelurahan Kreatif*
+          </h2>
+          <div className="flex items-center gap-2 mt-2">
+            <div className="w-2.5 h-2.5 rounded-full" style={{ background: "#3B82F6" }} />
+            <span className="text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Jumlah Desa</span>
+          </div>
+        </div>
+        <div className="px-5 pt-4 pb-2">
+          <p className="text-[18px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            31 Propinsi
+          </p>
+        </div>
+        <div className="px-2 pb-4" style={{ height: 380 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={[...PROVINCE_DATA].sort((a, b) => b.count - a.count)}
+              margin={{ top: 8, right: 12, left: 0, bottom: 55 }}
+            >
+              <XAxis
+                dataKey="name"
+                tick={{ fontSize: 10, fontWeight: 600, fill: "var(--ch-text-muted)", angle: -45, textAnchor: "end" }}
+                axisLine={{ stroke: "var(--ch-border)" }}
+                tickLine={false}
+                interval={0}
+                height={60}
+              />
+              <YAxis
+                tick={{ fontSize: 11, fontWeight: 600, fill: "var(--ch-text-muted)" }}
+                axisLine={false}
+                tickLine={false}
+                domain={[0, 26]}
+                ticks={[0, 5, 10, 15, 20, 25]}
+              />
+              <Tooltip
+                cursor={{ fill: "rgba(249,115,22,0.08)" }}
+                contentStyle={{
+                  background: "rgba(15,23,42,0.95)",
+                  border: "1px solid rgba(249,115,22,0.3)",
+                  borderRadius: "8px",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  color: "#fff",
+                  boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
+                }}
+                formatter={(value, _name, props: any) => [`${value} desa`, props.payload.name]}
+                labelFormatter={() => ""}
+              />
+              <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={40}>
+                {[...PROVINCE_DATA].sort((a, b) => b.count - a.count).map((entry) => (
+                  <Cell key={entry.name} fill="#3B82F6" />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </div>
