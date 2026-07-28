@@ -42,6 +42,7 @@ import CreatorAcademy from "@/pages/CreatorAcademy";
 import EkrafHubDashboard from "@/pages/ekrafhub/EkrafHubDashboard";
 import EkrafHubPlaceholder from "@/pages/ekrafhub/EkrafHubPlaceholder";
 import DesaKreative from "@/pages/ekrafhub/DesaKreative";
+import GampongNusa from "@/pages/ekrafhub/GampongNusa";
 
 export default function App() {
   return (
@@ -88,6 +89,7 @@ export default function App() {
           <Route path="ekrafhub">
             <Route index element={<EkrafHubRoute><EkrafHubDashboard /></EkrafHubRoute>} />
             <Route path="desa-kreative" element={<EkrafHubRoute><DesaKreative /></EkrafHubRoute>} />
+            <Route path="desa-kreative/gampongnusa" element={<EkrafHubRoute><GampongNusa /></EkrafHubRoute>} />
             <Route path="creative-hub" element={<EkrafHubRoute><EkrafHubPlaceholder title="Creative Hub" description="Creative hub management - Coming soon" /></EkrafHubRoute>} />
             <Route path="creative-indonesia" element={<EkrafHubRoute><EkrafHubPlaceholder title="Creative by Indonesia" description="Indonesian creative content - Coming soon" /></EkrafHubRoute>} />
             <Route path="marketplace" element={<EkrafHubRoute><Marketplace /></EkrafHubRoute>} />

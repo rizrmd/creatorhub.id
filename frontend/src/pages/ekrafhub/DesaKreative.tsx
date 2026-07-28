@@ -155,6 +155,10 @@ function MapViewController() {
   return null;
 }
 
+const VILLAGE_SLUGS: Record<string, string> = {
+  "Gampong Nusa": "gampongnusa",
+};
+
 export default function DesaKreative() {
   const [provinceGeoJson, setProvinceGeoJson] = useState<FeatureCollection | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<string>("all");
@@ -342,7 +346,9 @@ export default function DesaKreative() {
 
               {/* Selected province popup */}
               {selectedProvince && (
-                <div className="absolute top-4 right-4 z-[1000] rounded-xl border p-4 w-80 max-h-[80vh] overflow-y-auto"
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="absolute top-4 right-4 z-[1000] rounded-xl border p-4 w-80 max-h-[80vh] overflow-y-auto"
                   style={{ background: "rgba(15,23,42,0.95)", borderColor: "rgba(249,115,22,0.4)", boxShadow: "0 8px 32px rgba(0,0,0,0.5)" }}>
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
@@ -364,18 +370,35 @@ export default function DesaKreative() {
                     <div className="border-t border-white/10 pt-3">
                       <p className="text-[11px] font-bold text-white/60 mb-2 uppercase tracking-wider">Desa/Kelurahan Kreatif</p>
                       <div className="space-y-2">
-                        {PROVINCE_VILLAGES[selectedProvince.name].map((v, i) => (
-                          <div key={i} className="rounded-lg p-2.5" style={{ background: "rgba(255,255,255,0.05)" }}>
-                            <div className="flex items-start gap-2">
-                              <span className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold"
-                                style={{ background: "#F97316", color: "#fff" }}>{i + 1}</span>
-                              <div className="min-w-0">
-                                <p className="text-[12px] font-bold text-white">{v.name}</p>
-                                <p className="text-[10px] text-white/40 mt-0.5">{v.location}</p>
+                        {PROVINCE_VILLAGES[selectedProvince.name].map((v, i) => {
+                          const slug = VILLAGE_SLUGS[v.name];
+                          const villageContent = (
+                            <>
+                              <div className="flex items-start gap-2">
+                                <span className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold"
+                                  style={{ background: "#F97316", color: "#fff" }}>{i + 1}</span>
+                                <div className="min-w-0">
+                                  <p className={`text-[12px] font-bold ${slug ? "text-orange-400 hover:text-orange-300" : "text-white"}`}>{v.name}</p>
+                                  <p className="text-[10px] text-white/40 mt-0.5">{v.location}</p>
+                                </div>
                               </div>
+                            </>
+                          );
+                          return slug ? (
+                            <a
+                              key={i}
+                              href={`/dashboard/ekrafhub/desa-kreative/${slug}`}
+                              className="block rounded-lg p-2.5 transition-colors hover:bg-white/10"
+                              style={{ background: "rgba(255,255,255,0.05)" }}
+                            >
+                              {villageContent}
+                            </a>
+                          ) : (
+                            <div key={i} className="rounded-lg p-2.5" style={{ background: "rgba(255,255,255,0.05)" }}>
+                              {villageContent}
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   )}
