@@ -2117,7 +2117,7 @@ export default function Marketplace() {
                   onToggle={() => toggleSelect(creator)}
                   onCardClick={() => {
                     saveMarketplaceState();
-                    navigate(`/dashboard/creators/${creator.id}`);
+                    navigate(`/dashboard/ekrafhub/creators/${creator.id}`);
                   }}
                   onFavorite={() => toggleFavorite(creator.id)}
                   listView={listView}
