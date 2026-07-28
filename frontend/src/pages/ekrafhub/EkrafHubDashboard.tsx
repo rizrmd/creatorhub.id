@@ -1,11 +1,11 @@
-import { Camera, Video, User, BookOpen, FileText, Calendar, Upload, CheckCircle, Share2, Archive, Info, Globe, Send, PenTool, Image as ImageIcon, Film as FilmIcon } from "lucide-react";
+import { Camera, Video, User, BookOpen, FileText, Calendar, Info, Send, Share2, Image as ImageIcon, Film as FilmIcon, MapPin } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 const STAT_CARDS = [
-  { label: "Aset Konten", value: "3.200", icon: ImageIcon, bg: "#EFF6FF", color: "#2563EB" },
+  { label: "Desa/Kelurahan Terdata", value: "4.858", icon: MapPin, bg: "#ECFDF5", color: "#059669", desc: "berpotensi ekonomi kreatif" },
+  { label: "Desa Kreatif SK Pemda", value: "296", icon: FileText, bg: "#F0F9FF", color: "#0284C7", desc: "desa/kelurahan sudah ditetapkan" },
+  { label: "Foto", value: "3.200", icon: ImageIcon, bg: "#EFF6FF", color: "#2563EB" },
   { label: "Video", value: "1.000", icon: FilmIcon, bg: "#F0F4FF", color: "#3B5BDB" },
-  { label: "Artikel & Caption", value: "800", icon: FileText, bg: "#F0F9FF", color: "#0284C7" },
-  { label: "Portal Content Hub", value: "1", icon: Globe, bg: "#FFF7ED", color: "#EA580C" },
 ];
 
 const ASET_ITEMS = [
@@ -15,14 +15,6 @@ const ASET_ITEMS = [
   { label: "Katalog Digital", icon: BookOpen, img: "https://picsum.photos/seed/katalogdigital/200/140" },
   { label: "Press Release", icon: FileText, img: "https://picsum.photos/seed/pressrelease/200/140" },
   { label: "Dokumentasi Acara", icon: Calendar, img: "https://picsum.photos/seed/dokumentasiacara/200/140" },
-];
-
-const ALUR_DISTRIBUSI = [
-  { label: "Produksi", desc: "Pembuatan konten oleh pelaku dan tim program.", icon: PenTool },
-  { label: "Review", desc: "Kurasi dan validasi konten oleh tim editor.", icon: CheckCircle },
-  { label: "Upload", desc: "Unggah konten ke CreatorHub.id dan tagging.", icon: Upload },
-  { label: "Distribusi", desc: "Distribusi konten ke berbagai kanal digital.", icon: Share2 },
-  { label: "Arsip", desc: "Penyimpanan dan pengelolaan aset secara terstruktur.", icon: Archive },
 ];
 
 const KANAL_DATA = [
@@ -58,6 +50,7 @@ export default function EkrafHubDashboard() {
               <div>
                 <p className="text-[22px] md:text-[26px] font-extrabold leading-none" style={{ color: s.color }}>{s.value}</p>
                 <p className="text-[11px] mt-1 font-medium" style={{ color: "var(--ch-text-muted)" }}>{s.label}</p>
+                {"desc" in s && s.desc && <p className="text-[10px] mt-0.5" style={{ color: "var(--ch-text-muted)" }}>{s.desc}</p>}
               </div>
             </div>
           );
@@ -65,7 +58,7 @@ export default function EkrafHubDashboard() {
       </div>
 
       {/* Main 3-Column Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
         {/* Pusat Aset Konten */}
         <div className="rounded-xl border overflow-hidden"
           style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
@@ -90,53 +83,6 @@ export default function EkrafHubDashboard() {
                 </div>
               );
             })}
-          </div>
-        </div>
-
-        {/* Alur Distribusi */}
-        <div className="rounded-xl border overflow-hidden"
-          style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-          <div className="px-4 py-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
-            <h3 className="text-[14px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-              Alur Distribusi
-            </h3>
-          </div>
-          <div className="p-4">
-            <div className="flex items-center justify-between mb-4">
-              {ALUR_DISTRIBUSI.map((step, i) => {
-                const StepIcon = step.icon;
-                return (
-                  <div key={step.label} className="flex items-center">
-                    <div className="flex flex-col items-center text-center w-[60px]">
-                      <div className="w-10 h-10 rounded-full border-2 flex items-center justify-center mb-1.5"
-                        style={{ borderColor: "#2563EB", color: "#2563EB", background: "#EFF6FF" }}>
-                        <StepIcon className="w-4 h-4" />
-                      </div>
-                      <span className="text-[9px] font-bold leading-tight" style={{ color: "var(--ch-text)" }}>{step.label}</span>
-                    </div>
-                    {i < ALUR_DISTRIBUSI.length - 1 && (
-                      <div className="flex items-center mx-0.5">
-                        <div className="w-4 h-[2px]" style={{ borderStyle: "dashed", borderColor: "#94A3B8" }} />
-                        <svg className="w-3 h-3 shrink-0" style={{ color: "#94A3B8" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M9 18l6-6-6-6" />
-                        </svg>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-            <div className="space-y-2">
-              {ALUR_DISTRIBUSI.map((step) => (
-                <div key={step.label} className="flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style={{ background: "#2563EB" }} />
-                  <div>
-                    <span className="text-[11px] font-bold" style={{ color: "var(--ch-text)" }}>{step.label}:</span>
-                    <span className="text-[10px] ml-1" style={{ color: "var(--ch-text-muted)" }}>{step.desc}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
 

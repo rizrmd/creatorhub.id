@@ -828,7 +828,7 @@ export default function ProjectDetail() {
                     {/* Left: Official Accounts → Konten → Arrows → Shelter/Mikro/Nano */}
                     <div className="flex-1 space-y-2">
                       {/* Official Accounts */}
-                      <div className="rounded-lg border-2 p-3" style={{ borderColor: "#F97316", background: "rgba(249,115,22,0.04)" }}>
+                      <div className="rounded-2xl border-2 p-3" style={{ borderColor: "rgba(139,92,246,0.5)", background: "rgba(15,23,42,0.6)", boxShadow: "0 0 30px rgba(139,92,246,0.15)" }}>
                         <div className="text-center mb-2">
                           <p className="text-[13px] font-extrabold tracking-wider" style={{ color: "#F97316", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>OFFICIAL ACCOUNTS</p>
                           <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>Dikelola oleh Tim Humas Kementerian UMKM</p>
@@ -839,7 +839,7 @@ export default function ProjectDetail() {
                             { name: "Kementerian UMKM", realName: "#KitaUMKM", posts: "1,502", followers: "113K", following: "92", role: "Government Official", sub: "Akun Resmi Kementerian UMKM RI", photo: "/client-logos/logo-kementerian-umkm.jpg", highlight: true },
                             { name: "Wakil Menteri UMKM", realName: "Helvi Moraza", posts: "748", followers: "11.6K", following: "962", role: "Politician", sub: "Wakil Menteri UMKM RI", photo: "/client-logos/helvi-moraza.jpg" },
                           ].map((acc) => (
-                            <div key={acc.name} className="rounded-lg border p-2 text-center" style={{ borderColor: acc.highlight ? "#F97316" : "var(--ch-border)", background: acc.highlight ? "rgba(249,115,22,0.08)" : "var(--ch-surface)", borderWidth: acc.highlight ? "2px" : "1px" }}>
+                            <div key={acc.name} className="rounded-lg border p-2 text-center" style={{ borderColor: acc.highlight ? "#F97316" : "rgba(139,92,246,0.3)", background: acc.highlight ? "rgba(249,115,22,0.08)" : "rgba(30,41,59,0.8)", borderWidth: acc.highlight ? "2px" : "1px" }}>
                               <div className="w-10 h-10 rounded-full mx-auto mb-1 overflow-hidden border-2" style={{ borderColor: acc.highlight ? "#F97316" : "var(--ch-border)" }}>
                                 <img src={acc.photo} alt={acc.name} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; (e.target as HTMLImageElement).nextElementSibling?.classList.remove("hidden"); }} />
                                 <div className="w-full h-full hidden items-center justify-center text-[14px] font-bold" style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>
@@ -866,7 +866,7 @@ export default function ProjectDetail() {
                       </div>
 
                       {/* Konten Didistribusikan */}
-                      <div className="rounded-lg border p-2 text-center" style={{ borderColor: "#F97316", background: "rgba(249,115,22,0.04)" }}>
+                      <div className="rounded-2xl border-2 p-2 text-center" style={{ borderColor: "rgba(139,92,246,0.5)", background: "rgba(15,23,42,0.6)", boxShadow: "0 0 30px rgba(139,92,246,0.15)" }}>
                         <div className="flex items-center justify-center gap-1.5">
                           <span className="text-[14px]">▶</span>
                           <p className="text-[12px] font-extrabold" style={{ color: "#F97316", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Konten Didistribusikan</p>
@@ -885,7 +885,7 @@ export default function ProjectDetail() {
                       {/* Shelter + Mikro + Nano */}
                       <div className="grid grid-cols-3 gap-2">
                         {/* SHELTER */}
-                        <div className="rounded-lg border p-2" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
+                        <div className="rounded-2xl border-2 p-2" style={{ borderColor: "rgba(139,92,246,0.5)", background: "rgba(15,23,42,0.6)", boxShadow: "0 0 30px rgba(139,92,246,0.15)" }}>
                         <div className="flex items-center gap-2 mb-2">
                           <p className="text-[11px] font-extrabold py-0.5" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>SHELTER (3)</p>
                           </div>
@@ -895,7 +895,7 @@ export default function ProjectDetail() {
                               { handle: "kilas_umkm", followers: "447.1K", photo: "/profile-photos/kilas-umkm.jpg", platform: "tiktok" },
                               { handle: "umkmhits", followers: "510K", photo: "/profile-photos/umkm-hits.jpg", platform: "youtube" },
                             ].map((s) => (
-                            <div key={s.handle} className="flex items-center gap-1.5 p-1.5 rounded border" style={{ borderColor: "var(--ch-border)" }}>
+                            <div key={s.handle} className="flex items-center gap-1.5 p-1.5 rounded border" style={{ borderColor: "rgba(139,92,246,0.3)", background: "rgba(30,41,59,0.6)" }}>
                               <img src={s.photo} alt={s.handle} className="w-10 h-10 rounded-full object-cover shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                               <div className="min-w-0 flex-1">
                                 <p className="text-[9px] font-bold truncate" style={{ color: "var(--ch-text)" }}>@{s.handle}</p>
@@ -910,7 +910,7 @@ export default function ProjectDetail() {
                         </div>
 
                         {/* MIKRO */}
-                        <div className="rounded-lg border p-2" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
+                        <div className="rounded-2xl border-2 p-2" style={{ borderColor: "rgba(139,92,246,0.5)", background: "rgba(15,23,42,0.6)", boxShadow: "0 0 30px rgba(139,92,246,0.15)" }}>
                           <p className="text-[11px] font-extrabold py-0.5" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>MIKRO (15)</p>
                           <p className="text-[11px] font-bold py-1 flex items-center gap-1" style={{ color: "#FFFFFF" }}><LogoCircle bg="#000000" size="w-4 h-4"><TikTokLogo size="w-2.5 h-2.5" /></LogoCircle> TikTok <span className="font-normal">(10)</span></p>
                         <div className="grid grid-cols-5 gap-1 mb-1.5">
@@ -927,7 +927,7 @@ export default function ProjectDetail() {
                         </div>
 
                         {/* NANO */}
-                        <div className="rounded-lg border p-2" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
+                        <div className="rounded-2xl border-2 p-2" style={{ borderColor: "rgba(139,92,246,0.5)", background: "rgba(15,23,42,0.6)", boxShadow: "0 0 30px rgba(139,92,246,0.15)" }}>
                           <div className="flex items-center gap-2 mb-1">
                             <p className="text-[11px] font-extrabold py-0.5" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>NANO (40)</p>
                           </div>
@@ -950,9 +950,9 @@ export default function ProjectDetail() {
                     {/* Right: Amplifications — aligned with Official Accounts */}
                     <div className="xl:w-[280px] shrink-0 self-start flex items-center gap-2">
                       {/* Arrow pointing LEFT from Amplifications to Official Accounts */}
-                      <div className="hidden xl:flex items-center shrink-0">
-                        <svg width="40" height="28" viewBox="0 0 40 28">
-                          <line x1="38" y1="14" x2="10" y2="14" stroke="#F97316" strokeWidth="3" strokeLinecap="round" />
+                      <div className="hidden xl:flex items-center shrink-0 -ml-4">
+                        <svg width="56" height="28" viewBox="0 0 56 28">
+                          <line x1="54" y1="14" x2="10" y2="14" stroke="#F97316" strokeWidth="3" strokeLinecap="round" />
                           <polygon points="14,6 14,22 2,14" fill="#F97316" />
                         </svg>
                       </div>
