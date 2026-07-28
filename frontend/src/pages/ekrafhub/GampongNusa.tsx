@@ -28,10 +28,8 @@ interface AccountData {
 }
 
 const KOC_ACCOUNTS: AccountData[] = [
-  { id: "1", name: "Putri Rahmawati", handle: "@putri.nusa.travel", photo: "https://i.pravatar.cc/150?img=1", platforms: [{ name: "instagram", followers: 12400, engagementRate: 3.2 }, { name: "tiktok", followers: 5200, engagementRate: 5.8 }] },
-  { id: "2", name: "Faisal Ramadhan", handle: "@faisal.nusa.food", photo: "https://i.pravatar.cc/150?img=3", platforms: [{ name: "instagram", followers: 8700, engagementRate: 2.9 }] },
-  { id: "3", name: "Nisa Aulia", handle: "@nisa.nusa.vlog", photo: "https://i.pravatar.cc/150?img=5", platforms: [{ name: "youtube", followers: 15200, engagementRate: 8.7 }, { name: "instagram", followers: 9800, engagementRate: 4.1 }] },
-  { id: "4", name: "Rizky Pratama", handle: "@rizky.nusa.tiktok", photo: "https://i.pravatar.cc/150?img=7", platforms: [{ name: "tiktok", followers: 9800, engagementRate: 12.3 }, { name: "youtube", followers: 3200, engagementRate: 6.5 }] },
+  { id: "1", name: "Nura Sahirah", handle: "@nurasahirah", photo: "/nurasahirah.jpg", platforms: [{ name: "instagram", followers: 2017, engagementRate: 0.8 }] },
+  { id: "2", name: "Opie Zahri", handle: "@opiezahri", photo: "/opiezahri.jpg", platforms: [{ name: "instagram", followers: 6529, engagementRate: 0.6 }] },
 ];
 
 const HOMELESS_MEDIA_ACCOUNTS: AccountData[] = [
@@ -42,17 +40,13 @@ const HOMELESS_MEDIA_ACCOUNTS: AccountData[] = [
 ];
 
 const TOP_PERFORMERS = [
-  { id: "1", name: "Nisa Aulia", handle: "@nisa.nusa.vlog", platform: "youtube", views: 45200, engagement: 8.7, photo: "https://i.pravatar.cc/150?img=5", category: "Vlog & Education" },
-  { id: "2", name: "Rizky Pratama", handle: "@rizky.nusa.tiktok", platform: "tiktok", views: 38500, engagement: 12.3, photo: "https://i.pravatar.cc/150?img=7", category: "Travel & Eco-Tourism" },
-  { id: "3", name: "Putri Rahmawati", handle: "@putri.nusa.travel", platform: "instagram", views: 28900, engagement: 6.5, photo: "https://i.pravatar.cc/150?img=1", category: "Travel & Lifestyle" },
-  { id: "4", name: "Faisal Ramadhan", handle: "@faisal.nusa.food", platform: "instagram", views: 19200, engagement: 5.2, photo: "https://i.pravatar.cc/150?img=3", category: "Food & Culinary" },
+  { id: "1", name: "Opie Zahri", handle: "@opiezahri", platform: "instagram", views: 12500, engagement: 0.6, photo: "/opiezahri.jpg", category: "Lifestyle & Creative" },
+  { id: "2", name: "Nura Sahirah", handle: "@nurasahirah", platform: "instagram", views: 8300, engagement: 0.8, photo: "/nurasahirah.jpg", category: "Travel & Culture" },
 ];
 
 const TOP_CREATORS_BY_FOLLOWERS = [
-  { id: "3", name: "Nisa Aulia", handle: "@nisa.nusa.vlog", platform: "youtube", followers: 15200, photo: "https://i.pravatar.cc/150?img=5", category: "Vlog & Education" },
-  { id: "1", name: "Putri Rahmawati", handle: "@putri.nusa.travel", platform: "instagram", followers: 12400, photo: "https://i.pravatar.cc/150?img=1", category: "Travel & Lifestyle" },
-  { id: "4", name: "Rizky Pratama", handle: "@rizky.nusa.tiktok", platform: "tiktok", followers: 9800, photo: "https://i.pravatar.cc/150?img=7", category: "Travel & Eco-Tourism" },
-  { id: "2", name: "Faisal Ramadhan", handle: "@faisal.nusa.food", platform: "instagram", followers: 8700, photo: "https://i.pravatar.cc/150?img=3", category: "Food & Culinary" },
+  { id: "1", name: "Opie Zahri", handle: "@opiezahri", platform: "instagram", followers: 6529, photo: "/opiezahri.jpg", category: "Lifestyle & Creative" },
+  { id: "2", name: "Nura Sahirah", handle: "@nurasahirah", platform: "instagram", followers: 2017, photo: "/nurasahirah.jpg", category: "Travel & Culture" },
 ];
 
 function formatNum(n: number): string {
