@@ -1,4 +1,4 @@
-import { ArrowLeft, MapPin, Route, Users, Instagram, Youtube, Camera } from "lucide-react";
+import { ArrowLeft, MapPin, Route, Users, Instagram, Youtube, Camera, Eye, Heart, MessageCircle, Clock, TrendingUp, Award, BarChart3 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
@@ -12,46 +12,39 @@ const GAMPONG_NUSA = {
     "Gampong Nusa adalah desa wisata unggulan berbasis masyarakat di Kecamatan Lhoknga, Kabupaten Aceh Besar, yang berjarak sekitar 10 kilometer dari pusat Kota Banda Aceh. Desa ini terkenal dengan pemandangan alam perbukitan dan persawahan yang indah, serta konsep ramah lingkungan (ecotourism).",
 };
 
-const KREATOR_DATA = [
-  {
-    id: "1",
-    name: "Putri Rahmawati",
-    handle: "@putri.nusa.travel",
-    platform: "instagram" as const,
-    followers: 12400,
-    photo: "https://i.pravatar.cc/150?img=1",
-    category: "Travel & Lifestyle",
-  },
-  {
-    id: "2",
-    name: "Faisal Ramadhan",
-    handle: "@faisal.nusa.food",
-    platform: "instagram" as const,
-    followers: 8700,
-    photo: "https://i.pravatar.cc/150?img=3",
-    category: "Food & Culinary",
-  },
-  {
-    id: "3",
-    name: "Nisa Aulia",
-    handle: "@nisa.nusa.vlog",
-    platform: "youtube" as const,
-    followers: 15200,
-    photo: "https://i.pravatar.cc/150?img=5",
-    category: "Vlog & Education",
-  },
+const LAST_ACTIVITIES = [
+  { id: "1", name: "Putri Rahmawati", handle: "@putri.nusa.travel", platform: "instagram", action: "posted a reel", content: "Sunrise di Bukit Gampong Nusa", time: "2 jam lalu", likes: 1240, comments: 89, photo: "https://i.pravatar.cc/150?img=1" },
+  { id: "2", name: "Faisal Ramadhan", handle: "@faisal.nusa.food", platform: "instagram", action: "posted a carousel", content: "Kuliner Khas Aceh di Desa Nusa", time: "5 jam lalu", likes: 892, comments: 54, photo: "https://i.pravatar.cc/150?img=3" },
+  { id: "3", name: "Nisa Aulia", handle: "@nisa.nusa.vlog", platform: "youtube", action: "uploaded a video", content: "Vlog: Sehari di Gampong Nusa", time: "1 hari lalu", likes: 2100, comments: 156, photo: "https://i.pravatar.cc/150?img=5" },
+  { id: "4", name: "Rizky Pratama", handle: "@rizky.nusa.tiktok", platform: "tiktok", action: "posted a video", content: "Eco-Tourism Gampong Nusa Tour", time: "2 hari lalu", likes: 3400, comments: 210, photo: "https://i.pravatar.cc/150?img=7" },
 ];
 
-function formatFollowers(n: number): string {
+const TOP_PERFORMERS = [
+  { id: "1", name: "Nisa Aulia", handle: "@nisa.nusa.vlog", platform: "youtube", views: 45200, engagement: 8.7, photo: "https://i.pravatar.cc/150?img=5", category: "Vlog & Education" },
+  { id: "2", name: "Rizky Pratama", handle: "@rizky.nusa.tiktok", platform: "tiktok", views: 38500, engagement: 12.3, photo: "https://i.pravatar.cc/150?img=7", category: "Travel & Eco-Tourism" },
+  { id: "3", name: "Putri Rahmawati", handle: "@putri.nusa.travel", platform: "instagram", views: 28900, engagement: 6.5, photo: "https://i.pravatar.cc/150?img=1", category: "Travel & Lifestyle" },
+  { id: "4", name: "Faisal Ramadhan", handle: "@faisal.nusa.food", platform: "instagram", views: 19200, engagement: 5.2, photo: "https://i.pravatar.cc/150?img=3", category: "Food & Culinary" },
+];
+
+const TOP_CREATORS_BY_FOLLOWERS = [
+  { id: "3", name: "Nisa Aulia", handle: "@nisa.nusa.vlog", platform: "youtube", followers: 15200, photo: "https://i.pravatar.cc/150?img=5", category: "Vlog & Education" },
+  { id: "1", name: "Putri Rahmawati", handle: "@putri.nusa.travel", platform: "instagram", followers: 12400, photo: "https://i.pravatar.cc/150?img=1", category: "Travel & Lifestyle" },
+  { id: "4", name: "Rizky Pratama", handle: "@rizky.nusa.tiktok", platform: "tiktok", followers: 9800, photo: "https://i.pravatar.cc/150?img=7", category: "Travel & Eco-Tourism" },
+  { id: "2", name: "Faisal Ramadhan", handle: "@faisal.nusa.food", platform: "instagram", followers: 8700, photo: "https://i.pravatar.cc/150?img=3", category: "Food & Culinary" },
+];
+
+function formatNum(n: number): string {
   if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
   if (n >= 1000) return `${(n / 1000).toFixed(1)}K`;
   return String(n);
 }
 
-function platformIcon(p: string) {
-  if (p === "instagram") return <Instagram className="w-3.5 h-3.5" />;
-  if (p === "youtube") return <Youtube className="w-3.5 h-3.5" />;
-  return <Camera className="w-3.5 h-3.5" />;
+function platformIcon(p: string, size: "sm" | "md" = "sm") {
+  const cls = size === "sm" ? "w-3.5 h-3.5" : "w-4 h-4";
+  if (p === "instagram") return <Instagram className={cls} style={{ color: "#E1306C" }} />;
+  if (p === "youtube") return <Youtube className={cls} style={{ color: "#FF0000" }} />;
+  if (p === "tiktok") return <Camera className={cls} style={{ color: "#000" }} />;
+  return <Camera className={cls} />;
 }
 
 export default function GampongNusa() {
@@ -72,7 +65,6 @@ export default function GampongNusa() {
       {/* Hero Section */}
       <div className="rounded-xl border overflow-hidden mb-6"
         style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-        {/* Gradient banner */}
         <div className="h-32 md:h-40 relative"
           style={{ background: "linear-gradient(135deg, #065f46, #059669, #10b981)" }}>
           <div className="absolute inset-0 opacity-20"
@@ -100,6 +92,58 @@ export default function GampongNusa() {
                 style={{ background: "#EFF6FF", color: "#2563EB" }}>
                 ~{GAMPONG_NUSA.travelTime}
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats row */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <div className="rounded-xl border p-3"
+          style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-orange-500/10">
+              <Users className="w-4 h-4 text-orange-500" />
+            </div>
+            <div>
+              <p className="text-[18px] font-extrabold" style={{ color: "var(--ch-text)" }}>{TOP_CREATORS_BY_FOLLOWERS.length}</p>
+              <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>Content Creators</p>
+            </div>
+          </div>
+        </div>
+        <div className="rounded-xl border p-3"
+          style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-blue-500/10">
+              <Eye className="w-4 h-4 text-blue-500" />
+            </div>
+            <div>
+              <p className="text-[18px] font-extrabold" style={{ color: "var(--ch-text)" }}>{formatNum(TOP_PERFORMERS.reduce((s, c) => s + c.views, 0))}</p>
+              <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>Total Views</p>
+            </div>
+          </div>
+        </div>
+        <div className="rounded-xl border p-3"
+          style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-green-500/10">
+              <TrendingUp className="w-4 h-4 text-green-500" />
+            </div>
+            <div>
+              <p className="text-[18px] font-extrabold" style={{ color: "var(--ch-text)" }}>{(TOP_PERFORMERS.reduce((s, c) => s + c.engagement, 0) / TOP_PERFORMERS.length).toFixed(1)}%</p>
+              <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>Avg. Engagement</p>
+            </div>
+          </div>
+        </div>
+        <div className="rounded-xl border p-3"
+          style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-purple-500/10">
+              <Heart className="w-4 h-4 text-purple-500" />
+            </div>
+            <div>
+              <p className="text-[18px] font-extrabold" style={{ color: "var(--ch-text)" }}>{formatNum(TOP_CREATORS_BY_FOLLOWERS.reduce((s, c) => s + c.followers, 0))}</p>
+              <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>Total Followers</p>
             </div>
           </div>
         </div>
@@ -194,54 +238,104 @@ export default function GampongNusa() {
           </div>
         </div>
 
-        {/* Sidebar - Creator table */}
+        {/* Right Sidebar */}
         <div className="space-y-4">
-          {/* Creator count */}
-          <div className="rounded-xl border p-4"
+          {/* Last Activities */}
+          <div className="rounded-xl border overflow-hidden"
             style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-orange-500/10 text-orange-500">
-                <Users className="w-4.5 h-4.5" />
-              </div>
-              <div>
-                <p className="text-[22px] font-extrabold" style={{ color: "var(--ch-text)" }}>{KREATOR_DATA.length}</p>
-                <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>Kreator Aktif</p>
-              </div>
+            <div className="px-4 py-3 border-b flex items-center gap-2" style={{ borderColor: "var(--ch-border)" }}>
+              <Clock className="w-4 h-4 text-blue-500" />
+              <h3 className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>Last Activities</h3>
+            </div>
+            <div className="divide-y" style={{ borderColor: "var(--ch-border)" }}>
+              {LAST_ACTIVITIES.map((a) => (
+                <div key={a.id} className="px-4 py-3 hover:bg-black/[0.02] transition-colors">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <img src={a.photo} alt={a.name} className="w-7 h-7 rounded-full object-cover" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[12px] font-bold truncate" style={{ color: "var(--ch-text)" }}>{a.name}</p>
+                      <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{a.time}</p>
+                    </div>
+                    {platformIcon(a.platform)}
+                  </div>
+                  <p className="text-[11px] mb-1" style={{ color: "var(--ch-text-muted)" }}>
+                    <span className="font-semibold" style={{ color: "var(--ch-text)" }}>{a.action}</span> — {a.content}
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <span className="flex items-center gap-1 text-[10px]" style={{ color: "var(--ch-text-muted)" }}>
+                      <Heart className="w-3 h-3" /> {formatNum(a.likes)}
+                    </span>
+                    <span className="flex items-center gap-1 text-[10px]" style={{ color: "var(--ch-text-muted)" }}>
+                      <MessageCircle className="w-3 h-3" /> {a.comments}
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Creator list */}
+          {/* Top Performing Creators */}
           <div className="rounded-xl border overflow-hidden"
             style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-            <div className="px-4 py-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
-              <h3 className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>
-                Daftar Konten Kreator
-              </h3>
-              <p className="text-[11px] mt-0.5" style={{ color: "var(--ch-text-muted)" }}>
-                Kreator yang berdomisili di Gampong Nusa
-              </p>
+            <div className="px-4 py-3 border-b flex items-center gap-2" style={{ borderColor: "var(--ch-border)" }}>
+              <BarChart3 className="w-4 h-4 text-green-500" />
+              <h3 className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>Top Performing Creators</h3>
             </div>
             <div className="divide-y" style={{ borderColor: "var(--ch-border)" }}>
-              {KREATOR_DATA.map((k) => (
-                <div key={k.id} className="px-4 py-3 flex items-center gap-3 hover:bg-black/[0.02] transition-colors">
-                  <img
-                    src={k.photo}
-                    alt={k.name}
-                    className="w-10 h-10 rounded-full object-cover border-2 shrink-0"
-                    style={{ borderColor: "var(--ch-border)" }}
-                  />
+              {TOP_PERFORMERS.map((c, i) => (
+                <div key={c.id} className="px-4 py-3 flex items-center gap-3 hover:bg-black/[0.02] transition-colors">
+                  <span className="text-[11px] font-extrabold w-5 text-center shrink-0"
+                    style={{ color: i === 0 ? "#F59E0B" : i === 1 ? "#94A3B8" : i === 2 ? "#CD7F32" : "var(--ch-text-muted)" }}>
+                    #{i + 1}
+                  </span>
+                  <img src={c.photo} alt={c.name} className="w-9 h-9 rounded-full object-cover shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-[13px] font-bold truncate" style={{ color: "var(--ch-text)" }}>{k.name}</p>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <span style={{ color: "#E1306C" }}>{platformIcon(k.platform)}</span>
-                      <span className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>{k.handle}</span>
+                    <p className="text-[12px] font-bold truncate" style={{ color: "var(--ch-text)" }}>{c.name}</p>
+                    <div className="flex items-center gap-1 mt-0.5">
+                      {platformIcon(c.platform)}
+                      <span className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{c.category}</span>
+                    </div>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-[11px] font-extrabold flex items-center gap-1" style={{ color: "var(--ch-text)" }}>
+                      <Eye className="w-3 h-3" /> {formatNum(c.views)}
+                    </p>
+                    <p className="text-[10px] font-semibold" style={{ color: "#16A34A" }}>
+                      {c.engagement}% eng.
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Content Creators by Most Followers */}
+          <div className="rounded-xl border overflow-hidden"
+            style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+            <div className="px-4 py-3 border-b flex items-center gap-2" style={{ borderColor: "var(--ch-border)" }}>
+              <Award className="w-4 h-4 text-orange-500" />
+              <h3 className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>Content Creators by Most Followers</h3>
+            </div>
+            <div className="divide-y" style={{ borderColor: "var(--ch-border)" }}>
+              {TOP_CREATORS_BY_FOLLOWERS.map((c, i) => (
+                <div key={c.id} className="px-4 py-3 flex items-center gap-3 hover:bg-black/[0.02] transition-colors">
+                  <span className="text-[11px] font-extrabold w-5 text-center shrink-0"
+                    style={{ color: i === 0 ? "#F59E0B" : i === 1 ? "#94A3B8" : i === 2 ? "#CD7F32" : "var(--ch-text-muted)" }}>
+                    #{i + 1}
+                  </span>
+                  <img src={c.photo} alt={c.name} className="w-9 h-9 rounded-full object-cover shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[12px] font-bold truncate" style={{ color: "var(--ch-text)" }}>{c.name}</p>
+                    <div className="flex items-center gap-1 mt-0.5">
+                      {platformIcon(c.platform)}
+                      <span className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{c.handle}</span>
                     </div>
                   </div>
                   <div className="text-right shrink-0">
                     <p className="text-[13px] font-extrabold" style={{ color: "var(--ch-text)" }}>
-                      {formatFollowers(k.followers)}
+                      {formatNum(c.followers)}
                     </p>
-                    <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{k.category}</p>
+                    <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>followers</p>
                   </div>
                 </div>
               ))}

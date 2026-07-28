@@ -4,7 +4,7 @@ import L from "leaflet";
 import type { FeatureCollection } from "geojson";
 import * as topojson from "topojson-client";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
-import { Sprout, TrendingUp, MapPin, X } from "lucide-react";
+import { Sprout, TrendingUp, MapPin, X, ChevronDown, Clock, Eye, Heart, MessageCircle, BarChart3, Award, Instagram, Youtube, Camera } from "lucide-react";
 
 const PROVINCE_URL = "https://gist.githubusercontent.com/ajie31/3144875bad9705e2b2b544909c022276/raw/Peta%20Indonesia%20Provinsi.json";
 
@@ -62,26 +62,62 @@ const REGION_COLORS: Record<string, string> = {
   "Maluku & Papua": "#F59E0B",
 };
 
+const REGIONS = Object.keys(REGION_COLORS);
+
 interface Village {
   name: string;
   location: string;
-  desc: string;
+  slug?: string;
 }
 
 const PROVINCE_VILLAGES: Record<string, Village[]> = {
   "Aceh": [
-    { name: "Gampong Nusa", location: "Aceh Besar", desc: "Terkenal dengan pengelolaan Gampong Nusa berbasis masyarakat, kerajinan daur ulang sampah, dan homestay ramah lingkungan." },
-    { name: "Desa Wisata Jaboi", location: "Sabang", desc: "Masuk dalam Desa Wisata Jaboi dengan daya tarik wisata vulkanik, pemandian air panas, serta atraksi budaya lokal." },
-    { name: "Gampong Lampulo", location: "Banda Aceh", desc: "Menampilkan keunikan Gampong Lampulo berupa situs sejarah kapal di atas rumah pascabencana tsunami." },
-    { name: "Desa Iboih", location: "Sabang", desc: "Destinasi Desa Wisata Iboih yang mendunia dengan konservasi bahari dan keindahan bawah lautnya." },
-    { name: "Gampong Ulee Lhue", location: "Banda Aceh", desc: "Wilayah pesisir kreatif Gampong Ulee Lhue dengan pusat kuliner, dermaga, dan wisata religi." },
-    { name: "Desa Alue Jang", location: "Aceh Jaya", desc: "Menawarkan keindahan Desa Wisata Alue Jang berupa air terjun Ceuraceu Emboen dan Goa Walet yang dikelola secara kreatif." },
-    { name: "Desa Aneuk Laot", location: "Sabang", desc: "Kawasan Desa Wisata Aneuk Laot yang menonjolkan panorama danau serta tradisi budaya lokal." },
-    { name: "Desa Suak Timah", location: "Aceh Barat", desc: "Dikenal melalui sejarah perjuangan dan potensi wisata bahari pantainya." },
-    { name: "Desa Geunteut", location: "Aceh Besar", desc: "Sentra inovasi pertanian dan penyulingan minyak nilam lokal yang produktif." },
-    { name: "Desa Ulee Nyeue", location: "Aceh Utara", desc: "Desa kreatif Desa Wisata Wisata Cado Kacho sebagai tempat singgah istimewa pelintas jalur nasional." },
+    { name: "Gampong Nusa", location: "Aceh Besar", slug: "gampongnusa" },
+    { name: "Desa Wisata Jaboi", location: "Sabang" },
+    { name: "Gampong Lampulo", location: "Banda Aceh" },
+    { name: "Desa Iboih", location: "Sabang" },
+    { name: "Gampong Ulee Lhue", location: "Banda Aceh" },
+    { name: "Desa Alue Jang", location: "Aceh Jaya" },
+    { name: "Desa Aneuk Laot", location: "Sabang" },
+    { name: "Desa Suak Timah", location: "Aceh Barat" },
+    { name: "Desa Geunteut", location: "Aceh Besar" },
+    { name: "Desa Ulee Nyeue", location: "Aceh Utara" },
   ],
 };
+
+const LAST_ACTIVITIES = [
+  { id: "1", name: "Putri Rahmawati", handle: "@putri.nusa.travel", platform: "instagram", action: "posted a reel", content: "Sunrise di Bukit Gampong Nusa", time: "2 jam lalu", likes: 1240, comments: 89, photo: "https://i.pravatar.cc/150?img=1" },
+  { id: "2", name: "Faisal Ramadhan", handle: "@faisal.nusa.food", platform: "instagram", action: "posted a carousel", content: "Kuliner Khas Aceh di Desa Nusa", time: "5 jam lalu", likes: 892, comments: 54, photo: "https://i.pravatar.cc/150?img=3" },
+  { id: "3", name: "Nisa Aulia", handle: "@nisa.nusa.vlog", platform: "youtube", action: "uploaded a video", content: "Vlog: Sehari di Gampong Nusa", time: "1 hari lalu", likes: 2100, comments: 156, photo: "https://i.pravatar.cc/150?img=5" },
+  { id: "4", name: "Rizky Pratama", handle: "@rizky.nusa.tiktok", platform: "tiktok", action: "posted a video", content: "Eco-Tourism Gampong Nusa Tour", time: "2 hari lalu", likes: 3400, comments: 210, photo: "https://i.pravatar.cc/150?img=7" },
+];
+
+const TOP_PERFORMERS = [
+  { id: "1", name: "Nisa Aulia", handle: "@nisa.nusa.vlog", platform: "youtube", views: 45200, engagement: 8.7, photo: "https://i.pravatar.cc/150?img=5", category: "Vlog & Education" },
+  { id: "2", name: "Rizky Pratama", handle: "@rizky.nusa.tiktok", platform: "tiktok", views: 38500, engagement: 12.3, photo: "https://i.pravatar.cc/150?img=7", category: "Travel & Eco-Tourism" },
+  { id: "3", name: "Putri Rahmawati", handle: "@putri.nusa.travel", platform: "instagram", views: 28900, engagement: 6.5, photo: "https://i.pravatar.cc/150?img=1", category: "Travel & Lifestyle" },
+  { id: "4", name: "Faisal Ramadhan", handle: "@faisal.nusa.food", platform: "instagram", views: 19200, engagement: 5.2, photo: "https://i.pravatar.cc/150?img=3", category: "Food & Culinary" },
+];
+
+const TOP_CREATORS_BY_FOLLOWERS = [
+  { id: "3", name: "Nisa Aulia", handle: "@nisa.nusa.vlog", platform: "youtube", followers: 15200, photo: "https://i.pravatar.cc/150?img=5", category: "Vlog & Education" },
+  { id: "1", name: "Putri Rahmawati", handle: "@putri.nusa.travel", platform: "instagram", followers: 12400, photo: "https://i.pravatar.cc/150?img=1", category: "Travel & Lifestyle" },
+  { id: "4", name: "Rizky Pratama", handle: "@rizky.nusa.tiktok", platform: "tiktok", followers: 9800, photo: "https://i.pravatar.cc/150?img=7", category: "Travel & Eco-Tourism" },
+  { id: "2", name: "Faisal Ramadhan", handle: "@faisal.nusa.food", platform: "instagram", followers: 8700, photo: "https://i.pravatar.cc/150?img=3", category: "Food & Culinary" },
+];
+
+function formatNum(n: number): string {
+  if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
+  if (n >= 1000) return `${(n / 1000).toFixed(1)}K`;
+  return String(n);
+}
+
+function platformIcon(p: string) {
+  if (p === "instagram") return <Instagram className="w-3.5 h-3.5" style={{ color: "#E1306C" }} />;
+  if (p === "youtube") return <Youtube className="w-3.5 h-3.5" style={{ color: "#FF0000" }} />;
+  if (p === "tiktok") return <Camera className="w-3.5 h-3.5" style={{ color: "#000" }} />;
+  return <Camera className="w-3.5 h-3.5" />;
+}
 
 function getMarkerSize(count: number): number {
   if (count >= 20) return 34;
@@ -138,7 +174,6 @@ function MapViewController() {
   const map = useMap();
   useEffect(() => {
     map.setView([-2.5, 118.0], 5);
-    // Enable Ctrl + scroll to zoom
     map.scrollWheelZoom.enable();
     const container = map.getContainer();
     const onWheel = (e: WheelEvent) => {
@@ -155,14 +190,11 @@ function MapViewController() {
   return null;
 }
 
-const VILLAGE_SLUGS: Record<string, string> = {
-  "Gampong Nusa": "gampongnusa",
-};
-
 export default function DesaKreative() {
   const [provinceGeoJson, setProvinceGeoJson] = useState<FeatureCollection | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<string>("all");
   const [selectedProvince, setSelectedProvince] = useState<ProvincePoint | null>(null);
+  const [selectedDropdown, setSelectedDropdown] = useState<string>("all");
   const mapRef = useRef<L.Map | null>(null);
 
   useEffect(() => {
@@ -174,26 +206,38 @@ export default function DesaKreative() {
       .catch(() => {});
   }, []);
 
-  const filteredProvinces = useMemo(() => {
+  const regionProvinces = useMemo(() => {
     if (selectedRegion === "all") return PROVINCE_DATA;
     return PROVINCE_DATA.filter((p) => p.region === selectedRegion);
   }, [selectedRegion]);
 
-  const regionStats = useMemo(() => {
-    const m = new Map<string, { count: number; provinces: number }>();
-    for (const p of PROVINCE_DATA) {
-      const existing = m.get(p.region) ?? { count: 0, provinces: 0 };
-      m.set(p.region, { count: existing.count + p.count, provinces: existing.provinces + 1 });
-    }
-    return Array.from(m.entries()).sort((a, b) => b[1].count - a[1].count);
-  }, []);
+  const displayProvinces = useMemo(() => {
+    if (selectedDropdown === "all") return regionProvinces;
+    return regionProvinces.filter((p) => p.name === selectedDropdown);
+  }, [regionProvinces, selectedDropdown]);
 
   const handleProvinceClick = useCallback((p: ProvincePoint) => {
     setSelectedProvince(p);
+    setSelectedDropdown(p.name);
+    mapRef.current?.setView([p.lat, p.lng], 6);
   }, []);
 
   const handleMapClick = useCallback(() => {
     setSelectedProvince(null);
+  }, []);
+
+  const handleDropdownChange = useCallback((value: string) => {
+    setSelectedDropdown(value);
+    if (value === "all") {
+      setSelectedProvince(null);
+      mapRef.current?.setView([-2.5, 118.0], 5);
+    } else {
+      const p = PROVINCE_DATA.find((pr) => pr.name === value);
+      if (p) {
+        setSelectedProvince(p);
+        mapRef.current?.setView([p.lat, p.lng], 6);
+      }
+    }
   }, []);
 
   return (
@@ -208,7 +252,7 @@ export default function DesaKreative() {
           <div>
             <h1 className="text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]"
               style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-              Desa Kreative
+              Desa Kreatif
             </h1>
             <p className="text-[13px]" style={{ color: "var(--ch-text-muted)" }}>
               Peta Sebaran Usulan Pilot Project Desa/Kelurahan Kreatif
@@ -227,7 +271,7 @@ export default function DesaKreative() {
             </div>
             <div>
               <p className="text-[22px] font-extrabold" style={{ color: "var(--ch-text)" }}>133</p>
-              <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>Kab/Kota di 31 Propinsi</p>
+              <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>Kab/Kota di 31 Provinsi</p>
             </div>
           </div>
         </div>
@@ -251,18 +295,18 @@ export default function DesaKreative() {
             </div>
             <div>
               <p className="text-[22px] font-extrabold" style={{ color: "var(--ch-text)" }}>31</p>
-              <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>Propinsi Teridentifikasi</p>
+              <p className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>Provinsi Teridentifikasi</p>
             </div>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Map */}
+        {/* Map - left 2/3 */}
         <div className="lg:col-span-2">
           <div className="rounded-xl border overflow-hidden"
             style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-            {/* Map title bar */}
+            {/* Map title */}
             <div className="px-4 py-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-orange-500" />
@@ -271,10 +315,36 @@ export default function DesaKreative() {
                 </h2>
               </div>
               <p className="text-[12px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
-                133 Kab/Kota di 31 Propinsi — total desa/kelurahan berpotensi ekraf teridentifikasi sebanyak {TOTAL_DESA} desa/kelurahan
+                133 Kab/Kota di 31 Provinsi — total {TOTAL_DESA} desa/kelurahan berpotensi ekraf
               </p>
             </div>
-            <div className="relative h-[550px]" style={{ background: "#0B1120" }}>
+
+            {/* Region tabs */}
+            <div className="px-4 py-2.5 border-b flex items-center gap-2 overflow-x-auto" style={{ borderColor: "var(--ch-border)" }}>
+              <button
+                onClick={() => { setSelectedRegion("all"); setSelectedDropdown("all"); setSelectedProvince(null); }}
+                className="px-3 py-1.5 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-colors shrink-0"
+                style={selectedRegion === "all"
+                  ? { background: "var(--ch-primary)", color: "#fff" }
+                  : { background: "var(--ch-muted)", color: "var(--ch-text-muted)" }}
+              >
+                Semua Wilayah
+              </button>
+              {REGIONS.map((r) => (
+                <button
+                  key={r}
+                  onClick={() => { setSelectedRegion(r); setSelectedDropdown("all"); setSelectedProvince(null); }}
+                  className="px-3 py-1.5 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-colors shrink-0"
+                  style={selectedRegion === r
+                    ? { background: REGION_COLORS[r], color: "#fff" }
+                    : { background: "var(--ch-muted)", color: "var(--ch-text-muted)" }}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+
+            <div className="relative h-[480px]" style={{ background: "#0B1120" }}>
               <MapContainer
                 ref={mapRef}
                 center={[-2.5, 118.0]}
@@ -293,58 +363,43 @@ export default function DesaKreative() {
                 {provinceGeoJson && (
                   <GeoJSON
                     data={provinceGeoJson}
-                    style={(feature) => {
-                      const name = feature?.properties?.NAME_1 || "";
-                      const province = PROVINCE_DATA.find((p) => p.name === name);
-                      const count = province?.count ?? 0;
-                      const opacity = count >= 20 ? 0.7 : count >= 10 ? 0.5 : count >= 5 ? 0.35 : 0.2;
-                      return {
-                        fillColor: "#3B82F6",
-                        fillOpacity: opacity,
-                        color: "#60A5FA",
-                        weight: 0.8,
-                      };
-                    }}
+                    style={() => ({
+                      fillColor: "#3B82F6",
+                      fillOpacity: 0.25,
+                      color: "#60A5FA",
+                      weight: 0.8,
+                    })}
                   />
                 )}
-                {filteredProvinces.map((p) => {
+                {displayProvinces.map((p) => {
                   const hasLine = Math.abs(p.lat - p.markerLat) > 0.3 || Math.abs(p.lng - p.markerLng) > 0.3;
                   return (
                     <div key={p.name}>
                       {hasLine && (
                         <Polyline
                           positions={[[p.lat, p.lng], [p.markerLat, p.markerLng]]}
-                          pathOptions={{
-                            color: "rgba(249,115,22,0.5)",
-                            weight: 1.5,
-                            dashArray: "4 3",
-                          }}
+                          pathOptions={{ color: "rgba(249,115,22,0.5)", weight: 1.5, dashArray: "4 3" }}
                         />
                       )}
                       <Polyline
                         positions={[[p.lat, p.lng], [p.markerLat, p.markerLng]]}
                         pathOptions={{ color: "transparent", weight: 0 }}
-                        eventHandlers={{
-                          click: () => handleProvinceClick(p),
-                        }}
+                        eventHandlers={{ click: () => handleProvinceClick(p) }}
                       />
                     </div>
                   );
                 })}
-                {filteredProvinces.map((p) => {
-                  const icon = createMarkerIcon(p, selectedProvince?.name === p.name);
-                  return (
-                    <MarkerWithIcon
-                      key={p.name}
-                      position={[p.markerLat, p.markerLng]}
-                      icon={icon}
-                      onClick={() => handleProvinceClick(p)}
-                    />
-                  );
-                })}
+                {displayProvinces.map((p) => (
+                  <MarkerWithIcon
+                    key={p.name}
+                    position={[p.markerLat, p.markerLng]}
+                    icon={createMarkerIcon(p, selectedProvince?.name === p.name)}
+                    onClick={() => handleProvinceClick(p)}
+                  />
+                ))}
               </MapContainer>
 
-              {/* Selected province popup */}
+              {/* Province popup */}
               {selectedProvince && (
                 <div
                   onClick={(e) => e.stopPropagation()}
@@ -357,7 +412,7 @@ export default function DesaKreative() {
                         {selectedProvince.region}
                       </span>
                     </div>
-                    <button onClick={() => setSelectedProvince(null)} className="text-white/40 hover:text-white">
+                    <button onClick={() => { setSelectedProvince(null); setSelectedDropdown("all"); }} className="text-white/40 hover:text-white">
                       <X className="w-4 h-4" />
                     </button>
                   </div>
@@ -370,35 +425,36 @@ export default function DesaKreative() {
                     <div className="border-t border-white/10 pt-3">
                       <p className="text-[11px] font-bold text-white/60 mb-2 uppercase tracking-wider">Desa/Kelurahan Kreatif</p>
                       <div className="space-y-2">
-                        {PROVINCE_VILLAGES[selectedProvince.name].map((v, i) => {
-                          const slug = VILLAGE_SLUGS[v.name];
-                          const villageContent = (
-                            <>
+                        {PROVINCE_VILLAGES[selectedProvince.name].map((v, i) => (
+                          v.slug ? (
+                            <a
+                              key={i}
+                              href={`/dashboard/ekrafhub/desa-kreative/${v.slug}`}
+                              className="block rounded-lg p-2.5 transition-colors hover:bg-white/10"
+                              style={{ background: "rgba(255,255,255,0.05)" }}
+                            >
                               <div className="flex items-start gap-2">
                                 <span className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold"
                                   style={{ background: "#F97316", color: "#fff" }}>{i + 1}</span>
                                 <div className="min-w-0">
-                                  <p className={`text-[12px] font-bold ${slug ? "text-orange-400 hover:text-orange-300" : "text-white"}`}>{v.name}</p>
+                                  <p className="text-[12px] font-bold text-orange-400 hover:text-orange-300">{v.name}</p>
                                   <p className="text-[10px] text-white/40 mt-0.5">{v.location}</p>
                                 </div>
                               </div>
-                            </>
-                          );
-                          return slug ? (
-                            <a
-                              key={i}
-                              href={`/dashboard/ekrafhub/desa-kreative/${slug}`}
-                              className="block rounded-lg p-2.5 transition-colors hover:bg-white/10"
-                              style={{ background: "rgba(255,255,255,0.05)" }}
-                            >
-                              {villageContent}
                             </a>
                           ) : (
                             <div key={i} className="rounded-lg p-2.5" style={{ background: "rgba(255,255,255,0.05)" }}>
-                              {villageContent}
+                              <div className="flex items-start gap-2">
+                                <span className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold"
+                                  style={{ background: "#F97316", color: "#fff" }}>{i + 1}</span>
+                                <div className="min-w-0">
+                                  <p className="text-[12px] font-bold text-white">{v.name}</p>
+                                  <p className="text-[10px] text-white/40 mt-0.5">{v.location}</p>
+                                </div>
+                              </div>
                             </div>
-                          );
-                        })}
+                          )
+                        ))}
                       </div>
                     </div>
                   )}
@@ -433,65 +489,137 @@ export default function DesaKreative() {
                 </div>
               </div>
             </div>
+
+            {/* Province dropdown below map */}
+            <div className="px-4 py-3 border-t flex items-center gap-3 flex-wrap" style={{ borderColor: "var(--ch-border)" }}>
+              <span className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Filter Provinsi:</span>
+              <div className="relative flex-1 min-w-[200px] max-w-xs">
+                <select
+                  value={selectedDropdown}
+                  onChange={(e) => handleDropdownChange(e.target.value)}
+                  className="w-full appearance-none px-3 py-2 pr-8 rounded-lg text-[12px] font-semibold border cursor-pointer"
+                  style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+                >
+                  <option value="all">Semua Provinsi</option>
+                  {regionProvinces.sort((a, b) => b.count - a.count).map((p) => (
+                    <option key={p.name} value={p.name}>{p.name} ({p.count})</option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--ch-text-muted)" }} />
+              </div>
+              {selectedDropdown !== "all" && (
+                <button
+                  onClick={() => handleDropdownChange("all")}
+                  className="text-[11px] font-semibold px-2.5 py-1 rounded-md transition-colors"
+                  style={{ background: "var(--ch-muted)", color: "var(--ch-text-muted)" }}
+                >
+                  Reset
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Sidebar */}
+        {/* Right Sidebar */}
         <div className="space-y-4">
-          {/* Region filter */}
-          <div className="rounded-xl border p-4"
+          {/* Last Activities */}
+          <div className="rounded-xl border overflow-hidden"
             style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-            <h3 className="text-[13px] font-bold mb-3" style={{ color: "var(--ch-text)" }}>Filter Wilayah</h3>
-            <div className="space-y-1.5">
-              <button
-                onClick={() => setSelectedRegion("all")}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[12px] font-semibold text-left transition-colors"
-                style={selectedRegion === "all"
-                  ? { background: "var(--ch-primary-50)", color: "var(--ch-primary)" }
-                  : { color: "var(--ch-text-muted)" }}
-              >
-                <span className="w-2.5 h-2.5 rounded-full" style={{ background: "var(--ch-primary)" }} />
-                Semua Wilayah
-                <span className="ml-auto">{TOTAL_DESA}</span>
-              </button>
-              {regionStats.map(([region, stats]) => (
-                <button
-                  key={region}
-                  onClick={() => setSelectedRegion(region)}
-                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[12px] font-semibold text-left transition-colors"
-                  style={selectedRegion === region
-                    ? { background: `${REGION_COLORS[region]}15`, color: REGION_COLORS[region] }
-                    : { color: "var(--ch-text-muted)" }}
-                >
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ background: REGION_COLORS[region] }} />
-                  {region}
-                  <span className="ml-auto">{stats.count}</span>
-                </button>
+            <div className="px-4 py-3 border-b flex items-center gap-2" style={{ borderColor: "var(--ch-border)" }}>
+              <Clock className="w-4 h-4 text-blue-500" />
+              <h3 className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>Last Activities</h3>
+            </div>
+            <div className="divide-y" style={{ borderColor: "var(--ch-border)" }}>
+              {LAST_ACTIVITIES.map((a) => (
+                <div key={a.id} className="px-4 py-3 hover:bg-black/[0.02] transition-colors">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <img src={a.photo} alt={a.name} className="w-7 h-7 rounded-full object-cover" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[12px] font-bold truncate" style={{ color: "var(--ch-text)" }}>{a.name}</p>
+                      <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{a.time}</p>
+                    </div>
+                    {platformIcon(a.platform)}
+                  </div>
+                  <p className="text-[11px] mb-1" style={{ color: "var(--ch-text-muted)" }}>
+                    <span className="font-semibold" style={{ color: "var(--ch-text)" }}>{a.action}</span> — {a.content}
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <span className="flex items-center gap-1 text-[10px]" style={{ color: "var(--ch-text-muted)" }}>
+                      <Heart className="w-3 h-3" /> {formatNum(a.likes)}
+                    </span>
+                    <span className="flex items-center gap-1 text-[10px]" style={{ color: "var(--ch-text-muted)" }}>
+                      <MessageCircle className="w-3 h-3" /> {a.comments}
+                    </span>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
 
-          {/* Province list */}
-          <div className="rounded-xl border p-4"
+          {/* Top Performing Creators */}
+          <div className="rounded-xl border overflow-hidden"
             style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-            <h3 className="text-[13px] font-bold mb-3" style={{ color: "var(--ch-text)" }}>
-              Data per Propinsi
-            </h3>
-            <div className="space-y-1 max-h-[400px] overflow-y-auto">
-              {[...filteredProvinces].sort((a, b) => b.count - a.count).map((p) => (
-                <button
-                  key={p.name}
-                  onClick={() => handleProvinceClick(p)}
-                  className="w-full flex items-center gap-2 py-1.5 border-b last:border-0 text-left transition-colors hover:bg-black/5 rounded px-1"
-                  style={{ borderColor: "var(--ch-border)" }}
-                >
-                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: REGION_COLORS[p.region] }} />
-                  <span className="text-[12px] font-medium flex-1" style={{ color: "var(--ch-text)" }}>{p.name}</span>
-                  <span className="text-[12px] font-bold px-2 py-0.5 rounded-full"
-                    style={{ background: "#F9731615", color: "#F97316" }}>
-                    {p.count}
+            <div className="px-4 py-3 border-b flex items-center gap-2" style={{ borderColor: "var(--ch-border)" }}>
+              <BarChart3 className="w-4 h-4 text-green-500" />
+              <h3 className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>Top Performing Content Creators</h3>
+            </div>
+            <div className="divide-y" style={{ borderColor: "var(--ch-border)" }}>
+              {TOP_PERFORMERS.map((c, i) => (
+                <div key={c.id} className="px-4 py-3 flex items-center gap-3 hover:bg-black/[0.02] transition-colors">
+                  <span className="text-[11px] font-extrabold w-5 text-center shrink-0"
+                    style={{ color: i === 0 ? "#F59E0B" : i === 1 ? "#94A3B8" : i === 2 ? "#CD7F32" : "var(--ch-text-muted)" }}>
+                    #{i + 1}
                   </span>
-                </button>
+                  <img src={c.photo} alt={c.name} className="w-9 h-9 rounded-full object-cover shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[12px] font-bold truncate" style={{ color: "var(--ch-text)" }}>{c.name}</p>
+                    <div className="flex items-center gap-1 mt-0.5">
+                      {platformIcon(c.platform)}
+                      <span className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{c.category}</span>
+                    </div>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-[11px] font-extrabold flex items-center gap-1" style={{ color: "var(--ch-text)" }}>
+                      <Eye className="w-3 h-3" /> {formatNum(c.views)}
+                    </p>
+                    <p className="text-[10px] font-semibold" style={{ color: "#16A34A" }}>
+                      {c.engagement}% eng.
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Content Creators by Most Followers */}
+          <div className="rounded-xl border overflow-hidden"
+            style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+            <div className="px-4 py-3 border-b flex items-center gap-2" style={{ borderColor: "var(--ch-border)" }}>
+              <Award className="w-4 h-4 text-orange-500" />
+              <h3 className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>Content Creators by Most Followers</h3>
+            </div>
+            <div className="divide-y" style={{ borderColor: "var(--ch-border)" }}>
+              {TOP_CREATORS_BY_FOLLOWERS.map((c, i) => (
+                <div key={c.id} className="px-4 py-3 flex items-center gap-3 hover:bg-black/[0.02] transition-colors">
+                  <span className="text-[11px] font-extrabold w-5 text-center shrink-0"
+                    style={{ color: i === 0 ? "#F59E0B" : i === 1 ? "#94A3B8" : i === 2 ? "#CD7F32" : "var(--ch-text-muted)" }}>
+                    #{i + 1}
+                  </span>
+                  <img src={c.photo} alt={c.name} className="w-9 h-9 rounded-full object-cover shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[12px] font-bold truncate" style={{ color: "var(--ch-text)" }}>{c.name}</p>
+                    <div className="flex items-center gap-1 mt-0.5">
+                      {platformIcon(c.platform)}
+                      <span className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{c.handle}</span>
+                    </div>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-[13px] font-extrabold" style={{ color: "var(--ch-text)" }}>
+                      {formatNum(c.followers)}
+                    </p>
+                    <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>followers</p>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
@@ -503,7 +631,7 @@ export default function DesaKreative() {
         style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
         <div className="px-5 py-4 border-b" style={{ borderColor: "var(--ch-border)" }}>
           <h2 className="text-[15px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            Peta Sebaran Usulan Pilot Project Desa/Kelurahan Kreatif*
+            Peta Sebaran Usulan Pilot Project Desa/Kelurahan Kreatif
           </h2>
           <div className="flex items-center gap-2 mt-2">
             <div className="w-2.5 h-2.5 rounded-full" style={{ background: "#3B82F6" }} />
@@ -512,7 +640,7 @@ export default function DesaKreative() {
         </div>
         <div className="px-5 pt-4 pb-2">
           <p className="text-[18px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            31 Propinsi
+            31 Provinsi
           </p>
         </div>
         <div className="px-2 pb-4" style={{ height: 380 }}>
@@ -568,8 +696,6 @@ export default function DesaKreative() {
   );
 }
 
-/* Helper component: marker with click handler */
-
 function MarkerWithIcon({ position, icon, onClick }: {
   position: [number, number];
   icon: L.DivIcon;
@@ -581,13 +707,9 @@ function MarkerWithIcon({ position, icon, onClick }: {
   useEffect(() => {
     const marker = L.marker(position, { icon, interactive: true })
       .addTo(map);
-
     marker.on("click", onClick);
     markerRef.current = marker;
-
-    return () => {
-      marker.remove();
-    };
+    return () => { marker.remove(); };
   }, [map, position[0], position[1], icon, onClick]);
 
   return null;
