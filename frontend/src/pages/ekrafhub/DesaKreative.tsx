@@ -501,7 +501,7 @@ export default function DesaKreative() {
                   style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
                 >
                   <option value="all">Semua Provinsi</option>
-                  {regionProvinces.sort((a, b) => b.count - a.count).map((p) => (
+                  {[...regionProvinces].sort((a, b) => b.count - a.count).map((p) => (
                     <option key={p.name} value={p.name}>{p.name} ({p.count})</option>
                   ))}
                 </select>
