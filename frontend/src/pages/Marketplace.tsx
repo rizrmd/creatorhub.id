@@ -1876,9 +1876,9 @@ export default function Marketplace() {
   const tabs = [
     { id: "creators", label: "Content Creators", icon: Users },
     { id: "homeless", label: "Homeless Media", icon: Megaphone },
-    { id: "amplifiers", label: "Amplifiers", icon: Megaphone, highlightColor: "#EF4444" },
     { id: "podcast", label: "Podcast & Streaming", icon: Mic },
     { id: "live-shopping", label: "Live Shopping", icon: Video },
+    { id: "amplifiers", label: "Amplifiers", icon: Megaphone, highlightColor: "#EF4444" },
   ];
 
   return (

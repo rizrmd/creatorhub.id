@@ -90,7 +90,6 @@ export default function AmplifiersTab({ onBoostEngagement }: { onBoostEngagement
   const [activePlatform, setActivePlatform] = useState("instagram");
   const [search, setSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [sortByEr, setSortByEr] = useState(false);
 
   const allAccounts = useMemo(() => {
     const accounts: AmplifierAccount[] = [];
@@ -106,11 +105,8 @@ export default function AmplifiersTab({ onBoostEngagement }: { onBoostEngagement
       const q = search.toLowerCase();
       result = result.filter((a) => a.name.toLowerCase().includes(q) || a.handle.toLowerCase().includes(q));
     }
-    if (sortByEr) {
-      result = [...result].sort((a, b) => b.engagementRate - a.engagementRate);
-    }
     return result;
-  }, [allAccounts, activePlatform, search, sortByEr]);
+  }, [allAccounts, activePlatform, search]);
 
   const allSelected = filteredAccounts.length > 0 && filteredAccounts.every((a) => selectedIds.includes(a.id));
 
@@ -156,7 +152,7 @@ export default function AmplifiersTab({ onBoostEngagement }: { onBoostEngagement
         })}
 
         <button
-          onClick={() => { setSelectedIds([]); setSearch(""); setSortByEr(false); }}
+          onClick={() => { setSelectedIds([]); setSearch(""); }}
           className="flex items-center gap-2 h-9 pl-1.5 pr-3 rounded-lg text-[13px] font-medium border transition-all duration-200 cursor-pointer hover:text-slate-200"
           style={{ background: "#0F1B2D", borderColor: "#2A3850", color: "#8B96AA" }}
         >
@@ -191,20 +187,6 @@ export default function AmplifiersTab({ onBoostEngagement }: { onBoostEngagement
           />
           Select All
         </label>
-
-        <button
-          onClick={() => setSortByEr(!sortByEr)}
-          className={`flex items-center gap-2 h-9 pl-1.5 pr-3 rounded-lg text-[13px] font-medium border transition-all duration-200 cursor-pointer ${
-            sortByEr ? "text-white" : "hover:text-slate-200"
-          }`}
-          style={sortByEr
-            ? { background: "var(--ch-orange)", borderColor: "var(--ch-orange)" }
-            : { background: "#0F1B2D", borderColor: "#2A3850", color: "#8B96AA" }
-          }
-        >
-          <Zap className="w-3.5 h-3.5" />
-          ER
-        </button>
       </div>
 
       {/* Results info + Boost button */}
