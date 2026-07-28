@@ -9,6 +9,7 @@ import {
 import * as topojson from "topojson-client";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
+import AmplifiersTab, { BoostEngagementDialog } from "./ekrafhub/AmplifiersTab";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -1707,6 +1708,7 @@ export default function Marketplace() {
   const [showMobileBrief, setShowMobileBrief] = useState(false);
   const [showCreateCampaign, setShowCreateCampaign] = useState(false);
   const [showAddCreator, setShowAddCreator] = useState(false);
+  const [showBoostEngagement, setShowBoostEngagement] = useState(false);
   const [campaignForm, setCampaignForm] = useState({ title: "", description: "", budget: "" });
 
   const [profileCreator, setProfileCreator] = useState<Creator | null>(null);
@@ -1867,7 +1869,7 @@ export default function Marketplace() {
 
   const briefFooter = (
     <div id="run-campaign-btn" className="p-4 border-t border-white/10 space-y-3">
-      <Button className="w-full" onClick={() => { setShowMobileBrief(false); setShowCreateCampaign(true); }}>Run Campaign</Button>
+      <Button className="w-full" onClick={() => { setShowMobileBrief(false); setShowBoostEngagement(true); }}>Boost Engagement</Button>
     </div>
   );
 
@@ -2183,34 +2185,7 @@ export default function Marketplace() {
             </div>
           </div>
         ) : activeTab === "amplifiers" ? (
-          <div className="p-3 sm:p-4 space-y-3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-              {[
-                { name: "Community Voice 1", handle: "@communityvoice1", platform: "Instagram", followers: "850", category: "Amplifier", eng: "12.5%", img: "https://i.pravatar.cc/150?u=amp1" },
-                { name: "Kampung Digital", handle: "@kampungdigital", platform: "TikTok", followers: "620", category: "Amplifier", eng: "15.2%", img: "https://i.pravatar.cc/150?u=amp2" },
-                { name: "Warga Online", handle: "@wargaonline", platform: "Instagram", followers: "430", category: "Amplifier", eng: "18.1%", img: "https://i.pravatar.cc/150?u=amp3" },
-                { name: "RT Digital", handle: "@rtdigital", platform: "TikTok", followers: "310", category: "Amplifier", eng: "22.3%", img: "https://i.pravatar.cc/150?u=amp4" },
-              ].map((p, i) => (
-                <div key={i} className="rounded-xl border overflow-hidden hover:ring-2 hover:ring-red-500/50 transition-all cursor-pointer" style={{ borderColor: "var(--ch-border)", background: "var(--ch-surface)" }}>
-                  <div className="relative h-40 overflow-hidden">
-                    <img src={p.img} alt={p.name} className="w-full h-full object-cover" />
-                    <div className="absolute top-2 left-2">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-500 text-white">AMPLIFIER</span>
-                    </div>
-                  </div>
-                  <div className="p-3">
-                    <p className="text-[13px] font-bold truncate" style={{ color: "var(--ch-text)" }}>{p.name}</p>
-                    <p className="text-[11px] truncate" style={{ color: "var(--ch-text-muted)" }}>{p.handle}</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ background: "#FEE2E2", color: "#DC2626" }}>{p.platform}</span>
-                      <span className="text-[11px] font-semibold" style={{ color: "var(--ch-text)" }}>{p.followers} followers</span>
-                      <span className="text-[10px] font-semibold" style={{ color: "#DC2626" }}>{p.eng} eng.</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <AmplifiersTab onBoostEngagement={() => setShowBoostEngagement(true)} />
         ) : activeTab === "live-shopping" ? (
           <div className="p-3 sm:p-4 space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
@@ -2356,12 +2331,12 @@ export default function Marketplace() {
                   <p className="text-[18px] font-extrabold text-white">{selectedCreators.length}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => document.getElementById('run-campaign-btn')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="text-[11px] font-semibold text-blue-400 hover:text-blue-300 transition-colors cursor-pointer"
-                  >
-                    ↑ Run Campaign
-                  </button>
+                    <button
+                      onClick={() => document.getElementById('run-campaign-btn')?.scrollIntoView({ behavior: 'smooth' })}
+                      className="text-[11px] font-semibold text-blue-400 hover:text-blue-300 transition-colors cursor-pointer"
+                    >
+                      ↑ Boost Engagement
+                    </button>
                   <Button
                     variant="outline"
                     size="sm"
@@ -2422,7 +2397,7 @@ export default function Marketplace() {
               </div>
             )}
             <div className="p-4 border-t" style={{ borderColor: "var(--ch-border)" }}>
-              <Button className="w-full" onClick={() => { setShowMobileBrief(false); setShowCreateCampaign(true); }}>Run Campaign</Button>
+              <Button className="w-full" onClick={() => { setShowMobileBrief(false); setShowBoostEngagement(true); }}>Boost Engagement</Button>
             </div>
 
             {/* Invited Creators count card */}
@@ -2482,7 +2457,7 @@ export default function Marketplace() {
                       onClick={() => document.getElementById('run-campaign-btn')?.scrollIntoView({ behavior: 'smooth' })}
                       className="text-[11px] font-semibold text-blue-500 hover:text-blue-400 transition-colors cursor-pointer"
                     >
-                      ↑ Run Campaign
+                      ↑ Boost Engagement
                     </button>
                     <Button
                       variant="outline"
@@ -2616,6 +2591,13 @@ export default function Marketplace() {
           // Refetch creators list
           window.location.reload();
         }}
+      />
+
+      {/* Boost Engagement Dialog */}
+      <BoostEngagementDialog
+        open={showBoostEngagement}
+        onOpenChange={setShowBoostEngagement}
+        selectedCount={selectedIds.length}
       />
     </div>
   );
