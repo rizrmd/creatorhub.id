@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ArrowLeft, MapPin, Route, Users, Instagram, Youtube, Camera, Eye, Heart, TrendingUp, Award, BarChart3, ChevronRight, Activity } from "lucide-react";
+import { ArrowLeft, MapPin, Route, Users, Instagram, Youtube, Camera, Eye, Heart, TrendingUp, Award, BarChart3, ChevronRight, Activity, X, CheckCircle } from "lucide-react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
@@ -65,7 +66,113 @@ function platformIcon(p: string, size: "sm" | "md" = "sm") {
   return <Camera className={cls} />;
 }
 
-function ActivitiesCard() {
+function AccountProfileModal({ account, open, onOpenChange }: {
+  account: AccountData | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  if (!account) return null;
+
+  const platform = account.platforms[0];
+  const followers = platform?.followers ?? 0;
+  const er = platform?.engagementRate ?? 0;
+  const avgLikes = Math.round(followers * er / 100 * 0.5);
+  const avgComments = Math.round(followers * er / 100 * 0.15);
+  const avgViews = Math.round(followers * 2.3);
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[90dvh] overflow-hidden flex flex-col p-0" style={{ background: "#111827" }}>
+        {/* Hero */}
+        <div className="relative h-32" style={{ background: "linear-gradient(135deg, #0F172A, #1E293B)" }}>
+          <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "url('https://picsum.photos/seed/profile/800/300')", backgroundSize: "cover" }} />
+          <button onClick={() => onOpenChange(false)} className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/30 flex items-center justify-center hover:bg-black/50 transition-colors">
+            <X className="w-4 h-4 text-white" />
+          </button>
+        </div>
+
+        {/* Profile Info */}
+        <div className="px-6 -mt-12 relative z-10">
+          <div className="flex items-end gap-4">
+            <div className="w-24 h-24 rounded-full overflow-hidden border-4 shrink-0" style={{ borderColor: "#111827" }}>
+              <img src={account.photo} alt={account.name} className="w-full h-full object-cover" />
+            </div>
+            <div className="pb-2">
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-extrabold text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{account.name}</h2>
+                <CheckCircle className="w-5 h-5" style={{ color: "#3B82F6" }} />
+              </div>
+              <p className="text-sm text-white/50">{account.handle}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="px-6 py-4">
+          <div className="grid grid-cols-4 gap-3">
+            {[
+              { label: "Followers", value: formatNum(followers) },
+              { label: "Avg. Likes", value: formatNum(avgLikes) },
+              { label: "Avg. Comments", value: formatNum(avgComments) },
+              { label: "Avg. Views", value: formatNum(avgViews) },
+            ].map((s) => (
+              <div key={s.label} className="rounded-lg p-3 text-center" style={{ background: "rgba(255,255,255,0.05)" }}>
+                <p className="text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>{s.label}</p>
+                <p className="text-lg font-extrabold text-white mt-1">{s.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Platform Info */}
+        <div className="px-6 pb-4">
+          <div className="rounded-xl p-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                {platformIcon(platform.name, "md")}
+                <span className="text-sm font-semibold capitalize text-white">{platform.name}</span>
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-bold text-white">{formatNum(followers)} followers</p>
+                <p className="text-xs" style={{ color: "var(--ch-text-muted)" }}>{er}% engagement rate</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Content placeholder */}
+        <div className="px-6 pb-6">
+          <h3 className="text-sm font-bold text-white mb-3">Recent Content</h3>
+          <div className="grid grid-cols-3 gap-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="aspect-square rounded-lg overflow-hidden" style={{ background: "rgba(255,255,255,0.05)" }}>
+                <img src={`https://picsum.photos/seed/${account.handle}${i}/300/300`} alt="" className="w-full h-full object-cover hover:scale-105 transition-transform" />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="px-6 py-4 border-t flex items-center gap-3" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+          <a
+            href={`https://www.instagram.com/${account.handle.replace("@", "")}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold text-white transition-colors"
+            style={{ background: "#E1306C" }}
+          >
+            <Instagram className="w-4 h-4" /> Visit Profile
+          </a>
+          <button className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold text-white transition-colors" style={{ background: "var(--ch-primary)" }}>
+            <Heart className="w-4 h-4" /> Favorite
+          </button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ActivitiesCard({ onSelectAccount }: { onSelectAccount: (account: AccountData) => void }) {
   const [activeTab, setActiveTab] = useState<"koc" | "homeless">("koc");
   const [showAll, setShowAll] = useState(false);
   const data = activeTab === "koc" ? KOC_ACCOUNTS : HOMELESS_MEDIA_ACCOUNTS;
@@ -114,7 +221,7 @@ function ActivitiesCard() {
           <tbody className="divide-y" style={{ borderColor: "var(--ch-border)" }}>
             {visible.map((account) =>
               account.platforms.map((platform, pIdx) => (
-                <tr key={`${account.id}-${platform.name}`} className="hover:bg-black/[0.02] transition-colors">
+                <tr key={`${account.id}-${platform.name}`} className="hover:bg-black/[0.02] transition-colors cursor-pointer" onClick={() => onSelectAccount(account)}>
                   <td className="px-4 py-2.5">
                     {pIdx === 0 && (
                       <img src={account.photo} alt={account.name} className="w-7 h-7 rounded-full object-cover" />
@@ -162,6 +269,7 @@ function ActivitiesCard() {
 
 export default function GampongNusa() {
   const navigate = useNavigate();
+  const [selectedAccount, setSelectedAccount] = useState<AccountData | null>(null);
 
   return (
     <div className="p-4 md:p-6" style={{ background: "var(--ch-bg)" }}>
@@ -353,7 +461,7 @@ export default function GampongNusa() {
 
         {/* Right Sidebar - Account Monitoring */}
         <div className="lg:col-span-1">
-          <ActivitiesCard />
+          <ActivitiesCard onSelectAccount={setSelectedAccount} />
         </div>
       </div>
 
@@ -427,6 +535,13 @@ export default function GampongNusa() {
           </div>
         </div>
       </div>
+
+      {/* Account Profile Modal */}
+      <AccountProfileModal
+        account={selectedAccount}
+        open={!!selectedAccount}
+        onOpenChange={(open) => { if (!open) setSelectedAccount(null); }}
+      />
     </div>
   );
 }
