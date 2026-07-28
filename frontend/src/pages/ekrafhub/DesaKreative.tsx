@@ -92,6 +92,13 @@ const LAST_ACTIVITIES = [
   { id: "4", name: "Rizky Pratama", handle: "@rizky.nusa.tiktok", platform: "tiktok", action: "posted a video", content: "Eco-Tourism Gampong Nusa Tour", time: "2 hari lalu", likes: 3400, comments: 210, photo: "https://i.pravatar.cc/150?img=7" },
 ];
 
+const HOMELESS_MEDIA_ACTIVITIES = [
+  { id: "1", name: "Jakarta Keras", handle: "@jakartakeras", platform: "instagram", action: "posted a story", content: "Update terkini proyek desa kreatif", time: "1 jam lalu", likes: 560, comments: 32, photo: "https://i.pravatar.cc/150?img=10" },
+  { id: "2", name: "Lambe Turah", handle: "@lameturah", platform: "instagram", action: "posted a reel", content: "Behind the scene content creation", time: "3 jam lalu", likes: 1200, comments: 78, photo: "https://i.pravatar.cc/150?img=12" },
+  { id: "3", name: "Info Depok", handle: "@infodepok", platform: "tiktok", action: "posted a video", content: "Potensi desa kreatif di Depok", time: "8 jam lalu", likes: 890, comments: 45, photo: "https://i.pravatar.cc/150?img=14" },
+  { id: "4", name: "City Of Bandung", handle: "@cityofbandung", platform: "instagram", action: "posted a carousel", content: "Wisata desa kreatif Bandung", time: "1 hari lalu", likes: 1500, comments: 92, photo: "https://i.pravatar.cc/150?img=16" },
+];
+
 const TOP_PERFORMERS = [
   { id: "1", name: "Nisa Aulia", handle: "@nisa.nusa.vlog", platform: "youtube", views: 45200, engagement: 8.7, photo: "https://i.pravatar.cc/150?img=5", category: "Vlog & Education" },
   { id: "2", name: "Rizky Pratama", handle: "@rizky.nusa.tiktok", platform: "tiktok", views: 38500, engagement: 12.3, photo: "https://i.pravatar.cc/150?img=7", category: "Travel & Eco-Tourism" },
@@ -168,6 +175,67 @@ function createMarkerIcon(p: ProvincePoint, isSelected: boolean): L.DivIcon {
 function MapEventsHandler({ onMapClick }: { onMapClick: () => void }) {
   useMapEvents({ click: () => onMapClick() });
   return null;
+}
+
+function LastActivitiesCard() {
+  const [activeTab, setActiveTab] = useState<"koc" | "homeless">("koc");
+  const data = activeTab === "koc" ? LAST_ACTIVITIES : HOMELESS_MEDIA_ACTIVITIES;
+
+  return (
+    <div className="rounded-xl border overflow-hidden"
+      style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+      <div className="px-4 py-3 border-b flex items-center gap-2" style={{ borderColor: "var(--ch-border)" }}>
+        <Clock className="w-4 h-4 text-blue-500" />
+        <h3 className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>Last Activities</h3>
+      </div>
+      {/* Tabs */}
+      <div className="px-4 py-2 border-b flex items-center gap-1" style={{ borderColor: "var(--ch-border)" }}>
+        <button
+          onClick={() => setActiveTab("koc")}
+          className="px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-colors"
+          style={activeTab === "koc"
+            ? { background: "var(--ch-primary)", color: "#fff" }
+            : { background: "var(--ch-muted)", color: "var(--ch-text-muted)" }}
+        >
+          Key Opinion Community
+        </button>
+        <button
+          onClick={() => setActiveTab("homeless")}
+          className="px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-colors"
+          style={activeTab === "homeless"
+            ? { background: "#8B5CF6", color: "#fff" }
+            : { background: "var(--ch-muted)", color: "var(--ch-text-muted)" }}
+        >
+          Homeless Media
+        </button>
+      </div>
+      <div className="divide-y" style={{ borderColor: "var(--ch-border)" }}>
+        {data.map((a) => (
+          <div key={a.id} className="px-4 py-3 hover:bg-black/[0.02] transition-colors">
+            <div className="flex items-center gap-2 mb-1.5">
+              <img src={a.photo} alt={a.name} className="w-7 h-7 rounded-full object-cover" />
+              <div className="flex-1 min-w-0">
+                <p className="text-[12px] font-bold truncate" style={{ color: "var(--ch-text)" }}>{a.name}</p>
+                <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{a.time}</p>
+              </div>
+              {platformIcon(a.platform)}
+            </div>
+            <p className="text-[11px] mb-1" style={{ color: "var(--ch-text-muted)" }}>
+              <span className="font-semibold" style={{ color: "var(--ch-text)" }}>{a.action}</span> — {a.content}
+            </p>
+            <div className="flex items-center gap-3">
+              <span className="flex items-center gap-1 text-[10px]" style={{ color: "var(--ch-text-muted)" }}>
+                <Heart className="w-3 h-3" /> {formatNum(a.likes)}
+              </span>
+              <span className="flex items-center gap-1 text-[10px]" style={{ color: "var(--ch-text-muted)" }}>
+                <MessageCircle className="w-3 h-3" /> {a.comments}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 function MapViewController() {
@@ -301,327 +369,294 @@ export default function DesaKreative() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Map - left 2/3 */}
-        <div className="lg:col-span-2">
-          <div className="rounded-xl border overflow-hidden"
-            style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-            {/* Map title */}
-            <div className="px-4 py-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-orange-500" />
-                <h2 className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>
-                  PETA SEBARAN USULAN PILOT PROJECT DESA/KELURAHAN KREATIF
-                </h2>
-              </div>
-              <p className="text-[12px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
-                133 Kab/Kota di 31 Provinsi — total {TOTAL_DESA} desa/kelurahan berpotensi ekraf
-              </p>
+      {/* Map - Full Width */}
+      <div className="mb-6">
+        <div className="rounded-xl border overflow-hidden"
+          style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+          {/* Map title */}
+          <div className="px-4 py-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-orange-500" />
+              <h2 className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>
+                PETA SEBARAN USULAN PILOT PROJECT DESA/KELURAHAN KREATIF
+              </h2>
             </div>
+            <p className="text-[12px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
+              133 Kab/Kota di 31 Provinsi — total {TOTAL_DESA} desa/kelurahan berpotensi ekraf
+            </p>
+          </div>
 
-            {/* Region tabs */}
-            <div className="px-4 py-2.5 border-b flex items-center gap-2 overflow-x-auto" style={{ borderColor: "var(--ch-border)" }}>
+          {/* Region tabs */}
+          <div className="px-4 py-2.5 border-b flex items-center gap-2 overflow-x-auto" style={{ borderColor: "var(--ch-border)" }}>
+            <button
+              onClick={() => { setSelectedRegion("all"); setSelectedDropdown("all"); setSelectedProvince(null); }}
+              className="px-3 py-1.5 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-colors shrink-0"
+              style={selectedRegion === "all"
+                ? { background: "var(--ch-primary)", color: "#fff" }
+                : { background: "var(--ch-muted)", color: "var(--ch-text-muted)" }}
+            >
+              Semua Wilayah
+            </button>
+            {REGIONS.map((r) => (
               <button
-                onClick={() => { setSelectedRegion("all"); setSelectedDropdown("all"); setSelectedProvince(null); }}
+                key={r}
+                onClick={() => { setSelectedRegion(r); setSelectedDropdown("all"); setSelectedProvince(null); }}
                 className="px-3 py-1.5 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-colors shrink-0"
-                style={selectedRegion === "all"
-                  ? { background: "var(--ch-primary)", color: "#fff" }
+                style={selectedRegion === r
+                  ? { background: REGION_COLORS[r], color: "#fff" }
                   : { background: "var(--ch-muted)", color: "var(--ch-text-muted)" }}
               >
-                Semua Wilayah
+                {r}
               </button>
-              {REGIONS.map((r) => (
-                <button
-                  key={r}
-                  onClick={() => { setSelectedRegion(r); setSelectedDropdown("all"); setSelectedProvince(null); }}
-                  className="px-3 py-1.5 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-colors shrink-0"
-                  style={selectedRegion === r
-                    ? { background: REGION_COLORS[r], color: "#fff" }
-                    : { background: "var(--ch-muted)", color: "var(--ch-text-muted)" }}
-                >
-                  {r}
-                </button>
-              ))}
-            </div>
+            ))}
+          </div>
 
-            <div className="relative h-[480px]" style={{ background: "#0B1120" }}>
-              <MapContainer
-                ref={mapRef}
-                center={[-2.5, 118.0]}
-                zoom={5}
-                scrollWheelZoom={true}
-                style={{ height: "100%", width: "100%", background: "#0B1120" }}
-                zoomControl={false}
-                attributionControl={false}
-              >
-                <TileLayer
-                  url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                  subdomains="abcd"
+          <div className="relative h-[480px]" style={{ background: "#0B1120" }}>
+            <MapContainer
+              ref={mapRef}
+              center={[-2.5, 118.0]}
+              zoom={5}
+              scrollWheelZoom={true}
+              style={{ height: "100%", width: "100%", background: "#0B1120" }}
+              zoomControl={false}
+              attributionControl={false}
+            >
+              <TileLayer
+                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                subdomains="abcd"
+              />
+              <MapViewController />
+              <MapEventsHandler onMapClick={handleMapClick} />
+              {provinceGeoJson && (
+                <GeoJSON
+                  data={provinceGeoJson}
+                  style={() => ({
+                    fillColor: "#3B82F6",
+                    fillOpacity: 0.25,
+                    color: "#60A5FA",
+                    weight: 0.3,
+                  })}
                 />
-                <MapViewController />
-                <MapEventsHandler onMapClick={handleMapClick} />
-                {provinceGeoJson && (
-                  <GeoJSON
-                    data={provinceGeoJson}
-                    style={() => ({
-                      fillColor: "#3B82F6",
-                      fillOpacity: 0.25,
-                      color: "#60A5FA",
-                      weight: 0.8,
-                    })}
-                  />
-                )}
-                {displayProvinces.map((p) => {
-                  const hasLine = Math.abs(p.lat - p.markerLat) > 0.3 || Math.abs(p.lng - p.markerLng) > 0.3;
-                  return (
-                    <div key={p.name}>
-                      {hasLine && (
-                        <Polyline
-                          positions={[[p.lat, p.lng], [p.markerLat, p.markerLng]]}
-                          pathOptions={{ color: "rgba(249,115,22,0.5)", weight: 1.5, dashArray: "4 3" }}
-                        />
-                      )}
+              )}
+              {displayProvinces.map((p) => {
+                const hasLine = Math.abs(p.lat - p.markerLat) > 0.3 || Math.abs(p.lng - p.markerLng) > 0.3;
+                return (
+                  <div key={p.name}>
+                    {hasLine && (
                       <Polyline
                         positions={[[p.lat, p.lng], [p.markerLat, p.markerLng]]}
-                        pathOptions={{ color: "transparent", weight: 0 }}
-                        eventHandlers={{ click: () => handleProvinceClick(p) }}
+                        pathOptions={{ color: "rgba(249,115,22,0.5)", weight: 1.5, dashArray: "4 3" }}
                       />
-                    </div>
-                  );
-                })}
-                {displayProvinces.map((p) => (
-                  <MarkerWithIcon
-                    key={p.name}
-                    position={[p.markerLat, p.markerLng]}
-                    icon={createMarkerIcon(p, selectedProvince?.name === p.name)}
-                    onClick={() => handleProvinceClick(p)}
-                  />
-                ))}
-              </MapContainer>
+                    )}
+                    <Polyline
+                      positions={[[p.lat, p.lng], [p.markerLat, p.markerLng]]}
+                      pathOptions={{ color: "transparent", weight: 0 }}
+                      eventHandlers={{ click: () => handleProvinceClick(p) }}
+                    />
+                  </div>
+                );
+              })}
+              {displayProvinces.map((p) => (
+                <MarkerWithIcon
+                  key={p.name}
+                  position={[p.markerLat, p.markerLng]}
+                  icon={createMarkerIcon(p, selectedProvince?.name === p.name)}
+                  onClick={() => handleProvinceClick(p)}
+                />
+              ))}
+            </MapContainer>
 
-              {/* Province popup */}
-              {selectedProvince && (
-                <div
-                  onClick={(e) => e.stopPropagation()}
-                  className="absolute top-4 right-4 z-[1000] rounded-xl border p-4 w-80 max-h-[80vh] overflow-y-auto"
-                  style={{ background: "rgba(15,23,42,0.95)", borderColor: "rgba(249,115,22,0.4)", boxShadow: "0 8px 32px rgba(0,0,0,0.5)" }}>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full" style={{ background: REGION_COLORS[selectedProvince.region] }} />
-                      <span className="text-[11px] font-semibold" style={{ color: REGION_COLORS[selectedProvince.region] }}>
-                        {selectedProvince.region}
-                      </span>
-                    </div>
-                    <button onClick={() => { setSelectedProvince(null); setSelectedDropdown("all"); }} className="text-white/40 hover:text-white">
-                      <X className="w-4 h-4" />
-                    </button>
+            {/* Province popup */}
+            {selectedProvince && (
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="absolute top-4 right-4 z-[1000] rounded-xl border p-4 w-80 max-h-[80vh] overflow-y-auto"
+                style={{ background: "rgba(15,23,42,0.95)", borderColor: "rgba(249,115,22,0.4)", boxShadow: "0 8px 32px rgba(0,0,0,0.5)" }}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{ background: REGION_COLORS[selectedProvince.region] }} />
+                    <span className="text-[11px] font-semibold" style={{ color: REGION_COLORS[selectedProvince.region] }}>
+                      {selectedProvince.region}
+                    </span>
                   </div>
-                  <p className="text-[15px] font-extrabold text-white mb-1">{selectedProvince.name}</p>
-                  <div className="flex items-baseline gap-1.5 mb-3">
-                    <span className="text-[28px] font-extrabold" style={{ color: "#F97316" }}>{selectedProvince.count}</span>
-                    <span className="text-[12px] text-white/50">desa/kelurahan</span>
-                  </div>
-                  {PROVINCE_VILLAGES[selectedProvince.name] && (
-                    <div className="border-t border-white/10 pt-3">
-                      <p className="text-[11px] font-bold text-white/60 mb-2 uppercase tracking-wider">Desa/Kelurahan Kreatif</p>
-                      <div className="space-y-2">
-                        {PROVINCE_VILLAGES[selectedProvince.name].map((v, i) => (
-                          v.slug ? (
-                            <a
-                              key={i}
-                              href={`/dashboard/ekrafhub/desa-kreative/${v.slug}`}
-                              className="block rounded-lg p-2.5 transition-colors hover:bg-white/10"
-                              style={{ background: "rgba(255,255,255,0.05)" }}
-                            >
-                              <div className="flex items-start gap-2">
-                                <span className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold"
-                                  style={{ background: "#F97316", color: "#fff" }}>{i + 1}</span>
-                                <div className="min-w-0">
-                                  <p className="text-[12px] font-bold text-orange-400 hover:text-orange-300">{v.name}</p>
-                                  <p className="text-[10px] text-white/40 mt-0.5">{v.location}</p>
-                                </div>
-                              </div>
-                            </a>
-                          ) : (
-                            <div key={i} className="rounded-lg p-2.5" style={{ background: "rgba(255,255,255,0.05)" }}>
-                              <div className="flex items-start gap-2">
-                                <span className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold"
-                                  style={{ background: "#F97316", color: "#fff" }}>{i + 1}</span>
-                                <div className="min-w-0">
-                                  <p className="text-[12px] font-bold text-white">{v.name}</p>
-                                  <p className="text-[10px] text-white/40 mt-0.5">{v.location}</p>
-                                </div>
+                  <button onClick={() => { setSelectedProvince(null); setSelectedDropdown("all"); }} className="text-white/40 hover:text-white">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                <p className="text-[15px] font-extrabold text-white mb-1">{selectedProvince.name}</p>
+                <div className="flex items-baseline gap-1.5 mb-3">
+                  <span className="text-[28px] font-extrabold" style={{ color: "#F97316" }}>{selectedProvince.count}</span>
+                  <span className="text-[12px] text-white/50">desa/kelurahan</span>
+                </div>
+                {PROVINCE_VILLAGES[selectedProvince.name] && (
+                  <div className="border-t border-white/10 pt-3">
+                    <p className="text-[11px] font-bold text-white/60 mb-2 uppercase tracking-wider">Desa/Kelurahan Kreatif</p>
+                    <div className="space-y-2">
+                      {PROVINCE_VILLAGES[selectedProvince.name].map((v, i) => (
+                        v.slug ? (
+                          <a
+                            key={i}
+                            href={`/dashboard/ekrafhub/desa-kreative/${v.slug}`}
+                            className="block rounded-lg p-2.5 transition-colors hover:bg-white/10"
+                            style={{ background: "rgba(255,255,255,0.05)" }}
+                          >
+                            <div className="flex items-start gap-2">
+                              <span className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold"
+                                style={{ background: "#F97316", color: "#fff" }}>{i + 1}</span>
+                              <div className="min-w-0">
+                                <p className="text-[12px] font-bold text-orange-400 hover:text-orange-300">{v.name}</p>
+                                <p className="text-[10px] text-white/40 mt-0.5">{v.location}</p>
                               </div>
                             </div>
-                          )
-                        ))}
-                      </div>
+                          </a>
+                        ) : (
+                          <div key={i} className="rounded-lg p-2.5" style={{ background: "rgba(255,255,255,0.05)" }}>
+                            <div className="flex items-start gap-2">
+                              <span className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold"
+                                style={{ background: "#F97316", color: "#fff" }}>{i + 1}</span>
+                              <div className="min-w-0">
+                                <p className="text-[12px] font-bold text-white">{v.name}</p>
+                                <p className="text-[10px] text-white/40 mt-0.5">{v.location}</p>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      ))}
                     </div>
-                  )}
-                  {!PROVINCE_VILLAGES[selectedProvince.name] && (
-                    <div className="border-t border-white/10 pt-3">
-                      <p className="text-[11px] text-white/30 italic">Data desa kreatif belum tersedia</p>
-                    </div>
-                  )}
-                </div>
-              )}
+                  </div>
+                )}
+                {!PROVINCE_VILLAGES[selectedProvince.name] && (
+                  <div className="border-t border-white/10 pt-3">
+                    <p className="text-[11px] text-white/30 italic">Data desa kreatif belum tersedia</p>
+                  </div>
+                )}
+              </div>
+            )}
 
-              {/* Legend */}
-              <div className="absolute bottom-4 left-4 z-[1000] rounded-lg border p-3"
-                style={{ background: "rgba(15,23,42,0.9)", borderColor: "rgba(255,255,255,0.1)" }}>
-                <p className="text-[10px] font-bold text-white/60 mb-2 uppercase tracking-wider">Legenda</p>
-                <div className="space-y-1.5">
-                  {[
-                    { label: "20+ desa", opacity: 0.7 },
-                    { label: "10-19 desa", opacity: 0.5 },
-                    { label: "5-9 desa", opacity: 0.35 },
-                    { label: "1-4 desa", opacity: 0.2 },
-                  ].map((item) => (
-                    <div key={item.label} className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-sm" style={{ background: `rgba(59,130,246,${item.opacity})` }} />
-                      <span className="text-[10px] text-white/50">{item.label}</span>
-                    </div>
-                  ))}
-                  <div className="flex items-center gap-2 pt-1 border-t border-white/10">
-                    <div className="w-3 h-3 rounded-full" style={{ background: "#F97316", border: "1.5px solid #fff" }} />
-                    <span className="text-[10px] text-white/50">Jumlah desa/kelurahan</span>
+            {/* Legend */}
+            <div className="absolute bottom-4 left-4 z-[1000] rounded-lg border p-3"
+              style={{ background: "rgba(15,23,42,0.9)", borderColor: "rgba(255,255,255,0.1)" }}>
+              <p className="text-[10px] font-bold text-white/60 mb-2 uppercase tracking-wider">Legenda</p>
+              <div className="space-y-1.5">
+                {[
+                  { label: "20+ desa", opacity: 0.7 },
+                  { label: "10-19 desa", opacity: 0.5 },
+                  { label: "5-9 desa", opacity: 0.35 },
+                  { label: "1-4 desa", opacity: 0.2 },
+                ].map((item) => (
+                  <div key={item.label} className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-sm" style={{ background: `rgba(59,130,246,${item.opacity})` }} />
+                    <span className="text-[10px] text-white/50">{item.label}</span>
+                  </div>
+                ))}
+                <div className="flex items-center gap-2 pt-1 border-t border-white/10">
+                  <div className="w-3 h-3 rounded-full" style={{ background: "#F97316", border: "1.5px solid #fff" }} />
+                  <span className="text-[10px] text-white/50">Jumlah desa/kelurahan</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Province dropdown below map */}
+          <div className="px-4 py-3 border-t flex items-center gap-3 flex-wrap" style={{ borderColor: "var(--ch-border)" }}>
+            <span className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Filter Provinsi:</span>
+            <div className="relative flex-1 min-w-[200px] max-w-xs">
+              <select
+                value={selectedDropdown}
+                onChange={(e) => handleDropdownChange(e.target.value)}
+                className="w-full appearance-none px-3 py-2 pr-8 rounded-lg text-[12px] font-semibold border cursor-pointer"
+                style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+              >
+                <option value="all">Semua Provinsi</option>
+                {[...regionProvinces].sort((a, b) => b.count - a.count).map((p) => (
+                  <option key={p.name} value={p.name}>{p.name} ({p.count})</option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--ch-text-muted)" }} />
+            </div>
+            {selectedDropdown !== "all" && (
+              <button
+                onClick={() => handleDropdownChange("all")}
+                className="text-[11px] font-semibold px-2.5 py-1 rounded-md transition-colors"
+                style={{ background: "var(--ch-muted)", color: "var(--ch-text-muted)" }}
+              >
+                Reset
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* 3 Cards Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Last Activities with Tabs */}
+        <LastActivitiesCard />
+
+        {/* Top Performing Creators */}
+        <div className="rounded-xl border overflow-hidden"
+          style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+          <div className="px-4 py-3 border-b flex items-center gap-2" style={{ borderColor: "var(--ch-border)" }}>
+            <BarChart3 className="w-4 h-4 text-green-500" />
+            <h3 className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>Top Performing Content Creators</h3>
+          </div>
+          <div className="divide-y" style={{ borderColor: "var(--ch-border)" }}>
+            {TOP_PERFORMERS.map((c, i) => (
+              <div key={c.id} className="px-4 py-3 flex items-center gap-3 hover:bg-black/[0.02] transition-colors">
+                <span className="text-[11px] font-extrabold w-5 text-center shrink-0"
+                  style={{ color: i === 0 ? "#F59E0B" : i === 1 ? "#94A3B8" : i === 2 ? "#CD7F32" : "var(--ch-text-muted)" }}>
+                  #{i + 1}
+                </span>
+                <img src={c.photo} alt={c.name} className="w-9 h-9 rounded-full object-cover shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-[12px] font-bold truncate" style={{ color: "var(--ch-text)" }}>{c.name}</p>
+                  <div className="flex items-center gap-1 mt-0.5">
+                    {platformIcon(c.platform)}
+                    <span className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{c.category}</span>
                   </div>
                 </div>
+                <div className="text-right shrink-0">
+                  <p className="text-[11px] font-extrabold flex items-center gap-1" style={{ color: "var(--ch-text)" }}>
+                    <Eye className="w-3 h-3" /> {formatNum(c.views)}
+                  </p>
+                  <p className="text-[10px] font-semibold" style={{ color: "#16A34A" }}>
+                    {c.engagement}% eng.
+                  </p>
+                </div>
               </div>
-            </div>
-
-            {/* Province dropdown below map */}
-            <div className="px-4 py-3 border-t flex items-center gap-3 flex-wrap" style={{ borderColor: "var(--ch-border)" }}>
-              <span className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Filter Provinsi:</span>
-              <div className="relative flex-1 min-w-[200px] max-w-xs">
-                <select
-                  value={selectedDropdown}
-                  onChange={(e) => handleDropdownChange(e.target.value)}
-                  className="w-full appearance-none px-3 py-2 pr-8 rounded-lg text-[12px] font-semibold border cursor-pointer"
-                  style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
-                >
-                  <option value="all">Semua Provinsi</option>
-                  {[...regionProvinces].sort((a, b) => b.count - a.count).map((p) => (
-                    <option key={p.name} value={p.name}>{p.name} ({p.count})</option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--ch-text-muted)" }} />
-              </div>
-              {selectedDropdown !== "all" && (
-                <button
-                  onClick={() => handleDropdownChange("all")}
-                  className="text-[11px] font-semibold px-2.5 py-1 rounded-md transition-colors"
-                  style={{ background: "var(--ch-muted)", color: "var(--ch-text-muted)" }}
-                >
-                  Reset
-                </button>
-              )}
-            </div>
+            ))}
           </div>
         </div>
 
-        {/* Right Sidebar */}
-        <div className="space-y-4">
-          {/* Last Activities */}
-          <div className="rounded-xl border overflow-hidden"
-            style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-            <div className="px-4 py-3 border-b flex items-center gap-2" style={{ borderColor: "var(--ch-border)" }}>
-              <Clock className="w-4 h-4 text-blue-500" />
-              <h3 className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>Last Activities</h3>
-            </div>
-            <div className="divide-y" style={{ borderColor: "var(--ch-border)" }}>
-              {LAST_ACTIVITIES.map((a) => (
-                <div key={a.id} className="px-4 py-3 hover:bg-black/[0.02] transition-colors">
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <img src={a.photo} alt={a.name} className="w-7 h-7 rounded-full object-cover" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[12px] font-bold truncate" style={{ color: "var(--ch-text)" }}>{a.name}</p>
-                      <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{a.time}</p>
-                    </div>
-                    {platformIcon(a.platform)}
+        {/* Content Creators by Most Followers */}
+        <div className="rounded-xl border overflow-hidden"
+          style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+          <div className="px-4 py-3 border-b flex items-center gap-2" style={{ borderColor: "var(--ch-border)" }}>
+            <Award className="w-4 h-4 text-orange-500" />
+            <h3 className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>Content Creators by Most Followers</h3>
+          </div>
+          <div className="divide-y" style={{ borderColor: "var(--ch-border)" }}>
+            {TOP_CREATORS_BY_FOLLOWERS.map((c, i) => (
+              <div key={c.id} className="px-4 py-3 flex items-center gap-3 hover:bg-black/[0.02] transition-colors">
+                <span className="text-[11px] font-extrabold w-5 text-center shrink-0"
+                  style={{ color: i === 0 ? "#F59E0B" : i === 1 ? "#94A3B8" : i === 2 ? "#CD7F32" : "var(--ch-text-muted)" }}>
+                  #{i + 1}
+                </span>
+                <img src={c.photo} alt={c.name} className="w-9 h-9 rounded-full object-cover shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-[12px] font-bold truncate" style={{ color: "var(--ch-text)" }}>{c.name}</p>
+                  <div className="flex items-center gap-1 mt-0.5">
+                    {platformIcon(c.platform)}
+                    <span className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{c.handle}</span>
                   </div>
-                  <p className="text-[11px] mb-1" style={{ color: "var(--ch-text-muted)" }}>
-                    <span className="font-semibold" style={{ color: "var(--ch-text)" }}>{a.action}</span> — {a.content}
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-[13px] font-extrabold" style={{ color: "var(--ch-text)" }}>
+                    {formatNum(c.followers)}
                   </p>
-                  <div className="flex items-center gap-3">
-                    <span className="flex items-center gap-1 text-[10px]" style={{ color: "var(--ch-text-muted)" }}>
-                      <Heart className="w-3 h-3" /> {formatNum(a.likes)}
-                    </span>
-                    <span className="flex items-center gap-1 text-[10px]" style={{ color: "var(--ch-text-muted)" }}>
-                      <MessageCircle className="w-3 h-3" /> {a.comments}
-                    </span>
-                  </div>
+                  <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>followers</p>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Top Performing Creators */}
-          <div className="rounded-xl border overflow-hidden"
-            style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-            <div className="px-4 py-3 border-b flex items-center gap-2" style={{ borderColor: "var(--ch-border)" }}>
-              <BarChart3 className="w-4 h-4 text-green-500" />
-              <h3 className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>Top Performing Content Creators</h3>
-            </div>
-            <div className="divide-y" style={{ borderColor: "var(--ch-border)" }}>
-              {TOP_PERFORMERS.map((c, i) => (
-                <div key={c.id} className="px-4 py-3 flex items-center gap-3 hover:bg-black/[0.02] transition-colors">
-                  <span className="text-[11px] font-extrabold w-5 text-center shrink-0"
-                    style={{ color: i === 0 ? "#F59E0B" : i === 1 ? "#94A3B8" : i === 2 ? "#CD7F32" : "var(--ch-text-muted)" }}>
-                    #{i + 1}
-                  </span>
-                  <img src={c.photo} alt={c.name} className="w-9 h-9 rounded-full object-cover shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[12px] font-bold truncate" style={{ color: "var(--ch-text)" }}>{c.name}</p>
-                    <div className="flex items-center gap-1 mt-0.5">
-                      {platformIcon(c.platform)}
-                      <span className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{c.category}</span>
-                    </div>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <p className="text-[11px] font-extrabold flex items-center gap-1" style={{ color: "var(--ch-text)" }}>
-                      <Eye className="w-3 h-3" /> {formatNum(c.views)}
-                    </p>
-                    <p className="text-[10px] font-semibold" style={{ color: "#16A34A" }}>
-                      {c.engagement}% eng.
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Content Creators by Most Followers */}
-          <div className="rounded-xl border overflow-hidden"
-            style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
-            <div className="px-4 py-3 border-b flex items-center gap-2" style={{ borderColor: "var(--ch-border)" }}>
-              <Award className="w-4 h-4 text-orange-500" />
-              <h3 className="text-[13px] font-bold" style={{ color: "var(--ch-text)" }}>Content Creators by Most Followers</h3>
-            </div>
-            <div className="divide-y" style={{ borderColor: "var(--ch-border)" }}>
-              {TOP_CREATORS_BY_FOLLOWERS.map((c, i) => (
-                <div key={c.id} className="px-4 py-3 flex items-center gap-3 hover:bg-black/[0.02] transition-colors">
-                  <span className="text-[11px] font-extrabold w-5 text-center shrink-0"
-                    style={{ color: i === 0 ? "#F59E0B" : i === 1 ? "#94A3B8" : i === 2 ? "#CD7F32" : "var(--ch-text-muted)" }}>
-                    #{i + 1}
-                  </span>
-                  <img src={c.photo} alt={c.name} className="w-9 h-9 rounded-full object-cover shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[12px] font-bold truncate" style={{ color: "var(--ch-text)" }}>{c.name}</p>
-                    <div className="flex items-center gap-1 mt-0.5">
-                      {platformIcon(c.platform)}
-                      <span className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>{c.handle}</span>
-                    </div>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <p className="text-[13px] font-extrabold" style={{ color: "var(--ch-text)" }}>
-                      {formatNum(c.followers)}
-                    </p>
-                    <p className="text-[10px]" style={{ color: "var(--ch-text-muted)" }}>followers</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
