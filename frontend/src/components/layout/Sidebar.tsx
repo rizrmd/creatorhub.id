@@ -58,7 +58,7 @@ const kreatorNavItems: NavItem[] = [
 
 const ekrafHubNavItems: NavItem[] = [
   { to: "/dashboard/ekrafhub",                    icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/dashboard/ekrafhub/desa-kreative",      icon: Sprout,         label: "Desa Kreative" },
+  { to: "/dashboard/ekrafhub/desa-kreatif",       icon: Sprout,         label: "Desa Kreatif" },
   { to: "/dashboard/ekrafhub/creative-hub",       icon: Building2,       label: "Creative Hub" },
   { to: "/dashboard/ekrafhub/creative-indonesia", icon: Globe2,          label: "Creative by Indonesia" },
   { to: "/dashboard/ekrafhub/marketplace",        icon: Store,           label: "Marketplace" },

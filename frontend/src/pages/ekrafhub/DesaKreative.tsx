@@ -496,7 +496,7 @@ export default function DesaKreative() {
                         v.slug ? (
                           <a
                             key={i}
-                            href={`/dashboard/ekrafhub/desa-kreative/${v.slug}`}
+                            href={`/dashboard/ekrafhub/desa-kreatif/${v.slug}`}
                             className="block rounded-lg p-2.5 transition-colors hover:bg-white/10"
                             style={{ background: "rgba(255,255,255,0.05)" }}
                           >

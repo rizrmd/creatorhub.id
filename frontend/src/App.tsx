@@ -89,8 +89,8 @@ export default function App() {
             <Route path="settings" element={<BrandRoute><Settings /></BrandRoute>} />
           <Route path="ekrafhub">
             <Route index element={<EkrafHubRoute><EkrafHubDashboard /></EkrafHubRoute>} />
-            <Route path="desa-kreative" element={<EkrafHubRoute><DesaKreative /></EkrafHubRoute>} />
-            <Route path="desa-kreative/gampongnusa" element={<EkrafHubRoute><GampongNusa /></EkrafHubRoute>} />
+            <Route path="desa-kreatif" element={<EkrafHubRoute><DesaKreative /></EkrafHubRoute>} />
+            <Route path="desa-kreatif/gampongnusa" element={<EkrafHubRoute><GampongNusa /></EkrafHubRoute>} />
             <Route path="creative-hub" element={<EkrafHubRoute><CreativeHub /></EkrafHubRoute>} />
             <Route path="creative-indonesia" element={<EkrafHubRoute><EkrafHubPlaceholder title="Creative by Indonesia" description="Indonesian creative content - Coming soon" /></EkrafHubRoute>} />
             <Route path="marketplace" element={<EkrafHubRoute><Marketplace /></EkrafHubRoute>} />
