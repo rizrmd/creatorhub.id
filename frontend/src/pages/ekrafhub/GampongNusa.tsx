@@ -33,10 +33,8 @@ const KOC_ACCOUNTS: AccountData[] = [
 ];
 
 const HOMELESS_MEDIA_ACCOUNTS: AccountData[] = [
-  { id: "1", name: "Jakarta Keras", handle: "@jakartakeras", photo: "https://i.pravatar.cc/150?img=10", platforms: [{ name: "instagram", followers: 45000, engagementRate: 2.1 }] },
-  { id: "2", name: "Lambe Turah", handle: "@lameturah", photo: "https://i.pravatar.cc/150?img=12", platforms: [{ name: "instagram", followers: 128000, engagementRate: 1.8 }] },
-  { id: "3", name: "Info Depok", handle: "@infodepok", photo: "https://i.pravatar.cc/150?img=14", platforms: [{ name: "tiktok", followers: 32000, engagementRate: 4.5 }, { name: "instagram", followers: 18500, engagementRate: 2.7 }] },
-  { id: "4", name: "City Of Bandung", handle: "@cityofbandung", photo: "https://i.pravatar.cc/150?img=16", platforms: [{ name: "instagram", followers: 67000, engagementRate: 3.4 }] },
+  { id: "1", name: "Gampong Nusa Ku", handle: "@gampongnusaku", photo: "/gampongnusaku.jpg", platforms: [{ name: "instagram", followers: 5709, engagementRate: 0.7 }] },
+  { id: "2", name: "Explore Aceh", handle: "@exploreacehh", photo: "/exploreacehh.jpg", platforms: [{ name: "instagram", followers: 13000, engagementRate: 0.5 }] },
 ];
 
 const TOP_PERFORMERS = [
