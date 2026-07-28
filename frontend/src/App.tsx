@@ -41,6 +41,7 @@ import BrandSearch from "@/pages/BrandSearch";
 import CreatorAcademy from "@/pages/CreatorAcademy";
 import EkrafHubDashboard from "@/pages/ekrafhub/EkrafHubDashboard";
 import EkrafHubPlaceholder from "@/pages/ekrafhub/EkrafHubPlaceholder";
+import CreativeHub from "@/pages/ekrafhub/CreativeHub";
 import DesaKreative from "@/pages/ekrafhub/DesaKreative";
 import GampongNusa from "@/pages/ekrafhub/GampongNusa";
 
@@ -90,7 +91,7 @@ export default function App() {
             <Route index element={<EkrafHubRoute><EkrafHubDashboard /></EkrafHubRoute>} />
             <Route path="desa-kreative" element={<EkrafHubRoute><DesaKreative /></EkrafHubRoute>} />
             <Route path="desa-kreative/gampongnusa" element={<EkrafHubRoute><GampongNusa /></EkrafHubRoute>} />
-            <Route path="creative-hub" element={<EkrafHubRoute><EkrafHubPlaceholder title="Creative Hub" description="Creative hub management - Coming soon" /></EkrafHubRoute>} />
+            <Route path="creative-hub" element={<EkrafHubRoute><CreativeHub /></EkrafHubRoute>} />
             <Route path="creative-indonesia" element={<EkrafHubRoute><EkrafHubPlaceholder title="Creative by Indonesia" description="Indonesian creative content - Coming soon" /></EkrafHubRoute>} />
             <Route path="marketplace" element={<EkrafHubRoute><Marketplace /></EkrafHubRoute>} />
             <Route path="boost-ads" element={<EkrafHubRoute><BoostAds /></EkrafHubRoute>} />
