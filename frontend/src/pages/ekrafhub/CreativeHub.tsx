@@ -1,4 +1,4 @@
-import { Search, Bell, HelpCircle, Building2, Rocket, MapPin, ChevronDown, Download, ArrowRight } from "lucide-react";
+import { Building2, Rocket, MapPin, ArrowRight } from "lucide-react";
 
 const STAT_CARDS = [
   { label: "Total Ruang Kreatif", value: "263", icon: Building2, bg: "#EFF6FF", color: "#2563EB", desc: "Tersebar di Indonesia" },
@@ -10,54 +10,13 @@ export default function CreativeHub() {
   return (
     <div className="p-4 md:p-6 min-h-screen" style={{ background: "var(--ch-bg)" }}>
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            Creative Hub
-          </h1>
-          <p className="text-sm mt-1" style={{ color: "var(--ch-text-muted)" }}>
-            Kelola data, pemetaan, dan aktivasi Creative Hub di seluruh Indonesia.
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--ch-text-muted)" }} />
-            <input
-              type="text"
-              placeholder="Cari data, program, atau hub..."
-              className="pl-9 pr-4 py-2 rounded-lg border text-sm w-64"
-              style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
-            />
-          </div>
-          <button className="relative p-2 rounded-lg border" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-            <Bell className="w-5 h-5" style={{ color: "var(--ch-text-muted)" }} />
-            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center text-white" style={{ background: "#EF4444" }}>3</span>
-          </button>
-          <button className="p-2 rounded-lg border" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)" }}>
-            <HelpCircle className="w-5 h-5" style={{ color: "var(--ch-text-muted)" }} />
-          </button>
-          <div className="flex items-center gap-2 pl-3 border-l" style={{ borderColor: "var(--ch-border)" }}>
-            <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ background: "#2563EB" }}>AR</div>
-            <span className="text-sm font-semibold hidden md:block" style={{ color: "var(--ch-text)" }}>Admin CreatorHub</span>
-            <ChevronDown className="w-4 h-4" style={{ color: "var(--ch-text-muted)" }} />
-          </div>
-        </div>
-      </div>
-
-      {/* Action buttons */}
-      <div className="flex items-center justify-between mb-6">
-        <div />
-        <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-semibold" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}>
-            <Download className="w-4 h-4" />
-            Unduh Laporan
-            <ChevronDown className="w-4 h-4" />
-          </button>
-          <button className="flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-semibold" style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}>
-            Semua Provinsi
-            <ChevronDown className="w-4 h-4" />
-          </button>
-        </div>
+      <div className="mb-6">
+        <h1 className="text-2xl font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+          Creative Hub
+        </h1>
+        <p className="text-sm mt-1" style={{ color: "var(--ch-text-muted)" }}>
+          Kelola data, pemetaan, dan aktivasi Creative Hub di seluruh Indonesia.
+        </p>
       </div>
 
       {/* Stats Row */}
