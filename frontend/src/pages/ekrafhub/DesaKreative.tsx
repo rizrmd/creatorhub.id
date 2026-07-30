@@ -4,7 +4,7 @@ import L from "leaflet";
 import type { FeatureCollection } from "geojson";
 import * as topojson from "topojson-client";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
-import { Sprout, TrendingUp, MapPin, X, ChevronDown, Clock, Eye, Heart, MessageCircle, BarChart3, Award, Instagram, Youtube, Camera } from "lucide-react";
+import { Sprout, TrendingUp, MapPin, X, ChevronDown, Clock, Eye, Heart, MessageCircle, BarChart3, Award, Instagram, Youtube, Camera, Compass } from "lucide-react";
 
 const PROVINCE_URL = "https://gist.githubusercontent.com/ajie31/3144875bad9705e2b2b544909c022276/raw/Peta%20Indonesia%20Provinsi.json";
 
@@ -375,11 +375,30 @@ export default function DesaKreative() {
           style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
           {/* Map title */}
           <div className="px-4 py-3 border-b" style={{ borderColor: "var(--ch-border)" }}>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-orange-500" />
-              <h2 className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>
-                PETA SEBARAN USULAN PILOT PROJECT DESA/KELURAHAN KREATIF
-              </h2>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-orange-500" />
+                <h2 className="text-[14px] font-bold" style={{ color: "var(--ch-text)" }}>
+                  PETA SEBARAN USULAN PILOT PROJECT DESA/KELURAHAN KREATIF
+                </h2>
+              </div>
+              <button
+                className="group flex items-center gap-2 px-4 py-2 rounded-full text-[12px] font-bold text-white transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(249,115,22,0.4)] active:scale-95"
+                style={{
+                  background: "linear-gradient(135deg, #F97316, #FB923C, #F59E0B)",
+                  boxShadow: "0 2px 12px rgba(249,115,22,0.3)",
+                }}
+                onClick={() => {
+                  const el = document.getElementById("desa-sebaran-chart");
+                  el?.scrollIntoView({ behavior: "smooth", block: "center" });
+                }}
+              >
+                <Compass className="w-4 h-4 animate-[spin_3s_linear_infinite]" />
+                <span>Discover</span>
+                <span className="ml-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-white/20 text-[10px] font-extrabold">
+                  {TOTAL_DESA}
+                </span>
+              </button>
             </div>
             <p className="text-[12px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
               133 Kab/Kota di 31 Provinsi — total {TOTAL_DESA} desa/kelurahan berpotensi ekraf
@@ -662,7 +681,7 @@ export default function DesaKreative() {
       </div>
 
       {/* Bar Chart */}
-      <div className="mt-6 rounded-xl border overflow-hidden"
+      <div id="desa-sebaran-chart" className="mt-6 rounded-xl border overflow-hidden"
         style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
         <div className="px-5 py-4 border-b" style={{ borderColor: "var(--ch-border)" }}>
           <h2 className="text-[15px] font-extrabold" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
