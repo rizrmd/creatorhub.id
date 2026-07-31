@@ -43,6 +43,7 @@ import EkrafHubDashboard from "@/pages/ekrafhub/EkrafHubDashboard";
 import CreativeHub from "@/pages/ekrafhub/CreativeHub";
 import CreativeIndonesia from "@/pages/ekrafhub/CreativeIndonesia";
 import DesaKreative from "@/pages/ekrafhub/DesaKreative";
+import DesaKreatifDiscover from "@/pages/ekrafhub/DesaKreatifDiscover";
 import GampongNusa from "@/pages/ekrafhub/GampongNusa";
 import EkrafHubCreatorDetail from "@/pages/ekrafhub/EkrafHubCreatorDetail";
 
@@ -91,6 +92,7 @@ export default function App() {
           <Route path="ekrafhub">
             <Route index element={<EkrafHubRoute><EkrafHubDashboard /></EkrafHubRoute>} />
             <Route path="desa-kreatif" element={<EkrafHubRoute><DesaKreative /></EkrafHubRoute>} />
+            <Route path="desa-kreatif/discover" element={<EkrafHubRoute><DesaKreatifDiscover /></EkrafHubRoute>} />
             <Route path="desa-kreatif/gampongnusa" element={<EkrafHubRoute><GampongNusa /></EkrafHubRoute>} />
             <Route path="creative-hub" element={<EkrafHubRoute><CreativeHub /></EkrafHubRoute>} />
             <Route path="creative-indonesia" element={<EkrafHubRoute><CreativeIndonesia /></EkrafHubRoute>} />

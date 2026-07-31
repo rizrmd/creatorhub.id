@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, GeoJSON, Polyline, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import type { FeatureCollection } from "geojson";
@@ -259,6 +260,7 @@ function MapViewController() {
 }
 
 export default function DesaKreative() {
+  const navigate = useNavigate();
   const [provinceGeoJson, setProvinceGeoJson] = useState<FeatureCollection | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<string>("all");
   const [selectedProvince, setSelectedProvince] = useState<ProvincePoint | null>(null);
@@ -388,10 +390,7 @@ export default function DesaKreative() {
                   background: "linear-gradient(135deg, #F97316, #FB923C, #F59E0B)",
                   boxShadow: "0 2px 12px rgba(249,115,22,0.3)",
                 }}
-                onClick={() => {
-                  const el = document.getElementById("desa-sebaran-chart");
-                  el?.scrollIntoView({ behavior: "smooth", block: "center" });
-                }}
+                onClick={() => navigate("/dashboard/ekrafhub/desa-kreatif/discover")}
               >
                 <Compass className="w-4 h-4 animate-[spin_3s_linear_infinite]" />
                 <span>Discover</span>
