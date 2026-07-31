@@ -107,7 +107,8 @@ export default function DesaKreatifDiscover() {
         {filtered.map((pkg) => (
           <div
             key={pkg.id}
-            className="rounded-xl border overflow-hidden transition-all hover:scale-[1.02]"
+            onClick={() => navigate(`/dashboard/ekrafhub/desa-kreatif/discover/${pkg.id}`)}
+            className="rounded-xl border overflow-hidden transition-all hover:scale-[1.02] cursor-pointer"
             style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}
           >
             <div className="relative aspect-[4/3] overflow-hidden">
