@@ -1,50 +1,81 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Search, ChevronDown, Eye } from "lucide-react";
+import { ArrowLeft, Search, ChevronDown, MapPin } from "lucide-react";
 
-interface TourPackage {
-  id: string;
-  title: string;
-  duration: string;
-  location: string;
-  views: number;
-  image: string;
-  creator: string;
-  creatorAvatar: string;
+function useCountUp(target: number, duration = 1200) {
+  const [value, setValue] = useState(0);
+  const ref = useRef<number | null>(null);
+  useEffect(() => {
+    const start = performance.now();
+    const animate = (now: number) => {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setValue(Math.round(eased * target));
+      if (progress < 1) ref.current = requestAnimationFrame(animate);
+    };
+    ref.current = requestAnimationFrame(animate);
+    return () => { if (ref.current) cancelAnimationFrame(ref.current); };
+  }, [target, duration]);
+  return value;
 }
 
-const TOUR_PACKAGES: TourPackage[] = [
-  { id: "1", title: "1hariDiJakartaBaratTes", duration: "1 Hari", location: "Jakarta Barat Tes", views: 0, image: "https://images.unsplash.com/photo-1555899434-94d1368aa7af?w=400&h=300&fit=crop", creator: "User Atourin", creatorAvatar: "https://i.pravatar.cc/150?img=1" },
-  { id: "2", title: "1hariDiYogyakarta", duration: "1 Hari", location: "Yogyakarta", views: 563, image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=400&h=300&fit=crop", creator: "Syah Ari Wiharjo (Ari)", creatorAvatar: "https://i.pravatar.cc/150?img=2" },
-  { id: "3", title: "3 hari di Surabaya", duration: "3 Hari", location: "Surabaya", views: 480, image: "https://images.unsplash.com/photo-1547483238-f40e3c7ac494?w=400&h=300&fit=crop", creator: "Mighfari Arilianza", creatorAvatar: "https://i.pravatar.cc/150?img=3" },
-  { id: "4", title: "One Day Tour In Central Lombok", duration: "1 Hari", location: "Lombok Tengah", views: 424, image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop", creator: "Andrean Saputra", creatorAvatar: "https://i.pravatar.cc/150?img=4" },
-  { id: "5", title: "One Day Tour West Lombok", duration: "1 Hari", location: "Lombok Barat", views: 274, image: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=300&fit=crop", creator: "Anisa Latifah Arisanti", creatorAvatar: "https://i.pravatar.cc/150?img=5" },
-  { id: "6", title: "Hidden Heritage Tour", duration: "1 Hari", location: "Lombok", views: 227, image: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&h=300&fit=crop", creator: "Laela Urfiya Azzahra", creatorAvatar: "https://i.pravatar.cc/150?img=6" },
-  { id: "7", title: "2 hari di Garut", duration: "2 Hari", location: "Garut", views: 201, image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=400&h=300&fit=crop", creator: "Thoriq Abror", creatorAvatar: "https://i.pravatar.cc/150?img=7" },
-  { id: "8", title: "The Lost Age at Lahat", duration: "1 Hari", location: "Lahat", views: 199, image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop", creator: "Welly Wiliyanto", creatorAvatar: "https://i.pravatar.cc/150?img=8" },
-  { id: "9", title: "Yogyakarta Odyssey in 3D2N", duration: "3 Hari", location: "Yogyakarta", views: 252, image: "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=400&h=300&fit=crop", creator: "Winnuar Dwina Novarani", creatorAvatar: "https://i.pravatar.cc/150?img=9" },
-  { id: "10", title: "2 hari bersama Garut", duration: "2 Hari", location: "Garut", views: 149, image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=400&h=300&fit=crop", creator: "SARAH LUTHFIA HUMAIRA", creatorAvatar: "https://i.pravatar.cc/150?img=10" },
-  { id: "11", title: "Sabu Raijua One Day Tour", duration: "1 Hari", location: "Sabu Raijua", views: 340, image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&h=300&fit=crop", creator: "Reza Permadi", creatorAvatar: "https://i.pravatar.cc/150?img=11" },
-  { id: "12", title: "1hariDiYogyakarta", duration: "3 Hari", location: "Yogyakarta", views: 184, image: "https://images.unsplash.com/photo-1517483000871-1dbf64a6e1c6?w=400&h=300&fit=crop", creator: "Muhamad Rovianto", creatorAvatar: "https://i.pravatar.cc/150?img=12" },
+interface DesaKreatif {
+  id: string;
+  name: string;
+  location: string;
+  province: string;
+  image: string;
+  subsectors?: string[];
+}
+
+const DESA_KREATIF: DesaKreatif[] = [
+  { id: "gampongnusa", name: "Gampong Nusa", location: "Aceh Besar", province: "Aceh", image: "/desa-photos/Gampong Nusa.jpg" },
+  { id: "desawisatajaboi", name: "Desa Wisata Jaboi", location: "Sabang", province: "Aceh", image: "/desa-photos/Desa Wisata Jaboi.jpeg" },
+  { id: "gamponglampulo", name: "Gampong Lampulo", location: "Banda Aceh", province: "Aceh", image: "/desa-photos/Gampong Lampulo.jpg" },
+  { id: "desaiboih", name: "Desa Iboih", location: "Sabang", province: "Aceh", image: "/desa-photos/Desa Iboih.jpeg" },
+  { id: "gamponguleelhue", name: "Gampong Ulee Lhue", location: "Banda Aceh", province: "Aceh", image: "/desa-photos/Gampong Ulee Lhue.jpg" },
+  { id: "desaaluejang", name: "Desa Alue Jang", location: "Aceh Jaya", province: "Aceh", image: "/desa-photos/Desa Alue Jang.jpg" },
+  { id: "desaaneuklaot", name: "Desa Aneuk Laot", location: "Sabang", province: "Aceh", image: "/desa-photos/Desa Aneuk Laot.jpg" },
+  { id: "desasuaktimah", name: "Desa Suak Timah", location: "Aceh Barat", province: "Aceh", image: "/desa-photos/Desa Suak Timah.jpeg" },
+  { id: "desageunteut", name: "Desa Geunteut", location: "Aceh Besar", province: "Aceh", image: "/desa-photos/Desa Geunteut.jpg" },
+  { id: "desauleenyue", name: "Desa Ulee Nyeue", location: "Aceh Utara", province: "Aceh", image: "/desa-photos/Desa Ulee Nyeue.jpg" },
 ];
 
-const LOCATIONS = Array.from(new Set(TOUR_PACKAGES.map((p) => p.location))).sort();
-const DURATIONS = Array.from(new Set(TOUR_PACKAGES.map((p) => p.duration))).sort();
+const KLASTER_DATA: Record<string, string[]> = {
+  "Klaster Seni dan Budaya": ["Kuliner", "Kriya", "Seni Rupa", "Seni Pertunjukan", "Fesyen"],
+  "Klaster Desain": ["Arsitektur", "Desain Interior", "Desain Komunikasi Visual (DKV)", "Desain Produk", "Modifikasi Otomotif"],
+  "Klaster Teknologi dan Konten Digital": ["Pengembangan Permainan (Game)", "Aplikasi", "Teknologi Baru", "Konten Digital", "Sulih Suara"],
+  "Klaster Media dan Distribusi Kreatif": ["Film, Animasi, dan Video", "Musik", "Fotografi", "Televisi dan Radio", "Periklanan", "Penerbitan"],
+};
+
+const PROVINCES = [
+  "Aceh", "Sumatera Utara", "Sumatera Barat", "Kepulauan Riau", "Riau",
+  "Sumatera Selatan", "Kepulauan Bangka Belitung", "Lampung", "Banten", "DKI Jakarta",
+  "Jawa Barat", "Jawa Tengah", "DI Yogyakarta", "Jawa Timur", "Bali",
+  "Nusa Tenggara Barat", "Nusa Tenggara Timur", "Kalimantan Barat", "Kalimantan Selatan", "Kalimantan Timur",
+  "Sulawesi Selatan", "Sulawesi Tenggara", "Gorontalo", "Sulawesi Utara", "Maluku",
+  "Maluku Utara", "Papua", "Papua Barat", "Papua Barat Daya", "Papua Tengah",
+];
 
 export default function DesaKreatifDiscover() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
-  const [locationFilter, setLocationFilter] = useState("all");
-  const [durationFilter, setDurationFilter] = useState("all");
+  const [provinceFilter, setProvinceFilter] = useState("all");
+  const [klasterFilter, setKlasterFilter] = useState("all");
+  const [subsectorFilter, setSubsectorFilter] = useState("all");
+
+  const provinceCount = useCountUp(31);
+  const subsectorCount = useCountUp(21);
 
   const filtered = useMemo(() => {
-    return TOUR_PACKAGES.filter((p) => {
-      const matchSearch = search === "" || p.title.toLowerCase().includes(search.toLowerCase()) || p.creator.toLowerCase().includes(search.toLowerCase());
-      const matchLocation = locationFilter === "all" || p.location === locationFilter;
-      const matchDuration = durationFilter === "all" || p.duration === durationFilter;
-      return matchSearch && matchLocation && matchDuration;
+    return DESA_KREATIF.filter((d) => {
+      const matchSearch = search === "" || d.name.toLowerCase().includes(search.toLowerCase()) || d.location.toLowerCase().includes(search.toLowerCase());
+      const matchProvince = provinceFilter === "all" || d.province === provinceFilter;
+      const matchSubsector = subsectorFilter === "all" || d.subsectors?.includes(subsectorFilter);
+      return matchSearch && matchProvince && matchSubsector;
     });
-  }, [search, locationFilter, durationFilter]);
+  }, [search, provinceFilter, subsectorFilter]);
 
   return (
     <div className="p-4 md:p-6" style={{ background: "var(--ch-bg)" }}>
@@ -57,8 +88,11 @@ export default function DesaKreatifDiscover() {
           <ArrowLeft className="w-4 h-4" />
         </button>
         <h1 className="text-xl md:text-2xl font-extrabold tracking-tight" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-          Desa Kreatif Discover
+          Temukan Desa Kreatif
         </h1>
+        <span className="ml-auto text-[12px] font-semibold whitespace-nowrap" style={{ color: "var(--ch-text-muted)" }}>
+          Total: <span className="text-[15px] font-extrabold" style={{ color: "var(--ch-primary)" }}>{provinceCount}</span> Provinsi | <span className="text-[15px] font-extrabold" style={{ color: "var(--ch-primary)" }}>{subsectorCount}</span> Subsektor Ekonomi Kreatif
+        </span>
       </div>
 
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6">
@@ -66,7 +100,7 @@ export default function DesaKreatifDiscover() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--ch-text-muted)" }} />
           <input
             type="text"
-            placeholder="Cari paket wisata..."
+            placeholder="Temukan Desa Kreatif..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-9 pr-3 py-2.5 rounded-lg text-[13px] border outline-none transition-colors focus:ring-1"
@@ -75,28 +109,43 @@ export default function DesaKreatifDiscover() {
         </div>
         <div className="relative">
           <select
-            value={locationFilter}
-            onChange={(e) => setLocationFilter(e.target.value)}
+            value={provinceFilter}
+            onChange={(e) => setProvinceFilter(e.target.value)}
             className="appearance-none pl-3 pr-8 py-2.5 rounded-lg text-[13px] font-semibold border cursor-pointer"
             style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
           >
-            <option value="all">Semua Lokasi</option>
-            {LOCATIONS.map((l) => (
-              <option key={l} value={l}>{l}</option>
+            <option value="all">Semua Provinsi</option>
+            {PROVINCES.map((p) => (
+              <option key={p} value={p}>{p}</option>
             ))}
           </select>
           <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--ch-text-muted)" }} />
         </div>
         <div className="relative">
           <select
-            value={durationFilter}
-            onChange={(e) => setDurationFilter(e.target.value)}
+            value={klasterFilter}
+            onChange={(e) => { setKlasterFilter(e.target.value); setSubsectorFilter("all"); }}
             className="appearance-none pl-3 pr-8 py-2.5 rounded-lg text-[13px] font-semibold border cursor-pointer"
             style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
           >
-            <option value="all">Semua Durasi</option>
-            {DURATIONS.map((d) => (
-              <option key={d} value={d}>{d}</option>
+            <option value="all">Semua Klaster</option>
+            {Object.keys(KLASTER_DATA).map((k) => (
+              <option key={k} value={k}>{k}</option>
+            ))}
+          </select>
+          <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--ch-text-muted)" }} />
+        </div>
+        <div className="relative">
+          <select
+            value={subsectorFilter}
+            onChange={(e) => setSubsectorFilter(e.target.value)}
+            disabled={klasterFilter === "all"}
+            className="appearance-none pl-3 pr-8 py-2.5 rounded-lg text-[13px] font-semibold border cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+          >
+            <option value="all">{klasterFilter === "all" ? "Pilih Klaster dulu" : "Semua Subsektor"}</option>
+            {klasterFilter !== "all" && KLASTER_DATA[klasterFilter]?.map((item) => (
+              <option key={item} value={item}>{item}</option>
             ))}
           </select>
           <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--ch-text-muted)" }} />
@@ -104,32 +153,25 @@ export default function DesaKreatifDiscover() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {filtered.map((pkg) => (
+        {filtered.map((desa) => (
           <div
-            key={pkg.id}
-            onClick={() => navigate(`/dashboard/ekrafhub/desa-kreatif/discover/${pkg.id}`)}
+            key={desa.id}
+            onClick={() => navigate(`/dashboard/ekrafhub/desa-kreatif/discover/${desa.id}`)}
             className="rounded-xl border overflow-hidden transition-all hover:scale-[1.02] cursor-pointer"
             style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}
           >
             <div className="relative aspect-[4/3] overflow-hidden">
-              <img src={pkg.image} alt={pkg.title} className="w-full h-full object-cover" />
+              <img src={desa.image} alt={desa.name} className="w-full h-full object-cover" />
             </div>
             <div className="p-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
-                  {pkg.duration} &bull; {pkg.location}
-                </span>
-                <span className="flex items-center gap-1 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
-                  <Eye className="w-3.5 h-3.5" />
-                  {pkg.views}
-                </span>
-              </div>
-              <h3 className="text-[13px] font-bold mb-2 leading-tight" style={{ color: "var(--ch-text)" }}>
-                {pkg.title}
+              <h3 className="text-[13px] font-bold mb-1 leading-tight" style={{ color: "var(--ch-text)" }}>
+                {desa.name}
               </h3>
-              <div className="flex items-center gap-2">
-                <img src={pkg.creatorAvatar} alt={pkg.creator} className="w-5 h-5 rounded-full object-cover" />
-                <span className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>{pkg.creator}</span>
+              <div className="flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5" style={{ color: "var(--ch-text-muted)" }} />
+                <span className="text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
+                  {desa.location}
+                </span>
               </div>
             </div>
           </div>
@@ -138,7 +180,7 @@ export default function DesaKreatifDiscover() {
 
       {filtered.length === 0 && (
         <div className="text-center py-16">
-          <p className="text-[14px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Tidak ada paket wisata yang ditemukan.</p>
+          <p className="text-[14px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Tidak ada desa kreatif yang ditemukan.</p>
         </div>
       )}
     </div>
