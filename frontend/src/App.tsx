@@ -42,6 +42,7 @@ import CreatorSearch from "@/pages/kreator/CreatorSearch";
 import BrandSearch from "@/pages/BrandSearch";
 import CreatorAcademy from "@/pages/CreatorAcademy";
 import EkrafHubDashboard from "@/pages/ekrafhub/EkrafHubDashboard";
+import CoordinatorDashboard from "@/pages/ekrafhub/CoordinatorDashboard";
 import CreativeHub from "@/pages/ekrafhub/CreativeHub";
 import CreativeIndonesia from "@/pages/ekrafhub/CreativeIndonesia";
 import DesaKreative from "@/pages/ekrafhub/DesaKreative";
@@ -55,6 +56,12 @@ function RouteGuard({ children }: { children: React.ReactNode }) {
   const { pathname } = useLocation();
   if (isAccessRestricted(user?.email, pathname)) return <AccessRestricted />;
   return <>{children}</>;
+}
+
+function EkrafHubIndex() {
+  const { user } = useAuth();
+  if (user?.email === "itsbanuun@creatorhub.id") return <CoordinatorDashboard />;
+  return <EkrafHubDashboard />;
 }
 
 export default function App() {
@@ -100,7 +107,7 @@ export default function App() {
           <Route path="payments" element={<BrandRoute><Payments /></BrandRoute>} />
             <Route path="settings" element={<BrandRoute><Settings /></BrandRoute>} />
           <Route path="ekrafhub">
-            <Route index element={<EkrafHubRoute><EkrafHubDashboard /></EkrafHubRoute>} />
+            <Route index element={<EkrafHubRoute><EkrafHubIndex /></EkrafHubRoute>} />
             <Route path="desa-kreatif" element={<EkrafHubRoute><DesaKreative /></EkrafHubRoute>} />
             <Route path="desa-kreatif/discover" element={<EkrafHubRoute><DesaKreatifDiscover /></EkrafHubRoute>} />
             <Route path="desa-kreatif/discover/:id" element={<EkrafHubRoute><DesaKreatifDetail /></EkrafHubRoute>} />
