@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Bell, ChevronDown, Settings, LogOut, User, Megaphone, Users, Coins, Menu, Search } from "lucide-react";
+import { Bell, ChevronDown, Settings, LogOut, User, Coins, Menu, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -23,13 +23,9 @@ const MESSAGE_THREADS = [
 ];
 
 const USER_BY_ROLE = {
-  brand:   { name: "Arif Budiman",  subtitle: "Brand Manager",     initial: "A", stats: { campaigns: 0, creators: 0, spent: "Rp 0" } },
-  kreator: { name: "Rina Pratiwi",  subtitle: "Lifestyle Creator", initial: "R", stats: { campaigns: 0, creators: 0,  spent: "Rp 0" } },
-};
-
-const USER_AVATARS: Record<string, string> = {
-  "admin@creatorhub.id": "/favicon.png",
-  "tuffa@creatorhub.id": "/user-avatars/tuffa.jpg",
+  brand:      { name: "Tri Wahyudi, S.T.",  subtitle: "Direktur Aplikasi", initial: "TW", photo: "/tri-wahyudi.jpg", stats: { campaigns: 0, creators: 0, spent: "Rp 0" } },
+  kreator:    { name: "Rina Pratiwi",  subtitle: "Lifestyle Creator", initial: "R", photo: "", stats: { campaigns: 0, creators: 0,  spent: "Rp 0" } },
+  ekrafhub:   { name: "Ainul Mardhiah Lubis", subtitle: "EKRAF Hub Admin", initial: "AM", photo: "/itsbanuun.jpg", stats: { campaigns: 0, creators: 0, spent: "Rp 0" } },
 };
 
 function NotifIcon({ icon, bg, fg }: { icon: string; bg: string; fg: string }) {
@@ -68,12 +64,21 @@ export default function Header() {
     name:     user?.name ?? USER_BY_ROLE.kreator.name,
     subtitle: "Content Creator",
     initial:  user?.name ? user.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase() : USER_BY_ROLE.kreator.initial,
+    photo:    "",
     stats: USER_BY_ROLE.kreator.stats,
+  } : effectiveRole === "ekrafhub" ? {
+    ...USER_BY_ROLE.ekrafhub,
+    name:     user?.name ?? USER_BY_ROLE.ekrafhub.name,
+    subtitle: user?.role === "admin" ? "Admin" : "EKRAF Hub Admin",
+    initial:  user?.name ? user.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase() : USER_BY_ROLE.ekrafhub.initial,
+    photo:    USER_BY_ROLE.ekrafhub.photo,
+    stats: USER_BY_ROLE.ekrafhub.stats,
   } : {
     ...USER_BY_ROLE.brand,
-    name:     user?.name ?? "Arif Budiman",
-    subtitle: user?.role === "admin" ? "Admin" : "Brand Manager",
-    initial:  user?.name ? user.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase() : "A",
+    name:     "Tri Wahyudi, S.T.",
+    subtitle: user?.role === "admin" ? "Admin" : "Direktur Aplikasi",
+    initial:  "TW",
+    photo:    USER_BY_ROLE.brand.photo,
     stats: USER_BY_ROLE.brand.stats,
   };
 
@@ -262,45 +267,39 @@ export default function Header() {
             className="flex items-center gap-2 pl-2 sm:pl-3 ml-0.5 sm:ml-1 cursor-pointer"
             onClick={() => open("profile")}
           >
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold shrink-0 bg-orange-500 overflow-hidden"
-            >
-              {user?.email && USER_AVATARS[user.email] ? (
-                <img src={USER_AVATARS[user.email]} alt={displayUser.name} className="w-full h-full object-cover" />
+            <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 bg-blue-600 flex items-center justify-center text-white text-xs font-bold">
+              {displayUser.photo ? (
+                <img src={displayUser.photo} alt={displayUser.name} className="w-full h-full object-cover" />
               ) : (
                 displayUser.initial
               )}
             </div>
             <div className="hidden sm:block text-left">
-              <p className="text-[13px] font-semibold leading-none text-white">{displayUser.subtitle}</p>
+              <p className="text-[13px] font-semibold leading-none text-white">{displayUser.name}</p>
+              <p className="text-[10px] text-slate-400 mt-0.5">EKRAF</p>
             </div>
             <ChevronDown className="hidden sm:block text-white/60" style={{ width: 14, height: 14 }} />
           </button>
 
           {showProfile && (
-            <div className="absolute right-0 top-full mt-2 w-52 bg-[#111827] rounded-xl border border-white/10 overflow-hidden animate-slide-in"
+            <div className="absolute right-0 top-full mt-2 w-64 bg-[#0a0f1a] rounded-xl border border-white/10 overflow-hidden animate-slide-in"
               style={{ boxShadow: "var(--ch-shadow-lg)" }}>
-              <div className="px-4 py-3" style={{ background: "linear-gradient(135deg, rgba(59,130,246,.15), rgba(139,92,246,.1))" }}>
-                <p className="text-[13px] font-bold text-white">{displayUser.name}</p>
-                <p className="text-[11px] text-slate-400">{displayUser.subtitle}</p>
-              </div>
-              <div className="grid grid-cols-3 border-b border-white/10">
-                <div className="flex flex-col items-center py-2.5 border-r border-white/10">
-                  <Megaphone style={{ width: 14, height: 14, marginBottom: 2, color: "var(--ch-text-muted)" }} />
-                  <span className="text-[11px] font-bold text-white">{displayUser.stats.campaigns}</span>
-                  <span className="text-[9px] text-slate-500">Campaigns</span>
+              <div className="px-4 py-4 flex items-center gap-3" style={{ background: "linear-gradient(135deg, rgba(59,130,246,.1), rgba(99,102,241,.08))" }}>
+                <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border-2 border-white/20 bg-blue-600 flex items-center justify-center text-white text-sm font-bold">
+                  {displayUser.photo ? (
+                    <img src={displayUser.photo} alt={displayUser.name} className="w-full h-full object-cover" />
+                  ) : (
+                    displayUser.initial
+                  )}
                 </div>
-                <div className="flex flex-col items-center py-2.5 border-r border-white/10">
-                  <Users style={{ width: 14, height: 14, marginBottom: 2, color: "var(--ch-text-muted)" }} />
-                  <span className="text-[11px] font-bold text-white">{displayUser.stats.creators}</span>
-                  <span className="text-[9px] text-slate-500">Creators</span>
-                </div>
-                <div className="flex flex-col items-center py-2.5">
-                  <Coins style={{ width: 14, height: 14, marginBottom: 2, color: "var(--ch-text-muted)" }} />
-                  <span className="text-[10px] font-bold leading-tight text-center text-white">{displayUser.stats.spent}</span>
-                  <span className="text-[9px] text-slate-500">Spent</span>
+                <div>
+                  <p className="text-[13px] font-bold text-white">{displayUser.name}</p>
+                  <p className="text-[10px] text-blue-400 font-semibold">{displayUser.subtitle}</p>
+                  <p className="text-[9px] text-slate-400 mt-0.5">Kedeputian Bidang Kreativitas Digital dan Teknologi</p>
+                  <p className="text-[9px] text-white font-bold mt-0.5">Kementerian Ekonomi Kreatif/Badan Ekonomi Kreatif</p>
                 </div>
               </div>
+              <div className="border-t border-white/5" />
               <button className="w-full flex items-center gap-2.5 px-4 py-3 text-sm transition-colors hover:bg-white/5 text-white"
                 onClick={() => { navigate(profilePath); setShowProfile(false); }}>
                 <User style={{ width: 16, height: 16, color: "var(--ch-text-muted)" }} /> My Profile

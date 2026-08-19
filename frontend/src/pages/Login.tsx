@@ -40,6 +40,8 @@ export default function Login() {
         navigate("/dashboard/kreator/home", { replace: true });
       } else if (user.role === "media_monitoring") {
         navigate("/dashboard/media-monitoring", { replace: true });
+      } else if (user.role === "ekrafhub") {
+        navigate("/dashboard/ekrafhub", { replace: true });
       } else {
         navigate("/dashboard/marketplace", { replace: true });
       }
