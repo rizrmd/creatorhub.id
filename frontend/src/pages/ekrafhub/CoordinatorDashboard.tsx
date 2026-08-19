@@ -1,8 +1,9 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   MapPin, Users, FileVideo, Clock, TrendingUp,
-  Eye, Heart, CheckCircle2,
-  AlertCircle, CalendarDays, Filter,
+  Eye, Heart, MessageCircle, Bookmark, CheckCircle2,
+  AlertCircle, CalendarDays, Filter, BarChart3,
 } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -30,11 +31,11 @@ const PLATFORM_DATA = [
 ];
 
 const TOP_CONTENT = [
-  { title: "Tips Usaha Kopi Aceh", platform: "Instagram", views: "12.4K", likes: "892", status: "published" },
-  { title: "Vlog Desa Gampong Aceh", platform: "TikTok", views: "45.2K", likes: "3.1K", status: "published" },
-  { title: "Tutorial Kerajinan Tangan", platform: "YouTube", views: "8.7K", likes: "456", status: "in_progress" },
-  { title: "Profil Pelaku UMKM Aceh", platform: "Instagram", views: "6.3K", likes: "321", status: "published" },
-  { title: "Highlight Festival Budaya", platform: "TikTok", views: "32.1K", likes: "2.4K", status: "draft" },
+  { title: "Ga Bisa Yura, Tsunami Ambil Semua Yang Aku Punya", platform: "TikTok", views: "40.3M", likes: "3.1M", comments: "9.6K", favorites: "133.4K", status: "published", date: "7 Agu 2024", url: "https://www.tiktok.com/@itsbanuun/video/7400106989990300933", thumb: "/creators/itsbanuun-tiktok-1.webp" },
+  { title: "Tips Usaha Kopi Aceh untuk Pemula", platform: "Instagram", views: "12.4K", likes: "892", comments: "45", favorites: "120", status: "published", date: "5 Ags 2026", url: "#", thumb: "" },
+  { title: "Vlog Desa Gampong Aceh - Daya Tarik Wisata", platform: "TikTok", views: "45.2K", likes: "3.1K", comments: "189", favorites: "2.1K", status: "published", date: "3 Ags 2026", url: "#", thumb: "" },
+  { title: "Tutorial Kerajinan Tangan dari Bahan Lokal", platform: "YouTube", views: "8.7K", likes: "456", comments: "67", favorites: "89", status: "in_progress", date: "2 Ags 2026", url: "#", thumb: "" },
+  { title: "Profil Pelaku UMKM Aceh - Sentra Kopi", platform: "Instagram", views: "6.3K", likes: "321", comments: "34", favorites: "56", status: "published", date: "1 Ags 2026", url: "#", thumb: "" },
 ];
 
 export default function CoordinatorDashboard() {
@@ -75,14 +76,14 @@ export default function CoordinatorDashboard() {
       {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Desa Kreatif", value: "10", icon: MapPin, bg: "#ECFDF5", color: "#059669", desc: "di Provinsi Aceh" },
-          { label: "Konten Kreator", value: "100", icon: Users, bg: "#F0F9FF", color: "#0284C7", desc: "di bawah koordinasi" },
+          { label: "Desa Kreatif", value: "10", icon: MapPin, bg: "#ECFDF5", color: "#059669", desc: "di Provinsi Aceh", link: "/dashboard/ekrafhub/desa-kreatif/discover" },
+          { label: "Konten Kreator", value: "100", icon: Users, bg: "#F0F9FF", color: "#0284C7", desc: "di bawah koordinasi", link: "/dashboard/ekrafhub/marketplace?city=Aceh+Jaya" },
           { label: "Total Konten", value: "102", icon: FileVideo, bg: "#EFF6FF", color: "#2563EB", desc: "1 Ags — 18 Ags 2026" },
           { label: "In Progress", value: "23", icon: Clock, bg: "#FEF3C7", color: "#D97706", desc: "konten sedang dibuat" },
         ].map((s) => {
           const Icon = s.icon;
-          return (
-            <div key={s.label} className="rounded-xl border p-4 flex items-center gap-3"
+          const card = (
+            <div key={s.label} className={`rounded-xl border p-4 flex items-center gap-3 ${s.link ? "cursor-pointer transition-all hover:scale-[1.02] hover:shadow-md" : ""}`}
               style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
               <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ background: s.bg }}>
                 <Icon className="w-5 h-5" style={{ color: s.color }} />
@@ -94,6 +95,7 @@ export default function CoordinatorDashboard() {
               </div>
             </div>
           );
+          return s.link ? <Link key={s.label} to={s.link} className="no-underline block">{card}</Link> : card;
         })}
       </div>
 
@@ -204,34 +206,73 @@ export default function CoordinatorDashboard() {
             </span>
           </div>
           <div className="divide-y" style={{ borderColor: "var(--ch-border)" }}>
-            {TOP_CONTENT.map((c, i) => (
-              <div key={i} className="flex items-center gap-3 px-4 py-3" style={{ borderBottomColor: "var(--ch-border)" }}>
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 text-xs font-bold"
-                  style={{ background: i < 3 ? "rgba(249,115,22,.12)" : "var(--ch-border)", color: i < 3 ? "#F97316" : "var(--ch-text-muted)" }}>
-                  #{i + 1}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[12px] font-bold truncate" style={{ color: "var(--ch-text)" }}>{c.title}</p>
-                  <p className="text-[10px] mt-0.5" style={{ color: "var(--ch-text-muted)" }}>{c.platform}</p>
-                </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <span className="flex items-center gap-1 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
-                    <Eye className="w-3 h-3" /> {c.views}
-                  </span>
-                  <span className="flex items-center gap-1 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
-                    <Heart className="w-3 h-3" /> {c.likes}
-                  </span>
-                  <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                    style={{
-                      background: c.status === "published" ? "#DCFCE7" : c.status === "in_progress" ? "#FEF3C7" : "#F1F5F9",
-                      color: c.status === "published" ? "#16A34A" : c.status === "in_progress" ? "#D97706" : "#94A3B8",
-                    }}>
-                    {c.status === "published" ? <CheckCircle2 className="w-3 h-3" /> : c.status === "in_progress" ? <Clock className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
-                    {c.status === "published" ? "Published" : c.status === "in_progress" ? "In Progress" : "Draft"}
-                  </span>
-                </div>
+            {TOP_CONTENT.map((c, i) => {
+              const isTop = i === 0 && c.thumb;
+              return (
+              <div key={i} className={`px-4 py-3 ${isTop ? "space-y-3" : "flex items-center gap-3"}`} style={{ borderBottomColor: "var(--ch-border)" }}>
+                {isTop ? (
+                  <>
+                    <div className="flex items-center gap-3">
+                      <a href={c.url} target="_blank" rel="noopener noreferrer" className="w-16 h-16 rounded-xl overflow-hidden shrink-0 block shadow-md">
+                        <img src={c.thumb} alt={c.title} className="w-full h-full object-cover" />
+                      </a>
+                      <div className="flex-1 min-w-0">
+                        <a href={c.url} target="_blank" rel="noopener noreferrer" className="text-[13px] font-bold block no-underline" style={{ color: "var(--ch-text)" }}>{c.title}</a>
+                        <p className="text-[11px] mt-0.5" style={{ color: "var(--ch-text-muted)" }}>{c.platform} · {c.date}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 flex-wrap">
+                      <span className="flex items-center gap-1.5 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
+                        <Eye className="w-3.5 h-3.5" /> {c.views}
+                      </span>
+                      <span className="flex items-center gap-1.5 text-[11px] font-semibold" style={{ color: "#FE2C55" }}>
+                        <Heart className="w-3.5 h-3.5" /> {c.likes}
+                      </span>
+                      <span className="flex items-center gap-1.5 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
+                        <MessageCircle className="w-3.5 h-3.5" /> {c.comments}
+                      </span>
+                      <span className="flex items-center gap-1.5 text-[11px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
+                        <Bookmark className="w-3.5 h-3.5" /> {c.favorites}
+                      </span>
+                    </div>
+                    <a href={c.url} target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[11px] font-bold no-underline transition-all hover:scale-[1.02]"
+                      style={{ background: "linear-gradient(135deg, #FE2C55, #25F4EE)", color: "white", boxShadow: "0 2px 8px rgba(254,44,85,.3)" }}>
+                      <BarChart3 className="w-3.5 h-3.5" />
+                      Analyze Post
+                    </a>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 text-xs font-bold"
+                      style={{ background: i < 3 ? "rgba(249,115,22,.12)" : "var(--ch-border)", color: i < 3 ? "#F97316" : "var(--ch-text-muted)" }}>
+                      #{i + 1}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[12px] font-bold truncate" style={{ color: "var(--ch-text)" }}>{c.title}</p>
+                      <p className="text-[10px] mt-0.5" style={{ color: "var(--ch-text-muted)" }}>{c.platform} · {c.date}</p>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <span className="flex items-center gap-1 text-[10px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>
+                        <Eye className="w-3 h-3" /> {c.views}
+                      </span>
+                      <span className="flex items-center gap-1 text-[10px] font-semibold" style={{ color: "#FE2C55" }}>
+                        <Heart className="w-3 h-3" /> {c.likes}
+                      </span>
+                      <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                        style={{
+                          background: c.status === "published" ? "#DCFCE7" : c.status === "in_progress" ? "#FEF3C7" : "#F1F5F9",
+                          color: c.status === "published" ? "#16A34A" : c.status === "in_progress" ? "#D97706" : "#94A3B8",
+                        }}>
+                        {c.status === "published" ? <CheckCircle2 className="w-3 h-3" /> : c.status === "in_progress" ? <Clock className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />}
+                        {c.status === "published" ? "Published" : c.status === "in_progress" ? "In Progress" : "Draft"}
+                      </span>
+                    </div>
+                  </>
+                )}
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
