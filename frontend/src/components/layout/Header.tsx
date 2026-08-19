@@ -276,7 +276,7 @@ export default function Header() {
             </div>
             <div className="hidden sm:block text-left">
               <p className="text-[13px] font-semibold leading-none text-white">{displayUser.name}</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">EKRAF</p>
+              <p className="text-[10px] text-slate-400 mt-0.5">{displayUser.subtitle}</p>
             </div>
             <ChevronDown className="hidden sm:block text-white/60" style={{ width: 14, height: 14 }} />
           </button>

@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { useAuth } from "@/contexts/AuthContext";
 
 type TabKey = "workspace" | "team" | "branding" | "notifications" | "integrations" | "billing" | "security";
 
@@ -43,14 +44,29 @@ const integrations = [
 ];
 
 export default function Settings() {
+  const { user } = useAuth();
+  const isEkrafhub = user?.role === "ekrafhub";
   const [activeTab, setActiveTab] = useState<TabKey>("workspace");
-  const [profile, setProfile] = useState({
-    name: "Arif Budiman",
-    role: "Brand Manager",
-    email: "motovax.ai@gmail.com",
-    agency: "CreatorHub Agency.id",
-    currency: "IDR",
-    timezone: "Asia/Jakarta",
+  const [profile, setProfile] = useState<{
+    name: string; role: string; email: string; agency: string;
+    currency?: string; timezone?: string;
+  }>(() => {
+    if (user?.email === "itsbanuun@creatorhub.id") {
+      return {
+        name: "Ainul Mardhiah Lubis",
+        role: "Network Coordinator",
+        email: "itsbanuun@creatorhub.id",
+        agency: "PT KreatorHub Indonesia",
+      };
+    }
+    return {
+      name: "Arif Budiman",
+      role: "Brand Manager",
+      email: "motovax.ai@gmail.com",
+      agency: "CreatorHub Agency.id",
+      currency: "IDR",
+      timezone: "Asia/Jakarta",
+    };
   });
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -219,30 +235,32 @@ export default function Settings() {
                   </div>
                 ))}
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                <div className="space-y-1.5">
-                  <label className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Currency</label>
-                  <Select value={profile.currency} onValueChange={(v) => setProfile((p) => ({ ...p, currency: v }))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="IDR">IDR – Rupiah Indonesia</SelectItem>
-                      <SelectItem value="USD">USD – US Dollar</SelectItem>
-                      <SelectItem value="SGD">SGD – Singapore Dollar</SelectItem>
-                    </SelectContent>
-                  </Select>
+              {!isEkrafhub && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Currency</label>
+                    <Select value={profile.currency ?? ""} onValueChange={(v) => setProfile((p) => ({ ...p, currency: v }))}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="IDR">IDR – Rupiah Indonesia</SelectItem>
+                        <SelectItem value="USD">USD – US Dollar</SelectItem>
+                        <SelectItem value="SGD">SGD – Singapore Dollar</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Timezone</label>
+                    <Select value={profile.timezone ?? ""} onValueChange={(v) => setProfile((p) => ({ ...p, timezone: v }))}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Asia/Jakarta">WIB (Jakarta)</SelectItem>
+                        <SelectItem value="Asia/Makassar">WITA (Makassar)</SelectItem>
+                        <SelectItem value="Asia/Jayapura">WIT (Jayapura)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div className="space-y-1.5">
-                  <label className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Timezone</label>
-                  <Select value={profile.timezone} onValueChange={(v) => setProfile((p) => ({ ...p, timezone: v }))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Asia/Jakarta">WIB (Jakarta)</SelectItem>
-                      <SelectItem value="Asia/Makassar">WITA (Makassar)</SelectItem>
-                      <SelectItem value="Asia/Jayapura">WIT (Jayapura)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+              )}
               <div className="pt-4">
                 <Button onClick={handleSave}>
                   <Save style={{ width: 14, height: 14 }} />
