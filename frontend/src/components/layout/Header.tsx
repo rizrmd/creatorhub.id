@@ -23,9 +23,9 @@ const MESSAGE_THREADS = [
 ];
 
 const USER_BY_ROLE = {
-  brand:      { name: "Tri Wahyudi, S.T.",  subtitle: "Direktur Aplikasi", initial: "TW", photo: "/tri-wahyudi.jpg", stats: { campaigns: 0, creators: 0, spent: "Rp 0" } },
-  kreator:    { name: "Rina Pratiwi",  subtitle: "Lifestyle Creator", initial: "R", photo: "", stats: { campaigns: 0, creators: 0,  spent: "Rp 0" } },
-  ekrafhub:   { name: "Ainul Mardhiah Lubis", subtitle: "EKRAF Hub Admin", initial: "AM", photo: "/itsbanuun.jpg", stats: { campaigns: 0, creators: 0, spent: "Rp 0" } },
+  brand:      { name: "Tri Wahyudi, S.T.",  subtitle: "Direktur Aplikasi", initial: "TW", photo: "/tri-wahyudi.jpg", org1: "Kedeputian Bidang Kreativitas Digital dan Teknologi", org2: "Kementerian Ekonomi Kreatif/Badan Ekonomi Kreatif", stats: { campaigns: 0, creators: 0, spent: "Rp 0" } },
+  kreator:    { name: "Rina Pratiwi",  subtitle: "Lifestyle Creator", initial: "R", photo: "", org1: "", org2: "", stats: { campaigns: 0, creators: 0,  spent: "Rp 0" } },
+  ekrafhub:   { name: "Ainul Mardhiah Lubis", subtitle: "Coordinator", initial: "AM", photo: "/itsbanuun.jpg", org1: "Desa Kreatif", org2: "Provinsi Aceh", stats: { campaigns: 0, creators: 0, spent: "Rp 0" } },
 };
 
 function NotifIcon({ icon, bg, fg }: { icon: string; bg: string; fg: string }) {
@@ -69,7 +69,7 @@ export default function Header() {
   } : effectiveRole === "ekrafhub" ? {
     ...USER_BY_ROLE.ekrafhub,
     name:     user?.name ?? USER_BY_ROLE.ekrafhub.name,
-    subtitle: user?.role === "admin" ? "Admin" : "EKRAF Hub Admin",
+    subtitle: user?.role === "admin" ? "Admin" : "Network Coordinator",
     initial:  user?.name ? user.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase() : USER_BY_ROLE.ekrafhub.initial,
     photo:    USER_BY_ROLE.ekrafhub.photo,
     stats: USER_BY_ROLE.ekrafhub.stats,
@@ -295,8 +295,8 @@ export default function Header() {
                 <div>
                   <p className="text-[13px] font-bold text-white">{displayUser.name}</p>
                   <p className="text-[10px] text-blue-400 font-semibold">{displayUser.subtitle}</p>
-                  <p className="text-[9px] text-slate-400 mt-0.5">Kedeputian Bidang Kreativitas Digital dan Teknologi</p>
-                  <p className="text-[9px] text-white font-bold mt-0.5">Kementerian Ekonomi Kreatif/Badan Ekonomi Kreatif</p>
+                  {"org1" in displayUser && displayUser.org1 && <p className="text-[9px] text-slate-400 mt-0.5">{displayUser.org1}</p>}
+                  {"org2" in displayUser && displayUser.org2 && <p className="text-[9px] text-white font-bold mt-0.5">{displayUser.org2}</p>}
                 </div>
               </div>
               <div className="border-t border-white/5" />

@@ -64,7 +64,7 @@ const ekrafHubNavItems: NavItem[] = [
   { to: "/dashboard/ekrafhub/marketplace",        icon: Store,           label: "Marketplace" },
   { to: "/dashboard/ekrafhub/boost-ads",          icon: Rocket,          label: "Boost Ads" },
   { to: "/dashboard/ekrafhub/media-monitoring",   icon: Radio,           label: "Media Monitoring" },
-  { to: "/dashboard/ekrafhub/settings",           icon: Settings,        label: "Setting" },
+  { to: "/dashboard/ekrafhub/settings",           icon: Settings,        label: "Settings" },
 ];
 
 export default function Sidebar() {

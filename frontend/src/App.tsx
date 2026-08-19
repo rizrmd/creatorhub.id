@@ -1,7 +1,9 @@
-﻿import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+﻿import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { BrandRoute, KreatorRoute, MediaMonitoringRoute, EkrafHubRoute } from "@/components/RoleRoute";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import AccessRestricted, { isAccessRestricted } from "@/components/AccessRestricted";
+import { useAuth } from "@/contexts/AuthContext";
 import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
@@ -47,6 +49,13 @@ import DesaKreatifDiscover from "@/pages/ekrafhub/DesaKreatifDiscover";
 import GampongNusa from "@/pages/ekrafhub/GampongNusa";
 import EkrafHubCreatorDetail from "@/pages/ekrafhub/EkrafHubCreatorDetail";
 import DesaKreatifDetail from "@/pages/ekrafhub/DesaKreatifDetail";
+
+function RouteGuard({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
+  const { pathname } = useLocation();
+  if (isAccessRestricted(user?.email, pathname)) return <AccessRestricted />;
+  return <>{children}</>;
+}
 
 export default function App() {
   return (
@@ -96,13 +105,13 @@ export default function App() {
             <Route path="desa-kreatif/discover" element={<EkrafHubRoute><DesaKreatifDiscover /></EkrafHubRoute>} />
             <Route path="desa-kreatif/discover/:id" element={<EkrafHubRoute><DesaKreatifDetail /></EkrafHubRoute>} />
             <Route path="desa-kreatif/gampongnusa" element={<EkrafHubRoute><GampongNusa /></EkrafHubRoute>} />
-            <Route path="creative-hub" element={<EkrafHubRoute><CreativeHub /></EkrafHubRoute>} />
-            <Route path="creative-indonesia" element={<EkrafHubRoute><CreativeIndonesia /></EkrafHubRoute>} />
+            <Route path="creative-hub" element={<EkrafHubRoute><RouteGuard><CreativeHub /></RouteGuard></EkrafHubRoute>} />
+            <Route path="creative-indonesia" element={<EkrafHubRoute><RouteGuard><CreativeIndonesia /></RouteGuard></EkrafHubRoute>} />
             <Route path="marketplace" element={<EkrafHubRoute><Marketplace /></EkrafHubRoute>} />
             <Route path="creators/:id" element={<EkrafHubRoute><CreatorDetail /></EkrafHubRoute>} />
             <Route path="profiles/:handle" element={<EkrafHubRoute><EkrafHubCreatorDetail /></EkrafHubRoute>} />
             <Route path="boost-ads" element={<EkrafHubRoute><BoostAds /></EkrafHubRoute>} />
-            <Route path="media-monitoring" element={<EkrafHubRoute><MediaMonitoring /></EkrafHubRoute>} />
+            <Route path="media-monitoring" element={<EkrafHubRoute><RouteGuard><MediaMonitoring /></RouteGuard></EkrafHubRoute>} />
             <Route path="settings" element={<EkrafHubRoute><Settings /></EkrafHubRoute>} />
           </Route>
           <Route path="kreator">
