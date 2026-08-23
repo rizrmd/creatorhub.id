@@ -1,10 +1,10 @@
 ﻿import { useState, useRef, useEffect, useCallback } from "react";
 import {
   Search, SlidersHorizontal, Star, CheckCircle,
-  Instagram, Youtube, Users, Megaphone, TrendingUp,
+  Instagram, Youtube, Users, Megaphone,
   LayoutGrid, List, RotateCcw, X, MessageSquare, MapPin,
   Heart, User, Video, Mic,
-  UserPlus, Loader2, Link2, ChevronDown,
+  UserPlus, Loader2, ChevronDown,
 } from "lucide-react";
 import * as topojson from "topojson-client";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -18,8 +18,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { useInfiniteCreators, useMarketplaceStats } from "@/hooks/useCreators";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useCreateCampaign } from "@/hooks/useCampaigns";
+import { useAuth } from "@/contexts/AuthContext";
 import { creatorsApi } from "@/lib/api";
-import type { Creator, CreatorListParams, ScrapeResponse, PlatformInput } from "@/types";
+import type { Creator, CreatorListParams, ScrapeResponse } from "@/types";
 import { formatFollowers, resolveCreatorPhoto } from "@/lib/utils";
 
 const CATEGORIES = [
@@ -28,7 +29,8 @@ const CATEGORIES = [
   { label: "Bisnis", value: "business" },
   { label: "Sosial", value: "social" },
   { label: "Entertainment", value: "entertainment" },
-  { label: "Beauty & Fashion", value: "beauty" },
+  { label: "Beauty", value: "beauty" },
+  { label: "Fashion", value: "fashion" },
   { label: "Technology", value: "tech" },
   { label: "Travel", value: "travel" },
   { label: "Food", value: "food" },
@@ -37,12 +39,6 @@ const CATEGORIES = [
   { label: "Comedy", value: "comedy" },
   { label: "Gaming", value: "gaming" },
   { label: "Parenting", value: "parent" },
-];
-const DEFAULT_CITIES: string[] = [
-  "Jakarta", "Bandung", "Surabaya", "Semarang", "Yogyakarta", "Medan",
-  "Makassar", "Denpasar", "Malang", "Palembang", "Manado", "Balikpapan",
-  "Banjarmasin", "Pontianak", "Padang", "Lampung", "Bogor", "Depok",
-  "Tangerang", "Bekasi", "Solo", "Maluku", "Papua", "Sulawesi",
 ];
 const KABUPATEN_KOTA_URL = "https://gist.githubusercontent.com/ajie31/3144875bad9705e2b2b544909c022276/raw/Peta%20Indonesia%20Kota%20Kabupaten%20simplified.json";
 
@@ -97,7 +93,7 @@ const FOLLOWERS_OPTIONS = [
   { label: "Amplifier (<1K)", value: "0-1000" },
 ];
 
-const DEFAULT_CREATOR_TIER = "1000-10000";
+const DEFAULT_CREATOR_TIER = "all";
 const MARKETPLACE_STATE_KEY = "creatorhub.marketplace.state";
 
 type MarketplaceStoredState = {
@@ -115,7 +111,13 @@ function readMarketplaceState(): MarketplaceStoredState | null {
     const raw = window.sessionStorage.getItem(MARKETPLACE_STATE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as MarketplaceStoredState;
-    return parsed && typeof parsed === "object" ? parsed : null;
+    if (!parsed || typeof parsed !== "object") return null;
+    // Province-restricted users: clear stale city from session
+    const userProvince = localStorage.getItem("ch_province");
+    if (userProvince && parsed.filters?.city) {
+      parsed.filters = { ...parsed.filters, city: undefined };
+    }
+    return parsed;
   } catch {
     return null;
   }
@@ -370,21 +372,30 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
           {!photoSrc && creator.name[0]}
         </div>
 
-        {/* Verified chip — top-left */}
-        {creator.verified && (
+        {/* Verified chip — top-left — DISABLED */}
+        {false && creator.verified && (
           <div className="absolute top-2.5 left-2.5 flex items-center gap-1 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow"
             style={{ background: "var(--ch-primary)" }}>
             <CheckCircle style={{ width: 10, height: 10 }} /> Verified
           </div>
         )}
 
-        {/* Star creator badge */}
-        {creator.starCreator && (
+        {/* Star creator badge — DISABLED */}
+        {false && creator.starCreator && (
           <div className="absolute top-2.5 left-2.5 mt-5 flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full shadow"
             style={{ background: "#FCD34D", color: "#92400E", marginTop: creator.verified ? "24px" : "0" }}>
             ⭐ Star Creator
           </div>
         )}
+
+        {/* Custom tag badge (e.g. CreatorHub Aceh) */}
+        {creator.tags?.map((tag) => (
+          <div key={tag} className="absolute top-2.5 left-2.5 flex items-center gap-1 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow cursor-pointer hover:opacity-80"
+            style={{ background: "#10B981" }}
+            onClick={(e) => { e.stopPropagation(); onCityClick?.(creator.city); }}>
+            {tag}
+          </div>
+        ))}
 
         {/* Heart — top-right */}
         <button
@@ -729,31 +740,6 @@ function CreatorProfileModal({ creator, selected, favorited, onToggle, onClose, 
   );
 }
 
-const ADD_PLATFORMS = [
-  { id: "instagram", label: "Instagram", icon: Instagram },
-  { id: "tiktok", label: "TikTok", icon: () => (
-    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 0010.86 4.46v-7.2a8.16 8.16 0 005.58 2.19V11.2a4.83 4.83 0 01-3.77-1.7V2h3.77z"/>
-    </svg>
-  )},
-  { id: "youtube", label: "YouTube", icon: Youtube },
-  { id: "x", label: "X / Twitter", icon: () => (
-    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-    </svg>
-  )},
-  { id: "facebook", label: "Facebook", icon: () => (
-    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-    </svg>
-  )},
-  { id: "threads", label: "Threads", icon: () => (
-    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.59 12c.025 3.086.718 5.496 2.057 7.164 1.432 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.34-.776-.963-1.394-1.813-1.807-.1 1.578-.47 2.89-1.104 3.92-.89 1.44-2.17 2.215-3.81 2.302-1.276.068-2.447-.218-3.48-.855-1.166-.72-1.948-1.858-2.203-3.267-.22-1.212-.082-2.552.4-3.74.666-1.65 1.98-2.79 3.82-3.295.94-.258 1.96-.366 2.95-.314.364.02.727.063 1.085.128l.066.013-.003-.173-.075-1.764c-.058-1.374-.082-2.415-.448-3.348-.554-1.412-1.636-2.167-3.16-2.217h-.11c-1.046.035-1.88.36-2.475.97-.548.564-.878 1.327-.974 2.264-.072.708.014 1.488.258 2.32l1.728-.636c-.196-.662-.292-1.265-.262-1.802.047-.845.335-1.47.847-1.893.555-.457 1.273-.668 2.13-.64h.063c1.57.046 2.575.735 3.056 2.04.338.926.377 2.05.42 3.293l-.006.237.234.025c1.06.108 2.007.407 2.808.9.937.58 1.647 1.43 2.095 2.513.612 1.482.652 3.593-.592 5.394C18.307 22.683 15.762 24 12.186 24zM11.64 13.98c-.008.044-.016.088-.025.133-.14 1.626.155 2.838.863 3.62.557.616 1.35.926 2.28.926.066 0 .134-.002.2-.006.968-.06 1.777-.5 2.343-1.42.478-.778.738-1.818.774-3.066.023-.81-.014-1.587-.108-2.322-.163-.08-.343-.14-.536-.177-.76-.148-1.552-.165-2.366-.052a7.753 7.753 0 00-.782.155l-.177.045-.003.134z"/>
-    </svg>
-  )},
-];
-
 function parseSocialUrl(url: string): { platform: string; handle: string } | null {
   const trimmed = url.trim();
   try {
@@ -800,456 +786,94 @@ function parseSocialUrl(url: string): { platform: string; handle: string } | nul
   return null;
 }
 
-function AddCreatorDialog({ open, onOpenChange, onCreated, cityOptions }: {
+function AddCreatorDialog({ open, onOpenChange, onCreated }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCreated: () => void;
-  cityOptions: string[];
 }) {
-  const [name, setName] = useState("");
-  const [bio, setBio] = useState("");
-  const [category, setCategory] = useState("lifestyle");
-  const [city, setCity] = useState("Jakarta");
-  const [platforms, setPlatforms] = useState<PlatformInput[]>([]);
-  const [scraping, setScraping] = useState<string | null>(null);
-  const [creating, setCreating] = useState(false);
+  const { user } = useAuth();
   const [urlInput, setUrlInput] = useState("");
-  const [profileUrl, setProfileUrl] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleUrlSubmit = async () => {
+  const handleAdd = async () => {
     const parsed = parseSocialUrl(urlInput);
     if (!parsed) {
       toast.error("Link tidak valid atau platform tidak dikenali");
       return;
     }
 
-    const { platform: platformId, handle } = parsed;
-
-    // ensure platform is toggled on
-    setPlatforms((prev) => {
-      const exists = prev.find((p) => p.platform === platformId);
-      if (exists) {
-        return prev.map((p) => (p.platform === platformId ? { ...p, handle } : p));
-      }
-      return [...prev, { platform: platformId, handle, profilePictureUrl: "", followers: 0 }];
-    });
-
-    setUrlInput("");
-    toast.success(`Detected ${platformId} — fetching data...`);
-
-    // scrape after a tick so state is updated
-    setTimeout(async () => {
-      setScraping(platformId);
-      try {
-        const result: ScrapeResponse = await creatorsApi.scrapeSocial({
-          platform: platformId,
-          handle,
-        });
-
-        setPlatforms((prev) =>
-          prev.map((p) =>
-            p.platform === platformId
-              ? {
-                  ...p,
-                  profilePictureUrl: result.profilePictureUrl || p.profilePictureUrl,
-                  followers: result.followerCount || p.followers,
-                  following: result.followingCount || p.following,
-                  likes: result.likesCount || p.likes,
-                  bio: result.bio || p.bio,
-                }
-              : p
-          )
-        );
-
-        // Auto-fill creator bio and name from scraped data
-        if (result.bio && !bio.trim()) {
-          setBio(result.bio);
-        }
-        if (result.displayName && result.displayName !== handle && !name.trim()) {
-          setName(result.displayName);
-        }
-
-        if (result.success) {
-          toast.success(`${platformId} data fetched successfully`);
-        } else {
-          toast.error(result.error || `Failed to fetch ${platformId} data`);
-        }
-      } catch {
-        toast.error(`Failed to fetch ${platformId} data`);
-      } finally {
-        setScraping(null);
-      }
-    }, 50);
-  };
-
-  const togglePlatform = (platformId: string) => {
-    setPlatforms((prev) => {
-      const exists = prev.find((p) => p.platform === platformId);
-      if (exists) {
-        return prev.filter((p) => p.platform !== platformId);
-      }
-      return [...prev, { platform: platformId, handle: "", profilePictureUrl: "", followers: 0 }];
-    });
-  };
-
-  const updatePlatformHandle = (platformId: string, handle: string) => {
-    setPlatforms((prev) =>
-      prev.map((p) => (p.platform === platformId ? { ...p, handle } : p))
-    );
-  };
-
-  const updatePlatformField = (platformId: string, field: string, value: string | number) => {
-    setPlatforms((prev) =>
-      prev.map((p) => (p.platform === platformId ? { ...p, [field]: value } : p))
-    );
-  };
-
-  const scrapePlatform = async (platformId: string) => {
-    const platform = platforms.find((p) => p.platform === platformId);
-    if (!platform?.handle) return;
-
-    setScraping(platformId);
+    setLoading(true);
     try {
       const result: ScrapeResponse = await creatorsApi.scrapeSocial({
-        platform: platformId,
-        handle: platform.handle.replace(/^@/, ""),
+        platform: parsed.platform,
+        handle: parsed.handle,
       });
 
-      setPlatforms((prev) =>
-        prev.map((p) =>
-          p.platform === platformId
-            ? {
-                ...p,
-                profilePictureUrl: result.profilePictureUrl || p.profilePictureUrl,
-                followers: result.followerCount || p.followers,
-                following: result.followingCount || p.following,
-                likes: result.likesCount || p.likes,
-                bio: result.bio || p.bio,
-              }
-            : p
-        )
-      );
-
-      // Auto-fill creator bio from first scraped platform
-      if (result.bio && !bio.trim()) {
-        setBio(result.bio);
-      }
-      // Auto-fill creator name from displayName
-      if (result.displayName && result.displayName !== platformId && !name.trim()) {
-        setName(result.displayName);
+      if (!result.success && !result.displayName) {
+        toast.error(result.error || "Gagal mengambil data profil");
+        return;
       }
 
-      if (result.success) {
-        toast.success(`${platformId} data fetched successfully`);
-      } else {
-        toast.error(result.error || `Failed to fetch ${platformId} data`);
-      }
-    } catch {
-      toast.error(`Failed to fetch ${platformId} data`);
-    } finally {
-      setScraping(null);
-    }
-  };
-
-  const handleCreate = async () => {
-    if (!name.trim()) return;
-
-    setCreating(true);
-    try {
-      // Use profileUrl as main image, fallback to first platform's profile picture
-      const imageUrl = profileUrl || platforms.find((p) => p.profilePictureUrl)?.profilePictureUrl || "";
+      const name = result.displayName || parsed.handle;
+      const imageUrl = result.profilePictureUrl || "";
+      const city = user?.province ? `${user.province}` : "Jakarta";
 
       await creatorsApi.create({
-        name: name.trim(),
-        bio: bio.trim(),
-        category,
+        name,
+        bio: result.bio || "",
+        category: "content creator",
         city,
         imageUrl,
-        platforms: platforms.filter((p) => p.handle),
+        platforms: [{
+          platform: parsed.platform,
+          handle: parsed.handle,
+          profilePictureUrl: imageUrl,
+          followers: result.followerCount || 0,
+        }],
       });
 
-      toast.success("Creator created successfully!");
+      toast.success(`${name} berhasil ditambahkan!`);
       onOpenChange(false);
+      setUrlInput("");
       onCreated();
-      resetForm();
     } catch {
-      toast.error("Failed to create creator");
+      toast.error("Gagal menambahkan creator");
     } finally {
-      setCreating(false);
+      setLoading(false);
     }
   };
-
-  const resetForm = () => {
-    setName("");
-    setBio("");
-    setCategory("lifestyle");
-    setCity("Jakarta");
-    setPlatforms([]);
-    setProfileUrl("");
-  };
-
-  const firstProfilePic = profileUrl || platforms.find((p) => p.profilePictureUrl)?.profilePictureUrl;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90dvh] overflow-y-auto">
+      <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <UserPlus className="w-5 h-5" /> Add New Creator
+            <UserPlus className="w-5 h-5" /> Add Creator
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-5 py-2">
-          {/* Profile Preview */}
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 flex items-center justify-center text-xl font-bold"
-              style={{ background: "var(--ch-primary-50)", color: "var(--ch-primary)" }}>
-              {firstProfilePic ? (
-                <img src={firstProfilePic} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                name[0]?.toUpperCase() || "?"
-              )}
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium" style={{ color: "var(--ch-text)" }}>
-                {name || "Creator Name"}
-              </p>
-              <p className="text-xs" style={{ color: "var(--ch-text-muted)" }}>
-                {bio || "Brief description"}
-              </p>
-            </div>
-          </div>
-
-          {/* Basic Info */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium" style={{ color: "var(--ch-text)" }}>
-                Name <span className="text-red-500">*</span>
-              </label>
-              <Input
-                placeholder="Creator name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium" style={{ color: "var(--ch-text)" }}>
-                Category
-              </label>
-              <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {CATEGORIES.map((c) => (
-                    <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium" style={{ color: "var(--ch-text)" }}>
-              Bio / Description <span className="text-red-500">*</span>
-            </label>
-            <Input
-              placeholder="Brief description of the creator"
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium" style={{ color: "var(--ch-text)" }}>
-              Foto Profil URL
-            </label>
-            <div className="flex items-center gap-2">
-              <Input
-                placeholder="https://... (URL foto profil)"
-                value={profileUrl}
-                onChange={(e) => setProfileUrl(e.target.value)}
-                className="flex-1"
-              />
-              {profileUrl && (
-                <img src={profileUrl} alt="" className="w-10 h-10 rounded-full object-cover shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium" style={{ color: "var(--ch-text)" }}>City</label>
-            <Select value={city} onValueChange={setCity}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {cityOptions.map((c) => (
-                  <SelectItem key={c} value={c}>{c}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Social Media Links */}
-          <div className="space-y-3">
-            <label className="text-sm font-medium flex items-center gap-2" style={{ color: "var(--ch-text)" }}>
-              <Link2 className="w-4 h-4" /> Social Media Links
-            </label>
-
-            <div className="flex items-center gap-2">
-              <Input
-                placeholder="Paste link Instagram, TikTok, YouTube, dll..."
-                value={urlInput}
-                onChange={(e) => setUrlInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleUrlSubmit();
-                  }
-                }}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                className="shrink-0"
-                disabled={!urlInput.trim()}
-                onClick={handleUrlSubmit}
-              >
-                Detect
-              </Button>
-            </div>
-
-            <div className="space-y-2">
-              {ADD_PLATFORMS.map((platformDef) => {
-                const isActive = platforms.some((p) => p.platform === platformDef.id);
-                const platformData = platforms.find((p) => p.platform === platformDef.id);
-                const PlatformIcon = platformDef.icon;
-
-                return (
-                  <div
-                    key={platformDef.id}
-                    className="rounded-lg border p-3 transition-colors"
-                    style={{
-                      background: isActive ? "rgba(255,255,255,.05)" : "transparent",
-                      borderColor: isActive ? "var(--ch-border)" : "rgba(255,255,255,.05)",
-                    }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => togglePlatform(platformDef.id)}
-                        className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${
-                          isActive ? "bg-blue-600 border-blue-600" : "border-white/20"
-                        }`}
-                      >
-                        {isActive && <CheckCircle className="w-3 h-3 text-white" />}
-                      </button>
-                      <PlatformIcon />
-                      <span className="text-sm font-medium flex-1" style={{ color: "var(--ch-text)" }}>
-                        {platformDef.label}
-                      </span>
-                      {platformData?.profilePictureUrl && (
-                        <img
-                          src={platformData.profilePictureUrl}
-                          alt={platformDef.label}
-                          className="w-6 h-6 rounded-full object-cover"
-                        />
-                      )}
-                      {platformData && platformData.followers > 0 && (
-                        <span className="text-xs flex items-center gap-2" style={{ color: "var(--ch-text-muted)" }}>
-                          <span>{formatFollowers(platformData.followers)} followers</span>
-                          {platformData.following ? <span>· {formatFollowers(platformData.following)} following</span> : null}
-                          {platformData.likes ? <span>· {formatFollowers(platformData.likes)} likes</span> : null}
-                        </span>
-                      )}
-                    </div>
-
-                    {isActive && (
-                      <div className="mt-3 space-y-2">
-                        {/* Handle + Fetch button */}
-                        <div className="flex items-center gap-2">
-                          <Input
-                            placeholder={`@${platformDef.label.toLowerCase()} handle`}
-                            value={platformData?.handle || ""}
-                            onChange={(e) => updatePlatformHandle(platformDef.id, e.target.value)}
-                            className="flex-1"
-                          />
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => scrapePlatform(platformDef.id)}
-                            disabled={!platformData?.handle || scraping === platformDef.id}
-                          >
-                            {scraping === platformDef.id ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                              "Fetch"
-                            )}
-                          </Button>
-                        </div>
-
-                        {/* Profile Picture URL */}
-                        <div className="flex items-center gap-2">
-                          <Input
-                            placeholder="Foto profil URL"
-                            value={platformData?.profilePictureUrl || ""}
-                            onChange={(e) => updatePlatformField(platformDef.id, "profilePictureUrl", e.target.value)}
-                            className="flex-1"
-                          />
-                          {platformData?.profilePictureUrl && (
-                            <img src={platformData.profilePictureUrl} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
-                          )}
-                        </div>
-
-                        {/* Followers / Following / Likes */}
-                        <div className="grid grid-cols-3 gap-2">
-                          <Input
-                            type="number"
-                            placeholder="Followers"
-                            value={platformData?.followers || ""}
-                            onChange={(e) => updatePlatformField(platformDef.id, "followers", parseInt(e.target.value) || 0)}
-                          />
-                          <Input
-                            type="number"
-                            placeholder="Following"
-                            value={platformData?.following || ""}
-                            onChange={(e) => updatePlatformField(platformDef.id, "following", parseInt(e.target.value) || 0)}
-                          />
-                          <Input
-                            type="number"
-                            placeholder="Likes"
-                            value={platformData?.likes || ""}
-                            onChange={(e) => updatePlatformField(platformDef.id, "likes", parseInt(e.target.value) || 0)}
-                          />
-                        </div>
-
-                        {/* Bio */}
-                        <Input
-                          placeholder="Bio (opsional)"
-                          value={platformData?.bio || ""}
-                          onChange={(e) => updatePlatformField(platformDef.id, "bio", e.target.value)}
-                        />
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+        <div className="space-y-4 py-2">
+          <p className="text-sm" style={{ color: "var(--ch-text-muted)" }}>
+            Paste link profil creator dari Instagram, TikTok, YouTube, atau platform lainnya.
+          </p>
+          <Input
+            placeholder="https://instagram.com/username"
+            value={urlInput}
+            onChange={(e) => setUrlInput(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter" && urlInput.trim()) handleAdd(); }}
+            disabled={loading}
+          />
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
+            Batal
           </Button>
-          <Button
-            onClick={handleCreate}
-            disabled={!name.trim() || !bio.trim() || creating}
-          >
-            {creating ? (
-              <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Creating...</>
+          <Button onClick={handleAdd} disabled={!urlInput.trim() || loading}>
+            {loading ? (
+              <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Menambahkan...</>
             ) : (
-              "Create Creator"
+              "Tambah Creator"
             )}
           </Button>
         </DialogFooter>
@@ -1305,7 +929,6 @@ function HomelessMediaTab() {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [showFavorites, setShowFavorites] = useState(false);
-  const [sortByEr, setSortByEr] = useState(false);
   const [listView, setListView] = useState(false);
 
   const HM_CATEGORIES = Array.from(new Set(HOMELESS_MEDIA_DATA.map((m) => m.category))).sort();
@@ -1317,9 +940,6 @@ function HomelessMediaTab() {
     const matchCategory = categoryFilter === "all" || m.category === categoryFilter;
     const matchFav = !showFavorites || favoriteIds.includes(m.id);
     return matchSearch && matchRegion && matchCategory && matchFav;
-  }).sort((a, b) => {
-    if (sortByEr) return parseFloat(b.engagementRate) - parseFloat(a.engagementRate);
-    return 0;
   });
 
   const toggleFavorite = (id: string) => {
@@ -1382,23 +1002,7 @@ function HomelessMediaTab() {
         </button>
 
         <button
-          onClick={() => setSortByEr(!sortByEr)}
-          className={`flex items-center gap-2 h-9 pl-1.5 pr-3 rounded-lg text-[13px] font-medium border transition-all duration-200 cursor-pointer ${
-            sortByEr ? "text-white" : "hover:text-slate-200"
-          }`}
-          style={sortByEr
-            ? { background: "var(--ch-orange)", borderColor: "var(--ch-orange)" }
-            : { background: "#0F1B2D", borderColor: "#2A3850", color: "#8B96AA" }
-          }
-        >
-          <span className="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style={{ background: "#8B5CF6" }}>
-            <TrendingUp className="w-3.5 h-3.5 text-white" />
-          </span>
-          Highest Engagement Rate (ER)
-        </button>
-
-        <button
-          onClick={() => { setCategoryFilter("all"); setRegionFilter("all"); setSearch(""); setShowFavorites(false); setSortByEr(false); }}
+          onClick={() => { setCategoryFilter("all"); setRegionFilter("all"); setSearch(""); setShowFavorites(false); }}
           className="flex items-center gap-2 h-9 pl-1.5 pr-3 rounded-lg text-[13px] font-medium border transition-all duration-200 cursor-pointer hover:text-slate-200"
           style={{ background: "#0F1B2D", borderColor: "#2A3850", color: "#8B96AA" }}
         >
@@ -1452,7 +1056,7 @@ function HomelessMediaTab() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
                           <p className="text-[13px] font-semibold leading-tight" style={{ color: "var(--ch-text)" }}>{m.name}</p>
-                          {m.verified && <CheckCircle className="w-3.5 h-3.5" style={{ color: "#10B981" }} />}
+                          {false && m.verified && <CheckCircle className="w-3.5 h-3.5" style={{ color: "#10B981" }} />}
                         </div>
                         <div className="flex items-center gap-1.5 text-[12px]" style={{ color: "var(--ch-text-muted)" }}>
                           <MapPin style={{ width: 11, height: 11 }} />
@@ -1515,7 +1119,7 @@ function HomelessMediaTab() {
                     </div>
 
                     {/* Verified chip — top-left */}
-                    {m.verified && (
+                    {false && m.verified && (
                       <div className="absolute top-2.5 left-2.5 flex items-center gap-1 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow"
                         style={{ background: "var(--ch-primary)" }}>
                         <CheckCircle style={{ width: 10, height: 10 }} /> Verified
@@ -1612,6 +1216,7 @@ function HomelessMediaTab() {
 
 export default function Marketplace() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const restoredStateRef = useRef<MarketplaceStoredState | null>(readMarketplaceState());
   const pendingScrollTopRef = useRef(restoredStateRef.current?.scrollTop ?? 0);
@@ -1621,9 +1226,6 @@ export default function Marketplace() {
   const [filters, setFilters] = useState<CreatorListParams>(() => ({
     page: 1,
     pageSize: 20,
-    minFollowers: 1000,
-    maxFollowers: 10000,
-    verified: true,
     ...restoredStateRef.current?.filters,
     city: searchParams.get("city") ?? restoredStateRef.current?.filters?.city,
   }));
@@ -1633,9 +1235,8 @@ export default function Marketplace() {
   const [selectedCreatorsById, setSelectedCreatorsById] = useState<Record<string, Creator>>({});
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [showFavorites, setShowFavorites] = useState(false);
-  const [sortByEr, setSortByEr] = useState(false);
   const [listView, setListView] = useState(() => restoredStateRef.current?.listView ?? false);
-  const [cityOptions, setCityOptions] = useState<string[]>(DEFAULT_CITIES);
+  const [provinceCityMap, setProvinceCityMap] = useState<Record<string, string[]>>({});
   const [activePlatforms, setActivePlatforms] = useState<string[]>([]);
   const platformFilterActive = activePlatforms.length > 0;
   const [selectedServices, setSelectedServices] = useState<Record<string, boolean>>({});
@@ -1651,16 +1252,40 @@ export default function Marketplace() {
       .then((topo: any) => {
         const obj = topo.objects.gadm36_IDN_2;
         const geo = topojson.feature(topo, obj) as any;
-        const names = new Set<string>();
+        const citySet = new Set<string>();
+        const provMap: Record<string, Set<string>> = {};
         const features = geo.features ?? [geo];
         for (const f of features) {
-          const name = f.properties?.NAME_2;
-          if (name) names.add(name);
+          const prov = f.properties?.NAME_1;
+          const city = f.properties?.NAME_2;
+          if (!city) continue;
+          // If user has province restriction, only show that province
+          if (user?.province && prov !== user.province) continue;
+          citySet.add(city);
+          if (prov && city) {
+            if (!provMap[prov]) provMap[prov] = new Set();
+            provMap[prov].add(city);
+          }
         }
-        setCityOptions(Array.from(names).sort());
+        const sorted: Record<string, string[]> = {};
+        for (const prov of Object.keys(provMap).sort()) {
+          sorted[prov] = Array.from(provMap[prov]).sort();
+        }
+        setProvinceCityMap(sorted);
       })
       .catch(() => {});
-  }, []);
+  }, [user?.province]);
+
+  // Province-restricted users: force city to undefined (shows "X (Province)")
+  useEffect(() => {
+    if (user?.province) {
+      window.sessionStorage.removeItem(MARKETPLACE_STATE_KEY);
+      setFilters((f) => {
+        if (f.city === undefined) return f;
+        return { ...f, city: undefined, page: 1 };
+      });
+    }
+  }, [user?.province]);
 
   useEffect(() => {
     const hasUpdates =
@@ -1722,11 +1347,10 @@ export default function Marketplace() {
 
   const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteCreators({
     ...filters,
+    city: filters.city || user?.province || undefined,
     search: debouncedSearch || undefined,
-    sortBy: sortByEr ? "engagement" : undefined,
-    sortDir: sortByEr ? "desc" : undefined,
   });
-  const { data: stats, isLoading: statsLoading, dataUpdatedAt } = useMarketplaceStats();
+  const { dataUpdatedAt } = useMarketplaceStats();
 
   const creators = (() => {
     const seen = new Set<string>();
@@ -1756,7 +1380,7 @@ export default function Marketplace() {
     if (typeof window === "undefined") return;
     const scrollTop = getMarketplaceScrollElement()?.scrollTop ?? 0;
     const state: MarketplaceStoredState = {
-      filters,
+      filters: user?.province ? { ...filters, city: undefined } : filters,
       search,
       followersVal,
       listView,
@@ -1764,7 +1388,7 @@ export default function Marketplace() {
       scrollTop,
     };
     window.sessionStorage.setItem(MARKETPLACE_STATE_KEY, JSON.stringify(state));
-  }, [activeTab, filters, followersVal, listView, search]);
+  }, [activeTab, filters, followersVal, listView, search, user?.province]);
 
   useEffect(() => () => saveMarketplaceState(), [saveMarketplaceState]);
 
@@ -1831,7 +1455,7 @@ export default function Marketplace() {
   const resetFilters = () => {
     pendingScrollTopRef.current = 0;
     window.sessionStorage.removeItem(MARKETPLACE_STATE_KEY);
-    setFilters({ page: 1, pageSize: 20, minFollowers: 1000, maxFollowers: 10000 });
+    setFilters({ page: 1, pageSize: 20 });
     setSearch("");
     setFollowersVal(DEFAULT_CREATOR_TIER);
     setActivePlatforms([]);
@@ -1949,12 +1573,16 @@ export default function Marketplace() {
           </Select>
 
           <Select value={filters.city ?? "all"} onValueChange={(v) => setFilters((f) => ({ ...f, city: v === "all" ? undefined : v, page: 1 }))}>
-            <SelectTrigger className="w-full sm:w-40 mp-filter-select" style={{ background: "#0B1220", borderColor: "#2A3850", color: "#E5EAF3" }}>
-              <SelectValue placeholder="All Cities" />
+            <SelectTrigger className="w-full sm:w-48 mp-filter-select" style={{ background: "#0B1220", borderColor: "#2A3850", color: "#E5EAF3" }}>
+              <SelectValue placeholder={user?.province ? `${user.province} (Province)` : "All Provinces/Cities"} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Cities</SelectItem>
-              {cityOptions.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              <SelectItem value="all">{user?.province ? `${user.province} (Province)` : "All Provinces/Cities"}</SelectItem>
+              {Object.entries(provinceCityMap).map(([, cities]) =>
+                cities.map((c) => (
+                  <SelectItem key={c} value={c} className="pl-6">{c}</SelectItem>
+                ))
+              )}
             </SelectContent>
           </Select>
         </div>
@@ -1977,24 +1605,6 @@ export default function Marketplace() {
               <Heart className="w-3.5 h-3.5 text-white fill-white" />
             </span>
             Favorites
-          </button>
-
-          <button
-            onClick={() => setSortByEr(!sortByEr)}
-            className={`mp-platform-btn flex items-center gap-2 h-9 pl-1.5 pr-3 rounded-lg text-[13px] font-medium border transition-all duration-200 cursor-pointer ${
-              sortByEr
-                ? "text-white"
-                : "hover:text-slate-200"
-            }`}
-            style={sortByEr
-              ? { background: "var(--ch-orange)", borderColor: "var(--ch-orange)" }
-              : { background: "#0F1B2D", borderColor: "#2A3850", color: "#8B96AA" }
-            }
-          >
-            <span className="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style={{ background: "#8B5CF6" }}>
-              <TrendingUp className="w-3.5 h-3.5 text-white" />
-            </span>
-            Highest Engagement Rate (ER)
           </button>
 
           <div className="flex-1" />
@@ -2052,10 +1662,10 @@ export default function Marketplace() {
         <div className="sticky top-0 z-30 px-3 sm:px-4 py-2 bg-[#0B1120]/95 backdrop-blur border-b border-white/10 shadow-[0_10px_28px_rgba(0,0,0,0.28)] flex flex-wrap items-center gap-2">
           <div className="flex-1 min-w-[200px]">
             <p className="text-sm font-bold text-white">
-              <AnimatedNumber value={`${stats?.totalCreators ?? 0} Creators`} loading={statsLoading} />
+              <AnimatedNumber value={`${data?.pages?.[0]?.total ?? 0} Creators`} loading={isLoading} />
             </p>
             <p className="text-[10px] text-slate-500">
-              {statsLoading ? "Loading..." : `Last updated: ${dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "–"}`}
+              {isLoading ? "Loading..." : `Last updated: ${dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "–"}`}
             </p>
           </div>
 
@@ -2136,11 +1746,11 @@ export default function Marketplace() {
                   <Loader2 className={`w-4 h-4 ${isFetchingNextPage ? "animate-spin" : ""}`} />
                   {isFetchingNextPage
                     ? "Loading more creators..."
-                    : `Showing ${creators.length} creators`}
+                    : `Showing all ${data?.pages?.[0]?.total ?? creators.length} creators`}
                 </div>
               ) : (
                 <span className="text-xs text-slate-500">
-                  Showing all {creators.length} creators
+                  Showing all {data?.pages?.[0]?.total ?? creators.length} creators
                 </span>
               )}
             </div>
@@ -2586,7 +2196,6 @@ export default function Marketplace() {
       <AddCreatorDialog
         open={showAddCreator}
         onOpenChange={setShowAddCreator}
-        cityOptions={cityOptions}
         onCreated={() => {
           // Refetch creators list
           window.location.reload();

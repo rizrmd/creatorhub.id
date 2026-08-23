@@ -31,6 +31,7 @@ export interface Creator {
   focus?: string;
   hue?: number;
   bio: string;
+  tags?: string[];
 }
 
 export interface CreatorListParams {
@@ -136,6 +137,7 @@ export interface AuthUser {
   email: string;
   name: string;
   role: string;
+  province?: string;
 }
 
 export interface LoginRequest {

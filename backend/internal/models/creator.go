@@ -32,6 +32,7 @@ type Creator struct {
 	Focus           string           `json:"focus"`
 	Hue             int              `json:"hue"`
 	Bio             string           `json:"bio"`
+	Tags            []string         `json:"tags"`
 }
 
 type CreatorListParams struct {

@@ -223,6 +223,39 @@ func scrapeYouTubeHTML(handle string) *ScrapeResult {
 	}
 }
 
+// --- Playwright sidecar scraper ---
+
+func scrapeWithPlaywright(platform, handle string) *ScrapeResult {
+	jsonBody := fmt.Sprintf(`{"platform":"%s","handle":"%s"}`, platform, handle)
+	resp, err := httpClient.Post("http://127.0.0.1:3099/scrape", "application/json", strings.NewReader(jsonBody))
+	if err != nil || resp.StatusCode != 200 {
+		return &ScrapeResult{Success: false}
+	}
+	defer resp.Body.Close()
+	body, _ := io.ReadAll(io.LimitReader(resp.Body, 10<<20))
+
+	var result struct {
+		Success           bool   `json:"success"`
+		DisplayName       string `json:"displayName"`
+		ProfilePictureURL string `json:"profilePictureUrl"`
+		FollowerCount     int64  `json:"followerCount"`
+		Bio               string `json:"bio"`
+		Error             string `json:"error"`
+	}
+	if err := json.Unmarshal(body, &result); err != nil {
+		return &ScrapeResult{Success: false}
+	}
+
+	return &ScrapeResult{
+		Success:           result.Success,
+		DisplayName:       result.DisplayName,
+		ProfilePictureURL: result.ProfilePictureURL,
+		FollowerCount:     result.FollowerCount,
+		Bio:               result.Bio,
+		Error:             result.Error,
+	}
+}
+
 // --- TikTok ---
 
 func scrapeTikTok(handle string) *ScrapeResult {
@@ -277,12 +310,31 @@ func scrapeTikTok(handle string) *ScrapeResult {
 		}
 	}
 
+	// Method 5: Playwright headless browser (bypasses some WAF)
+	if result.ProfilePictureURL == "" || result.FollowerCount == 0 {
+		pwResult := scrapeWithPlaywright("tiktok", handle)
+		if pwResult.Success {
+			if result.DisplayName == "" || result.DisplayName == handle {
+				result.DisplayName = pwResult.DisplayName
+			}
+			if result.ProfilePictureURL == "" {
+				result.ProfilePictureURL = pwResult.ProfilePictureURL
+			}
+			if result.FollowerCount == 0 {
+				result.FollowerCount = pwResult.FollowerCount
+			}
+			if result.Bio == "" {
+				result.Bio = pwResult.Bio
+			}
+		}
+	}
+
 	if result.DisplayName == "" {
 		result.DisplayName = handle
 	}
 
 	if !result.Success {
-		result.Error = "TikTok blocks server requests (datacenter IP). Set TIKHUB_API_KEY env var or enter data manually."
+		result.Success = result.DisplayName != "" && result.DisplayName != handle
 	}
 
 	return result
@@ -387,7 +439,7 @@ func scrapeTikTokOEmbed(handle string) *ScrapeResult {
 	return &ScrapeResult{
 		ProfilePictureURL: picURL,
 		DisplayName:       name,
-		Success:           picURL != "",
+		Success:           name != "",
 	}
 }
 

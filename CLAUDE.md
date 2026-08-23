@@ -419,6 +419,107 @@ docker logs $(docker ps --filter "name=emzin0v" --format "{{.Names}}") --tail 50
 
 Default admin account (created on first boot if no users exist): `admin@creatorhub.id` / `Admin123!`
 
+### Frontend Deploy Verification (MANDATORY)
+
+**NEVER claim "deployed" without running ALL verification steps.**
+
+After every frontend deploy:
+
+```bash
+# 1. CLEAR old assets first
+CONTAINER=$(docker ps --filter "name=emzin0v" --format "{{.Names}}" | head -1)
+docker exec "$CONTAINER" sh -c 'rm -rf /app/static/assets/*'
+
+# 2. Copy new dist
+docker cp frontend/dist/. "$CONTAINER:/app/static/"
+
+# 3. VERIFY — check file exists and size matches local build
+docker exec "$CONTAINER" ls -la /app/static/assets/
+# Compare JS file size with: ls -la frontend/dist/assets/*.js
+
+# 4. VERIFY — index.html references the new JS
+docker exec "$CONTAINER" cat /app/static/index.html
+```
+
+**If any step fails, DO NOT say "deployed". Fix it first.**
+
+### Code Tracing Rules (MANDATORY)
+
+Before claiming a fix works:
+
+1. **Search for ALL places a value is set** — use grep for `setFilters`, `setState`, etc.
+2. **Trace execution order** — React effects run in order; later effects can override earlier ones
+3. **Check for race conditions** — cleanup effects run on unmount and can save stale state
+4. **Test the fix yourself** — login, verify the behavior, THEN tell user to test
+
+**Never assume one code change is enough.**
+
+### Code Removal Rules (MANDATORY)
+
+When removing UI elements (buttons, badges, features):
+
+1. **Grep for every symbol** the removed code uses (component names, icons, state setters, imports)
+2. **Check if any OTHER code** still references those symbols
+3. **Remove dead imports, dead state, dead callbacks** — not just the JSX
+4. **Run `npm run build`** to verify TypeScript is clean before claiming done
+
+```bash
+# Before removing a button that calls setFoo:
+grep -n "setFoo" src/pages/MyPage.tsx    # find ALL callers
+grep -n "import.*FooIcon" src/pages/MyPage.tsx  # find import
+# Only remove if ALL callers are removed
+```
+
+**Common mistakes when removing code:**
+- Removed button JSX but left the import → `TS6133: 'X' is declared but its value is never read`
+- Removed button but left the useState setter → `TS6133: 'setX' is declared but its value is never read`
+- Replaced callback body with empty → unused params → `TS6133: 'a' is declared but its value is never read`
+
+### Cost of Unverified Claims
+
+| Failure | Time Wasted | User Frustration |
+|---------|-------------|------------------|
+| Claim "deployed" without verification | ~5 min per attempt | High |
+| Don't clean old files before deploy | ~5 min debugging | High |
+| Don't trace full code path | ~10 min re-fixing | Very High |
+| Tell user to test broken fix | ~3 min per attempt | Extreme |
+
+**Total cost of lazy verification: 30+ minutes wasted, user trust damaged.**
+
+### Database Access Rules (MANDATORY)
+
+**NEVER try inline SQL through PowerShell SSH.** Quotes will be mangled every time.
+
+```bash
+# WRONG — will fail with quote errors
+ssh riz@107.155.75.50 "PGPASSWORD=postgres psql -c \"UPDATE ...\""
+
+# CORRECT — scp SQL file, then run it
+echo "UPDATE creators SET image_url = '/creators/x.jpg' WHERE id = 'x';" > /tmp/fix.sql
+scp /tmp/fix.sql riz@107.155.75.50:/tmp/fix.sql
+ssh riz@107.155.75.50 "PGPASSWORD=<password> psql -h 107.155.75.50 -p 5389 -U postgres -d chub -f /tmp/fix.sql"
+```
+
+**Password:** Check CLAUDE.md line 261 (production DATABASE_URL) or extract from container env:
+```bash
+docker exec $CONTAINER env | grep DATABASE_URL
+```
+
+### Image/Photo Debugging Rules (MANDATORY)
+
+When user says "no photo" or "image not showing":
+
+1. **Check the API response** — look at `imageUrl` field
+2. **Test the URL** — `curl -sI https://creatorhub.id/$imageUrl`
+3. **If 404** — check if URL path matches file location in `/app/static/`
+4. **Common issue:** DB stores `/static/creators/x.jpg` but server serves from root → URL should be `/creators/x.jpg`
+
+```bash
+# Quick diagnosis
+curl -sI https://creatorhub.id/creators/$FILENAME   # should be 200
+curl -sI https://creatorhub.id/static/creators/$FILENAME  # will be 404
+```
+
 ### Troubleshooting
 
 | Issue | Cause | Fix |
