@@ -65,6 +65,13 @@ const REGION_COLORS: Record<string, string> = {
 
 const REGIONS = Object.keys(REGION_COLORS);
 
+const KLASTER_DATA: Record<string, string[]> = {
+  "seni-budaya": ["Kuliner", "Kriya", "Seni Rupa", "Seni Pertunjukan", "Fesyen"],
+  "desain": ["Arsitektur", "Desain Interior", "Desain Komunikasi Visual (DKV)", "Desain Produk", "Modifikasi Otomotif"],
+  "teknologi": ["Pengembangan Permainan (Game)", "Aplikasi", "Teknologi Baru", "Konten Digital", "Sulih Suara"],
+  "media": ["Film, Animasi, dan Video", "Musik", "Fotografi", "Televisi dan Radio", "Periklanan", "Penerbitan"],
+};
+
 interface Village {
   name: string;
   location: string;
@@ -265,6 +272,8 @@ export default function DesaKreative() {
   const [selectedRegion, setSelectedRegion] = useState<string>("all");
   const [selectedProvince, setSelectedProvince] = useState<ProvincePoint | null>(null);
   const [selectedDropdown, setSelectedDropdown] = useState<string>("all");
+  const [selectedKlaster, setSelectedKlaster] = useState<string>("all");
+  const [selectedSubsektor, setSelectedSubsektor] = useState<string>("all");
   const mapRef = useRef<L.Map | null>(null);
 
   useEffect(() => {
@@ -551,28 +560,6 @@ export default function DesaKreative() {
               </div>
             )}
 
-            {/* Legend */}
-            <div className="absolute bottom-4 left-4 z-[1000] rounded-lg border p-3"
-              style={{ background: "rgba(15,23,42,0.9)", borderColor: "rgba(255,255,255,0.1)" }}>
-              <p className="text-[10px] font-bold text-white/60 mb-2 uppercase tracking-wider">Legenda</p>
-              <div className="space-y-1.5">
-                {[
-                  { label: "20+ desa", opacity: 0.7 },
-                  { label: "10-19 desa", opacity: 0.5 },
-                  { label: "5-9 desa", opacity: 0.35 },
-                  { label: "1-4 desa", opacity: 0.2 },
-                ].map((item) => (
-                  <div key={item.label} className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-sm" style={{ background: `rgba(59,130,246,${item.opacity})` }} />
-                    <span className="text-[10px] text-white/50">{item.label}</span>
-                  </div>
-                ))}
-                <div className="flex items-center gap-2 pt-1 border-t border-white/10">
-                  <div className="w-3 h-3 rounded-full" style={{ background: "#F97316", border: "1.5px solid #fff" }} />
-                  <span className="text-[10px] text-white/50">Jumlah desa/kelurahan</span>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Province dropdown below map */}
@@ -595,6 +582,47 @@ export default function DesaKreative() {
             {selectedDropdown !== "all" && (
               <button
                 onClick={() => handleDropdownChange("all")}
+                className="text-[11px] font-semibold px-2.5 py-1 rounded-md transition-colors"
+                style={{ background: "var(--ch-muted)", color: "var(--ch-text-muted)" }}
+              >
+                Reset
+              </button>
+            )}
+            <span className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Klaster:</span>
+            <div className="relative">
+              <select
+                value={selectedKlaster}
+                onChange={(e) => { setSelectedKlaster(e.target.value); setSelectedSubsektor("all"); }}
+                className="appearance-none px-3 py-2 pr-8 rounded-lg text-[12px] font-semibold border cursor-pointer"
+                style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+              >
+                <option value="all">Semua Klaster</option>
+                <option value="seni-budaya">Seni dan Budaya</option>
+                <option value="desain">Desain</option>
+                <option value="teknologi">Teknologi dan Konten Digital</option>
+                <option value="media">Media dan Distribusi Kreatif</option>
+              </select>
+              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--ch-text-muted)" }} />
+            </div>
+            <span className="text-[12px] font-semibold" style={{ color: "var(--ch-text-muted)" }}>Subsektor:</span>
+            <div className="relative">
+              <select
+                value={selectedSubsektor}
+                onChange={(e) => setSelectedSubsektor(e.target.value)}
+                disabled={selectedKlaster === "all"}
+                className="appearance-none px-3 py-2 pr-8 rounded-lg text-[12px] font-semibold border cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+              >
+                <option value="all">{selectedKlaster === "all" ? "Pilih Klaster dulu" : "Semua Subsektor"}</option>
+                {selectedKlaster !== "all" && KLASTER_DATA[selectedKlaster]?.map((item) => (
+                  <option key={item} value={item}>{item}</option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--ch-text-muted)" }} />
+            </div>
+            {selectedKlaster !== "all" && (
+              <button
+                onClick={() => { setSelectedKlaster("all"); setSelectedSubsektor("all"); }}
                 className="text-[11px] font-semibold px-2.5 py-1 rounded-md transition-colors"
                 style={{ background: "var(--ch-muted)", color: "var(--ch-text-muted)" }}
               >

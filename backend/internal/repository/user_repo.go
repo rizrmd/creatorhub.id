@@ -22,9 +22,9 @@ func (r *UserRepository) GetByEmail(ctx context.Context, email string) (*models.
 	var hash string
 	var createdAt time.Time
 	err := r.db.QueryRow(ctx,
-		`SELECT id, email, name, role, password_hash, created_at FROM users WHERE email = $1`,
+		`SELECT id, email, name, role, COALESCE(province,''), password_hash, created_at FROM users WHERE email = $1`,
 		email,
-	).Scan(&u.ID, &u.Email, &u.Name, &u.Role, &hash, &createdAt)
+	).Scan(&u.ID, &u.Email, &u.Name, &u.Role, &u.Province, &hash, &createdAt)
 	if err != nil {
 		return nil, "", err
 	}

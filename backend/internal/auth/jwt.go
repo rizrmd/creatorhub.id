@@ -20,12 +20,13 @@ func secret() []byte {
 
 func CreateToken(user *models.User) (string, error) {
 	claims := jwt.MapClaims{
-		"sub":   user.ID,
-		"email": user.Email,
-		"name":  user.Name,
-		"role":  user.Role,
-		"exp":   time.Now().Add(24 * time.Hour).Unix(),
-		"iat":   time.Now().Unix(),
+		"sub":      user.ID,
+		"email":    user.Email,
+		"name":     user.Name,
+		"role":     user.Role,
+		"province": user.Province,
+		"exp":      time.Now().Add(24 * time.Hour).Unix(),
+		"iat":      time.Now().Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(secret())

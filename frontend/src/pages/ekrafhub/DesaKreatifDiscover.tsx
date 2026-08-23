@@ -25,21 +25,22 @@ interface DesaKreatif {
   name: string;
   location: string;
   province: string;
+  kecamatan: string;
   image: string;
   subsectors?: string[];
 }
 
 const DESA_KREATIF: DesaKreatif[] = [
-  { id: "gampongnusa", name: "Gampong Nusa", location: "Aceh Besar", province: "Aceh", image: "/desa-photos/Gampong Nusa.jpg" },
-  { id: "desawisatajaboi", name: "Desa Wisata Jaboi", location: "Sabang", province: "Aceh", image: "/desa-photos/Desa Wisata Jaboi.jpeg" },
-  { id: "gamponglampulo", name: "Gampong Lampulo", location: "Banda Aceh", province: "Aceh", image: "/desa-photos/Gampong Lampulo.jpg" },
-  { id: "desaiboih", name: "Desa Iboih", location: "Sabang", province: "Aceh", image: "/desa-photos/Desa Iboih.jpeg" },
-  { id: "gamponguleelhue", name: "Gampong Ulee Lhue", location: "Banda Aceh", province: "Aceh", image: "/desa-photos/Gampong Ulee Lhue.jpg" },
-  { id: "desaaluejang", name: "Desa Alue Jang", location: "Aceh Jaya", province: "Aceh", image: "/desa-photos/Desa Alue Jang.jpg" },
-  { id: "desaaneuklaot", name: "Desa Aneuk Laot", location: "Sabang", province: "Aceh", image: "/desa-photos/Desa Aneuk Laot.jpg" },
-  { id: "desasuaktimah", name: "Desa Suak Timah", location: "Aceh Barat", province: "Aceh", image: "/desa-photos/Desa Suak Timah.jpeg" },
-  { id: "desageunteut", name: "Desa Geunteut", location: "Aceh Besar", province: "Aceh", image: "/desa-photos/Desa Geunteut.jpg" },
-  { id: "desauleenyue", name: "Desa Ulee Nyeue", location: "Aceh Utara", province: "Aceh", image: "/desa-photos/Desa Ulee Nyeue.jpg" },
+  { id: "gampongnusa", name: "Gampong Nusa", location: "Aceh Besar", province: "Aceh", kecamatan: "Indrapuri", image: "/desa-photos/Gampong Nusa.jpg" },
+  { id: "desawisatajaboi", name: "Desa Wisata Jaboi", location: "Sabang", province: "Aceh", kecamatan: "Sukakarya", image: "/desa-photos/Desa Wisata Jaboi.jpeg" },
+  { id: "gamponglampulo", name: "Gampong Lampulo", location: "Banda Aceh", province: "Aceh", kecamatan: "Kuta Alam", image: "/desa-photos/Gampong Lampulo.jpg" },
+  { id: "desaiboih", name: "Desa Iboih", location: "Sabang", province: "Aceh", kecamatan: "Sukajaya", image: "/desa-photos/Desa Iboih.jpeg" },
+  { id: "gamponguleelhue", name: "Gampong Ulee Lhue", location: "Banda Aceh", province: "Aceh", kecamatan: "Banda Raya", image: "/desa-photos/Gampong Ulee Lhue.jpg" },
+  { id: "desaaluejang", name: "Desa Alue Jang", location: "Aceh Jaya", province: "Aceh", kecamatan: "Krueng Sabee", image: "/desa-photos/Desa Alue Jang.jpg" },
+  { id: "desaaneuklaot", name: "Desa Aneuk Laot", location: "Sabang", province: "Aceh", kecamatan: "Sukajaya", image: "/desa-photos/Desa Aneuk Laot.jpg" },
+  { id: "desasuaktimah", name: "Desa Suak Timah", location: "Aceh Barat", province: "Aceh", kecamatan: "Johan Pahlawan", image: "/desa-photos/Desa Suak Timah.jpeg" },
+  { id: "desageunteut", name: "Desa Geunteut", location: "Aceh Besar", province: "Aceh", kecamatan: "Ingin Jaya", image: "/desa-photos/Desa Geunteut.jpg" },
+  { id: "desauleenyue", name: "Desa Ulee Nyeue", location: "Aceh Utara", province: "Aceh", kecamatan: "Banda Baro", image: "/desa-photos/Desa Ulee Nyeue.jpg" },
 ];
 
 const KLASTER_DATA: Record<string, string[]> = {
@@ -62,20 +63,39 @@ export default function DesaKreatifDiscover() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [provinceFilter, setProvinceFilter] = useState("all");
+  const [kabupatenFilter, setKabupatenFilter] = useState("all");
+  const [kecamatanFilter, setKecamatanFilter] = useState("all");
   const [klasterFilter, setKlasterFilter] = useState("all");
   const [subsectorFilter, setSubsectorFilter] = useState("all");
 
   const provinceCount = useCountUp(31);
   const subsectorCount = useCountUp(21);
 
+  const kabupatenList = useMemo(() => {
+    const set = new Set(DESA_KREATIF.filter((d) => provinceFilter === "all" || d.province === provinceFilter).map((d) => d.location));
+    return [...set].sort();
+  }, [provinceFilter]);
+
+  const kecamatanList = useMemo(() => {
+    const filtered = DESA_KREATIF.filter((d) => {
+      if (provinceFilter !== "all" && d.province !== provinceFilter) return false;
+      if (kabupatenFilter !== "all" && d.location !== kabupatenFilter) return false;
+      return true;
+    });
+    const set = new Set(filtered.map((d) => d.kecamatan));
+    return [...set].sort();
+  }, [provinceFilter, kabupatenFilter]);
+
   const filtered = useMemo(() => {
     return DESA_KREATIF.filter((d) => {
       const matchSearch = search === "" || d.name.toLowerCase().includes(search.toLowerCase()) || d.location.toLowerCase().includes(search.toLowerCase());
       const matchProvince = provinceFilter === "all" || d.province === provinceFilter;
+      const matchKabupaten = kabupatenFilter === "all" || d.location === kabupatenFilter;
+      const matchKecamatan = kecamatanFilter === "all" || d.kecamatan === kecamatanFilter;
       const matchSubsector = subsectorFilter === "all" || d.subsectors?.includes(subsectorFilter);
-      return matchSearch && matchProvince && matchSubsector;
+      return matchSearch && matchProvince && matchKabupaten && matchKecamatan && matchSubsector;
     });
-  }, [search, provinceFilter, subsectorFilter]);
+  }, [search, provinceFilter, kabupatenFilter, kecamatanFilter, subsectorFilter]);
 
   return (
     <div className="p-4 md:p-6" style={{ background: "var(--ch-bg)" }}>
@@ -123,6 +143,35 @@ export default function DesaKreatifDiscover() {
         </div>
         <div className="relative">
           <select
+            value={kabupatenFilter}
+            onChange={(e) => { setKabupatenFilter(e.target.value); setKecamatanFilter("all"); }}
+            className="appearance-none pl-3 pr-8 py-2.5 rounded-lg text-[13px] font-semibold border cursor-pointer"
+            style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+          >
+            <option value="all">Semua Kabupaten</option>
+            {kabupatenList.map((k) => (
+              <option key={k} value={k}>{k}</option>
+            ))}
+          </select>
+          <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--ch-text-muted)" }} />
+        </div>
+        <div className="relative">
+          <select
+            value={kecamatanFilter}
+            onChange={(e) => setKecamatanFilter(e.target.value)}
+            disabled={kabupatenFilter === "all"}
+            className="appearance-none pl-3 pr-8 py-2.5 rounded-lg text-[13px] font-semibold border cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
+          >
+            <option value="all">Semua Kecamatan</option>
+            {kabupatenFilter !== "all" && kecamatanList.map((k) => (
+              <option key={k} value={k}>{k}</option>
+            ))}
+          </select>
+          <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--ch-text-muted)" }} />
+        </div>
+        <div className="relative">
+          <select
             value={klasterFilter}
             onChange={(e) => { setKlasterFilter(e.target.value); setSubsectorFilter("all"); }}
             className="appearance-none pl-3 pr-8 py-2.5 rounded-lg text-[13px] font-semibold border cursor-pointer"
@@ -143,7 +192,7 @@ export default function DesaKreatifDiscover() {
             className="appearance-none pl-3 pr-8 py-2.5 rounded-lg text-[13px] font-semibold border cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", color: "var(--ch-text)" }}
           >
-            <option value="all">{klasterFilter === "all" ? "Pilih Klaster dulu" : "Semua Subsektor"}</option>
+            <option value="all">Semua Subsektor</option>
             {klasterFilter !== "all" && KLASTER_DATA[klasterFilter]?.map((item) => (
               <option key={item} value={item}>{item}</option>
             ))}

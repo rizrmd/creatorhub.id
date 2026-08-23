@@ -102,7 +102,7 @@ func main() {
 		// Protected: admin & brand/kreator routes (exclude media_monitoring)
 		r.Group(func(r chi.Router) {
 			r.Use(authmw.RequireAuth)
-			r.Use(authmw.RequireRole("admin", "brand", "kreator"))
+			r.Use(authmw.RequireRole("admin", "brand", "kreator", "ekrafhub"))
 
 			r.Post("/creators/scrape", creatorHandler.ScrapeSocial)
 			r.Post("/creators", creatorHandler.Create)

@@ -16,7 +16,7 @@ function decodeToken(token: string): AuthUser | null {
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
     if ((payload.exp as number) * 1000 < Date.now()) return null;
-    return { id: payload.sub, email: payload.email, name: payload.name, role: payload.role };
+    return { id: payload.sub, email: payload.email, name: payload.name, role: payload.role, province: payload.province || "" };
   } catch {
     return null;
   }
@@ -28,9 +28,14 @@ function readStoredUser(): AuthUser | null {
   const decoded = decodeToken(token);
   if (!decoded) {
     localStorage.removeItem("auth_token");
+    localStorage.removeItem("ch_role");
+    localStorage.removeItem("ch_province");
     return null;
   }
   localStorage.setItem("ch_role", roleFromAuth(decoded.role));
+  if (decoded.province) {
+    localStorage.setItem("ch_province", decoded.province);
+  }
   return decoded;
 }
 
@@ -44,6 +49,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await authApi.login(data);
       localStorage.setItem("auth_token", res.token);
       localStorage.setItem("ch_role", roleFromAuth(res.user.role));
+      if (res.user.province) {
+        localStorage.setItem("ch_province", res.user.province);
+        // Clear marketplace session so filter defaults to province level
+        sessionStorage.removeItem("creatorhub.marketplace.state");
+      } else {
+        localStorage.removeItem("ch_province");
+      }
       setUser(res.user);
       return res.user;
     } finally {
@@ -54,6 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     localStorage.removeItem("auth_token");
     localStorage.removeItem("ch_role");
+    localStorage.removeItem("ch_province");
     setUser(null);
   };
 
