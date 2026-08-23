@@ -32,6 +32,7 @@ export interface Creator {
   hue?: number;
   bio: string;
   tags?: string[];
+  createdAt?: string;
 }
 
 export interface CreatorListParams {

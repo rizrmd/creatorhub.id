@@ -814,14 +814,14 @@ function AddCreatorDialog({ open, onOpenChange, onCreated }: {
         return;
       }
 
-      const name = result.displayName || parsed.handle;
+      const name = parsed.handle;
       const imageUrl = result.profilePictureUrl || "";
       const city = user?.province ? `${user.province}` : "Jakarta";
 
       await creatorsApi.create({
         name,
         bio: result.bio || "",
-        category: "content creator",
+        category: result.displayName || "content creator",
         city,
         imageUrl,
         platforms: [{

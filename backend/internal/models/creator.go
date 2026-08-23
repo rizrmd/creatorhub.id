@@ -33,6 +33,7 @@ type Creator struct {
 	Hue             int              `json:"hue"`
 	Bio             string           `json:"bio"`
 	Tags            []string         `json:"tags"`
+	CreatedAt       string           `json:"createdAt"`
 }
 
 type CreatorListParams struct {
