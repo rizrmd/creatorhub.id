@@ -137,7 +137,7 @@ func (r *CreatorRepository) List(ctx context.Context, params models.CreatorListP
 			c.followers, c.followers_text, c.engagement_rate,
 			c.price, c.price_text, c.verified, c.star_creator, c.rating,
 			c.fast_response, c.top_rated, c.last_seen, c.image_url, c.img_path, c.focus, c.hue, c.bio,
-			COALESCE(c.tags, '{}') AS tags, c.created_at,
+			COALESCE(c.tags, '{}') AS tags, COALESCE(c.created_at::text, '') AS created_at,
 			COALESCE(
 				(SELECT array_agg(cp.platform ORDER BY cp.platform)
 				 FROM creator_platforms cp WHERE cp.creator_id = c.id),
@@ -221,7 +221,7 @@ func (r *CreatorRepository) GetByID(ctx context.Context, id string) (*models.Cre
 			c.followers, c.followers_text, c.engagement_rate,
 			c.price, c.price_text, c.verified, c.star_creator, c.rating,
 			c.fast_response, c.top_rated, c.last_seen, c.image_url, c.img_path, c.focus, c.hue, c.bio,
-			COALESCE(c.tags, '{}') AS tags, c.created_at,
+			COALESCE(c.tags, '{}') AS tags, COALESCE(c.created_at::text, '') AS created_at,
 			COALESCE(
 				(SELECT array_agg(cp.platform ORDER BY cp.platform)
 				 FROM creator_platforms cp WHERE cp.creator_id = c.id),
@@ -244,7 +244,7 @@ func (r *CreatorRepository) GetByID(ctx context.Context, id string) (*models.Cre
 		&c.Followers, &c.FollowersText, &c.EngagementRate,
 		&c.Price, &c.PriceText, &c.Verified, &c.StarCreator, &c.Rating,
 		&c.FastResponse, &c.TopRated, &c.LastSeen, &c.ImageURL, &c.ImgPath, &c.Focus, &c.Hue, &c.Bio,
-		&c.Tags, &c.Platforms, &c.PlatformMetrics,
+		&c.Tags, &c.CreatedAt, &c.Platforms, &c.PlatformMetrics,
 	)
 	if err != nil {
 		return nil, err
