@@ -184,4 +184,5 @@ export interface CreateCreatorRequest {
   city: string;
   imageUrl: string;
   platforms: PlatformInput[];
+  tags?: string[];
 }

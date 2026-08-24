@@ -285,13 +285,17 @@ func (r *CreatorRepository) Create(ctx context.Context, req models.CreateCreator
 
 	followersText := formatFollowers(totalFollowers)
 
+	if req.Tags == nil {
+		req.Tags = []string{}
+	}
+
 	err := r.db.QueryRow(ctx, `
-		INSERT INTO creators (id, name, handle, city, country, category, followers, followers_text, image_url, bio)
-		VALUES ($1, $2, $3, $4, 'Indonesia', $5, $6, $7, $8, $9)
+		INSERT INTO creators (id, name, handle, city, country, category, followers, followers_text, image_url, bio, tags)
+		VALUES ($1, $2, $3, $4, 'Indonesia', $5, $6, $7, $8, $9, $10)
 		RETURNING id, name, handle, city, country, category, followers, followers_text, engagement_rate,
 			price, price_text, verified, star_creator, rating, fast_response, top_rated,
 			last_seen, image_url, img_path, focus, hue, bio`,
-		id, req.Name, "", req.City, req.Category, totalFollowers, followersText, imageURL, req.Bio,
+		id, req.Name, "", req.City, req.Category, totalFollowers, followersText, imageURL, req.Bio, req.Tags,
 	).Scan(
 		&c.ID, &c.Name, &c.Handle, &c.City, &c.Country, &c.Category,
 		&c.Followers, &c.FollowersText, &c.EngagementRate,
@@ -304,6 +308,8 @@ func (r *CreatorRepository) Create(ctx context.Context, req models.CreateCreator
 
 	c.Platforms = []string{}
 	c.PlatformMetrics = []models.PlatformMetric{}
+	c.Tags = req.Tags
+	c.CreatedAt = ""
 
 	return &c, nil
 }
@@ -318,6 +324,14 @@ func (r *CreatorRepository) AddPlatform(ctx context.Context, creatorID string, p
 			platform_followers = EXCLUDED.platform_followers`,
 		creatorID, p.Platform, p.Handle, p.ProfilePictureURL, p.Followers,
 	)
+	return err
+}
+
+// UpdateImage points the creator's image_url to a local file path after a
+// successful photo download. Prevents stale CDN URLs (which expire/403) from
+// remaining in the DB.
+func (r *CreatorRepository) UpdateImage(ctx context.Context, creatorID, imageURL string) error {
+	_, err := r.db.Exec(ctx, `UPDATE creators SET image_url = $2, updated_at = NOW() WHERE id = $1`, creatorID, imageURL)
 	return err
 }
 

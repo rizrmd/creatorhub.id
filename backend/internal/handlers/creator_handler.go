@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -8,6 +9,8 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 
@@ -124,7 +127,92 @@ func (h *CreatorHandler) ScrapeSocial(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := services.ScrapeSocial(req.Platform, req.Handle)
+	result = h.cacheScrapedPhoto(req.Handle, result)
 	writeJSON(w, http.StatusOK, result)
+}
+
+// cacheScrapedPhoto downloads the scraped profile photo once and returns a
+// permanent local URL. Instagram/TikTok CDN URLs are signed and expire (they
+// load once in the browser, then 403 — "keliatan habis hilang"). With a local
+// copy, the preview and the stored creator always show the photo.
+func (h *CreatorHandler) cacheScrapedPhoto(handle string, result *services.ScrapeResult) *services.ScrapeResult {
+	if result == nil || result.ProfilePictureURL == "" {
+		return result
+	}
+	url := result.ProfilePictureURL
+	if strings.HasPrefix(url, "/") {
+		return result
+	}
+
+	staticDir := os.Getenv("STATIC_DIR")
+	if staticDir == "" {
+		staticDir = "/app/static"
+	}
+	creatorsDir := filepath.Join(staticDir, "creators")
+	if err := os.MkdirAll(creatorsDir, 0755); err != nil {
+		return result
+	}
+
+	// Sanitize handle -> stable filename (reuse existing cache if present)
+	name := strings.Map(func(r rune) rune {
+		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '.' || r == '-' || r == '_' {
+			return r
+		}
+		return -1
+	}, strings.TrimSpace(handle))
+	if name == "" {
+		return result
+	}
+
+	filename := name + ".jpg"
+	destPath := filepath.Join(creatorsDir, filename)
+
+	if _, err := os.Stat(destPath); err == nil {
+		result.ProfilePictureURL = "/creators/" + filename
+		return result
+	}
+
+	client := &http.Client{Timeout: 20 * time.Second}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return result
+	}
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
+
+	resp, err := client.Do(req)
+	if err != nil || resp.StatusCode != 200 {
+		fmt.Printf("scrape photo download failed for %s: %v\n", handle, err)
+		return result
+	}
+	defer resp.Body.Close()
+
+	f, err := os.Create(destPath)
+	if err != nil {
+		fmt.Printf("scrape photo create failed for %s: %v\n", handle, err)
+		return result
+	}
+	defer f.Close()
+
+	if _, err := io.Copy(f, resp.Body); err != nil {
+		fmt.Printf("scrape photo copy failed for %s: %v\n", handle, err)
+		return result
+	}
+
+	// Small extra safety: verify the downloaded bytes look like an image
+	head := make([]byte, 3)
+	if _, err := f.Seek(0, io.SeekStart); err == nil {
+		if _, rerr := f.Read(head); rerr == nil {
+			if head[0] != 0xFF || head[1] != 0xD8 {
+				os.Remove(destPath)
+				fmt.Printf("scrape photo not a jpeg for %s\n", handle)
+				return result
+			}
+		}
+	}
+
+	result.ProfilePictureURL = "/creators/" + filename
+	fmt.Printf("scrape photo cached for %s -> /creators/%s\n", handle, filename)
+	return result
 }
 
 func (h *CreatorHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -155,15 +243,15 @@ func (h *CreatorHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Download and cache profile photo locally
+	// Download and cache profile photo locally, then point DB to the local file
 	if req.ImageURL != "" && len(req.ImageURL) > 10 {
-		go downloadAndCachePhoto(creator.ID, req.ImageURL)
+		go h.downloadAndCachePhoto(context.Background(), creator.ID, req.ImageURL)
 	}
 
 	writeJSON(w, http.StatusCreated, creator)
 }
 
-func downloadAndCachePhoto(id, imageURL string) {
+func (h *CreatorHandler) downloadAndCachePhoto(ctx context.Context, id, imageURL string) {
 	staticDir := os.Getenv("STATIC_DIR")
 	if staticDir == "" {
 		staticDir = "/app/static"
@@ -175,6 +263,19 @@ func downloadAndCachePhoto(id, imageURL string) {
 	destPath := filepath.Join(creatorsDir, filename)
 
 	if _, err := os.Stat(destPath); err == nil {
+		return
+	}
+
+	// Already a local path (fast-path from scrape) — just point DB at it.
+	if strings.HasPrefix(imageURL, "/creators/") {
+		localURL := imageURL
+		if !strings.HasSuffix(localURL, ".jpg") {
+			localURL = "/creators/" + filename
+		}
+		fmt.Printf("photo already cached for %s -> %s\n", id, localURL)
+		if err := h.repo.UpdateImage(ctx, id, localURL); err != nil {
+			fmt.Printf("failed to persist local image for %s: %v\n", id, err)
+		}
 		return
 	}
 
@@ -196,6 +297,12 @@ func downloadAndCachePhoto(id, imageURL string) {
 
 	localURL := "/creators/" + filename
 	fmt.Printf("downloaded photo for %s -> %s\n", id, localURL)
+
+	// IMPORTANT: persist local path to DB so the frontend never serves an
+	// expired/403 CDN URL (e.g. Instagram) for this creator.
+	if err := h.repo.UpdateImage(ctx, id, localURL); err != nil {
+		fmt.Printf("failed to persist local image for %s: %v\n", id, err)
+	}
 }
 
 func writeJSON(w http.ResponseWriter, status int, v any) {

@@ -91,4 +91,5 @@ type CreateCreatorRequest struct {
 	City      string          `json:"city"`
 	ImageURL  string          `json:"imageUrl"`
 	Platforms []PlatformInput `json:"platforms"`
+	Tags      []string        `json:"tags"`
 }

@@ -1,4 +1,4 @@
-package services
+﻿package services
 
 import (
 	"encoding/json"
@@ -66,7 +66,7 @@ func doHTTPGet(url string, extraHeaders map[string]string) ([]byte, int, error) 
 	req.Header.Set("User-Agent", chromeUA)
 	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8")
 	req.Header.Set("Accept-Language", "en-US,en;q=0.9,id;q=0.8")
-	// Do NOT set Accept-Encoding manually — Go's transport auto-decompresses gzip/deflate.
+	// Do NOT set Accept-Encoding manually â€” Go's transport auto-decompresses gzip/deflate.
 	// Manually setting it disables auto-decompression, causing us to read raw compressed bytes.
 	req.Header.Set("Cache-Control", "no-cache")
 	req.Header.Set("Sec-Fetch-Dest", "document")
@@ -223,120 +223,22 @@ func scrapeYouTubeHTML(handle string) *ScrapeResult {
 	}
 }
 
-// --- Playwright sidecar scraper ---
-
-func scrapeWithPlaywright(platform, handle string) *ScrapeResult {
-	jsonBody := fmt.Sprintf(`{"platform":"%s","handle":"%s"}`, platform, handle)
-	resp, err := httpClient.Post("http://127.0.0.1:3099/scrape", "application/json", strings.NewReader(jsonBody))
-	if err != nil || resp.StatusCode != 200 {
-		return &ScrapeResult{Success: false}
-	}
-	defer resp.Body.Close()
-	body, _ := io.ReadAll(io.LimitReader(resp.Body, 10<<20))
-
-	var result struct {
-		Success           bool   `json:"success"`
-		DisplayName       string `json:"displayName"`
-		ProfilePictureURL string `json:"profilePictureUrl"`
-		FollowerCount     int64  `json:"followerCount"`
-		Bio               string `json:"bio"`
-		Error             string `json:"error"`
-	}
-	if err := json.Unmarshal(body, &result); err != nil {
-		return &ScrapeResult{Success: false}
-	}
-
-	return &ScrapeResult{
-		Success:           result.Success,
-		DisplayName:       result.DisplayName,
-		ProfilePictureURL: result.ProfilePictureURL,
-		FollowerCount:     result.FollowerCount,
-		Bio:               result.Bio,
-		Error:             result.Error,
-	}
-}
-
 // --- TikTok ---
 
+// scrapeTikTok uses TikHub ONLY. NEVER fall back to tiktok.com scraping
+// (oEmbed / web API / HTML / Playwright) â€” TikTok blocks datacenter IPs,
+// which is exactly what caused the "photo disappeared" bugs before.
+// LESSON RECORDED IN CLAUDE.md: never not use TikHub for TikTok.
 func scrapeTikTok(handle string) *ScrapeResult {
-	// Method 1: TikHub API (third-party, most reliable from datacenter IPs)
-	if apiKey := os.Getenv("TIKHUB_API_KEY"); apiKey != "" {
-		result := scrapeTikTokTikHub(handle, apiKey)
-		if result.Success && result.FollowerCount > 0 {
-			return result
-		}
+	apiKey := os.Getenv("TIKHUB_API_KEY")
+	if apiKey == "" {
+		return &ScrapeResult{Success: false, Error: "TIKHUB_API_KEY not configured"}
 	}
 
-	// Method 2: oEmbed API
-	oembedResult := scrapeTikTokOEmbed(handle)
-	if oembedResult.Success && oembedResult.FollowerCount > 0 {
-		return oembedResult
-	}
-
-	// Method 3: TikTok web API
-	apiResult := scrapeTikTokAPI(handle)
-	if apiResult.Success && apiResult.FollowerCount > 0 {
-		return apiResult
-	}
-
-	// Method 4: HTML page scraping
-	htmlResult := scrapeTikTokHTML(handle)
-
-	// Merge best results
-	result := &ScrapeResult{Success: oembedResult.Success || apiResult.Success || htmlResult.Success}
-
-	if apiResult.Success {
-		result.DisplayName = apiResult.DisplayName
-		result.ProfilePictureURL = apiResult.ProfilePictureURL
-		result.FollowerCount = apiResult.FollowerCount
-	}
-	if oembedResult.Success {
-		if result.DisplayName == "" || result.DisplayName == handle {
-			result.DisplayName = oembedResult.DisplayName
-		}
-		if result.ProfilePictureURL == "" {
-			result.ProfilePictureURL = oembedResult.ProfilePictureURL
-		}
-	}
-	if htmlResult.Success {
-		if result.ProfilePictureURL == "" {
-			result.ProfilePictureURL = htmlResult.ProfilePictureURL
-		}
-		if result.FollowerCount == 0 {
-			result.FollowerCount = htmlResult.FollowerCount
-		}
-		if result.DisplayName == "" || result.DisplayName == handle {
-			result.DisplayName = htmlResult.DisplayName
-		}
-	}
-
-	// Method 5: Playwright headless browser (bypasses some WAF)
-	if result.ProfilePictureURL == "" || result.FollowerCount == 0 {
-		pwResult := scrapeWithPlaywright("tiktok", handle)
-		if pwResult.Success {
-			if result.DisplayName == "" || result.DisplayName == handle {
-				result.DisplayName = pwResult.DisplayName
-			}
-			if result.ProfilePictureURL == "" {
-				result.ProfilePictureURL = pwResult.ProfilePictureURL
-			}
-			if result.FollowerCount == 0 {
-				result.FollowerCount = pwResult.FollowerCount
-			}
-			if result.Bio == "" {
-				result.Bio = pwResult.Bio
-			}
-		}
-	}
-
-	if result.DisplayName == "" {
-		result.DisplayName = handle
-	}
-
+	result := scrapeTikTokTikHub(handle, apiKey)
 	if !result.Success {
-		result.Success = result.DisplayName != "" && result.DisplayName != handle
+		return &ScrapeResult{Success: false, Error: result.Error}
 	}
-
 	return result
 }
 
@@ -360,7 +262,9 @@ func scrapeTikTokTikHub(handle, apiKey string) *ScrapeResult {
 		Code    int    `json:"code"`
 		Message string `json:"message"`
 		Data    struct {
-			UserInfo struct {
+			StatusCode int `json:"statusCode"`
+			StatusMsg  string `json:"statusMsg"`
+			UserInfo   struct {
 				User struct {
 					Nickname     string `json:"nickname"`
 					AvatarLarger string `json:"avatarLarger"`
@@ -378,10 +282,19 @@ func scrapeTikTokTikHub(handle, apiKey string) *ScrapeResult {
 	}
 
 	if err := json.Unmarshal(body, &tikhubResp); err != nil {
-		return &ScrapeResult{Success: false}
+		return &ScrapeResult{Success: false, Error: "failed to parse TikHub response"}
 	}
 	if tikhubResp.Code != 200 && tikhubResp.Code != 0 {
-		return &ScrapeResult{Success: false}
+		return &ScrapeResult{Success: false, Error: fmt.Sprintf("TikHub error code %d: %s", tikhubResp.Code, tikhubResp.Message)}
+	}
+	// TikTok inner status: 0 = OK. Else (e.g. 10221) = TikTok rejected the
+	// profile request at TikHub's upstream â€” surface it, don't silently fail.
+	if tikhubResp.Data.StatusCode != 0 && tikhubResp.Data.StatusCode != 200 {
+		msg := tikhubResp.Data.StatusMsg
+		if msg == "" {
+			msg = fmt.Sprintf("TikTok upstream status %d", tikhubResp.Data.StatusCode)
+		}
+		return &ScrapeResult{Success: false, Error: msg}
 	}
 
 	user := tikhubResp.Data.UserInfo
@@ -406,139 +319,6 @@ func scrapeTikTokTikHub(handle, apiKey string) *ScrapeResult {
 	}
 }
 
-func scrapeTikTokOEmbed(handle string) *ScrapeResult {
-	tiktokURL := fmt.Sprintf("https://www.tiktok.com/@%s", handle)
-	url := fmt.Sprintf("https://www.tiktok.com/oembed?url=%s", tiktokURL)
-	body, status, err := doHTTPGet(url, map[string]string{
-		"Referer": "https://www.tiktok.com/",
-	})
-	if err != nil || status != 200 {
-		return &ScrapeResult{Success: false}
-	}
-
-	var oembed struct {
-		Title       string `json:"title"`
-		AuthorName  string `json:"author_name"`
-		AuthorURL   string `json:"author_url"`
-		ThumbnailURL string `json:"thumbnail_url"`
-	}
-	if err := json.Unmarshal(body, &oembed); err != nil {
-		return &ScrapeResult{Success: false}
-	}
-
-	picURL := oembed.ThumbnailURL
-	if strings.HasPrefix(picURL, "//") {
-		picURL = "https:" + picURL
-	}
-
-	name := oembed.AuthorName
-	if name == "" {
-		name = handle
-	}
-
-	return &ScrapeResult{
-		ProfilePictureURL: picURL,
-		DisplayName:       name,
-		Success:           name != "",
-	}
-}
-
-func scrapeTikTokAPI(handle string) *ScrapeResult {
-	url := fmt.Sprintf("https://www.tiktok.com/api/user/detail/?uniqueId=%s", handle)
-	body, status, err := doHTTPGet(url, map[string]string{
-		"Referer":          fmt.Sprintf("https://www.tiktok.com/@%s", handle),
-		"Accept":           "application/json, text/plain, */*",
-	})
-	if err != nil || status != 200 {
-		return &ScrapeResult{Success: false}
-	}
-
-	var resp struct {
-		UserInfo struct {
-			User struct {
-				Nickname   string `json:"nickname"`
-				AvatarLarger string `json:"avatarLarger"`
-			} `json:"user"`
-			Stats struct {
-				FollowerCount int64 `json:"followerCount"`
-			} `json:"stats"`
-		} `json:"userInfo"`
-	}
-	if err := json.Unmarshal(body, &resp); err != nil {
-		return &ScrapeResult{Success: false}
-	}
-
-	picURL := resp.UserInfo.User.AvatarLarger
-	if strings.HasPrefix(picURL, "//") {
-		picURL = "https:" + picURL
-	}
-
-	name := resp.UserInfo.User.Nickname
-	if name == "" {
-		name = handle
-	}
-
-	return &ScrapeResult{
-		ProfilePictureURL: picURL,
-		FollowerCount:     resp.UserInfo.Stats.FollowerCount,
-		DisplayName:       name,
-		Success:           picURL != "" || resp.UserInfo.Stats.FollowerCount > 0,
-	}
-}
-
-func scrapeTikTokHTML(handle string) *ScrapeResult {
-	url := fmt.Sprintf("https://www.tiktok.com/@%s", handle)
-	body, status, err := doHTTPGet(url, map[string]string{
-		"Referer": "https://www.tiktok.com/",
-	})
-	if err != nil || status != 200 {
-		return &ScrapeResult{Success: false}
-	}
-
-	html := string(body)
-
-	// Extract data via regex from raw HTML — avoids JSON duplicate key issues
-	result := &ScrapeResult{DisplayName: handle}
-
-	// Profile picture: "avatarLarger":"https://..."
-	if m := regexp.MustCompile(`"avatarLarger":\s*"([^"]+)"`).FindStringSubmatch(html); len(m) > 1 {
-		result.ProfilePictureURL = m[1]
-	}
-
-	// Display name: "nickname":"..."
-	if m := regexp.MustCompile(`"nickname":\s*"([^"]+)"`).FindStringSubmatch(html); len(m) > 1 {
-		result.DisplayName = m[1]
-	}
-
-	// Followers
-	if m := regexp.MustCompile(`"followerCount":\s*(\d+)`).FindStringSubmatch(html); len(m) > 1 {
-		result.FollowerCount, _ = strconv.ParseInt(m[1], 10, 64)
-	}
-
-	// Following
-	if m := regexp.MustCompile(`"followingCount":\s*(\d+)`).FindStringSubmatch(html); len(m) > 1 {
-		result.FollowingCount, _ = strconv.ParseInt(m[1], 10, 64)
-	}
-
-	// Likes (heartCount)
-	if m := regexp.MustCompile(`"heartCount":\s*(\d+)`).FindStringSubmatch(html); len(m) > 1 {
-		result.LikesCount, _ = strconv.ParseInt(m[1], 10, 64)
-	} else if m := regexp.MustCompile(`"heart":\s*(\d+)`).FindStringSubmatch(html); len(m) > 1 {
-		result.LikesCount, _ = strconv.ParseInt(m[1], 10, 64)
-	}
-
-	// Bio: "signature":"..."
-	if m := regexp.MustCompile(`"signature":\s*"([^"]*)"`).FindStringSubmatch(html); len(m) > 1 {
-		result.Bio = strings.ReplaceAll(m[1], `\n`, "\n")
-	}
-
-	result.Success = result.ProfilePictureURL != "" || result.FollowerCount > 0
-	if !result.Success {
-		result.Error = "could not extract profile data"
-	}
-
-	return result
-}
 
 // --- Instagram ---
 

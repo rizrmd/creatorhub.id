@@ -159,6 +159,14 @@ onValueChange={(v) => setFilter(v === "all" ? undefined : v)}
 
 ## Backend
 
+> ### ⚠️ LESSON RECORDED (MANDATORY, NEVER FORGET)
+> **TikTok scraping MUST ALWAYS use TikHub. NEVER EVER fall back to scraping tiktok.com directly** (oEmbed, `www.tiktok.com/api`, HTML regex, Playwright). TikTok blocks datacenter IPs and rate-limits aggressively — falling back is exactly what caused the "photo shows then disappears" bugs (broken data + expiring CDN URLs).
+>
+> `scrapeTikTok()` in `backend/internal/services/scraper.go` is **TikHub-ONLY** by design. `TIKHUB_API_KEY` is set in production env. The TikHub response has TWO status layers — check both:
+> - outer `code` (200/0 = ok) and **inner `data.statusCode`** (0/200 = ok; e.g. `10221` = TikTok upstream refused the profile). Surface inner errors; never silently fail, never fall back.
+>
+> When asked to "fix TikTok scrape", always start from TikHub. Never re-introduce tiktok.com fallbacks.
+
 Go 1.22+ server (`backend/`). Serves the API at `/api/v1/*` and the built frontend SPA at `/*`.
 
 ```bash
@@ -320,15 +328,28 @@ docker exec coolify php artisan tinker --execute="\App\Jobs\ApplicationDeploymen
 
 #### Fast frontend-only deploy (~5–10s, skip Docker rebuild)
 
-When only `frontend/src/` changed and the container is already running:
+When only `frontend/src/` changed and the container is already running, use the **verified script** — it clears old assets, copies all 3 files, verifies byte sizes + hash references, purges Cloudflare, and verifies the LIVE site. It fails loudly (exit 1) if anything is off. NEVER claim "deployed" without its `ALL CHECKS PASSED`.
 
-```bash
-cd frontend && npm run build
-CONTAINER=$(docker ps --filter "name=emzin0v" --format "{{.Names}}" | head -1)
-docker cp dist/. "$CONTAINER:/app/static/"
+```powershell
+# 1. Build
+cd frontend; npm run build
+
+# 2. Stage (PowerShell, from repo root)
+$js=(Get-ChildItem frontend/dist/assets/index-*.js).Name
+$css=(Get-ChildItem frontend/dist/assets/index-*.css).Name
+ssh riz@107.155.75.50 "rm -rf /tmp/ch-deploy && mkdir -p /tmp/ch-deploy"
+scp frontend/dist/index.html riz@107.155.75.50:/tmp/ch-deploy/index.html
+scp "frontend/dist/assets/$js" "riz@107.155.75.50:/tmp/ch-deploy/$js"
+scp "frontend/dist/assets/$css" "riz@107.155.75.50:/tmp/ch-deploy/$css"
+scp scripts/deploy-frontend.sh riz@107.155.75.50:/tmp/deploy-frontend.sh
+
+# 3. Deploy + verify (MARKER optional: a string unique to the new build)
+ssh riz@107.155.75.50 "MARKER='w-[340px]' bash /tmp/deploy-frontend.sh"
 ```
 
-This copies the new `dist/` into the live container — no image rebuild, no healthcheck wait.
+Requirements: Cloudflare token/zone in `/home/riz/.creatorhub-deploy.env` (`CF_TOKEN`, `CF_ZONE`) — set once on the server, never commit.
+
+> `Cache-Control: public, max-age=31536000, immutable` on `/assets/*` is **correct** (Vite hashes filenames; old files are never re-requested). The HTML stays `no-cache`. Browsers must fetch new HTML → new hashed JS/CSS; no 1-year staleness for the UI.
 
 #### Deploy timing (measured on this server)
 
@@ -498,6 +519,15 @@ ssh riz@107.155.75.50 "PGPASSWORD=postgres psql -c \"UPDATE ...\""
 echo "UPDATE creators SET image_url = '/creators/x.jpg' WHERE id = 'x';" > /tmp/fix.sql
 scp /tmp/fix.sql riz@107.155.75.50:/tmp/fix.sql
 ssh riz@107.155.75.50 "PGPASSWORD=<password> psql -h 107.155.75.50 -p 5389 -U postgres -d chub -f /tmp/fix.sql"
+```
+
+**NEVER guess column names.** Schema has changed over migrations (e.g. `img_path`, NOT `img`). Always inspect first:
+
+```bash
+# ALWAYS before writing any SELECT/UPDATE on a table you haven't seen recently:
+PSQL='PGPASSWORD=<password> psql -h 107.155.75.50 -p 5389 -U postgres -d chub'
+ssh riz@107.155.75.50 "$PSQL -c '\d creators'"
+ssh riz@107.155.75.50 "$PSQL -c 'SELECT column_name FROM information_schema.columns WHERE table_name=\"creators\";'"
 ```
 
 **Password:** Check CLAUDE.md line 261 (production DATABASE_URL) or extract from container env:

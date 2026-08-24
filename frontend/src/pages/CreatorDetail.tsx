@@ -10,7 +10,6 @@ import { formatFollowers, formatRupiah, resolveCreatorPhoto } from "@/lib/utils"
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import NetworkGraph from "@/components/NetworkGraph";
-import { useAuth } from "@/contexts/AuthContext";
 import EkrafHubCreatorProfile from "@/pages/ekrafhub/EkrafHubCreatorProfile";
 
 const TiktokIcon = ({ className }: { className?: string }) => (
@@ -112,13 +111,12 @@ export default function CreatorDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: creator, isLoading, error } = useCreator(id ?? "");
-  const { user } = useAuth();
   const [activePlatform, setActivePlatform] = useState<string>("instagram");
   const [favorited, setFavorited] = useState(false);
   const [showNetwork, setShowNetwork] = useState(false);
 
-  // Only Ainul (itsbanuun@creatorhub.id) gets the new profile
-  if (user?.email === "itsbanuun@creatorhub.id" && id === "ainul-mardhiah-lubis") {
+  // EkrafHub marketplace: all creators get the new profile
+  if (id) {
     return <EkrafHubCreatorProfile />;
   }
 
