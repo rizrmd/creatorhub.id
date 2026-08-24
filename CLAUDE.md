@@ -520,6 +520,16 @@ curl -sI https://creatorhub.id/creators/$FILENAME   # should be 200
 curl -sI https://creatorhub.id/static/creators/$FILENAME  # will be 404
 ```
 
+### Browser Caching Rules (MANDATORY)
+
+When deploying new frontend files:
+
+1. **Always rebuild** — old JS hash files may be cached by browser
+2. **Verify deployed JS hash matches** — `docker exec $CONTAINER cat /app/static/index.html | grep 'index-'`
+3. **If user says "still old"** — it's browser cache, NOT Cloudflare (Cloudflare has `cf-cache-status: DYNAMIC` for HTML)
+4. **Tell user to clear browser cache** — not Ctrl+Shift+R, full cache clear in Chrome settings
+5. **Never blame Cloudflare** — check `cf-cache-status` header first
+
 ### Troubleshooting
 
 | Issue | Cause | Fix |
