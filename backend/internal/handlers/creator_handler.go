@@ -2,7 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
@@ -151,7 +155,47 @@ func (h *CreatorHandler) Create(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Download and cache profile photo locally
+	if req.ImageURL != "" && len(req.ImageURL) > 10 {
+		go downloadAndCachePhoto(creator.ID, req.ImageURL)
+	}
+
 	writeJSON(w, http.StatusCreated, creator)
+}
+
+func downloadAndCachePhoto(id, imageURL string) {
+	staticDir := os.Getenv("STATIC_DIR")
+	if staticDir == "" {
+		staticDir = "/app/static"
+	}
+	creatorsDir := filepath.Join(staticDir, "creators")
+	os.MkdirAll(creatorsDir, 0755)
+
+	filename := id + ".jpg"
+	destPath := filepath.Join(creatorsDir, filename)
+
+	if _, err := os.Stat(destPath); err == nil {
+		return
+	}
+
+	resp, err := http.Get(imageURL)
+	if err != nil || resp.StatusCode != 200 {
+		fmt.Printf("download photo failed for %s: %v\n", id, err)
+		return
+	}
+	defer resp.Body.Close()
+
+	f, err := os.Create(destPath)
+	if err != nil {
+		fmt.Printf("create file failed for %s: %v\n", id, err)
+		return
+	}
+	defer f.Close()
+
+	io.Copy(f, resp.Body)
+
+	localURL := "/creators/" + filename
+	fmt.Printf("downloaded photo for %s -> %s\n", id, localURL)
 }
 
 func writeJSON(w http.ResponseWriter, status int, v any) {

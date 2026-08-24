@@ -191,6 +191,7 @@ func spaHandler(dir string) http.Handler {
 		f, err := fs.Open(r.URL.Path)
 		if err != nil {
 			w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+			w.Header().Set("Surrogate-Control", "no-store")
 			http.ServeFile(w, r, filepath.Join(dir, "index.html"))
 			return
 		}
@@ -199,6 +200,7 @@ func spaHandler(dir string) http.Handler {
 		stat, err := f.Stat()
 		if err != nil || stat.IsDir() {
 			w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+			w.Header().Set("Surrogate-Control", "no-store")
 			http.ServeFile(w, r, filepath.Join(dir, "index.html"))
 			return
 		}

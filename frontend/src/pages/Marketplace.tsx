@@ -234,6 +234,12 @@ function socialUrl(platform: string, handle: string): string {
   }
 }
 
+const TiktokIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 0010.86 4.46v-7.2a8.16 8.16 0 005.58 2.19V11.2a4.83 4.83 0 01-3.77-1.7V2h3.77z"/>
+  </svg>
+);
+
 const platformBg: Record<string, string> = {
   instagram: "bg-pink-500/15 text-pink-400 border-pink-500/20",
   tiktok:    "bg-white/10 text-white border-white/10",
@@ -365,6 +371,7 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
             alt={creator.name}
             className="w-full h-full object-cover"
             style={{ objectPosition: creator.focus ?? "50% 25%" }}
+            referrerPolicy="no-referrer"
             onError={(e) => { e.currentTarget.style.display = "none"; }}
           />
         )}
@@ -792,49 +799,128 @@ function AddCreatorDialog({ open, onOpenChange, onCreated }: {
   onCreated: () => void;
 }) {
   const { user } = useAuth();
-  const [urlInput, setUrlInput] = useState("");
+  const [name, setName] = useState("");
+  const [tiktokUrl, setTiktokUrl] = useState("");
+  const [instagramUrl, setInstagramUrl] = useState("");
   const [loading, setLoading] = useState(false);
+  const [scraping, setScraping] = useState(false);
+  const [scrapeProgress, setScrapeProgress] = useState(0);
+  const [scrapeStatus, setScrapeStatus] = useState("");
+  const [tiktokData, setTiktokData] = useState<ScrapeResponse | null>(null);
+  const [instagramData, setInstagramData] = useState<ScrapeResponse | null>(null);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [province, setProvince] = useState(user?.province || "");
+  const [city, setCity] = useState("");
+  const [provinceCityMap, setProvinceCityMap] = useState<Record<string, string[]>>({});
 
-  const handleAdd = async () => {
-    const parsed = parseSocialUrl(urlInput);
-    if (!parsed) {
-      toast.error("Link tidak valid atau platform tidak dikenali");
+  useEffect(() => {
+    fetch(KABUPATEN_KOTA_URL)
+      .then((r) => r.json())
+      .then((geojson: any) => {
+        const provMap: Record<string, Set<string>> = {};
+        for (const f of geojson.features || []) {
+          const props = f.properties || {};
+          const prov = props.state || props.provinsi || "";
+          const city = props.city || props.name || props.kabkot || "";
+          if (prov && city) {
+            if (!provMap[prov]) provMap[prov] = new Set();
+            provMap[prov].add(city);
+          }
+        }
+        const sorted: Record<string, string[]> = {};
+        for (const p of Object.keys(provMap).sort()) {
+          sorted[p] = Array.from(provMap[p]).sort();
+        }
+        setProvinceCityMap(sorted);
+      })
+      .catch(() => {});
+  }, []);
+
+  const toggleCategory = (val: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(val) ? prev.filter((c) => c !== val) : [...prev, val]
+    );
+  };
+
+  const handleScrape = async () => {
+    const tiktokParsed = tiktokUrl.trim() ? parseSocialUrl(tiktokUrl) : null;
+    const igParsed = instagramUrl.trim() ? parseSocialUrl(instagramUrl) : null;
+
+    if (!tiktokParsed && !igParsed) {
+      toast.error("Masukkan minimal satu link profil");
       return;
     }
 
-    setLoading(true);
-    try {
-      const result: ScrapeResponse = await creatorsApi.scrapeSocial({
-        platform: parsed.platform,
-        handle: parsed.handle,
-      });
+    const totalSteps = (tiktokParsed ? 1 : 0) + (igParsed ? 1 : 0);
+    let currentStep = 0;
 
-      if (!result.success && !result.displayName) {
-        toast.error(result.error || "Gagal mengambil data profil");
-        return;
+    setScraping(true);
+    setScrapeProgress(0);
+    setScrapeStatus("");
+    setTiktokData(null);
+    setInstagramData(null);
+
+    try {
+      if (tiktokParsed) {
+        setScrapeStatus("Scraping TikTok...");
+        setScrapeProgress(30);
+        const result = await creatorsApi.scrapeSocial({ platform: "tiktok", handle: tiktokParsed.handle });
+        setTiktokData(result);
+        currentStep++;
+        setScrapeProgress(Math.round((currentStep / totalSteps) * 100));
+        setScrapeStatus(result.success ? `TikTok: ${result.displayName || tiktokParsed.handle} ✓` : `TikTok: gagal`);
       }
 
-      const name = parsed.handle;
-      const imageUrl = result.profilePictureUrl || "";
-      const city = user?.province ? `${user.province}` : "Jakarta";
+      if (igParsed) {
+        setScrapeStatus("Scraping Instagram...");
+        setScrapeProgress(currentStep === 0 ? 30 : 70);
+        const result = await creatorsApi.scrapeSocial({ platform: "instagram", handle: igParsed.handle });
+        setInstagramData(result);
+        currentStep++;
+        setScrapeProgress(100);
+        setScrapeStatus(result.success ? `Instagram: ${result.displayName || igParsed.handle} ✓` : `Instagram: gagal`);
+      }
 
+      toast.success("Scrape selesai!");
+    } catch {
+      setScrapeStatus("Gagal scrape");
+      toast.error("Gagal scrape data");
+    } finally {
+      setScraping(false);
+    }
+  };
+
+  const handleCreate = async () => {
+    if (!name.trim()) { toast.error("Nama harus diisi"); return; }
+
+    const tiktokParsed = tiktokUrl.trim() ? parseSocialUrl(tiktokUrl) : null;
+    const igParsed = instagramUrl.trim() ? parseSocialUrl(instagramUrl) : null;
+
+    const platforms: { platform: string; handle: string; profilePictureUrl: string; followers: number }[] = [];
+    if (tiktokParsed && tiktokData) {
+      platforms.push({ platform: "tiktok", handle: tiktokParsed.handle, profilePictureUrl: tiktokData.profilePictureUrl || "", followers: tiktokData.followerCount || 0 });
+    }
+    if (igParsed && instagramData) {
+      platforms.push({ platform: "instagram", handle: igParsed.handle, profilePictureUrl: instagramData.profilePictureUrl || "", followers: instagramData.followerCount || 0 });
+    }
+
+    const imageUrl = instagramData?.profilePictureUrl || tiktokData?.profilePictureUrl || "";
+    const categoryStr = selectedCategories.length > 0 ? selectedCategories.join(", ") : tiktokData?.displayName || instagramData?.displayName || "content creator";
+
+    setLoading(true);
+    try {
       await creatorsApi.create({
-        name,
-        bio: result.bio || "",
-        category: result.displayName || "content creator",
-        city,
+        name: name.trim(),
+        bio: tiktokData?.bio || instagramData?.bio || "",
+        category: categoryStr,
+        city: city || province || "Jakarta",
         imageUrl,
-        platforms: [{
-          platform: parsed.platform,
-          handle: parsed.handle,
-          profilePictureUrl: imageUrl,
-          followers: result.followerCount || 0,
-        }],
+        platforms,
       });
 
-      toast.success(`${name} berhasil ditambahkan!`);
+      toast.success(`${name.trim()} berhasil ditambahkan!`);
       onOpenChange(false);
-      setUrlInput("");
+      resetForm();
       onCreated();
     } catch {
       toast.error("Gagal menambahkan creator");
@@ -843,9 +929,19 @@ function AddCreatorDialog({ open, onOpenChange, onCreated }: {
     }
   };
 
+  const resetForm = () => {
+    setName(""); setTiktokUrl(""); setInstagramUrl("");
+    setTiktokData(null); setInstagramData(null);
+    setSelectedCategories([]); setProvince(user?.province || ""); setCity("");
+    setScrapeProgress(0); setScrapeStatus("");
+  };
+
+  const hasScrapedData = tiktokData || instagramData;
+  const cities = province && provinceCityMap[province] ? provinceCityMap[province] : [];
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+    <Dialog open={open} onOpenChange={(v) => { if (!v) resetForm(); onOpenChange(v); }}>
+      <DialogContent className="max-w-lg max-h-[90dvh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <UserPlus className="w-5 h-5" /> Add Creator
@@ -853,28 +949,135 @@ function AddCreatorDialog({ open, onOpenChange, onCreated }: {
         </DialogHeader>
 
         <div className="space-y-4 py-2">
-          <p className="text-sm" style={{ color: "var(--ch-text-muted)" }}>
-            Paste link profil creator dari Instagram, TikTok, YouTube, atau platform lainnya.
-          </p>
-          <Input
-            placeholder="https://instagram.com/username"
-            value={urlInput}
-            onChange={(e) => setUrlInput(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter" && urlInput.trim()) handleAdd(); }}
-            disabled={loading}
-          />
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium" style={{ color: "var(--ch-text)" }}>
+              Nama Pemilik Akun <span className="text-red-500">*</span>
+            </label>
+            <Input placeholder="Contoh: Tengku Putri Isna" value={name} onChange={(e) => setName(e.target.value)} disabled={loading || scraping} />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium flex items-center gap-2" style={{ color: "var(--ch-text)" }}>
+              <TiktokIcon className="w-4 h-4" /> Link Profile TikTok
+            </label>
+            <Input placeholder="https://tiktok.com/@username" value={tiktokUrl} onChange={(e) => setTiktokUrl(e.target.value)} disabled={loading || scraping} />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium flex items-center gap-2" style={{ color: "var(--ch-text)" }}>
+              <Instagram className="w-4 h-4" /> Link Profile Instagram
+            </label>
+            <Input placeholder="https://instagram.com/username" value={instagramUrl} onChange={(e) => setInstagramUrl(e.target.value)} disabled={loading || scraping} />
+          </div>
+
+          {/* Scrape button + progress */}
+          <div className="space-y-2">
+            <Button variant="outline" onClick={handleScrape} disabled={scraping || loading || (!tiktokUrl.trim() && !instagramUrl.trim())} className="w-full">
+              {scraping ? <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Scraping...</> : "Scrape Data"}
+            </Button>
+
+            {(scraping || scrapeStatus) && (
+              <div className="space-y-1.5">
+                <div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--ch-bg)" }}>
+                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${scrapeProgress}%`, background: scrapeProgress === 100 ? "#10B981" : "#3B82F6" }} />
+                </div>
+                <p className="text-[11px]" style={{ color: scrapeProgress === 100 ? "#10B981" : "var(--ch-text-muted)" }}>{scrapeStatus}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Preview table */}
+          {hasScrapedData && (
+            <div className="rounded-lg border overflow-hidden" style={{ borderColor: "var(--ch-border)", background: "var(--ch-bg)" }}>
+              <div className="flex items-center justify-between px-3 py-2 border-b" style={{ borderColor: "var(--ch-border)" }}>
+                <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Platform</span>
+                <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Handle</span>
+                <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--ch-text-muted)" }}>Followers</span>
+              </div>
+              {tiktokData && tiktokData.success && (
+                <div className="flex items-center justify-between px-3 py-2 border-t" style={{ borderColor: "var(--ch-border)" }}>
+                  <span className="flex items-center gap-2 text-[12px] font-semibold capitalize" style={{ color: "var(--ch-text)" }}>
+                    <TiktokIcon className="w-4 h-4" /> TikTok
+                  </span>
+                  <span className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>@{tiktokUrl.split("@").pop()}</span>
+                  <span className="text-[12px] font-bold" style={{ color: "var(--ch-text)" }}>{formatFollowers(tiktokData.followerCount)}</span>
+                </div>
+              )}
+              {instagramData && instagramData.success && (
+                <div className="flex items-center justify-between px-3 py-2 border-t" style={{ borderColor: "var(--ch-border)" }}>
+                  <span className="flex items-center gap-2 text-[12px] font-semibold capitalize" style={{ color: "var(--ch-text)" }}>
+                    <Instagram className="w-4 h-4" /> Instagram
+                  </span>
+                  <span className="text-[12px]" style={{ color: "var(--ch-text-muted)" }}>@{instagramUrl.split("@").pop()}</span>
+                  <span className="text-[12px] font-bold" style={{ color: "var(--ch-text)" }}>{formatFollowers(instagramData.followerCount)}</span>
+                </div>
+              )}
+              <div className="flex items-center justify-between px-3 py-2 border-t font-bold" style={{ borderColor: "var(--ch-border)", background: "var(--ch-primary-50)" }}>
+                <span className="text-[12px]" style={{ color: "var(--ch-text)" }}>Total</span>
+                <span></span>
+                <span className="text-[12px]" style={{ color: "var(--ch-primary)" }}>
+                  {formatFollowers((tiktokData?.followerCount || 0) + (instagramData?.followerCount || 0))}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Categories */}
+          {hasScrapedData && (
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium" style={{ color: "var(--ch-text)" }}>Categories</label>
+              <div className="flex flex-wrap gap-1.5">
+                {CATEGORIES.map((cat) => (
+                  <button key={cat.value} type="button" onClick={() => toggleCategory(cat.value)}
+                    className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-colors ${
+                      selectedCategories.includes(cat.value)
+                        ? "bg-blue-600 text-white border-blue-600"
+                        : "border-gray-300 hover:border-gray-400"
+                    }`}>
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Location */}
+          {hasScrapedData && (
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium" style={{ color: "var(--ch-text)" }}>Provinsi</label>
+                <Select value={province} onValueChange={(v) => { setProvince(v === "all" ? "" : v); setCity(""); }}>
+                  <SelectTrigger><SelectValue placeholder="Pilih provinsi" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua Provinsi</SelectItem>
+                    {Object.keys(provinceCityMap).sort().map((p) => (
+                      <SelectItem key={p} value={p}>{p}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium" style={{ color: "var(--ch-text)" }}>Kota / Kabupaten</label>
+                <Select value={city} onValueChange={(v) => setCity(v === "all" ? "" : v)} disabled={!province}>
+                  <SelectTrigger><SelectValue placeholder={province ? "Pilih kota" : "Pilih provinsi dulu"} /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua</SelectItem>
+                    {cities.map((c) => (
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
+          <Button variant="outline" onClick={() => { onOpenChange(false); resetForm(); }} disabled={loading}>
             Batal
           </Button>
-          <Button onClick={handleAdd} disabled={!urlInput.trim() || loading}>
-            {loading ? (
-              <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Menambahkan...</>
-            ) : (
-              "Tambah Creator"
-            )}
+          <Button onClick={handleCreate} disabled={loading || scraping || !name.trim() || !hasScrapedData}>
+            {loading ? <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Menambahkan...</> : "Tambah Creator"}
           </Button>
         </DialogFooter>
       </DialogContent>
