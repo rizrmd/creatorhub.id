@@ -228,11 +228,15 @@ func scrapeYouTubeHTML(handle string) *ScrapeResult {
 
 // --- TikTok ---
 
-// scrapeTikTok uses TikHub ONLY. NEVER fall back to tiktok.com scraping
-// (oEmbed / web API / HTML / Playwright) â€” TikTok blocks datacenter IPs,
-// which is exactly what caused the "photo disappeared" bugs before.
-// LESSON RECORDED IN CLAUDE.md: never not use TikHub for TikTok.
+// scrapeTikTok uses Apify (clockworks/tiktok-scraper) FIRST, then TikHub as
+// fallback. NEVER fall back to tiktok.com scraping (oEmbed / web API / HTML /
+// Playwright) — TikTok blocks datacenter IPs, which is exactly what caused
+// the "photo disappeared" bugs before. LESSON RECORDED IN CLAUDE.md.
 func scrapeTikTok(handle string) *ScrapeResult {
+	if r := scrapeTikTokApify(handle); r != nil {
+		return r
+	}
+
 	apiKey := os.Getenv("TIKHUB_API_KEY")
 	if apiKey == "" {
 		return &ScrapeResult{Success: false, Error: "TIKHUB_API_KEY not configured"}
@@ -243,6 +247,67 @@ func scrapeTikTok(handle string) *ScrapeResult {
 		return &ScrapeResult{Success: false, Error: result.Error}
 	}
 	return result
+}
+
+// scrapeTikTokApify fetches the user profile via the Apify tiktok-scraper
+// actor. Returns nil when the token is missing or the run fails, so the
+// caller can fall back (TikHub).
+func scrapeTikTokApify(handle string) *ScrapeResult {
+	token := getApifyToken()
+	if token == "" {
+		return nil
+	}
+
+	payload := fmt.Sprintf(`{"profiles":["https://www.tiktok.com/@%s"]}`, handle)
+	result, ok := apifyRun(token, "clockworks~tiktok-scraper", payload)
+	if !ok {
+		return nil
+	}
+
+	var items []struct {
+		AuthorMeta struct {
+			Name               string `json:"name"`
+			NickName           string `json:"nickName"`
+			Signature          string `json:"signature"`
+			Avatar             string `json:"avatar"`
+			OriginalAvatarURL  string `json:"originalAvatarUrl"`
+			Fans               int64  `json:"fans"`
+			Following          int64  `json:"following"`
+			Heart              int64  `json:"heart"`
+			PrivateAccount     bool   `json:"privateAccount"`
+		} `json:"authorMeta"`
+	}
+	if err := json.Unmarshal(result, &items); err != nil || len(items) == 0 {
+		return nil
+	}
+
+	meta := items[0].AuthorMeta
+	if meta.Name == "" || meta.Fans == 0 && meta.Avatar == "" {
+		return nil
+	}
+
+	picURL := meta.OriginalAvatarURL
+	if picURL == "" {
+		picURL = meta.Avatar
+	}
+	if strings.HasPrefix(picURL, "//") {
+		picURL = "https:" + picURL
+	}
+
+	name := meta.NickName
+	if name == "" {
+		name = meta.Name
+	}
+
+	return &ScrapeResult{
+		ProfilePictureURL: picURL,
+		FollowerCount:     meta.Fans,
+		FollowingCount:    meta.Following,
+		LikesCount:        meta.Heart,
+		Bio:               meta.Signature,
+		DisplayName:       name,
+		Success:           picURL != "" || meta.Fans > 0,
+	}
 }
 
 func scrapeTikTokTikHub(handle, apiKey string) *ScrapeResult {
@@ -407,37 +472,55 @@ func scrapeInstagram(handle string) *ScrapeResult {
 	}
 }
 
-// scrapeInstagramApify fetches user metadata via the Apify instagram-scraper
-// actor. Token comes from env APIFY_API_TOKEN or /app/.apify_token file.
-// Returns nil when no token configured or the run fails, so the caller falls
-// back to the anonymous crawler.
-func scrapeInstagramApify(handle string) *ScrapeResult {
-	token := strings.TrimSpace(os.Getenv("APIFY_API_TOKEN"))
-	if token == "" {
-		if data, err := os.ReadFile("/app/.apify_token"); err == nil {
-			token = strings.TrimSpace(string(data))
-		}
+// getApifyToken returns the Apify API token from env APIFY_API_TOKEN or the
+// /app/.apify_token file (check first, file wins over nothing — env preferred).
+func getApifyToken() string {
+	if t := strings.TrimSpace(os.Getenv("APIFY_API_TOKEN")); t != "" {
+		return t
 	}
-	if token == "" {
-		return nil
+	if data, err := os.ReadFile("/app/.apify_token"); err == nil {
+		return strings.TrimSpace(string(data))
 	}
+	return ""
+}
 
-	payload := fmt.Sprintf(`{"directUrls":["https://www.instagram.com/%s/"],"resultsType":"details","resultsLimit":1}`, handle)
-	apiURL := fmt.Sprintf("https://api.apify.com/v2/acts/apify~instagram-scraper/run-sync-get-dataset-items?token=%s&timeout=75", token)
+// apifyRun runs an actor synchronously (run-sync-get-dataset-items) and
+// returns the raw dataset items JSON. ok=false on any failure.
+func apifyRun(token, actor, payload string) ([]byte, bool) {
+	apiURL := fmt.Sprintf("https://api.apify.com/v2/acts/%s/run-sync-get-dataset-items?token=%s&timeout=75", actor, token)
 
 	req, err := http.NewRequest("POST", apiURL, strings.NewReader(payload))
 	if err != nil {
-		return nil
+		return nil, false
 	}
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := apifyHTTPClient.Do(req)
 	if err != nil {
-		fmt.Printf("apify scrape request failed for %s: %v\n", handle, err)
-		return nil
+		return nil, false
 	}
 	defer resp.Body.Close()
 	body, _ := io.ReadAll(io.LimitReader(resp.Body, 20<<20))
+	if resp.StatusCode != 200 && resp.StatusCode != 201 {
+		return nil, false
+	}
+	return body, true
+}
+
+// scrapeInstagramApify fetches user metadata via the Apify instagram-scraper
+// actor. Returns nil when no token configured or the run fails, so the caller
+// falls back to the anonymous crawler.
+func scrapeInstagramApify(handle string) *ScrapeResult {
+	token := getApifyToken()
+	if token == "" {
+		return nil
+	}
+
+	payload := fmt.Sprintf(`{"directUrls":["https://www.instagram.com/%s/"],"resultsType":"details","resultsLimit":1}`, handle)
+	result, ok := apifyRun(token, "apify~instagram-scraper", payload)
+	if !ok {
+		return nil
+	}
 
 	var items []struct {
 		URL             string `json:"url"`
@@ -450,7 +533,7 @@ func scrapeInstagramApify(handle string) *ScrapeResult {
 		ProfilePicURL   string `json:"profilePicUrl"`
 		ProfilePicURLHD string `json:"profilePicUrlHD"`
 	}
-	if err := json.Unmarshal(body, &items); err != nil {
+	if err := json.Unmarshal(result, &items); err != nil {
 		fmt.Printf("apify parse failed for %s: %v\n", handle, err)
 		return nil
 	}
