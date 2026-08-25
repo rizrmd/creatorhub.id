@@ -407,10 +407,10 @@ const AUDIENCE_SEED =
   "Audience analysis: 30% akun real high quality (verified, pengikut >200), 65% medium quality (pengikut <200, postingan terbatas), 2% low quality (postingan <3, stalker/buzzer), dan 3% suspected bots yang tidak mengganggu. Kualitas interaksi audiens tergolong sehat.";
 
 const AUD_SEGS = [
-  { label: "Real — High Quality", desc: "verified, pengikut >200", pct: "30%", grad: "linear-gradient(90deg, #4ade80, #15803d)", glow: "0 0 16px rgba(74,222,128,0.45)", color: "#4ade80" },
-  { label: "Real — Medium Quality", desc: "pengikut <200, beberapa postingan", pct: "65%", grad: "linear-gradient(90deg, #38bdf8, #0369a1)", glow: "0 0 14px rgba(56,189,248,0.4)", color: "#38bdf8" },
-  { label: "Real — Low Quality", desc: "postingan <3, stalker/buzzer", pct: "2%", grad: "linear-gradient(90deg, #fbbf24, #b45309)", glow: "0 0 14px rgba(251,191,36,0.4)", color: "#fbbf24" },
-  { label: "Suspected Bots", desc: "tanpa postingan nyata, spam like/comment", pct: "3%", grad: "linear-gradient(90deg, #f87171, #b91c1c)", glow: "0 0 16px rgba(248,113,113,0.5)", color: "#f87171" },
+  { label: "Real — High Quality", desc: "Authentic profile, 200+ followers, consistent original posts, and natural engagement.", pct: "30%", grad: "linear-gradient(90deg, #4ade80, #15803d)", glow: "0 0 16px rgba(74,222,128,0.45)", color: "#4ade80" },
+  { label: "Real — Medium Quality", desc: "Authentic profile, fewer than 200 followers, with several original posts and normal activity.", pct: "65%", grad: "linear-gradient(90deg, #38bdf8, #0369a1)", glow: "0 0 14px rgba(56,189,248,0.4)", color: "#38bdf8" },
+  { label: "Real — Low Quality", desc: "Likely authentic but has fewer than three posts, limited activity, or indications of coordinated commenting.", pct: "2%", grad: "linear-gradient(90deg, #fbbf24, #b45309)", glow: "0 0 14px rgba(251,191,36,0.4)", color: "#fbbf24" },
+  { label: "Suspected Bots", desc: "No credible original content, repetitive comments, spam activity, or unnatural engagement patterns.", pct: "3%", grad: "linear-gradient(90deg, #f87171, #b91c1c)", glow: "0 0 16px rgba(248,113,113,0.5)", color: "#f87171" },
 ];
 
 function AudienceBars() {
