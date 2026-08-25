@@ -696,7 +696,7 @@ export default function MonitorPostsTab() {
               )}
 
               {/* Mini post header */}
-              <div className={`flex items-center gap-3 mb-4 pb-4 ${analysis ? "mt-4" : ""}`} style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+              <div className={`flex items-center gap-3 mb-4 pb-4 ${analysis ? "mt-6" : ""}`} style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
                 {post.thumbnail ? (
                   <img src={post.thumbnail} alt={post.caption} className="w-9 h-9 rounded-lg object-cover shrink-0" />
                 ) : (
@@ -710,13 +710,6 @@ export default function MonitorPostsTab() {
                     Reels · 31w · {post.commentsCount} komentar
                   </div>
                 </div>
-                <button
-                  onClick={rollDown}
-                  className="shrink-0 px-4 py-1.5 rounded-lg text-[12px] font-bold transition-opacity hover:opacity-80"
-                  style={{ background: "#fff", color: "#0b0f17" }}
-                >
-                  Tutup
-                </button>
               </div>
 
               <div ref={listRef} className="flex flex-col gap-[18px]">
