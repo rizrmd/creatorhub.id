@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { CalendarDays, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import type { CSSProperties } from "react";
+import { CalendarDays, ChevronLeft, ChevronRight, RefreshCw, Instagram } from "lucide-react";
 import { formatFollowers } from "@/lib/utils";
+
+const TiktokIcon = ({ className, style }: { className?: string; style?: CSSProperties }) => (
+  <svg className={className} style={style} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
+  </svg>
+);
 
 const CARD_BG = "linear-gradient(158deg, #16202f 0%, #101825 55%, #0e1521 100%)";
 const CELL_BG = "#0d141f";
@@ -721,6 +728,7 @@ export default function MonitorPostsTab() {
   };
   const [range, setRange] = useState<[Date, Date]>(last7);
   const [sort, setSort] = useState<"newest" | "oldest">("newest");
+  const [platform, setPlatform] = useState<"instagram" | "tiktok">("instagram");
   const setMostRecent = () => setRange(last7());
 
   useEffect(() => {
@@ -940,7 +948,55 @@ export default function MonitorPostsTab() {
   const sentimentReady = showComments && !loading && !closing && active === 1;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)] gap-[22px] items-start">
+    <div className="flex flex-col gap-4">
+      {/* Platform switcher — Instagram content (current) vs TikTok monitoring */}
+      <div className="flex items-center gap-2.5 flex-wrap">
+        <div className="inline-flex items-center rounded-[10px] overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.14)" }}>
+          <button
+            onClick={() => setPlatform("instagram")}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-[12px] font-bold transition-colors hover:bg-white/10"
+            style={platform === "instagram" ? { background: "rgba(242,101,34,0.16)", color: ORANGE_LIGHT } : { color: "#8a97ab" }}
+          >
+            <Instagram className="w-4 h-4" style={platform === "instagram" ? { color: "#E1306C" } : undefined} /> Instagram
+          </button>
+          <button
+            onClick={() => setPlatform("tiktok")}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-[12px] font-bold transition-colors hover:bg-white/10"
+            style={platform === "tiktok" ? { background: "rgba(242,101,34,0.16)", color: ORANGE_LIGHT } : { color: "#8a97ab" }}
+          >
+            <TiktokIcon className="w-4 h-4" style={platform === "tiktok" ? { color: "#25F4EE" } : undefined} /> TikTok
+          </button>
+        </div>
+        <span className="text-[11px]" style={{ color: "#8a97ab" }}>
+          {platform === "instagram" ? "Monitoring konten Instagram" : "Monitoring konten TikTok"}
+        </span>
+      </div>
+
+      {platform === "tiktok" && (
+        <div className="rounded-3xl px-6 py-14 text-center flex flex-col items-center" style={{ background: CARD_BG, border: "1px solid rgba(255,255,255,0.07)" }}>
+          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: "#000", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 0 24px rgba(37,244,238,0.18), 0 0 24px rgba(254,44,85,0.18)" }}>
+            <TiktokIcon className="w-8 h-8 text-white" />
+          </div>
+          <p className="text-[15px] font-bold" style={{ color: "#e8edf5" }}>TikTok Content Monitoring</p>
+          <p className="text-[12px] mt-2 max-w-md leading-relaxed" style={{ color: "#8a97ab" }}>
+            Monitoring video TikTok @itsbanuun sedang disiapkan. Data akan tampil otomatis di panel ini setelah sinkronisasi selesai — tidak mengganggu tampilan monitoring Instagram.
+          </p>
+          <div className="flex items-center gap-2 mt-5 flex-wrap justify-center">
+            {[
+              { l: "Posts", v: "1.329" },
+              { l: "Followers", v: "261.2K" },
+              { l: "Likes", v: "18.8M" },
+            ].map((s) => (
+              <span key={s.l} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11.5px] font-bold" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.75)" }}>
+                <span style={{ color: "#25F4EE" }}>{s.l}</span> <b style={{ color: "#fff" }}>{s.v}</b>
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {platform === "instagram" && (
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)] gap-[22px] items-start">
       {/* LEFT: Pinned Posts */}
       <div className="flex flex-col gap-3.5">
         <div className="flex items-center gap-2.5" style={{ height: 26 }}>
@@ -1278,6 +1334,8 @@ export default function MonitorPostsTab() {
           </div>
         )}
       </div>
+      </div>
+      )}
     </div>
   );
 }
