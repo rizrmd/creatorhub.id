@@ -1,0 +1,13 @@
+-- +goose Up
+ALTER TABLE creator_platforms
+  ADD COLUMN IF NOT EXISTS posts_count BIGINT NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS following_count BIGINT NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS likes_count BIGINT NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ;
+
+-- +goose Down
+ALTER TABLE creator_platforms
+  DROP COLUMN IF EXISTS posts_count,
+  DROP COLUMN IF EXISTS following_count,
+  DROP COLUMN IF EXISTS likes_count,
+  DROP COLUMN IF EXISTS updated_at;

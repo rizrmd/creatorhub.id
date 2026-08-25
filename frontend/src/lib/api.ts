@@ -42,6 +42,10 @@ export const creatorsApi = {
     api.get<MarketplaceStats>("/creators/stats").then((r) => r.data),
   scrapeSocial: (data: ScrapeRequest) =>
     api.post<ScrapeResponse>("/creators/scrape", data).then((r) => r.data),
+  refreshMetrics: (id: string, platform: string) =>
+    api.post<{ success: boolean; platform: string; followers: number; posts: number; following: number; likes: number; updatedAt: string; handle: string }>(
+      `/creators/${id}/refresh-metrics?platform=${platform}`
+    ).then((r) => r.data),
   create: (data: CreateCreatorRequest) =>
     api.post<Creator>("/creators", data).then((r) => r.data),
 };

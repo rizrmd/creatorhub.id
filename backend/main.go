@@ -106,6 +106,7 @@ func main() {
 
 			r.Post("/creators/scrape", creatorHandler.ScrapeSocial)
 			r.Post("/creators", creatorHandler.Create)
+			r.Post("/creators/{id}/refresh-metrics", creatorHandler.RefreshCreatorMetrics)
 			r.Route("/campaigns", func(r chi.Router) {
 				r.Get("/", campaignHandler.List)
 				r.Post("/", campaignHandler.Create)

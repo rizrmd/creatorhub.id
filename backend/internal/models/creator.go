@@ -5,6 +5,10 @@ type PlatformMetric struct {
 	Handle         string  `json:"handle,omitempty"`
 	Followers      int64   `json:"followers"`
 	EngagementRate float64 `json:"engagementRate"`
+	Posts          int64   `json:"posts,omitempty"`
+	Following      int64   `json:"following,omitempty"`
+	Likes          int64   `json:"likes,omitempty"`
+	UpdatedAt      string  `json:"updatedAt,omitempty"`
 }
 
 type Creator struct {

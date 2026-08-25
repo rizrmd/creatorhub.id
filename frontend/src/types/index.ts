@@ -3,6 +3,10 @@ export interface PlatformMetric {
   handle?: string;
   followers: number;
   engagementRate: number;
+  posts?: number;
+  following?: number;
+  likes?: number;
+  updatedAt?: string;
 }
 
 export interface Creator {

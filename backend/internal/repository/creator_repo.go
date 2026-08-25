@@ -146,20 +146,24 @@ func (r *CreatorRepository) List(ctx context.Context, params models.CreatorListP
 				 FROM creator_platforms cp WHERE cp.creator_id = c.id),
 				ARRAY[]::text[]
 			) AS platforms,
-			COALESCE(
-				(SELECT jsonb_agg(jsonb_build_object(
-					'platform', cp.platform,
-					'handle', cp.handle,
-					'followers', cp.platform_followers,
-					'engagementRate', cp.engagement_rate
-				) ORDER BY cp.platform)
-				FROM creator_platforms cp WHERE cp.creator_id = c.id),
-				'[]'::jsonb
-			) AS platform_metrics
-		FROM creators c
-		WHERE %s
-		ORDER BY %s
-		LIMIT $%d OFFSET $%d`,
+		COALESCE(
+			(SELECT jsonb_agg(jsonb_build_object(
+				'platform', cp.platform,
+				'handle', cp.handle,
+				'followers', cp.platform_followers,
+				'engagementRate', cp.engagement_rate,
+				'posts', cp.posts_count,
+				'following', cp.following_count,
+				'likes', cp.likes_count,
+				'updatedAt', COALESCE(to_char(cp.updated_at, 'YYYY-MM-DD"T"HH24:MI:SS'), '')
+			) ORDER BY cp.platform)
+			FROM creator_platforms cp WHERE cp.creator_id = c.id),
+			'[]'::jsonb
+		) AS platform_metrics
+	FROM creators c
+	WHERE %s
+	ORDER BY %s
+	LIMIT $%d OFFSET $%d`,
 		whereClause, orderBy, argIdx, argIdx+1)
 
 	rows, err := r.db.Query(ctx, dataQuery, dataArgs...)
@@ -230,18 +234,22 @@ func (r *CreatorRepository) GetByID(ctx context.Context, id string) (*models.Cre
 				 FROM creator_platforms cp WHERE cp.creator_id = c.id),
 				ARRAY[]::text[]
 			) AS platforms,
-			COALESCE(
-				(SELECT jsonb_agg(jsonb_build_object(
-					'platform', cp.platform,
-					'handle', cp.handle,
-					'followers', cp.platform_followers,
-					'engagementRate', cp.engagement_rate
-				) ORDER BY cp.platform)
-				FROM creator_platforms cp WHERE cp.creator_id = c.id),
-				'[]'::jsonb
-			) AS platform_metrics
-		FROM creators c
-		WHERE c.id = $1`, id,
+		COALESCE(
+			(SELECT jsonb_agg(jsonb_build_object(
+				'platform', cp.platform,
+				'handle', cp.handle,
+				'followers', cp.platform_followers,
+				'engagementRate', cp.engagement_rate,
+				'posts', cp.posts_count,
+				'following', cp.following_count,
+				'likes', cp.likes_count,
+				'updatedAt', COALESCE(to_char(cp.updated_at, 'YYYY-MM-DD"T"HH24:MI:SS'), '')
+			) ORDER BY cp.platform)
+			FROM creator_platforms cp WHERE cp.creator_id = c.id),
+			'[]'::jsonb
+		) AS platform_metrics
+	FROM creators c
+	WHERE c.id = $1`, id,
 	).Scan(
 		&c.ID, &c.Name, &c.Handle, &c.City, &c.Country, &c.Category,
 		&c.Followers, &c.FollowersText, &c.EngagementRate,
@@ -349,8 +357,33 @@ func (r *CreatorRepository) AddPlatform(ctx context.Context, creatorID string, p
 	return err
 }
 
-// UpdateImage points the creator's image_url to a local file path after a
-// successful photo download. Prevents stale CDN URLs (which expire/403) from
+// GetPlatformHandle returns the handle for a creator+platform row.
+func (r *CreatorRepository) GetPlatformHandle(ctx context.Context, creatorID, platform string) (string, error) {
+	var handle string
+	err := r.db.QueryRow(ctx,
+		`SELECT handle FROM creator_platforms WHERE creator_id = $1 AND platform = $2`,
+		creatorID, platform).Scan(&handle)
+	return handle, err
+}
+
+// UpdatePlatformMetrics persists scraped metrics (posts/followers/following/
+// likes + updated_at) for one platform row and returns the new updated_at.
+func (r *CreatorRepository) UpdatePlatformMetrics(ctx context.Context, creatorID, platform string, followers, posts, following, likes int64) (string, error) {
+	var updatedAt string
+	err := r.db.QueryRow(ctx, `
+		UPDATE creator_platforms
+		SET platform_followers = $3,
+		    posts_count = $4,
+		    following_count = $5,
+		    likes_count = $6,
+		    updated_at = NOW()
+		WHERE creator_id = $1 AND platform = $2
+		RETURNING to_char(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS')`,
+		creatorID, platform, followers, posts, following, likes).Scan(&updatedAt)
+	return updatedAt, err
+}
+
+// UpdateImage points the creator's image_url to a local file path after a// successful photo download. Prevents stale CDN URLs (which expire/403) from
 // remaining in the DB.
 func (r *CreatorRepository) UpdateImage(ctx context.Context, creatorID, imageURL string) error {
 	_, err := r.db.Exec(ctx, `UPDATE creators SET image_url = $2, updated_at = NOW() WHERE id = $1`, creatorID, imageURL)

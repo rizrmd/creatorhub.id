@@ -249,46 +249,68 @@ func scrapeTikTok(handle string) *ScrapeResult {
 	return result
 }
 
-// scrapeTikTokApify fetches the user profile via the Apify tiktok-scraper
-// actor. Returns nil when the token is missing or the run fails, so the
-// caller can fall back (TikHub).
-func scrapeTikTokApify(handle string) *ScrapeResult {
+// TiktokApifyProfile is the metric payload extracted from an Apify TikTok run.
+type TiktokApifyProfile struct {
+	Followers, Following, Likes, Posts int64
+	Name, Bio                          string
+}
+
+// ApifyTikTokProfile runs the Apify tiktok-scraper actor and extracts profile
+// metrics (followers/following/likes/posts/name/bio). ok=false on failure or
+// missing token, so callers can fall back.
+func ApifyTikTokProfile(handle string) (*TiktokApifyProfile, bool) {
 	token := getApifyToken()
 	if token == "" {
-		return nil
+		return nil, false
 	}
 
 	payload := fmt.Sprintf(`{"profiles":["https://www.tiktok.com/@%s"],"resultsLimit":1}`, handle)
 	result, ok := apifyRun(token, "clockworks~tiktok-scraper", payload)
 	if !ok {
-		return nil
+		return nil, false
 	}
 
 	var items []struct {
 		AuthorMeta struct {
-			Name               string `json:"name"`
-			NickName           string `json:"nickName"`
-			Signature          string `json:"signature"`
-			Avatar             string `json:"avatar"`
-			OriginalAvatarURL  string `json:"originalAvatarUrl"`
-			Fans               int64  `json:"fans"`
-			Following          int64  `json:"following"`
-			Heart              int64  `json:"heart"`
-			PrivateAccount     bool   `json:"privateAccount"`
+			Name      string `json:"name"`
+			NickName  string `json:"nickName"`
+			Signature string `json:"signature"`
+			Fans      int64  `json:"fans"`
+			Following int64  `json:"following"`
+			Heart     int64  `json:"heart"`
+			Video     int64  `json:"video"`
 		} `json:"authorMeta"`
 	}
 	if err := json.Unmarshal(result, &items); err != nil || len(items) == 0 {
-		return nil
+		return nil, false
 	}
 
-	meta := items[0].AuthorMeta
-	if meta.Name == "" || meta.Fans == 0 && meta.Avatar == "" {
-		return nil
+	m := items[0].AuthorMeta
+	if m.Name == "" {
+		return nil, false
 	}
-
-	name := meta.NickName
+	name := m.NickName
 	if name == "" {
-		name = meta.Name
+		name = m.Name
+	}
+
+	return &TiktokApifyProfile{
+		Followers: m.Fans,
+		Following: m.Following,
+		Likes:     m.Heart,
+		Posts:     m.Video,
+		Name:      name,
+		Bio:       m.Signature,
+	}, true
+}
+
+// scrapeTikTokApify fetches the user profile via the Apify tiktok-scraper
+// actor. Returns nil when the token is missing or the run fails, so the
+// caller can fall back (TikHub).
+func scrapeTikTokApify(handle string) *ScrapeResult {
+	meta, ok := ApifyTikTokProfile(handle)
+	if !ok {
+		return nil
 	}
 
 	// Cost-saver (2026-08-25): profile photo for the Add Creator button is
@@ -296,11 +318,11 @@ func scrapeTikTokApify(handle string) *ScrapeResult {
 	// follower/likes/bio/name metrics keep coming from the TikTok run.
 	return &ScrapeResult{
 		ProfilePictureURL: "",
-		FollowerCount:     meta.Fans,
+		FollowerCount:     meta.Followers,
 		FollowingCount:    meta.Following,
-		LikesCount:        meta.Heart,
-		Bio:               meta.Signature,
-		DisplayName:       name,
+		LikesCount:        meta.Likes,
+		Bio:               meta.Bio,
+		DisplayName:       meta.Name,
 		Success:           true,
 	}
 }
@@ -502,56 +524,79 @@ func apifyRun(token, actor, payload string) ([]byte, bool) {
 	return body, true
 }
 
-// scrapeInstagramApify fetches user metadata via the Apify instagram-scraper
-// actor. Returns nil when no token configured or the run fails, so the caller
-// falls back to the anonymous crawler.
-func scrapeInstagramApify(handle string) *ScrapeResult {
+// InstagramApifyProfile is the metric payload extracted from an Apify IG run.
+type InstagramApifyProfile struct {
+	Followers, Following, Posts int64
+	PicURL, Name, Bio           string
+}
+
+// ApifyInstagramProfile runs the Apify instagram-scraper actor and extracts
+// profile metrics + photo. ok=false on failure or missing token, so callers
+// can fall back to the anonymous crawler.
+func ApifyInstagramProfile(handle string) (*InstagramApifyProfile, bool) {
 	token := getApifyToken()
 	if token == "" {
-		return nil
+		return nil, false
 	}
 
 	payload := fmt.Sprintf(`{"directUrls":["https://www.instagram.com/%s/"],"resultsType":"details","resultsLimit":1}`, handle)
 	result, ok := apifyRun(token, "apify~instagram-scraper", payload)
 	if !ok {
-		return nil
+		return nil, false
 	}
 
 	var items []struct {
-		URL             string `json:"url"`
 		UserName        string `json:"username"`
 		FullName        string `json:"fullName"`
 		Biography       string `json:"biography"`
 		FollowersCount  int64  `json:"followersCount"`
 		FollowsCount    int64  `json:"followsCount"`
-		Private         bool   `json:"private"`
+		PostsCount      int64  `json:"postsCount"`
 		ProfilePicURL   string `json:"profilePicUrl"`
 		ProfilePicURLHD string `json:"profilePicUrlHD"`
 	}
 	if err := json.Unmarshal(result, &items); err != nil {
-		fmt.Printf("apify parse failed for %s: %v\n", handle, err)
-		return nil
+		return nil, false
 	}
 	if len(items) == 0 || items[0].UserName == "" && items[0].ProfilePicURL == "" && items[0].ProfilePicURLHD == "" {
-		return nil
+		return nil, false
 	}
 
-	user := items[0]
-	picURL := user.ProfilePicURLHD
+	u := items[0]
+	picURL := u.ProfilePicURLHD
 	if picURL == "" {
-		picURL = user.ProfilePicURL
+		picURL = u.ProfilePicURL
 	}
-	name := user.FullName
+	name := u.FullName
 	if name == "" {
 		name = handle
 	}
 
+	return &InstagramApifyProfile{
+		Followers: u.FollowersCount,
+		Following: u.FollowsCount,
+		Posts:     u.PostsCount,
+		PicURL:    picURL,
+		Name:      name,
+		Bio:       u.Biography,
+	}, true
+}
+
+// scrapeInstagramApify fetches user metadata via the Apify instagram-scraper
+// actor. Returns nil when no token configured or the run fails, so the caller
+// falls back to the anonymous crawler.
+func scrapeInstagramApify(handle string) *ScrapeResult {
+	p, ok := ApifyInstagramProfile(handle)
+	if !ok {
+		return nil
+	}
+
 	return &ScrapeResult{
-		ProfilePictureURL: picURL,
-		FollowerCount:     user.FollowersCount,
-		FollowingCount:    user.FollowsCount,
-		Bio:               user.Biography,
-		DisplayName:       name,
+		ProfilePictureURL: p.PicURL,
+		FollowerCount:     p.Followers,
+		FollowingCount:    p.Following,
+		Bio:               p.Bio,
+		DisplayName:       p.Name,
 		Success:           true,
 	}
 }

@@ -305,6 +305,59 @@ func (h *CreatorHandler) downloadAndCachePhoto(ctx context.Context, id, imageURL
 	}
 }
 
+// RefreshCreatorMetrics re-scrapes one platform's metrics via Apify and
+// persists them (followers/posts/following/likes + updated_at).
+func (h *CreatorHandler) RefreshCreatorMetrics(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	platform := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("platform")))
+	if platform != "instagram" && platform != "tiktok" {
+		writeError(w, http.StatusBadRequest, "platform must be instagram or tiktok")
+		return
+	}
+
+	handle, err := h.repo.GetPlatformHandle(r.Context(), id, platform)
+	if err != nil || strings.TrimSpace(handle) == "" {
+		writeError(w, http.StatusBadRequest, "no "+platform+" handle for this creator")
+		return
+	}
+	handle = strings.TrimPrefix(handle, "@")
+
+	var followers, posts, following, likes int64
+	if platform == "tiktok" {
+		p, ok := services.ApifyTikTokProfile(handle)
+		if !ok {
+			writeError(w, http.StatusBadGateway, "tiktok scrape failed (Apify token missing or run failed)")
+			return
+		}
+		followers, posts, following, likes = p.Followers, p.Posts, p.Following, p.Likes
+		// TikTok photo rule: keep existing profile pic — metrics only.
+	} else {
+		p, ok := services.ApifyInstagramProfile(handle)
+		if !ok {
+			writeError(w, http.StatusBadGateway, "instagram scrape failed (Apify token missing or run failed)")
+			return
+		}
+		followers, posts, following, likes = p.Followers, p.Posts, p.Following, 0
+	}
+
+	updatedAt, err := h.repo.UpdatePlatformMetrics(r.Context(), id, platform, followers, posts, following, likes)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]any{
+		"success":   true,
+		"platform":  platform,
+		"handle":    handle,
+		"followers": followers,
+		"posts":     posts,
+		"following": following,
+		"likes":     likes,
+		"updatedAt": updatedAt,
+	})
+}
+
 func writeJSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
