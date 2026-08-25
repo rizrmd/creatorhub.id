@@ -1,13 +1,10 @@
 ﻿import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
-import { MapPin, ArrowLeft, Info, CheckCircle, Circle, Clock, Send, Bookmark, User, Eye, CreditCard, BarChart3, RefreshCw, Loader2 } from "lucide-react";
+import { MapPin, ArrowLeft, CheckCircle, Circle, Clock, Send, Bookmark, User, Eye, CreditCard, BarChart3 } from "lucide-react";
 import { useCreator } from "@/hooks/useCreators";
-import { creatorsApi } from "@/lib/api";
 import { formatFollowers, resolveCreatorPhoto } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { PlatformMetric } from "@/types";
 
 const TiktokIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -46,7 +43,6 @@ export default function EkrafHubCreatorProfile() {
   const navigate = useNavigate();
   const { data: creator, isLoading, error } = useCreator(id ?? "");
   const [tab, setTab] = useState<TabKey>("profile");
-  const queryClient = useQueryClient();
 
   if (isLoading) {
     return (
@@ -189,17 +185,6 @@ export default function EkrafHubCreatorProfile() {
         </div>
       </div>
 
-      {/* Account Performance Summary â€” under profile card */}
-      <AccountPerformanceSummary
-        creatorId={creator.id}
-        igMetric={igMetric}
-        tiktokMetric={tiktokMetric}
-        onUpdated={() => {
-          queryClient.invalidateQueries({ queryKey: ["creator", id ?? ""] });
-          queryClient.invalidateQueries({ queryKey: ["creators"] });
-        }}
-      />
-
       {/* Tab content */}
       <div className="mt-4">
         {tab === "profile" && (
@@ -330,146 +315,6 @@ export default function EkrafHubCreatorProfile() {
             <RateCard creator={creator} />
           </div>
         )}
-      </div>
-    </div>
-  );
-}
-
-function fmtUpdated(iso?: string): string {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  if (isNaN(d.getTime())) return "—";
-  const date = d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-  const time = d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
-  return `${date} | ${time}`;
-}
-
-function SummaryCard({ title, handle, href, updateLabel, gradient, logo, metricRows, updatedAt, refreshing, onUpdate }: {
-  title: string;
-  handle?: string;
-  href: string;
-  updateLabel: string;
-  gradient: string;
-  logo: React.ReactNode;
-  metricRows: { label: string; value: number }[];
-  updatedAt?: string;
-  refreshing: boolean;
-  onUpdate: () => void;
-}) {
-  const cardStyle = { background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.06)" };
-  const sep = "border-l border-white/10 pl-3";
-
-  return (
-    <div className="rounded-2xl overflow-hidden p-6 relative" style={cardStyle}>
-      <div className="flex items-start justify-between gap-3 mb-4">
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: title === "Instagram" ? "linear-gradient(135deg, rgba(131,58,180,0.2), rgba(253,29,29,0.2), rgba(247,119,55,0.2))" : "#000000", boxShadow: title === "TikTok" ? "0 0 20px rgba(37,244,238,0.15), 0 0 20px rgba(254,44,85,0.15)" : undefined }}>
-            {logo}
-          </div>
-          <div className="min-w-0">
-            <p className="text-base font-bold text-white">{title}</p>
-            {href !== "" ? (
-              <a href={href} target="_blank" rel="noopener noreferrer" className="text-xs block truncate hover:underline" style={{ color: "rgba(255,255,255,0.55)" }}>
-                @{handle}
-              </a>
-            ) : (
-              <p className="text-xs truncate" style={{ color: "rgba(255,255,255,0.55)" }}>@{handle}</p>
-            )}
-          </div>
-        </div>
-        <button
-          onClick={onUpdate}
-          disabled={refreshing}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold text-white transition-all hover:brightness-110 shrink-0"
-          style={{ background: "var(--ch-primary)", boxShadow: "0 4px 12px rgba(37,99,235,0.3)" }}
-        >
-          {refreshing ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
-          Update data
-        </button>
-      </div>
-      <div className="h-1 mb-5" style={{ background: gradient, boxShadow: "0 1px 10px rgba(225,48,108,0.35)" }} />
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.55)" }}>
-          {updateLabel}
-        </p>
-        <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.55)" }}>Data updated on {fmtUpdated(updatedAt)}</p>
-      </div>
-      <div className="grid grid-cols-5 gap-0">
-        {metricRows.map((s, i) => (
-          <div key={s.label} className={i > 0 ? sep : "pr-3"} style={{ gridColumn: title === "Instagram" && metricRows.length === 3 ? "span 1" : undefined }}>
-            <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.55)" }}>{s.label}</p>
-            <p className="text-lg font-extrabold text-white mt-1" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-              {s.value > 0 ? formatFollowers(s.value) : "—"}
-            </p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function AccountPerformanceSummary({ creatorId, igMetric, tiktokMetric, onUpdated }: {
-  creatorId: string;
-  igMetric?: PlatformMetric;
-  tiktokMetric?: PlatformMetric;
-  onUpdated: () => void;
-}) {
-  const [refreshing, setRefreshing] = useState<string | null>(null);
-
-  const update = async (platform: string) => {
-    setRefreshing(platform);
-    try {
-      await creatorsApi.refreshMetrics(creatorId, platform);
-      onUpdated();
-    } catch {
-      // keep old values; errors surface via unchanged data
-    } finally {
-      setRefreshing(null);
-    }
-  };
-
-  return (
-    <div className="mx-6 mt-4 space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <SummaryCard
-          title="Instagram"
-          handle={igMetric?.handle}
-          href={igMetric?.handle ? `https://www.instagram.com/${igMetric.handle.replace(/^@/, "")}/` : ""}
-          updateLabel="Account Performance Summary"
-          gradient="linear-gradient(90deg, #FFDC80, #F77737, #FD1D1D, #C13584, #833AB4)"
-          logo={<IgLogo className="w-8 h-8" />}
-          metricRows={[
-            { label: "Posts", value: igMetric?.posts ?? 0 },
-            { label: "Followers", value: igMetric?.followers ?? 0 },
-            { label: "Following", value: igMetric?.following ?? 0 },
-          ]}
-          updatedAt={igMetric?.updatedAt}
-          refreshing={refreshing === "instagram"}
-          onUpdate={() => update("instagram")}
-        />
-        <SummaryCard
-          title="TikTok"
-          handle={tiktokMetric?.handle}
-          href={tiktokMetric?.handle ? `https://www.tiktok.com/@${tiktokMetric.handle.replace(/^@/, "")}` : ""}
-          updateLabel="Account Performance Summary"
-          gradient="linear-gradient(90deg, #25F4EE, #FE2C55, #25F4EE)"
-          logo={<TiktokIcon className="w-6 h-6 text-white" />}
-          metricRows={[
-            { label: "Following", value: tiktokMetric?.following ?? 0 },
-            { label: "Followers", value: tiktokMetric?.followers ?? 0 },
-            { label: "Likes", value: tiktokMetric?.likes ?? 0 },
-          ]}
-          updatedAt={tiktokMetric?.updatedAt}
-          refreshing={refreshing === "tiktok"}
-          onUpdate={() => update("tiktok")}
-        />
-      </div>
-
-      <div className="flex items-center gap-2 px-4 py-3 rounded-xl" style={{ background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.1)" }}>
-        <Info className="w-4 h-4 shrink-0" style={{ color: "#3B82F6" }} />
-        <p className="text-[11px]" style={{ color: "rgba(255,255,255,0.6)" }}>
-          Data ditampilkan per platform berdasarkan informasi yang tersedia. Periode data belum dicantumkan.
-        </p>
       </div>
     </div>
   );
