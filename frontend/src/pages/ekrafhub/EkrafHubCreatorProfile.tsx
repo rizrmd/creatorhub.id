@@ -357,7 +357,8 @@ function AccountPerformanceSummary({ igHandle, tiktokHandle, igFollowers, tiktok
             </div>
             <div>
               <p className="text-base font-bold text-white">Instagram</p>
-              <p className="text-xs" style={{ color: "rgba(255,255,255,0.55)" }}>@{igHandle}</p>
+              <a href={`https://www.instagram.com/${igHandle.replace(/^@/, "")}/`} target="_blank" rel="noopener noreferrer"
+                className="text-xs hover:underline" style={{ color: "rgba(255,255,255,0.55)" }}>@{igHandle}</a>
             </div>
           </div>
           <div className="h-1 mb-5" style={{ background: "linear-gradient(90deg, #FFDC80, #F77737, #FD1D1D, #C13584, #833AB4)", boxShadow: "0 1px 10px rgba(225,48,108,0.35)" }} />
@@ -382,7 +383,8 @@ function AccountPerformanceSummary({ igHandle, tiktokHandle, igFollowers, tiktok
             </div>
             <div>
               <p className="text-base font-bold text-white">TikTok</p>
-              <p className="text-xs" style={{ color: "rgba(255,255,255,0.55)" }}>@{tiktokHandle}</p>
+              <a href={`https://www.tiktok.com/@${tiktokHandle.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer"
+                className="text-xs hover:underline" style={{ color: "rgba(255,255,255,0.55)" }}>@{tiktokHandle}</a>
             </div>
           </div>
           <div className="h-1 mb-5" style={{ background: "linear-gradient(90deg, #25F4EE, #FE2C55, #25F4EE)", boxShadow: "0 1px 10px rgba(254,44,85,0.35)" }} />
