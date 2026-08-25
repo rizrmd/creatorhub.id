@@ -50,22 +50,22 @@ const MegaphoneIcon = ({ className, style }: { className?: string; style?: React
   </svg>
 );
 
-const EXISTING_BRANDS: { name: string; letter?: string; letterColor?: string; logo?: string }[] = [
+const EXISTING_BRANDS: { name: string; logo: string; light?: boolean }[] = [
   { name: "Yamaha", logo: "/collaborations/yamaha.svg" },
   { name: "Honda", logo: "/collaborations/honda.svg" },
   { name: "Shopee", logo: "/collaborations/shopee.svg" },
-  { name: "Aceh", logo: "/collaborations/aceh.png" },
+  { name: "Aceh", logo: "/collaborations/aceh.png", light: true },
   { name: "Indosat", logo: "/collaborations/indosat.svg" },
-  { name: "McDonald's", logo: "/collaborations/mcdonalds.svg" },
-  { name: "KFC", logo: "/collaborations/kfc.svg" },
-  { name: "Scarlett", logo: "/collaborations/scarlett.svg" },
-  { name: "Teh Kotak", letter: "T", letterColor: "#FFC933" },
-  { name: "Yupi", letter: "Y", letterColor: "#FF4757" },
+  { name: "McDonald's", logo: "/collaborations/mcdonalds.png" },
+  { name: "KFC", logo: "/collaborations/kfc.png", light: true },
+  { name: "Scarlett", logo: "/collaborations/scarlett.svg", light: true },
+  { name: "Teh Kotak", logo: "/collaborations/tehkotak.png" },
+  { name: "Yupi", logo: "/collaborations/yupi.png" },
   { name: "Tokopedia", logo: "/collaborations/tokopedia.svg" },
   { name: "Telkomsel", logo: "/collaborations/telkomsel.svg" },
   { name: "Lemonilo", logo: "/collaborations/lemonilo.png" },
-  { name: "MS Glow", letter: "M", letterColor: "#fff" },
-  { name: "Smartfren", logo: "/collaborations/smartfren.svg" },
+  { name: "MS Glow", logo: "/collaborations/msglow.png", light: true },
+  { name: "Smartfren", logo: "/collaborations/smartfren.svg", light: true },
 ];
 
 const PREVIOUS_BRANDS: string[][] = [
@@ -395,26 +395,32 @@ export default function EkrafHubCreatorProfile() {
                 <h3 className="text-center text-xl md:text-2xl font-extrabold tracking-wide mb-6" style={{ color: "#fff", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                   BRAND COLLABORATION
                 </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-4 gap-y-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-5 gap-y-7">
                   {EXISTING_BRANDS.map((b) => (
-                    <div key={b.name} className="flex flex-col items-center gap-2">
+                    <div key={b.name} className="flex flex-col items-center gap-2.5">
                       <div
-                        className="w-[72px] h-[72px] rounded-2xl flex items-center justify-center"
+                        className="w-[88px] h-[88px] rounded-[22px] flex items-center justify-center"
                         style={{
                           background: "rgba(255,255,255,0.05)",
                           border: "1px solid rgba(255,255,255,0.16)",
-                          boxShadow: "0 0 14px rgba(255,255,255,0.22), inset 0 1px 0 rgba(255,255,255,0.12)",
+                          boxShadow: "0 0 16px rgba(255,255,255,0.22), inset 0 1px 0 rgba(255,255,255,0.12)",
                         }}
                       >
-                        {b.logo ? (
-                          <img src={b.logo} alt={b.name} className="object-contain max-h-10 max-w-[52px]" />
+                        {b.light ? (
+                          <div
+                            className="w-[68px] h-[68px] rounded-[16px] flex items-center justify-center"
+                            style={{
+                              background: "linear-gradient(140deg, #ffffff 0%, #E9EDF5 100%)",
+                              boxShadow: "0 8px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.9)",
+                            }}
+                          >
+                            <img src={b.logo} alt={b.name} className="object-contain max-h-[50px] max-w-[58px]" />
+                          </div>
                         ) : (
-                          <span className="text-2xl font-extrabold" style={{ color: b.letterColor, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                            {b.letter}
-                          </span>
+                          <img src={b.logo} alt={b.name} className="object-contain max-h-[56px] max-w-[66px] drop-shadow-[0_4px_10px_rgba(0,0,0,0.45)]" />
                         )}
                       </div>
-                      <span className="text-[11px] font-semibold text-center" style={{ color: "rgba(255,255,255,0.65)" }}>{b.name}</span>
+                      <span className="text-[11.5px] font-semibold text-center" style={{ color: "rgba(255,255,255,0.7)" }}>{b.name}</span>
                     </div>
                   ))}
                 </div>
