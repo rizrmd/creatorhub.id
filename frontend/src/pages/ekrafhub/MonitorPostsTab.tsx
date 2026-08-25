@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { CalendarDays, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import { formatFollowers } from "@/lib/utils";
 
 const CARD_BG = "linear-gradient(158deg, #16202f 0%, #101825 55%, #0e1521 100%)";
@@ -556,8 +557,7 @@ function SnaBars() {
 }
 
 const MONTHS_ID = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-
-type DateTripleValue = { d: number; m: number; y: number };
+const DAY_LABELS = ["S", "S", "R", "K", "J", "S", "M"];
 
 type RegularPost = { id: number; caption: string; ms: number; views: number; likes: number; comments: number };
 
@@ -574,41 +574,96 @@ const REGULAR_POSTS: RegularPost[] = [
   { id: 10, caption: "POV : satu sore di warung kopi", ms: new Date(2026, 7, 24).getTime(), views: 892000, likes: 78500, comments: 561 },
 ];
 
-const msOf = (v: DateTripleValue) => new Date(v.y, v.m, v.d).getTime();
-
 const fmtDate = (ms: number) => {
   const d = new Date(ms);
   return `${d.getDate()} ${MONTHS_ID[d.getMonth()]} ${d.getFullYear()}`;
 };
 
-const selectStyle: React.CSSProperties = { background: "#0f1621", border: "1px solid rgba(255,255,255,0.1)", color: "#dbe3ed" };
+function RangeCalendar({ range, onChange }: { range: [Date, Date]; onChange: (r: [Date, Date]) => void }) {
+  const [open, setOpen] = useState(false);
+  const [view, setView] = useState(new Date(range[0].getFullYear(), range[0].getMonth(), 1));
+  const [selecting, setSelecting] = useState<"start" | "end">("start");
+  const ref = useRef<HTMLDivElement>(null);
 
-function DateTriple({ label, value, onChange }: { label: string; value: DateTripleValue; onChange: (v: DateTripleValue) => void }) {
-  const daysInMonth = new Date(value.y, value.m + 1, 0).getDate();
-  const set = (part: keyof DateTripleValue, v: number) => {
-    const next = { ...value, [part]: v };
-    const dImpl = new Date(next.y, next.m + 1, 0).getDate();
-    if (next.d > dImpl) next.d = dImpl;
-    onChange(next);
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [open]);
+
+  const daysBetween = (a: Date, b: Date) => Math.round((b.getTime() - a.getTime()) / 86400000) + 1;
+  const [start, end] = range;
+  const isInRange = (d: Date) => start && end && d.getTime() > start.getTime() && d.getTime() < end.getTime();
+
+  const label = `${start.getDate()} ${MONTHS_ID[start.getMonth()]} ${start.getFullYear()} – ${end.getDate()} ${MONTHS_ID[end.getMonth()]} ${end.getFullYear()} • ${daysBetween(start, end)} hari terakhir`;
+
+  const grid: (Date | null)[] = [];
+  const firstDay = new Date(view.getFullYear(), view.getMonth(), 1).getDay();
+  const daysInMonth = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
+  for (let i = 0; i < firstDay; i++) grid.push(null);
+  for (let d = 1; d <= daysInMonth; d++) grid.push(new Date(view.getFullYear(), view.getMonth(), d));
+
+  const pick = (d: Date) => {
+    if (selecting === "start") { onChange([d, d]); setSelecting("end"); return; }
+    if (d.getTime() < range[0].getTime()) { onChange([d, range[0]]); setSelecting("end"); return; }
+    onChange([range[0], d]); setSelecting("start"); setOpen(false);
   };
+
   return (
-    <div className="flex items-center gap-1.5">
-      <span className="text-[11px] font-bold whitespace-nowrap" style={{ color: "#8a97ab" }}>{label}</span>
-      <select value={value.d} onChange={(e) => set("d", Number(e.target.value))} style={selectStyle} className="text-[12px] px-2 py-1 rounded-lg focus:outline-none cursor-pointer">
-        {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((n) => (
-          <option key={n} value={n}>{n}</option>
-        ))}
-      </select>
-      <select value={value.m} onChange={(e) => set("m", Number(e.target.value))} style={selectStyle} className="text-[12px] px-2 py-1 rounded-lg focus:outline-none cursor-pointer">
-        {MONTHS_ID.map((mn, i) => (
-          <option key={mn} value={i}>{mn}</option>
-        ))}
-      </select>
-      <select value={value.y} onChange={(e) => set("y", Number(e.target.value))} style={selectStyle} className="text-[12px] px-2 py-1 rounded-lg focus:outline-none cursor-pointer">
-        {[2026, 2025, 2024].map((yr) => (
-          <option key={yr} value={yr}>{yr}</option>
-        ))}
-      </select>
+    <div className="relative inline-block" ref={ref}>
+      <button
+        onClick={() => setOpen(!open)}
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-colors hover:bg-white/10"
+        style={{ border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.75)" }}
+      >
+        <CalendarDays className="w-3 h-3" style={{ color: "#F97316" }} />
+        {label}
+      </button>
+
+      {open && (
+        <div
+          className="absolute z-40 mt-2 right-0 w-[248px] rounded-xl p-3"
+          style={{ background: "#0B1120", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 16px 48px rgba(0,0,0,0.6)" }}
+        >
+          <div className="flex items-center justify-between mb-2">
+            <button onClick={() => setView(new Date(view.getFullYear(), view.getMonth() - 1, 1))} className="p-1 rounded hover:bg-white/10">
+              <ChevronLeft className="w-4 h-4" style={{ color: "rgba(255,255,255,0.8)" }} />
+            </button>
+            <p className="text-[12px] font-bold text-white">
+              {MONTHS_ID[view.getMonth()]} {view.getFullYear()}
+            </p>
+            <button onClick={() => setView(new Date(view.getFullYear(), view.getMonth() + 1, 1))} className="p-1 rounded hover:bg-white/10">
+              <ChevronRight className="w-4 h-4" style={{ color: "rgba(255,255,255,0.8)" }} />
+            </button>
+          </div>
+          <p className="text-[10px] mb-1.5 text-center" style={{ color: "rgba(255,255,255,0.45)" }}>
+            {selecting === "start" ? "Pilih tanggal mulai" : "Pilih tanggal selesai"}
+          </p>
+          <div className="grid grid-cols-7 gap-y-0.5">
+            {DAY_LABELS.map((d, i) => (
+              <span key={i} className="text-center text-[9px] font-bold py-1" style={{ color: "rgba(255,255,255,0.35)" }}>{d}</span>
+            ))}
+            {grid.map((d, i) => {
+              if (!d) return <span key={i} />;
+              const isStart = d.getTime() === start.getTime();
+              const isEnd = d.getTime() === end.getTime();
+              const isEdges = isStart || isEnd;
+              const sel = isEdges ? { background: "#F97316", color: "white" } : isInRange(d) ? { background: "rgba(249,115,22,0.2)", color: "white" } : undefined;
+              return (
+                <button
+                  key={i}
+                  onClick={() => pick(d)}
+                  className="h-8 rounded-lg text-[11px] font-semibold transition-colors hover:bg-white/10"
+                  style={sel ?? { color: "rgba(255,255,255,0.7)" }}
+                >
+                  {d.getDate()}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -650,8 +705,11 @@ export default function MonitorPostsTab() {
   const [snaState, setSnaState] = useState<"idle" | "loading" | "done">("idle");
   const [snaProgress, setSnaProgress] = useState(0);
   const [snaTyped, setSnaTyped] = useState("");
-  const [from, setFrom] = useState<DateTripleValue>({ d: 12, m: 5, y: 2026 });
-  const [to, setTo] = useState<DateTripleValue>({ d: 24, m: 7, y: 2026 });
+  const [range, setRange] = useState<[Date, Date]>([new Date(2026, 5, 12), new Date(2026, 7, 24)]);
+  const setMostRecent = () => {
+    const t = new Date();
+    setRange((r) => (r[0].getTime() > t.getTime() ? [t, t] : [r[0], t]));
+  };
 
   useEffect(() => {
     if (!analysis) {
@@ -778,7 +836,7 @@ export default function MonitorPostsTab() {
   }, []);
 
   const post = POSTS.find((p) => p.id === active) ?? POSTS[0];
-  const visible = REGULAR_POSTS.filter((p) => p.ms >= msOf(from) && p.ms <= msOf(to));
+  const visible = REGULAR_POSTS.filter((p) => p.ms >= range[0].getTime() && p.ms <= range[1].getTime());
 
   const select = (n: number) => {
     if (active === n) return;
@@ -899,17 +957,15 @@ export default function MonitorPostsTab() {
           <span className="text-[11.5px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap" style={{ color: ORANGE_LIGHT, background: "rgba(242,101,34,0.13)" }}>
             {visible.length} posts
           </span>
-          <div className="ml-auto flex items-center gap-3 flex-wrap justify-end">
-            <DateTriple
-              label="Dari"
-              value={from}
-              onChange={(v) => { setFrom(v); if (msOf(v) > msOf(to)) setTo(v); }}
-            />
-            <DateTriple
-              label="Sampai"
-              value={to}
-              onChange={(v) => { setTo(v); if (msOf(v) < msOf(from)) setFrom(v); }}
-            />
+          <div className="ml-auto flex items-center gap-2 flex-wrap justify-end">
+            <RangeCalendar range={range} onChange={setRange} />
+            <button
+              onClick={setMostRecent}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-bold whitespace-nowrap transition-colors hover:bg-orange-400/25"
+              style={{ background: "rgba(242,101,34,0.16)", color: ORANGE_LIGHT }}
+            >
+              <RefreshCw className="w-3.5 h-3.5" /> Get Most Recent
+            </button>
           </div>
         </div>
         <div className="flex flex-col gap-3.5">
