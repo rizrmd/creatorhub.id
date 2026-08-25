@@ -965,31 +965,31 @@ export default function MonitorPostsTab() {
         ))}
 
         {/* Regular Posts */}
-        <div className="flex items-center gap-2.5 flex-wrap" style={{ minHeight: 26 }}>
+        <div className="flex items-center gap-2.5" style={{ height: 26 }}>
           <div className="w-[3px] h-[17px] rounded-[2px]" style={{ background: ORANGE }} />
           <h2 className="text-[17px] font-bold" style={{ color: "#e8edf5" }}>Regular Posts</h2>
           <span className="text-[11.5px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap" style={{ color: ORANGE_LIGHT, background: "rgba(242,101,34,0.13)" }}>
             {visible.length} posts
           </span>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
           <RangeCalendar range={range} onChange={setRange} />
-          <div className="ml-auto flex items-center gap-2 flex-wrap justify-end">
-            <button
-              onClick={setMostRecent}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-bold whitespace-nowrap transition-colors hover:bg-orange-400/25"
-              style={{ background: "rgba(242,101,34,0.16)", color: ORANGE_LIGHT }}
-            >
-              <RefreshCw className="w-3.5 h-3.5" /> Get Most Recent
-            </button>
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value as "newest" | "oldest")}
-              className="px-3 py-1.5 rounded-lg text-[12px] font-bold whitespace-nowrap cursor-pointer focus:outline-none"
-              style={{ background: "#0f1621", border: "1px solid rgba(255,255,255,0.12)", color: "#dbe3ed" }}
-            >
-              <option value="newest">Newest</option>
-              <option value="oldest">Oldest</option>
-            </select>
-          </div>
+          <button
+            onClick={setMostRecent}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-bold whitespace-nowrap transition-colors hover:bg-orange-400/25"
+            style={{ background: "rgba(242,101,34,0.16)", color: ORANGE_LIGHT }}
+          >
+            <RefreshCw className="w-3.5 h-3.5" /> Get Most Recent
+          </button>
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as "newest" | "oldest")}
+            className="px-3 py-1.5 rounded-lg text-[12px] font-bold whitespace-nowrap cursor-pointer focus:outline-none"
+            style={{ background: "#0f1621", border: "1px solid rgba(255,255,255,0.12)", color: "#dbe3ed" }}
+          >
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+          </select>
         </div>
         <div className="flex flex-col gap-3.5">
           {visible.map((p) => (
