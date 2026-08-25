@@ -403,6 +403,9 @@ function SentimentBars() {
   );
 }
 
+const SNA_SEED =
+  "Social Network Analysis: 95% of commenters are direct followers of this account. The remaining 5% are non-followers whose engagement was driven by relevance - hashtags, keywords, topics, or geographic proximity - reached naturally by the algorithm.\n\nAmong non-followers, 3% are 2nd degree connections (followers of followers), 1.5% are 3rd degree connections, and 0.5% have no connection at all. The network is healthy: dense organic reach beyond the core audience, with no suspicious spike.";
+
 const AUDIENCE_SEED =
   "Audience analysis: 30% akun real high quality (verified, pengikut >200), 65% medium quality (pengikut <200, postingan terbatas), 2% low quality (postingan <3, stalker/buzzer), dan 3% suspected bots yang tidak mengganggu. Kualitas interaksi audiens tergolong sehat.";
 
@@ -476,6 +479,76 @@ function AudienceBars() {
   );
 }
 
+const SNA_SEGS = [
+  { label: "Followers", desc: "Direct followers of this account with natural engagement.", pct: "95%", grad: "linear-gradient(90deg, #4ade80, #15803d)", glow: "0 0 16px rgba(74,222,128,0.45)", color: "#4ade80" },
+  { label: "Non-Followers — 2nd Degree", desc: "Followers of followers (2nd degree connections) reached organically.", pct: "3%", grad: "linear-gradient(90deg, #38bdf8, #0369a1)", glow: "0 0 14px rgba(56,189,248,0.4)", color: "#38bdf8" },
+  { label: "Non-Followers — 3rd Degree", desc: "3rd degree connections reached through content spread.", pct: "1.5%", grad: "linear-gradient(90deg, #a78bfa, #6d28d9)", glow: "0 0 14px rgba(167,139,250,0.4)", color: "#a78bfa" },
+  { label: "No Connections at All", desc: "No network connection; surfaced by algorithmic relevance only.", pct: "0.5%", grad: "linear-gradient(90deg, #f87171, #b91c1c)", glow: "0 0 16px rgba(248,113,113,0.5)", color: "#f87171" },
+];
+
+function SnaBars() {
+  const [widths, setWidths] = useState(["0%", "0%", "0%", "0%"]);
+
+  useEffect(() => {
+    const timers = [
+      window.setTimeout(() => setWidths((w) => ["95%", w[1], w[2], w[3]]), 60),
+      window.setTimeout(() => setWidths((w) => [w[0], "3%", w[2], w[3]]), 280),
+      window.setTimeout(() => setWidths((w) => [w[0], w[1], "1.5%", w[3]]), 500),
+      window.setTimeout(() => setWidths((w) => [w[0], w[1], w[2], "0.5%"]), 720),
+    ];
+    return () => timers.forEach((t) => window.clearTimeout(t));
+  }, []);
+
+  return (
+    <div className="mt-4 rounded-[12px] p-4" style={{ background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.08)" }}>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#a78bfa" }} />
+          <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.55)" }}>
+            Network Distribution
+          </p>
+        </div>
+        <span className="text-[10px] font-semibold" style={{ color: "rgba(255,255,255,0.45)" }}>
+          dari 371 komentator
+        </span>
+      </div>
+
+      <div className="relative h-4 rounded-full flex overflow-hidden" style={{ background: "rgba(255,255,255,0.06)", boxShadow: "0 0 20px rgba(167,139,250,0.12), inset 0 0 0 1px rgba(255,255,255,0.06)" }}>
+        {SNA_SEGS.map((s, i) => (
+          <div
+            key={s.label}
+            className="h-full rounded-full transition-all duration-700 ease-out"
+            style={{
+              width: widths[i],
+              minWidth: widths[i] !== "0%" ? "7px" : undefined,
+              background: s.grad,
+              boxShadow: s.glow,
+              borderRadius: i === 0 ? "9999px 0 0 9999px" : undefined,
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="flex flex-col gap-2.5 mt-3">
+        {SNA_SEGS.map((s, i) => (
+          <div key={s.label} className="flex items-center gap-2.5">
+            <span className="w-3 h-3 rounded-[4px] shrink-0" style={{ background: s.grad, boxShadow: s.glow, opacity: widths[i] === "0%" ? 0.35 : 1 }} />
+            <div className="flex-1 min-w-0">
+              <p className="text-[12px] font-semibold leading-tight" style={{ color: s.label === "No Connections at All" ? s.color : "rgba(255,255,255,0.85)" }}>
+                {s.label}
+              </p>
+              <p className="text-[10.5px] leading-tight" style={{ color: "rgba(255,255,255,0.45)" }}>
+                {s.desc}
+              </p>
+            </div>
+            <span className="text-[12px] font-extrabold shrink-0" style={{ color: "#e8edf5", fontVariantNumeric: "tabular-nums" }}>{s.pct}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function MonitorPostsTab() {
   const [active, setActive] = useState(1);
   const [showComments, setShowComments] = useState(false);
@@ -493,6 +566,9 @@ export default function MonitorPostsTab() {
   const [audState, setAudState] = useState<"idle" | "loading" | "done">("idle");
   const [audProgress, setAudProgress] = useState(0);
   const [audTyped, setAudTyped] = useState("");
+  const [snaState, setSnaState] = useState<"idle" | "loading" | "done">("idle");
+  const [snaProgress, setSnaProgress] = useState(0);
+  const [snaTyped, setSnaTyped] = useState("");
 
   useEffect(() => {
     if (!analysis) {
@@ -509,6 +585,7 @@ export default function MonitorPostsTab() {
   }, [analysis]);
 
   const audIvRef = useRef<number | null>(null);
+  const snaIvRef = useRef<number | null>(null);
 
   const openAudience = () => {
     if (analysisTab === "audience") return;
@@ -523,6 +600,19 @@ export default function MonitorPostsTab() {
     }, 150);
   };
 
+  const openSna = () => {
+    if (analysisTab === "sna") return;
+    setAnalysisTab("sna");
+    if (snaState === "done") return;
+    if (snaState === "loading") return;
+    setSnaState("loading");
+    setSnaProgress(1);
+    if (snaIvRef.current) window.clearInterval(snaIvRef.current);
+    snaIvRef.current = window.setInterval(() => {
+      setSnaProgress((p) => (p >= 100 ? 100 : p + 2 + Math.ceil(Math.random() * 6)));
+    }, 150);
+  };
+
   useEffect(() => {
     if (audState !== "loading" || audProgress < 100) return;
     if (audIvRef.current) window.clearInterval(audIvRef.current);
@@ -531,6 +621,15 @@ export default function MonitorPostsTab() {
       setAudProgress(0);
     }, 450);
   }, [audState, audProgress]);
+
+  useEffect(() => {
+    if (snaState !== "loading" || snaProgress < 100) return;
+    if (snaIvRef.current) window.clearInterval(snaIvRef.current);
+    tRef.current = window.setTimeout(() => {
+      setSnaState("done");
+      setSnaProgress(0);
+    }, 450);
+  }, [snaState, snaProgress]);
 
   useEffect(() => {
     if (!analysis || analysisTab !== "audience" || audState !== "done") {
@@ -547,8 +646,23 @@ export default function MonitorPostsTab() {
   }, [analysis, analysisTab, audState]);
 
   useEffect(() => {
+    if (!analysis || analysisTab !== "sna" || snaState !== "done") {
+      if (analysisTab !== "sna") setSnaTyped("");
+      return;
+    }
+    let i = 0;
+    const id = window.setInterval(() => {
+      i += 1;
+      setSnaTyped(SNA_SEED.slice(0, i));
+      if (i >= SNA_SEED.length) window.clearInterval(id);
+    }, 14);
+    return () => window.clearInterval(id);
+  }, [analysis, analysisTab, snaState]);
+
+  useEffect(() => {
     return () => {
       if (audIvRef.current) window.clearInterval(audIvRef.current);
+      if (snaIvRef.current) window.clearInterval(snaIvRef.current);
     };
   }, []);
 
@@ -797,14 +911,14 @@ export default function MonitorPostsTab() {
                     ].map((t) => {
                       const activeTab = analysisTab === t.key;
                       return (
-                        <button
-                          key={t.key}
-                          onClick={() => (t.key === "audience" ? openAudience() : setAnalysisTab(t.key))}
-                          className="flex-1 text-center py-[9px] rounded-[9px] text-[12px] font-bold cursor-pointer transition-colors hover:text-[#e8edf5]"
-                          style={activeTab ? { background: "rgba(242,101,34,0.16)", color: ORANGE_LIGHT } : { color: "#8a97ab" }}
-                        >
-                          {t.label}
-                        </button>
+                      <button
+                        key={t.key}
+                        onClick={() => (t.key === "audience" ? openAudience() : t.key === "sna" ? openSna() : setAnalysisTab(t.key))}
+                        className="flex-1 text-center py-[9px] rounded-[9px] text-[12px] font-bold cursor-pointer transition-colors hover:text-[#e8edf5]"
+                        style={activeTab ? { background: "rgba(242,101,34,0.16)", color: ORANGE_LIGHT } : { color: "#8a97ab" }}
+                      >
+                        {t.label}
+                      </button>
                       );
                     })}
                   </div>
@@ -851,11 +965,32 @@ export default function MonitorPostsTab() {
                       {audTyped.length >= AUDIENCE_SEED.length && <AudienceBars />}
                     </div>
                   )}
-                  {analysisTab === "sna" && (
-                    <div className="rounded-[12px] px-4 py-8 mb-4 text-center" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
-                      <p className="text-[12px] font-semibold" style={{ color: "rgba(255,255,255,0.45)" }}>
-                        Social Network Analysis — belum tersedia
+                  {analysisTab === "sna" && snaState === "loading" && (
+                    <div className="flex flex-col gap-[9px] px-[18px] py-4 mb-4 rounded-[14px]" style={{ border: "1px solid rgba(255,255,255,0.07)", background: "#0f1621" }}>
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-[12px] font-bold" style={{ color: "#c6d0dd" }}>Analyzing Social Network</span>
+                        <span className="ml-auto text-[12px] font-extrabold" style={{ color: ORANGE_LIGHT, fontVariantNumeric: "tabular-nums" }}>
+                          {snaProgress}%
+                        </span>
+                      </div>
+                      <div className="h-[6px] rounded-[6px] overflow-hidden" style={{ background: "rgba(255,255,255,0.07)" }}>
+                        <div className="h-full rounded-[6px] transition-all duration-200 ease-linear" style={{ width: `${snaProgress}%`, background: ORANGE }} />
+                      </div>
+                    </div>
+                  )}
+                  {analysisTab === "sna" && snaState === "done" && (
+                    <div className="rounded-[12px] p-4 mb-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                      <div className="flex items-center gap-2 mb-2.5">
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#a78bfa" }} />
+                        <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.55)" }}>
+                          Social Network Analysis
+                        </p>
+                      </div>
+                      <p className="text-[13px] leading-relaxed whitespace-pre-line" style={{ color: "#c6d0dd" }}>
+                        {snaTyped}
+                        <span className="inline-block w-[2px] h-[13px] ml-1 align-middle animate-pulse" style={{ background: ORANGE_LIGHT }} />
                       </p>
+                      {snaTyped.length >= SNA_SEED.length && <SnaBars />}
                     </div>
                   )}
                 </>
