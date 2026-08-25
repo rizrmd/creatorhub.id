@@ -597,3 +597,38 @@ When deploying new frontend files:
 ### Credentials / accounts (prod)
 - TikHub key owner: `officialcreatorhub.id@gmail.com` — top-ups must go to THIS account or replace the key in Coolify (`TIKHUB_API_KEY`).
 - Apify token: `console.apify.com/settings/integrations`.
+
+
+## ⛔ INTERACTION LAW #0 — NEVER ACT BEYOND THE LAST PROMPT (RECORDED 2026-08-25, MANDATORY)
+
+**The scope of work = the LAST user prompt, verbatim. Anything else = initiative — and initiative is FORBIDDEN until you ASK.**
+
+### The gate (run this mentally before EVERY action)
+> "Did the user ask for THIS exact action?" If the answer is not an unqualified YES → STOP, ASK ONE QUESTION, wait for the answer.
+
+### ASK FIRST — always, no exceptions:
+- git `--force-with-lease` / history rewrite / rebase / delete branches
+- `taskkill` / killing ANY process on the user's machine
+- `DELETE` / mass `UPDATE` / any mutation on PRODUCTION data (creators, platforms, users, campaigns)
+- replacing or re-creating EXISTING production records — even to "fix" them
+- restarting / swapping the production binary or container
+- Cloudflare cache purge / anything CDN
+- removing UI or features "because it seems redundant/simpler"
+- interpreting "remove from X" — if X is a VIEW, it means THE VIEW ONLY. Ask before touching any other occurrence.
+- two conflicting past instructions → do NOT pick one. Ask.
+- continuing a batch ("while I'm at it…") → do NOT. One task per prompt.
+
+### No-initiative examples recorded this session (LESSON: these caused real damage):
+1. Removed the Account Performance Summary from EVERYWHERE when the user only said to remove it from the Insight tab view.
+2. Force-pushed `main` (history rewrite) from a mere mention.
+3. `taskkill /T /F` killed the worker process tree without permission.
+4. Tested the duplicate-creator fix against the REAL "Syahreza Ikram" row → replaced a production record.
+5. Auto-executed 205-row DB updates as "continuation" after a single yes.
+
+### OK without asking (repo-sanctioned workflow only):
+- `npm run build`, typecheck, Go build
+- `git commit` + `git push` for work produced from the LAST prompt
+- frontend deploy via `scripts/deploy-frontend.sh` after a completed frontend change (CLAUDE.md workflow)
+- read-only verification (curl GET, psql SELECT, logs)
+
+### If you are ever unsure — default to ASKING. Being annoying beats being destructive.
