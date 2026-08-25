@@ -706,6 +706,7 @@ export default function MonitorPostsTab() {
   const [snaProgress, setSnaProgress] = useState(0);
   const [snaTyped, setSnaTyped] = useState("");
   const [range, setRange] = useState<[Date, Date]>([new Date(2026, 5, 12), new Date(2026, 7, 24)]);
+  const [sort, setSort] = useState<"newest" | "oldest">("newest");
   const setMostRecent = () => {
     const t = new Date();
     setRange((r) => (r[0].getTime() > t.getTime() ? [t, t] : [r[0], t]));
@@ -836,7 +837,9 @@ export default function MonitorPostsTab() {
   }, []);
 
   const post = POSTS.find((p) => p.id === active) ?? POSTS[0];
-  const visible = REGULAR_POSTS.filter((p) => p.ms >= range[0].getTime() && p.ms <= range[1].getTime());
+  const visible = REGULAR_POSTS
+    .filter((p) => p.ms >= range[0].getTime() && p.ms <= range[1].getTime())
+    .sort((a, b) => (sort === "newest" ? b.ms - a.ms : a.ms - b.ms));
 
   const select = (n: number) => {
     if (active === n) return;
@@ -966,6 +969,18 @@ export default function MonitorPostsTab() {
             >
               <RefreshCw className="w-3.5 h-3.5" /> Get Most Recent
             </button>
+            <div className="inline-flex items-center rounded-lg overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.12)" }}>
+              {(["newest", "oldest"] as const).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setSort(s)}
+                  className="px-3 py-1.5 text-[12px] font-bold whitespace-nowrap transition-colors hover:bg-white/10"
+                  style={sort === s ? { background: "rgba(242,101,34,0.16)", color: ORANGE_LIGHT } : { color: "#8a97ab" }}
+                >
+                  {s === "newest" ? "Newest" : "Oldest"}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
         <div className="flex flex-col gap-3.5">
