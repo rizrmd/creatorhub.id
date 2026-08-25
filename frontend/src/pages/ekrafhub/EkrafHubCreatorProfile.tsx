@@ -223,7 +223,7 @@ export default function EkrafHubCreatorProfile() {
                 <div>
                   <p className="text-xs font-bold" style={{ color: "#F97316" }}>About Me</p>
                   <p className="text-[11px] mt-1.5 leading-relaxed" style={{ color: "rgba(255,255,255,0.85)" }}>
-                    {creator.bio || "Bio kreator belum tersedia."}
+                    Sejak kecil aku sudah punya passion besar di dunia kuliner. Dari hobi makan, akhirnya berkembang menjadi perjalanan karier sebagai Food Content Creator & Vlogger di berbagai platform sosial media. Di setiap konten, aku selalu membawa energi positif dengan tagline khas: <span className="font-bold" style={{ color: "#F97316" }}>"MARI KITA RIPHIUU!"</span>
                   </p>
                 </div>
               </div>
