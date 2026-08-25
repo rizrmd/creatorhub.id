@@ -68,7 +68,17 @@ export default function CampaignMonitoringTab() {
     { l: "Program registrations", v: "126" },
   ];
 
-  const contentItems = [
+  const MONITOR_TABLE = [
+  { level: "Output", q: "Apa yang telah dipublikasikan?", ind: "Jumlah konten, akun dan kreator aktif, platform, penggunaan #DesaKreatif, wilayah terjangkau, konsistensi jadwal" },
+  { level: "Exposure", q: "Seberapa luas konten tersebar?", ind: "Reach, impressions, views, unique viewers, video completion rate, pertumbuhan mentions" },
+  { level: "Engagement", q: "Bagaimana respons audiens?", ind: "Likes, comments, shares, saves, engagement rate, engagement per 1.000 views, organic amplification" },
+  { level: "Audience Quality", q: "Siapa yang berinteraksi?", ind: "Akun real vs suspected bots, follower range, lokasi audiens, local audience share, commenter quality" },
+  { level: "Public Response", q: "Apa yang dibicarakan publik?", ind: "Sentiment, top topics, pertanyaan publik, aspirasi, keluhan, misinformation, share of positive conversation" },
+  { level: "Outcome", q: "Tindakan apa yang terjadi?", ind: "Klik informasi, kunjungan profil, pencarian lokasi, pendaftaran program, kunjungan acara, inquiry produk, kontak kemitraan" },
+  { level: "Impact", q: "Apa manfaatnya bagi desa?", ind: "Peningkatan wisatawan, penjualan UMKM, pelaku kreatif terlibat, lapangan kerja, kemitraan, dan pendapatan desa" },
+];
+
+const contentItems = [
     { name: "Instagram Reel", v: "58.4K" },
     { name: "Instagram Carousel", v: "31.9K" },
     { name: "TikTok Video 01", v: "128.7K" },
@@ -90,9 +100,20 @@ export default function CampaignMonitoringTab() {
             <h2 className="text-2xl md:text-3xl font-extrabold text-white mt-2.5" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
               Desa Kreatif Gampong Nusa
             </h2>
-            <p className="text-[12px] mt-1" style={{ color: MUTED }}>
-              Tracking how creator-led content moves audiences from awareness to measurable action.
-            </p>
+            <div className="mt-4 rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.1)" }}>
+              <div className="grid grid-cols-2 md:grid-cols-[110px_1fr_1.4fr] gap-3 px-4 py-2.5" style={{ background: "rgba(255,255,255,0.06)" }}>
+                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.6)" }}>Level</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider hidden md:block" style={{ color: "rgba(255,255,255,0.6)" }}>Pertanyaan utama</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.6)" }}>Indikator yang dipantau</p>
+              </div>
+              {MONITOR_TABLE.map((r, i) => (
+                <div key={r.level} className="grid grid-cols-2 md:grid-cols-[110px_1fr_1.4fr] gap-3 px-4 py-2.5" style={{ borderTop: "1px solid rgba(255,255,255,0.06)", background: i % 2 === 1 ? "rgba(255,255,255,0.02)" : "transparent" }}>
+                  <p className="text-[12px] font-bold" style={{ color: "#FF8B4D" }}>{r.level}</p>
+                  <p className="text-[11.5px] hidden md:block leading-snug" style={{ color: "rgba(255,255,255,0.8)" }}>{r.q}</p>
+                  <p className="text-[11.5px] leading-snug" style={{ color: "rgba(255,255,255,0.65)" }}>{r.ind}</p>
+                </div>
+              ))}
+            </div>
             <p className="text-[11px] mt-3">
               <span style={{ color: MUTED }}>Performance Data Updated: </span>
               <span style={{ color: "#FB923C", fontWeight: 700 }}>Aug 25, 2026</span>
