@@ -348,6 +348,35 @@ function fmtUpdated(iso?: string): string {
   return `${date} | ${time}`;
 }
 
+function AnimatedNumber({ value }: { value: number }) {
+  const [display, setDisplay] = useState(0);
+  const prev = useRef(0);
+
+  useEffect(() => {
+    const from = prev.current;
+    const to = value;
+    if (from === to) { setDisplay(to); return; }
+    const start = performance.now();
+    const dur = 950;
+    let raf: number;
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - start) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const v = Math.round(from + (to - from) * eased);
+      setDisplay(v);
+      if (p < 1) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        prev.current = to;
+      }
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [value]);
+
+  return <>{display > 0 ? formatFollowers(display) : "—"}</>;
+}
+
 function SummaryCard({ title, handle, href, updateLabel, gradient, logo, metricRows, updatedAt, refreshing, onUpdate }: {
   title: string;
   handle?: string;
@@ -396,14 +425,22 @@ function SummaryCard({ title, handle, href, updateLabel, gradient, logo, metricR
         <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.55)" }}>
           {updateLabel}
         </p>
-        <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.55)" }}>Data updated on {fmtUpdated(updatedAt)}</p>
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold"
+          style={{ background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.35)" }}>
+          <span className="relative flex w-1.5 h-1.5">
+            <span className="absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping" style={{ background: "#10B981" }} />
+            <span className="relative inline-flex rounded-full h-1.5 w-1.5" style={{ background: "#10B981" }} />
+          </span>
+          <span style={{ color: "rgba(255,255,255,0.6)" }}>Data updated on</span>
+          <span style={{ color: "#6EE7B7" }}>{fmtUpdated(updatedAt)}</span>
+        </span>
       </div>
       <div className="grid grid-cols-5 gap-0">
         {metricRows.map((s, i) => (
           <div key={s.label} className={i > 0 ? sep : "pr-3"} style={{ gridColumn: title === "Instagram" && metricRows.length === 3 ? "span 1" : undefined }}>
             <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.55)" }}>{s.label}</p>
             <p className="text-lg font-extrabold text-white mt-1" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-              {s.value > 0 ? formatFollowers(s.value) : "—"}
+              <AnimatedNumber value={s.value} />
             </p>
           </div>
         ))}
