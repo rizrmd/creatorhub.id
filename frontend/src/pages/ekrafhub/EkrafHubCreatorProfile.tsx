@@ -169,7 +169,7 @@ export default function EkrafHubCreatorProfile() {
             </div>
 
             {/* Bio + handle */}
-            <p className="text-[13px] mt-3 leading-snug max-w-xl line-clamp-2" style={{ color: "rgba(255,255,255,0.8)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            <p className="text-[13px] mt-3 leading-snug max-w-2xl" style={{ color: "rgba(255,255,255,0.8)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
               {creator.bio || "Sejak kecil aku sudah punya passion besar di dunia kuliner. Dari hobi makan, akhirnya berkembang menjadi perjalanan karier sebagai Food Content Creator & Vlogger di berbagai platform sosial media. Di setiap konten, aku selalu membawa energi positif dengan tagline khas: \"MARI KITA RIPHIUUU!\""}
             </p>
             <p className="text-[13px]" style={{ color: "rgba(255,255,255,0.6)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>@{handle}</p>
