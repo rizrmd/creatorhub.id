@@ -1,7 +1,7 @@
 ﻿import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { MapPin, ArrowLeft, Info, CheckCircle, Circle, Clock, Send, Bookmark, User, Eye, CreditCard, BarChart3, RefreshCw, Loader2, ChevronLeft, ChevronRight, CalendarDays, Check } from "lucide-react";
+import { MapPin, ArrowLeft, CheckCircle, Circle, Clock, Send, Bookmark, User, Eye, CreditCard, BarChart3, RefreshCw, Loader2, ChevronLeft, ChevronRight, CalendarDays, Check } from "lucide-react";
 import { useCreator } from "@/hooks/useCreators";
 import { creatorsApi } from "@/lib/api";
 import { formatFollowers, resolveCreatorPhoto } from "@/lib/utils";
@@ -663,13 +663,6 @@ function AccountPerformanceSummary({ creatorId, igMetric, tiktokMetric, onUpdate
           onUpdate={() => update("tiktok")}
         />
       </div>
-
-      <div className="flex items-center gap-2 px-4 py-3 rounded-xl" style={{ background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.1)" }}>
-        <Info className="w-4 h-4 shrink-0" style={{ color: "#3B82F6" }} />
-        <p className="text-[11px]" style={{ color: "rgba(255,255,255,0.6)" }}>
-          Data ditampilkan per platform berdasarkan informasi yang tersedia. Periode data belum dicantumkan.
-        </p>
-      </div>
     </div>
   );
 }
@@ -1053,80 +1046,96 @@ const TERMS: string[] = [
   "Tambahan biaya apabila tempat visit jauh",
 ];
 
+function RatePanel({ title, badge, children }: { title: string; badge: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-3xl p-6" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", border: "1px solid rgba(255,255,255,0.08)" }}>
+      <div className="flex items-center gap-2.5 mb-5">
+        <div className="w-1 h-5 rounded-full" style={{ background: "linear-gradient(180deg, #F97316, #EA580C)", boxShadow: "0 0 10px rgba(249,115,22,0.5)" }} />
+        <h4 className="text-[15px] font-extrabold text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{title}</h4>
+        <span className="px-2.5 py-1 rounded-full text-[10px] font-extrabold tracking-wide" style={{ background: "rgba(249,115,22,0.14)", border: "1px solid rgba(249,115,22,0.35)", color: "#FF8B4D" }}>
+          {badge}
+        </span>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function RateRow({ label, price }: { label: string; price: string }) {
+  return (
+    <div className="flex items-center justify-between gap-3 py-2.5 border-b last:border-b-0" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
+      <p className="text-[12.5px] leading-snug" style={{ color: "rgba(255,255,255,0.8)" }}>{label}</p>
+      <span className="px-2.5 py-0.5 rounded-[8px] text-[12px] font-extrabold whitespace-nowrap shrink-0 tabular-nums" style={{ background: "rgba(249,115,22,0.12)", border: "1px solid rgba(249,115,22,0.3)", color: "#FB923C" }}>
+        {price}
+      </span>
+    </div>
+  );
+}
+
 function RateCard() {
   return (
-    <div className="space-y-6">
-      <div className="rounded-3xl p-6 md:p-8" style={{ background: "#F4EBDD", border: "1px solid #DDCBA8" }}>
-        <h3 className="text-center text-xl md:text-2xl font-extrabold tracking-wide mb-7" style={{ color: "#1E2735", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-          PRICELIST
-        </h3>
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_0.9fr] gap-5 items-start">
-          {/* TikTok */}
-          <div className="rounded-2xl p-5" style={{ background: "#131B2E", boxShadow: "0 10px 30px rgba(30,39,53,0.2)" }}>
-            <div className="flex items-center gap-2.5 mb-4">
-              <p className="text-lg font-extrabold text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Tiktok</p>
-              <span className="px-2.5 py-0.5 rounded-lg text-[11px] font-bold" style={{ background: "#F4EBDD", color: "#1E2735" }}>266K Followers</span>
+    <div className="space-y-5">
+      {/* PRICELIST */}
+      <div className="rounded-3xl p-6 md:p-7" style={{ background: "linear-gradient(180deg, #101827 0%, #080d16 100%)", border: "1px solid rgba(255,255,255,0.07)" }}>
+        <div className="flex items-center gap-2 mb-6">
+          <div className="w-3 h-[17px] rounded-[2px]" style={{ background: "#f26522", boxShadow: "0 0 10px rgba(242,101,34,0.6)" }} />
+          <h3 className="text-[17px] font-extrabold tracking-wide text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>PRICELIST</h3>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1.1fr_0.95fr] gap-5 items-start">
+          <RatePanel title="TikTok" badge="266K Followers">
+            <div className="rounded-2xl px-4 py-3 mb-4" style={{ background: "rgba(37,244,238,0.06)", border: "1px solid rgba(37,244,238,0.2)" }}>
+              <p className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: "rgba(37,244,238,0.8)" }}>Per Video</p>
+              <p className="text-[13px] font-bold mt-0.5" style={{ color: "rgba(255,255,255,0.75)" }}>500K – 1.800K</p>
             </div>
-            <div className="space-y-2.5">
-              {RATE_TIKTOK.map((r) => (
-                <div key={r.l} className="flex items-center justify-between gap-3">
-                  <p className="text-[12px] leading-snug" style={{ color: "#E8EDF5" }}>{r.l}</p>
-                  <span className="px-2 py-0.5 rounded-[6px] text-[11px] font-extrabold whitespace-nowrap shrink-0" style={{ background: "#F4EBDD", color: "#1E2735" }}>{r.p}</span>
-                </div>
-              ))}
+            <div>
+              {RATE_TIKTOK.map((r) => <RateRow key={r.l} label={r.l} price={r.p} />)}
             </div>
-          </div>
+          </RatePanel>
 
-          {/* Instagram */}
-          <div className="rounded-2xl p-5" style={{ background: "#131B2E", boxShadow: "0 10px 30px rgba(30,39,53,0.2)" }}>
-            <div className="flex items-center gap-2.5 mb-4">
-              <p className="text-lg font-extrabold text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Instagram</p>
-              <span className="px-2.5 py-0.5 rounded-lg text-[11px] font-bold" style={{ background: "#F4EBDD", color: "#1E2735" }}>26K Followers</span>
+          <RatePanel title="Instagram" badge="26K Followers">
+            <div className="rounded-2xl px-4 py-3 mb-4" style={{ background: "rgba(253,29,29,0.06)", border: "1px solid rgba(253,29,29,0.2)" }}>
+              <p className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: "rgba(248,113,113,0.85)" }}>Per Content</p>
+              <p className="text-[13px] font-bold mt-0.5" style={{ color: "rgba(255,255,255,0.75)" }}>150K – 1.000K</p>
             </div>
-            <div className="space-y-2.5">
-              {RATE_INSTAGRAM.map((r) => (
-                <div key={r.l} className="flex items-center justify-between gap-3">
-                  <p className="text-[12px] leading-snug" style={{ color: "#E8EDF5" }}>{r.l}</p>
-                  <span className="px-2 py-0.5 rounded-[6px] text-[11px] font-extrabold whitespace-nowrap shrink-0" style={{ background: "#F4EBDD", color: "#1E2735" }}>{r.p}</span>
-                </div>
-              ))}
+            <div>
+              {RATE_INSTAGRAM.map((r) => <RateRow key={r.l} label={r.l} price={r.p} />)}
             </div>
-          </div>
+          </RatePanel>
 
-          {/* Brand Ambassador */}
-          <div className="rounded-2xl p-5" style={{ background: "#131B2E", boxShadow: "0 10px 30px rgba(30,39,53,0.2)" }}>
-            <p className="text-lg font-extrabold text-white mt-1 mb-3" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Brand Ambassador</p>
-            <span className="inline-block px-2.5 py-0.5 rounded-lg text-[11px] font-extrabold mb-5" style={{ background: "#F4EBDD", color: "#1E2735" }}>
-              15.000K /3Months
-            </span>
-            <ul className="space-y-3">
+          <RatePanel title="Brand Ambassador" badge="15.000K /3Months">
+            <ul className="space-y-3.5">
               {BRAND_AMBASSADOR.map((b) => (
-                <li key={b.t} className="flex items-start gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style={{ background: "#F4EBDD" }} />
+                <li key={b.t} className="flex items-start gap-2.5">
+                  <div className="w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5" style={{ background: "rgba(249,115,22,0.15)" }}>
+                    <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#FB923C" }} />
+                  </div>
                   <div>
                     <p className="text-[13px] font-bold leading-snug" style={{ color: "#fff" }}>{b.t}</p>
-                    {b.s && <p className="text-[11px] leading-snug" style={{ color: "rgba(255,255,255,0.55)" }}>{b.s}</p>}
+                    {b.s && <p className="text-[11px] leading-snug" style={{ color: "rgba(255,255,255,0.5)" }}>{b.s}</p>}
                   </div>
                 </li>
               ))}
             </ul>
-          </div>
+          </RatePanel>
         </div>
       </div>
 
-      {/* Term & Condition */}
-      <div className="rounded-3xl p-6 md:p-8" style={{ background: "#F4EBDD", border: "1px solid #DDCBA8" }}>
-        <h3 className="text-center text-xl md:text-2xl font-extrabold tracking-widest mb-6" style={{ color: "#1E2735", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-          TERM & CONDITION
-        </h3>
-        <ul className="max-w-2xl mx-auto space-y-2.5">
-          {TERMS.map((t) => (
-            <li key={t} className="flex items-start gap-2.5">
-              <span className="mt-1.5 text-[14px] shrink-0" style={{ color: "#1E2735" }}>•</span>
-              <p className="text-[13.5px] font-semibold leading-snug" style={{ color: "#1E2735" }}>{t}</p>
-            </li>
+      {/* TERM & CONDITION */}
+      <div className="rounded-3xl p-6 md:p-7" style={{ background: "linear-gradient(180deg, #101827 0%, #080d16 100%)", border: "1px solid rgba(255,255,255,0.07)" }}>
+        <div className="flex items-center gap-2 mb-6">
+          <div className="w-3 h-[17px] rounded-[2px]" style={{ background: "#f26522", boxShadow: "0 0 10px rgba(242,101,34,0.6)" }} />
+          <h3 className="text-[17px] font-extrabold tracking-widest text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>TERM & CONDITION</h3>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-10 gap-y-3">
+          {TERMS.map((t, i) => (
+            <div key={t} className="flex items-start gap-3 rounded-2xl px-3.5 py-3" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+              <span className="w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-extrabold shrink-0" style={{ background: "rgba(249,115,22,0.14)", color: "#FB923C" }}>
+                {i + 1}
+              </span>
+              <p className="text-[12.5px] font-semibold leading-snug" style={{ color: "rgba(255,255,255,0.85)" }}>{t}</p>
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
     </div>
   );
