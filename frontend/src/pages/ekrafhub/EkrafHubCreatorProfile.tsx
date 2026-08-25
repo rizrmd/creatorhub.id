@@ -50,22 +50,22 @@ const MegaphoneIcon = ({ className, style }: { className?: string; style?: React
   </svg>
 );
 
-const EXISTING_BRANDS: { name: string; icon: string; bg: string; color: string; border?: string }[] = [
-  { name: "Yamaha", icon: "Y", bg: "#D01325", color: "#fff" },
-  { name: "Honda", icon: "H", bg: "#E60012", color: "#fff" },
-  { name: "Shopee", icon: "S", bg: "#EE4D2D", color: "#fff" },
-  { name: "Aceh", icon: "A", bg: "#22456B", color: "#fff" },
-  { name: "Indosat", icon: "i", bg: "#E62B1E", color: "#FFD400" },
-  { name: "McDonald's", icon: "M", bg: "#FFC72C", color: "#DA291C" },
-  { name: "KFC", icon: "K", bg: "#B5050A", color: "#fff" },
-  { name: "Scarlett", icon: "S", bg: "#FFFFFF", color: "#111111", border: "#111111" },
-  { name: "Teh Kotak", icon: "T", bg: "#6D4C2F", color: "#fff" },
-  { name: "Yupi", icon: "Y", bg: "#EC1E24", color: "#fff" },
-  { name: "Tokopedia", icon: "T", bg: "#F7F4E9", color: "#17A053", border: "#17A053" },
-  { name: "Telkomsel", icon: "T", bg: "#ED0101", color: "#fff" },
-  { name: "Lemonilo", icon: "L", bg: "#EFF5E3", color: "#7BA839", border: "#7BA839" },
-  { name: "MS Glow", icon: "M", bg: "#101010", color: "#fff" },
-  { name: "Smartfren", icon: "S", bg: "#EE4E9B", color: "#fff" },
+const EXISTING_BRANDS: { name: string; letter?: string; letterColor?: string; logo?: string }[] = [
+  { name: "Yamaha", logo: "/collaborations/yamaha.svg" },
+  { name: "Honda", logo: "/collaborations/honda.svg" },
+  { name: "Shopee", logo: "/collaborations/shopee.svg" },
+  { name: "Aceh", logo: "/collaborations/aceh.png" },
+  { name: "Indosat", logo: "/collaborations/indosat.svg" },
+  { name: "McDonald's", logo: "/collaborations/mcdonalds.svg" },
+  { name: "KFC", logo: "/collaborations/kfc.svg" },
+  { name: "Scarlett", logo: "/collaborations/scarlett.svg" },
+  { name: "Teh Kotak", letter: "T", letterColor: "#FFC933" },
+  { name: "Yupi", letter: "Y", letterColor: "#FF4757" },
+  { name: "Tokopedia", logo: "/collaborations/tokopedia.svg" },
+  { name: "Telkomsel", logo: "/collaborations/telkomsel.svg" },
+  { name: "Lemonilo", logo: "/collaborations/lemonilo.png" },
+  { name: "MS Glow", letter: "M", letterColor: "#fff" },
+  { name: "Smartfren", logo: "/collaborations/smartfren.svg" },
 ];
 
 const PREVIOUS_BRANDS: string[][] = [
@@ -390,21 +390,31 @@ export default function EkrafHubCreatorProfile() {
                 <div className="w-[3px] h-[17px] rounded-[2px]" style={{ background: "#f26522" }} />
                 <h2 className="text-[17px] font-bold text-white">Existing Collaborations</h2>
               </div>
-              <div className="rounded-3xl p-6 md:p-8" style={{ background: "#F4EBDD", border: "1px solid #DDCBA8" }}>
-                <p className="text-center text-[13px] italic font-semibold mb-0.5" style={{ color: "#8A7A5C" }}>Latest</p>
-                <h3 className="text-center text-xl md:text-2xl font-extrabold tracking-wide mb-6" style={{ color: "#1E2735", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+              <div className="rounded-3xl p-6 md:p-8" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                <p className="text-center text-[13px] italic font-semibold mb-0.5" style={{ color: "#FF9A5C" }}>Latest</p>
+                <h3 className="text-center text-xl md:text-2xl font-extrabold tracking-wide mb-6" style={{ color: "#fff", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                   BRAND COLLABORATION
                 </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-4 gap-y-5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-4 gap-y-6">
                   {EXISTING_BRANDS.map((b) => (
-                    <div key={b.name} className="flex flex-col items-center gap-1.5">
+                    <div key={b.name} className="flex flex-col items-center gap-2">
                       <div
-                        className="w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-extrabold border-2"
-                        style={{ background: b.bg, color: b.color, borderColor: b.border ?? "transparent", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                        className="w-[72px] h-[72px] rounded-2xl flex items-center justify-center"
+                        style={{
+                          background: "rgba(255,255,255,0.05)",
+                          border: "1px solid rgba(255,255,255,0.16)",
+                          boxShadow: "0 0 14px rgba(255,255,255,0.22), inset 0 1px 0 rgba(255,255,255,0.12)",
+                        }}
                       >
-                        {b.icon}
+                        {b.logo ? (
+                          <img src={b.logo} alt={b.name} className="object-contain max-h-10 max-w-[52px]" />
+                        ) : (
+                          <span className="text-2xl font-extrabold" style={{ color: b.letterColor, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                            {b.letter}
+                          </span>
+                        )}
                       </div>
-                      <span className="text-[12px] font-bold text-center" style={{ color: "#1E2735" }}>{b.name}</span>
+                      <span className="text-[11px] font-semibold text-center" style={{ color: "rgba(255,255,255,0.65)" }}>{b.name}</span>
                     </div>
                   ))}
                 </div>
