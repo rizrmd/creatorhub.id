@@ -529,7 +529,7 @@ function CalendarPicker({ range, onChange }: { range: [Date, Date]; onChange: (r
   const [start, end] = range;
   const isInRange = (d: Date) => start && end && d.getTime() > start.getTime() && d.getTime() < end.getTime();
 
-  const label = `${start.getDate()} ${MONTHS[start.getMonth()]}–${end.getDate()} ${MONTHS[end.getMonth()]} • ${daysBetween(start, end)} hari terakhir`;
+  const label = `${start.getDate()} ${MONTHS[start.getMonth()]} ${start.getFullYear()} – ${end.getDate()} ${MONTHS[end.getMonth()]} ${end.getFullYear()} • ${daysBetween(start, end)} hari terakhir`;
 
   const grid: (Date | null)[] = [];
   const firstDay = new Date(view.getFullYear(), view.getMonth(), 1).getDay();
