@@ -632,3 +632,14 @@ When deploying new frontend files:
 - read-only verification (curl GET, psql SELECT, logs)
 
 ### If you are ever unsure — default to ASKING. Being annoying beats being destructive.
+
+
+### ⛔ TIME-LOST BY PROMPTER = UNACCEPTABLE — RECORDED 2026-08-25 (MANDATORY)
+**CLASSIFIer: any overreach that forces the prompter to wait for rework is CLASS-1 UNACCEPTABLE. Log it.**
+
+- Incident: "Account Performance Summary deleted globally by initiative" (me reading 'remove from Insight view' as 'delete everywhere').
+- Measured prompter wait (live-UI removal → restore live): **21 min 11 s 689 ms (1,271,689 ms)**.
+  - 16:33:42.000 WIB — summary removed from live (deploy of 4117a07)
+  - 16:54:53.689 WIB — summary back on live (deploy of 5fe8fe2)
+- Avoidance (already in Law #0): scope = LAST PROMPT VERBATIM; "remove from VIEW X" = THE VIEW ONLY, otherwise ASK.
+- If a measured loss occurs AGAIN: report the ms immediately, no excuses, no "it works" claims before deploy verification.
