@@ -1,7 +1,7 @@
 ﻿import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { MapPin, ArrowLeft, Info, CheckCircle, Circle, Clock, Send, Bookmark, User, Eye, CreditCard, RefreshCw, Loader2 } from "lucide-react";
+import { MapPin, ArrowLeft, Info, CheckCircle, Circle, Clock, Send, Bookmark, User, Eye, CreditCard, BarChart3, RefreshCw, Loader2 } from "lucide-react";
 import { useCreator } from "@/hooks/useCreators";
 import { creatorsApi } from "@/lib/api";
 import { formatFollowers, resolveCreatorPhoto } from "@/lib/utils";
@@ -32,10 +32,11 @@ const IgLogo = ({ className }: { className?: string }) => (
   </svg>
 );
 
-type TabKey = "profile" | "posts" | "rate";
+type TabKey = "profile" | "insight" | "posts" | "rate";
 
 const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
   { key: "profile", label: "Profile", icon: <User className="w-3.5 h-3.5" /> },
+  { key: "insight", label: "Insight", icon: <BarChart3 className="w-3.5 h-3.5" /> },
   { key: "posts", label: "Monitor Posts", icon: <Eye className="w-3.5 h-3.5" /> },
   { key: "rate", label: "Rate Card", icon: <CreditCard className="w-3.5 h-3.5" /> },
 ];
@@ -314,6 +315,10 @@ export default function EkrafHubCreatorProfile() {
           </div>
         )}
 
+        {tab === "insight" && (
+          <InsightTab creatorName={creator.name} photoSrc={photoSrc ?? ""} igHandle={igMetric?.handle || handle} tiktokHandle={tiktokMetric?.handle || handle} />
+        )}
+
         {tab === "posts" && (
           <div className="mx-6">
             <MonitorPosts handle={igMetric?.handle || (creator.platforms.includes("instagram") ? handle : "")} />
@@ -466,6 +471,239 @@ function AccountPerformanceSummary({ creatorId, igMetric, tiktokMetric, onUpdate
           Data ditampilkan per platform berdasarkan informasi yang tersedia. Periode data belum dicantumkan.
         </p>
       </div>
+    </div>
+  );
+}
+
+function Delta({ up, suffix }: { up: boolean; suffix: string }) {
+  return (
+    <span className="inline-flex items-center gap-0.5" style={{ color: up ? "#10B981" : "#EF4444" }}>
+      <svg className="w-2 h-2" viewBox="0 0 12 12" fill="currentColor" style={{ transform: up ? undefined : "rotate(180deg)" }}>
+        <path d="M6 2l4 5H2z" />
+      </svg>
+      {suffix}
+    </span>
+  );
+}
+
+function PanelCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl p-5" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", boxShadow: "0 4px 24px rgba(0,0,0,0.35)", border: "1px solid rgba(255,255,255,0.06)" }}>
+      <p className="text-[12px] font-bold text-white mb-4">{title}</p>
+      {children}
+    </div>
+  );
+}
+
+function InsightTab({ creatorName, photoSrc, igHandle, tiktokHandle }: {
+  creatorName: string; photoSrc: string; igHandle: string; tiktokHandle: string;
+}) {
+  const panelBorder = { border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.04)" };
+  const igBar = "linear-gradient(90deg, #F97316, #FB923C)";
+  const ttBar = "linear-gradient(90deg, #22D3EE, #A78BFA)";
+
+  return (
+    <div className="mx-6 space-y-4">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+        <div>
+          <p className="text-[10px] font-bold tracking-[0.25em]" style={{ color: "#F97316", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>CREATORHUB.ID</p>
+          <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight mt-1" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            Creator Performance Overview
+          </h2>
+          <p className="text-[12px] mt-1" style={{ color: "rgba(255,255,255,0.55)" }}>
+            {creatorName} • ringkasan insight berdasarkan data yang tersedia pada screenshot
+          </p>
+        </div>
+        <span className="inline-flex items-center px-4 py-2 rounded-lg text-[11px] font-bold text-cyan-300" style={{ border: "1px solid rgba(34,211,238,0.4)", background: "rgba(34,211,238,0.08)" }}>
+          SOCIAL ANALYTICS
+        </span>
+      </div>
+
+      {/* Platform rows */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {[
+          { title: "Instagram", sub: "18 Agu–16 Sep • 30 hari terakhir", link: `instagram.com/${igHandle}`, href: `https://www.instagram.com/${igHandle.replace(/^@/, "")}`, logo: <IgLogo className="w-7 h-7" />, avatar: photoSrc },
+          { title: "TikTok", sub: "19 Agu–15 Sep • 28 hari terakhir", link: `tiktok.com/${tiktokHandle}`, href: `https://www.tiktok.com/${tiktokHandle.replace(/^@/, "")}`, logo: <TiktokIcon className="w-5 h-5 text-white" />, avatar: photoSrc },
+        ].map((p) => (
+          <div key={p.title} className="rounded-2xl p-4 flex items-center gap-3" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", border: "1px solid rgba(255,255,255,0.08)" }}>
+            <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ background: p.title === "Instagram" ? "linear-gradient(135deg, rgba(253,29,29,0.25), rgba(131,58,180,0.25), rgba(247,119,55,0.25))" : "#000000" }}>
+              {p.logo}
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <p className="text-[15px] font-bold text-white">{p.title}</p>
+                <span className="px-1.5 py-0.5 rounded text-[9px] font-extrabold tracking-wider text-white" style={{ background: "#F97316" }}>INSIGHT</span>
+              </div>
+              <p className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.5)" }}>{p.sub}</p>
+            </div>
+            <div className="flex-1" />
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-10 h-10 rounded-full overflow-hidden shrink-0" style={{ border: "2px solid #F97316" }}>
+                {p.avatar ? <img src={p.avatar} alt={creatorName} className="w-full h-full object-cover" /> : null}
+              </div>
+              <div className="min-w-0">
+                <p className="text-[12px] font-bold text-white truncate">@{p.title === "Instagram" ? igHandle : tiktokHandle}</p>
+                <a href={p.href} target="_blank" rel="noopener noreferrer" className="block text-[10px] truncate hover:underline" style={{ color: "rgba(255,255,255,0.45)" }}>
+                  {p.link} <span style={{ color: "rgba(255,255,255,0.45)" }}>›</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Two columns */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+        {/* Left — Instagram */}
+        <div className="space-y-4">
+          <PanelCard title="Ringkasan utama">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-xl p-4" style={{ background: "#1F2937" }}>
+                <p className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: "rgba(255,255,255,0.55)" }}>Tayangan</p>
+                <p className="text-2xl font-extrabold text-white mt-1.5" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>586.854</p>
+              </div>
+              <div className="rounded-xl p-4" style={{ background: "rgba(255,255,255,0.04)" }}>
+                <p className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: "rgba(255,255,255,0.55)" }}>Akun yang dijangkau</p>
+                <p className="text-2xl font-extrabold text-white mt-1.5" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                  81.143 <Delta up={false} suffix="7.5%" />
+                </p>
+              </div>
+            </div>
+          </PanelCard>
+
+          <PanelCard title="Sumber tayangan">
+            {[
+              { label: "Pengikut", value: "63%", pct: 63, bg: igBar },
+              { label: "Bukan pengikut", value: "37%", pct: 37, bg: "linear-gradient(90deg, #D946EF, #F472B6)" },
+            ].map((r) => (
+              <div key={r.label} className="mb-3 last:mb-0">
+                <div className="flex items-center justify-between mb-1.5">
+                  <p className="text-[12px]" style={{ color: "rgba(255,255,255,0.75)" }}>{r.label}</p>
+                  <p className="text-[12px] font-bold text-white">{r.value}</p>
+                </div>
+                <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
+                  <div className="h-full rounded-full" style={{ width: `${r.pct}%`, background: r.bg }} />
+                </div>
+              </div>
+            ))}
+          </PanelCard>
+
+          <PanelCard title="Tayangan berdasarkan jenis konten">
+            <div className="rounded-lg overflow-hidden" style={panelBorder}>
+              <div className="grid grid-cols-2 px-3 py-2" style={{ background: "rgba(255,255,255,0.05)" }}>
+                <p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.5)" }}>Jenis Konten</p>
+                <p className="text-[9px] font-bold uppercase tracking-wider text-right" style={{ color: "rgba(255,255,255,0.5)" }}>Kontribusi</p>
+              </div>
+              {[
+                ["Cerita", "79.4%"],
+                ["Reel", "11.7%"],
+                ["Postingan", "8.9%"],
+                ["Video / Siaran langsung", "0.0%"],
+              ].map(([k, v], i) => (
+                <div key={k} className="grid grid-cols-2 px-3 py-2.5" style={{ borderTop: i > 0 ? "1px solid rgba(255,255,255,0.06)" : undefined }}>
+                  <p className="text-[12px]" style={{ color: "rgba(255,255,255,0.8)" }}>{k}</p>
+                  <p className="text-[12px] font-bold text-white text-right">{v}</p>
+                </div>
+              ))}
+            </div>
+          </PanelCard>
+
+          <PanelCard title="Konten populer berdasarkan tayangan">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { v: "8,3 rb", d: "22 Agu" },
+                { v: "8,2 rb", d: "30 Agu" },
+                { v: "7,8 rb", d: "31 Agu" },
+                { v: "7,7 rb", d: "26 Agu" },
+              ].map((c) => (
+                <div key={c.d} className="rounded-xl p-3 text-center" style={{ background: "#1F2937" }}>
+                  <p className="text-[15px] font-extrabold text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{c.v}</p>
+                  <p className="text-[10px] mt-0.5" style={{ color: "rgba(255,255,255,0.5)" }}>{c.d}</p>
+                </div>
+              ))}
+            </div>
+          </PanelCard>
+        </div>
+
+        {/* Right — TikTok */}
+        <div className="space-y-4">
+          <PanelCard title="Metrik utama">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {[
+                { l: "Tayangan postingan", v: "6,5 jt", d: <Delta up suffix="1.5" /> },
+                { l: "Tampilan profil", v: "28 rb", d: <Delta up suffix="2.7 jt" /> },
+                { l: "Suka", v: "546 rb", d: <Delta up suffix="24 rb" /> },
+                { l: "Komentar", v: "964", d: <Delta up={false} suffix="38%" /> },
+                { l: "Bagikan", v: "15 rb", d: <Delta up={false} suffix="31.1 jt" /> },
+                { l: "Perkiraan reward", v: "$0.14", d: <Delta up={false} suffix="40.1 jt" />, dark: true },
+              ].map((s) => (
+                <div key={s.l} className="rounded-xl p-3" style={{ background: s.dark ? "#2A1215" : "rgba(255,255,255,0.04)" }}>
+                  <p className="text-[9px] uppercase tracking-wider font-semibold" style={{ color: "rgba(255,255,255,0.5)" }}>{s.l}</p>
+                  <p className="text-[17px] font-extrabold text-white mt-1 flex items-center gap-1.5" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                    {s.v} {s.d}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </PanelCard>
+
+          <PanelCard title="Pertumbuhan penonton">
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { l: "Total penonton", v: "4,8 jt", d: <Delta up suffix="6 jt" /> },
+                { l: "Penonton baru", v: "1,8 jt", d: <Delta up suffix="6 jt" /> },
+              ].map((s) => (
+                <div key={s.l} className="rounded-xl p-4" style={{ background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.2)" }}>
+                  <p className="text-[10px] font-semibold" style={{ color: "rgba(16,185,129,0.9)" }}>{s.l}</p>
+                  <p className="text-2xl font-extrabold text-white mt-1.5" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                    {s.v} {s.d}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </PanelCard>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <PanelCard title="Usia penonton">
+              {[
+                { l: "18-24", v: "53.3%", pct: 53.3 },
+                { l: "25-34", v: "36.8%", pct: 36.8 },
+                { l: "35-44", v: "5.6%", pct: 5.6 },
+                { l: "45-54", v: "1.9%", pct: 1.9 },
+                { l: "55+", v: "2.6%", pct: 2.6 },
+              ].map((r) => (
+                <div key={r.l} className="flex items-center gap-3 mb-2.5 last:mb-0">
+                  <span className="w-9 text-[11px] shrink-0" style={{ color: "rgba(255,255,255,0.65)" }}>{r.l}</span>
+                  <div className="h-1.5 flex-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
+                    <div className="h-full rounded-full" style={{ width: `${r.pct}%`, background: ttBar }} />
+                  </div>
+                  <span className="w-12 text-right text-[11px] font-bold text-white shrink-0">{r.v}</span>
+                </div>
+              ))}
+            </PanelCard>
+
+            <PanelCard title="Gender">
+              {[
+                { l: "Pria", v: "8%", c: "#3B82F6" },
+                { l: "Perempuan", v: "89%", c: "#F97316" },
+                { l: "Lainnya", v: "3%", c: "#FBBF24" },
+              ].map((g) => (
+                <div key={g.l} className="flex items-center gap-3 mb-3 last:mb-0">
+                  <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: g.c }} />
+                  <span className="flex-1 text-[12px]" style={{ color: "rgba(255,255,255,0.75)" }}>{g.l}</span>
+                  <span className="text-[12px] font-bold text-white">{g.v}</span>
+                </div>
+              ))}
+            </PanelCard>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer note */}
+      <p className="text-center text-[10px] pt-1" style={{ color: "rgba(255,255,255,0.45)" }}>
+        Sumber: Instagram Insight & TikTok Analytics {creatorName} • Data disajikan dari tampilan yang terlihat pada screenshot
+      </p>
     </div>
   );
 }
