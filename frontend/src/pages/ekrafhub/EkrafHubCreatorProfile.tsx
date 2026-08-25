@@ -200,11 +200,11 @@ export default function EkrafHubCreatorProfile() {
             <div className="flex items-center gap-3 mt-4">
               <button className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold text-white transition-all hover:scale-[1.03]"
                 style={{ background: "linear-gradient(135deg, #F97316, #EA580C)", boxShadow: "0 8px 24px rgba(249,115,22,0.35)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                <Send className="w-4 h-4" /> Hubungi Kreator
+                <Send className="w-4 h-4" /> Contact Creator
               </button>
               <button className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-[13px] font-bold transition-colors hover:bg-white/5"
                 style={{ border: "1px solid rgba(255,255,255,0.2)", color: "rgba(255,255,255,0.85)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                <Bookmark className="w-4 h-4" /> Simpan Profil
+                <Bookmark className="w-4 h-4" /> Save Profile
               </button>
             </div>
           </div>
@@ -612,8 +612,8 @@ const SUBMITTED_TAG = (
   </span>
 );
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-const DAY_LABELS = ["S", "S", "R", "K", "J", "S", "M"];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const DAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
 
 function CalendarPicker({ range, onChange }: { range: [Date, Date]; onChange: (r: [Date, Date]) => void }) {
   const [open, setOpen] = useState(false);
@@ -632,7 +632,7 @@ function CalendarPicker({ range, onChange }: { range: [Date, Date]; onChange: (r
   const [start, end] = range;
   const isInRange = (d: Date) => start && end && d.getTime() > start.getTime() && d.getTime() < end.getTime();
 
-  const label = `${start.getDate()} ${MONTHS[start.getMonth()]} ${start.getFullYear()} – ${end.getDate()} ${MONTHS[end.getMonth()]} ${end.getFullYear()} • ${daysBetween(start, end)} hari terakhir`;
+  const label = `${start.getDate()} ${MONTHS[start.getMonth()]} ${start.getFullYear()} – ${end.getDate()} ${MONTHS[end.getMonth()]} ${end.getFullYear()} • ${daysBetween(start, end)} days`;
 
   const grid: (Date | null)[] = [];
   const firstDay = new Date(view.getFullYear(), view.getMonth(), 1).getDay();
@@ -672,7 +672,7 @@ function CalendarPicker({ range, onChange }: { range: [Date, Date]; onChange: (r
             </button>
           </div>
           <p className="text-[10px] mb-1.5 text-center" style={{ color: "rgba(255,255,255,0.45)" }}>
-            {selecting === "start" ? "Pilih tanggal mulai" : "Pilih tanggal selesai"}
+            {selecting === "start" ? "Select start date" : "Select end date"}
           </p>
           <div className="grid grid-cols-7 gap-y-0.5">
             {DAY_LABELS.map((d, i) => (
@@ -728,7 +728,7 @@ function InsightTab({ creatorId, creatorName, photoSrc, igHandle, tiktokHandle }
             Creator Performance Overview
           </h2>
           <p className="text-[12px] mt-1" style={{ color: "rgba(255,255,255,0.55)" }}>
-            {creatorName} • ringkasan insight berdasarkan data yang tersedia pada screenshot
+            {creatorName} • insight summary based on data available in screenshots
           </p>
         </div>
         <span className="inline-flex items-center px-4 py-2 rounded-lg text-[11px] font-bold text-cyan-300" style={{ border: "1px solid rgba(34,211,238,0.4)", background: "rgba(34,211,238,0.08)" }}>
@@ -775,14 +775,14 @@ function InsightTab({ creatorId, creatorName, photoSrc, igHandle, tiktokHandle }
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
         {/* Left — Instagram */}
         <div className="space-y-4">
-          <PanelCard title="Ringkasan utama" tag={SUBMITTED_TAG}>
+          <PanelCard title="Overview" tag={SUBMITTED_TAG}>
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-xl p-4" style={{ background: "#1F2937" }}>
-                <p className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: "rgba(255,255,255,0.55)" }}>Tayangan</p>
+                <p className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: "rgba(255,255,255,0.55)" }}>Impressions</p>
                 <p className="text-2xl font-extrabold text-white mt-1.5" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>586.854</p>
               </div>
               <div className="rounded-xl p-4" style={{ background: "rgba(255,255,255,0.04)" }}>
-                <p className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: "rgba(255,255,255,0.55)" }}>Akun yang dijangkau</p>
+                <p className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: "rgba(255,255,255,0.55)" }}>Accounts reached</p>
                 <p className="text-2xl font-extrabold text-white mt-1.5" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                   81.143 <Delta up={false} suffix="7.5%" />
                 </p>
@@ -790,10 +790,10 @@ function InsightTab({ creatorId, creatorName, photoSrc, igHandle, tiktokHandle }
             </div>
           </PanelCard>
 
-          <PanelCard title="Sumber tayangan">
+          <PanelCard title="Impressions source">
             {[
-              { label: "Pengikut", value: "63%", pct: 63, bg: igBar },
-              { label: "Bukan pengikut", value: "37%", pct: 37, bg: "linear-gradient(90deg, #D946EF, #F472B6)" },
+              { label: "Followers", value: "63%", pct: 63, bg: igBar },
+              { label: "Non-followers", value: "37%", pct: 37, bg: "linear-gradient(90deg, #D946EF, #F472B6)" },
             ].map((r) => (
               <div key={r.label} className="mb-3 last:mb-0">
                 <div className="flex items-center justify-between mb-1.5">
@@ -807,17 +807,17 @@ function InsightTab({ creatorId, creatorName, photoSrc, igHandle, tiktokHandle }
             ))}
           </PanelCard>
 
-          <PanelCard title="Tayangan berdasarkan jenis konten">
+          <PanelCard title="Impressions by content type">
             <div className="rounded-lg overflow-hidden" style={panelBorder}>
               <div className="grid grid-cols-2 px-3 py-2" style={{ background: "rgba(255,255,255,0.05)" }}>
-                <p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.5)" }}>Jenis Konten</p>
-                <p className="text-[9px] font-bold uppercase tracking-wider text-right" style={{ color: "rgba(255,255,255,0.5)" }}>Kontribusi</p>
+                <p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.5)" }}>Content type</p>
+                <p className="text-[9px] font-bold uppercase tracking-wider text-right" style={{ color: "rgba(255,255,255,0.5)" }}>Contribution</p>
               </div>
               {[
-                ["Cerita", "79.4%"],
-                ["Reel", "11.7%"],
-                ["Postingan", "8.9%"],
-                ["Video / Siaran langsung", "0.0%"],
+                ["Stories", "79.4%"],
+                ["Reels", "11.7%"],
+                ["Posts", "8.9%"],
+                ["Video / Live", "0.0%"],
               ].map(([k, v], i) => (
                 <div key={k} className="grid grid-cols-2 px-3 py-2.5" style={{ borderTop: i > 0 ? "1px solid rgba(255,255,255,0.06)" : undefined }}>
                   <p className="text-[12px]" style={{ color: "rgba(255,255,255,0.8)" }}>{k}</p>
@@ -827,13 +827,13 @@ function InsightTab({ creatorId, creatorName, photoSrc, igHandle, tiktokHandle }
             </div>
           </PanelCard>
 
-          <PanelCard title="Konten populer berdasarkan tayangan">
+          <PanelCard title="Popular content by impressions">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { v: "8,3 rb", d: "22 Agu" },
-                { v: "8,2 rb", d: "30 Agu" },
-                { v: "7,8 rb", d: "31 Agu" },
-                { v: "7,7 rb", d: "26 Agu" },
+                { v: "8.3K", d: "Aug 22" },
+                { v: "8.2K", d: "Aug 30" },
+                { v: "7.8K", d: "Aug 31" },
+                { v: "7.7K", d: "Aug 26" },
               ].map((c) => (
                 <div key={c.d} className="rounded-xl p-3 text-center" style={{ background: "#1F2937" }}>
                   <p className="text-[15px] font-extrabold text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{c.v}</p>
@@ -846,15 +846,15 @@ function InsightTab({ creatorId, creatorName, photoSrc, igHandle, tiktokHandle }
 
         {/* Right — TikTok */}
         <div className="space-y-4">
-          <PanelCard title="Metrik utama" tag={SUBMITTED_TAG}>
+          <PanelCard title="Key metrics" tag={SUBMITTED_TAG}>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {[
-                { l: "Tayangan postingan", v: "6,5 jt", d: <Delta up suffix="1.5" /> },
-                { l: "Tampilan profil", v: "28 rb", d: <Delta up suffix="2.7 jt" /> },
-                { l: "Suka", v: "546 rb", d: <Delta up suffix="24 rb" /> },
-                { l: "Komentar", v: "964", d: <Delta up={false} suffix="38%" /> },
-                { l: "Bagikan", v: "15 rb", d: <Delta up={false} suffix="31.1 jt" /> },
-                { l: "Perkiraan reward", v: "$0.14", d: <Delta up={false} suffix="40.1 jt" />, dark: true },
+                { l: "Video views", v: "6.5M", d: <Delta up suffix="1.5" /> },
+                { l: "Profile views", v: "28K", d: <Delta up suffix="2.7M" /> },
+                { l: "Likes", v: "546K", d: <Delta up suffix="24K" /> },
+                { l: "Comments", v: "964", d: <Delta up={false} suffix="38%" /> },
+                { l: "Shares", v: "15K", d: <Delta up={false} suffix="31.1M" /> },
+                { l: "Estimated reward", v: "$0.14", d: <Delta up={false} suffix="40.1M" />, dark: true },
               ].map((s) => (
                 <div key={s.l} className="rounded-xl p-3" style={{ background: s.dark ? "#2A1215" : "rgba(255,255,255,0.04)" }}>
                   <p className="text-[9px] uppercase tracking-wider font-semibold" style={{ color: "rgba(255,255,255,0.5)" }}>{s.l}</p>
@@ -866,11 +866,11 @@ function InsightTab({ creatorId, creatorName, photoSrc, igHandle, tiktokHandle }
             </div>
           </PanelCard>
 
-          <PanelCard title="Pertumbuhan penonton">
+          <PanelCard title="Audience growth">
             <div className="grid grid-cols-2 gap-3">
               {[
-                { l: "Total penonton", v: "4,8 jt", d: <Delta up suffix="6 jt" /> },
-                { l: "Penonton baru", v: "1,8 jt", d: <Delta up suffix="6 jt" /> },
+                { l: "Total viewers", v: "4.8M", d: <Delta up suffix="6M" /> },
+                { l: "New viewers", v: "1.8M", d: <Delta up suffix="6M" /> },
               ].map((s) => (
                 <div key={s.l} className="rounded-xl p-4" style={{ background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.2)" }}>
                   <p className="text-[10px] font-semibold" style={{ color: "rgba(16,185,129,0.9)" }}>{s.l}</p>
@@ -883,7 +883,7 @@ function InsightTab({ creatorId, creatorName, photoSrc, igHandle, tiktokHandle }
           </PanelCard>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <PanelCard title="Usia penonton">
+            <PanelCard title="Viewer age">
               {[
                 { l: "18-24", v: "53.3%", pct: 53.3 },
                 { l: "25-34", v: "36.8%", pct: 36.8 },
@@ -903,9 +903,9 @@ function InsightTab({ creatorId, creatorName, photoSrc, igHandle, tiktokHandle }
 
             <PanelCard title="Gender">
               {[
-                { l: "Pria", v: "8%", c: "#3B82F6" },
-                { l: "Perempuan", v: "89%", c: "#F97316" },
-                { l: "Lainnya", v: "3%", c: "#FBBF24" },
+                { l: "Male", v: "8%", c: "#3B82F6" },
+                { l: "Female", v: "89%", c: "#F97316" },
+                { l: "Other", v: "3%", c: "#FBBF24" },
               ].map((g) => (
                 <div key={g.l} className="flex items-center gap-3 mb-3 last:mb-0">
                   <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: g.c }} />
@@ -920,7 +920,7 @@ function InsightTab({ creatorId, creatorName, photoSrc, igHandle, tiktokHandle }
 
       {/* Footer note */}
       <p className="text-center text-[10px] pt-1" style={{ color: "rgba(255,255,255,0.45)" }}>
-        Sumber: Instagram Insight & TikTok Analytics {creatorName} • Data disajikan dari tampilan yang terlihat pada screenshot
+        Source: Instagram Insights & TikTok Analytics {creatorName} • Data presented from screenshots
       </p>
     </div>
   );
