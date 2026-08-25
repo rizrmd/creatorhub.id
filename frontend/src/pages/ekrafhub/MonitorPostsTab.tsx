@@ -407,7 +407,7 @@ const SNA_SEED =
   "Social Network Analysis: 95% of commenters are direct followers of this account. The remaining 5% are non-followers whose engagement was driven by relevance - hashtags, keywords, topics, or geographic proximity - reached naturally by the algorithm.\n\nAmong non-followers, 3% are 2nd degree connections (followers of followers), 1.5% are 3rd degree connections, and 0.5% have no connection at all. The network is healthy: dense organic reach beyond the core audience, with no suspicious spike.";
 
 const AUDIENCE_SEED =
-  "Audience analysis: 30% akun real high quality (verified, pengikut >200), 65% medium quality (pengikut <200, postingan terbatas), 2% low quality (postingan <3, stalker/buzzer), dan 3% suspected bots yang tidak mengganggu. Kualitas interaksi audiens tergolong sehat.";
+  "Sebanyak 30% interaksi berasal dari akun berkualitas tinggi, 65% dari akun berkualitas menengah, dan 2% dari akun dengan aktivitas terbatas. Akun yang terindikasi bot hanya 3%, sehingga kualitas interaksi audiens secara keseluruhan tergolong sehat.";
 
 const AUD_SEGS = [
   { label: "Real — High Quality", desc: "Authentic profile, 200+ followers, consistent original posts, and natural engagement.", pct: "30%", grad: "linear-gradient(90deg, #4ade80, #15803d)", glow: "0 0 16px rgba(74,222,128,0.45)", color: "#4ade80" },
