@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { MapPin, ArrowLeft, Info, CheckCircle, Circle, Clock, Send, Bookmark, User, BarChart3, Eye, CreditCard } from "lucide-react";
+import { MapPin, ArrowLeft, Info, CheckCircle, Circle, Clock, Send, Bookmark, User, Eye, CreditCard } from "lucide-react";
 import { useCreator } from "@/hooks/useCreators";
 import { formatFollowers, resolveCreatorPhoto } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -29,11 +29,10 @@ const IgLogo = ({ className }: { className?: string }) => (
   </svg>
 );
 
-type TabKey = "profile" | "insight" | "posts" | "rate";
+type TabKey = "profile" | "posts" | "rate";
 
 const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
   { key: "profile", label: "Profile", icon: <User className="w-3.5 h-3.5" /> },
-  { key: "insight", label: "Insight", icon: <BarChart3 className="w-3.5 h-3.5" /> },
   { key: "posts", label: "Monitor Posts", icon: <Eye className="w-3.5 h-3.5" /> },
   { key: "rate", label: "Rate Card", icon: <CreditCard className="w-3.5 h-3.5" /> },
 ];
@@ -188,6 +187,14 @@ export default function EkrafHubCreatorProfile() {
         </div>
       </div>
 
+      {/* Account Performance Summary â€” under profile card */}
+      <AccountPerformanceSummary
+        igHandle={igMetric?.handle || handle}
+        tiktokHandle={tiktokMetric?.handle || handle}
+        igFollowers={igFollowers}
+        tiktokFollowers={tiktokFollowers}
+      />
+
       {/* Tab content */}
       <div className="mt-4">
         {tab === "profile" && (
@@ -238,7 +245,7 @@ export default function EkrafHubCreatorProfile() {
               <div className="space-y-4">
                 {[
                   { icon: <TagIcon />, label: "Kategori", value: creator.category.split(",").map((c) => categoryDisplay[c.trim().toLowerCase()] || c.trim()).join(" & ") },
-                  { icon: <PinIcon />, label: "Lokasi", value: creator.city || "—" },
+                  { icon: <PinIcon />, label: "Lokasi", value: creator.city || "â€”" },
                   { icon: <GlobeIcon />, label: "Platform", value: creator.platforms.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(" & ") },
                   ...(creator.tags?.length ? [{ icon: <StarIcon />, label: "Tag", value: creator.tags.join(", "), highlight: true } as const] : []),
                 ].map((item) => (
@@ -303,87 +310,6 @@ export default function EkrafHubCreatorProfile() {
           </div>
         )}
 
-        {tab === "insight" && (
-          <div className="mx-6 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Instagram Card */}
-              <div className="rounded-2xl overflow-hidden" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", boxShadow: shadow3d, border: "1px solid rgba(255,255,255,0.06)" }}>
-                <div className="h-1" style={{ background: "linear-gradient(90deg, #FFDC80, #F77737, #FD1D1D, #C13584, #833AB4)", boxShadow: "0 1px 10px rgba(225,48,108,0.35)" }} />
-                <div className="p-6">
-                  <div className="flex items-center gap-3 mb-5">
-                    <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, rgba(131,58,180,0.2), rgba(253,29,29,0.2), rgba(247,119,55,0.2))" }}>
-                      <IgLogo className="w-8 h-8" />
-                    </div>
-                    <div>
-                      <p className="text-base font-bold text-white">Instagram</p>
-                      <p className="text-xs" style={{ color: "rgba(255,255,255,0.55)" }}>@{igMetric?.handle || handle}</p>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-4 gap-4">
-                    {[
-                      { label: "Followers", value: igFollowers > 0 ? formatFollowers(igFollowers) : "24.3K" },
-                      { label: "Reach", value: "580K+" },
-                      { label: "Likes", value: "Data tidak tersedia", muted: true },
-                      { label: "Engagement Rate", value: "Belum dihitung", muted: true },
-                    ].map((s) => (
-                      <div key={s.label}>
-                        <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.55)" }}>{s.label}</p>
-                        <p className={`text-lg font-extrabold mt-1 ${s.muted ? "text-xs font-semibold" : ""}`}
-                          style={{ color: s.muted ? "rgba(255,255,255,0.55)" : "white", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                          {s.value}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* TikTok Card */}
-              <div className="rounded-2xl overflow-hidden" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", boxShadow: shadow3d, border: "1px solid rgba(255,255,255,0.06)" }}>
-                <div className="h-1" style={{ background: "linear-gradient(90deg, #25F4EE, #FE2C55, #25F4EE)", boxShadow: "0 1px 10px rgba(254,44,85,0.35)" }} />
-                <div className="p-6 relative">
-                  <div className="absolute top-3 right-6 w-1 h-1 rounded-full bg-white/30 animate-pulse" />
-                  <div className="absolute top-6 right-10 w-0.5 h-0.5 rounded-full bg-white/20 animate-pulse" style={{ animationDelay: "0.5s" }} />
-                  <div className="absolute bottom-8 right-4 w-0.5 h-0.5 rounded-full bg-[#25F4EE]/30 animate-pulse" style={{ animationDelay: "1s" }} />
-
-                  <div className="flex items-center gap-3 mb-5">
-                    <div className="w-12 h-12 rounded-xl flex items-center justify-center relative" style={{ background: "#000000", boxShadow: "0 0 20px rgba(37,244,238,0.15), 0 0 20px rgba(254,44,85,0.15)" }}>
-                      <TiktokIcon className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <p className="text-base font-bold text-white">TikTok</p>
-                      <p className="text-xs" style={{ color: "rgba(255,255,255,0.55)" }}>@{tiktokMetric?.handle || handle}</p>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-5 gap-3">
-                    {[
-                      { label: "Followers", value: tiktokFollowers > 0 ? formatFollowers(tiktokFollowers) : "266.7K" },
-                      { label: "Profile Likes", value: "18.4M" },
-                      { label: "Reach / Views", value: "6M+" },
-                      { label: "Content Likes", value: "540K+" },
-                      { label: "Shares", value: "15K+" },
-                    ].map((s) => (
-                      <div key={s.label}>
-                        <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.55)" }}>{s.label}</p>
-                        <p className="text-lg font-extrabold text-white mt-1" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                          {s.value}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 px-4 py-3 rounded-xl" style={{ background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.1)" }}>
-              <Info className="w-4 h-4 shrink-0" style={{ color: "#3B82F6" }} />
-              <p className="text-[11px]" style={{ color: "rgba(255,255,255,0.6)" }}>
-                Data ditampilkan per platform berdasarkan informasi yang tersedia. Periode data belum dicantumkan.
-              </p>
-            </div>
-          </div>
-        )}
-
         {tab === "posts" && (
           <div className="mx-6">
             <MonitorPosts handle={igMetric?.handle || (creator.platforms.includes("instagram") ? handle : "")} />
@@ -395,6 +321,89 @@ export default function EkrafHubCreatorProfile() {
             <RateCard creator={creator} />
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function AccountPerformanceSummary({ igHandle, tiktokHandle, igFollowers, tiktokFollowers }: {
+  igHandle: string; tiktokHandle: string; igFollowers: number; tiktokFollowers: number;
+}) {
+  const card = { background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.06)" };
+  const sep = "border-l border-white/10 pl-3";
+
+  const igCols = [
+    { label: "Followers", value: igFollowers > 0 ? formatFollowers(igFollowers) : "24.3K" },
+    { label: "Reach", value: "580K+" },
+    { label: "Likes", value: "Data tidak tersedia", muted: true },
+    { label: "Engagement Rate", value: "Belum dihitung", muted: true },
+  ];
+  const ttCols = [
+    { label: "Followers", value: tiktokFollowers > 0 ? formatFollowers(tiktokFollowers) : "266.7K" },
+    { label: "Profile Likes", value: "18.4M" },
+    { label: "Reach / Views", value: "6M+" },
+    { label: "Content Likes", value: "540K+" },
+    { label: "Shares", value: "15K+" },
+  ];
+
+  return (
+    <div className="mx-6 mt-4 space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Instagram card */}
+        <div className="rounded-2xl overflow-hidden p-6" style={card}>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, rgba(131,58,180,0.2), rgba(253,29,29,0.2), rgba(247,119,55,0.2))" }}>
+              <IgLogo className="w-8 h-8" />
+            </div>
+            <div>
+              <p className="text-base font-bold text-white">Instagram</p>
+              <p className="text-xs" style={{ color: "rgba(255,255,255,0.55)" }}>@{igHandle}</p>
+            </div>
+          </div>
+          <div className="h-1 mb-5" style={{ background: "linear-gradient(90deg, #FFDC80, #F77737, #FD1D1D, #C13584, #833AB4)", boxShadow: "0 1px 10px rgba(225,48,108,0.35)" }} />
+          <div className="grid grid-cols-4 gap-0">
+            {igCols.map((s, i) => (
+              <div key={s.label} className={i > 0 ? sep : "pr-3"}>
+                <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.55)" }}>{s.label}</p>
+                <p className={`${s.muted ? "text-[11px] font-semibold leading-snug mt-1.5" : "text-lg font-extrabold mt-1"}`}
+                  style={{ color: s.muted ? "rgba(255,255,255,0.55)" : "white", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                  {s.value}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* TikTok card */}
+        <div className="rounded-2xl overflow-hidden p-6 relative" style={card}>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center relative" style={{ background: "#000000", boxShadow: "0 0 20px rgba(37,244,238,0.15), 0 0 20px rgba(254,44,85,0.15)" }}>
+              <TiktokIcon className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <p className="text-base font-bold text-white">TikTok</p>
+              <p className="text-xs" style={{ color: "rgba(255,255,255,0.55)" }}>@{tiktokHandle}</p>
+            </div>
+          </div>
+          <div className="h-1 mb-5" style={{ background: "linear-gradient(90deg, #25F4EE, #FE2C55, #25F4EE)", boxShadow: "0 1px 10px rgba(254,44,85,0.35)" }} />
+          <div className="grid grid-cols-5 gap-0">
+            {ttCols.map((s, i) => (
+              <div key={s.label} className={i > 0 ? sep : "pr-3"}>
+                <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.55)" }}>{s.label}</p>
+                <p className="text-lg font-extrabold text-white mt-1" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                  {s.value}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 px-4 py-3 rounded-xl" style={{ background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.1)" }}>
+        <Info className="w-4 h-4 shrink-0" style={{ color: "#3B82F6" }} />
+        <p className="text-[11px]" style={{ color: "rgba(255,255,255,0.6)" }}>
+          Data ditampilkan per platform berdasarkan informasi yang tersedia. Periode data belum dicantumkan.
+        </p>
       </div>
     </div>
   );
@@ -460,7 +469,7 @@ function MonitorPosts({ handle }: { handle: string }) {
           <img src={p.mediaUrl || p.displayUrl || p.thumbnail} alt="Post" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none"; }} />
           {p.likes > 0 && (
             <span className="absolute bottom-1.5 left-1.5 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-sm text-[10px] font-bold text-white">
-              ♥ {formatFollowers(Number(p.likes))}
+              â™¥ {formatFollowers(Number(p.likes))}
             </span>
           )}
         </div>
@@ -472,7 +481,7 @@ function MonitorPosts({ handle }: { handle: string }) {
 function RateCard({ creator }: { creator: { name: string; price: number; priceText: string; engagementRate: number; followers: number } }) {
   const base = creator.price || 0;
   const fmt = (n: number) => {
-    if (n <= 0) return "—";
+    if (n <= 0) return "â€”";
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(Math.round(n))
       .replace(/\sRp/g, "").replace(/Rp(\d)/, "Rp $1");
   };
@@ -487,7 +496,7 @@ function RateCard({ creator }: { creator: { name: string; price: number; priceTe
     <div className="rounded-2xl p-6" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.06)" }}>
       <div className="flex items-center gap-2 mb-5">
         <div className="w-1 h-5 rounded-full" style={{ background: "linear-gradient(180deg, #F97316, #EA580C)", boxShadow: "0 0 10px rgba(249,115,22,0.5)" }} />
-        <h3 className="text-sm font-bold text-white">Rate Card — {creator.name}</h3>
+        <h3 className="text-sm font-bold text-white">Rate Card â€” {creator.name}</h3>
       </div>
 
       <div className="flex items-center justify-between rounded-xl px-4 py-3 mb-5" style={{ background: "rgba(249,115,22,0.08)", border: "1px solid rgba(249,115,22,0.2)" }}>
@@ -511,7 +520,7 @@ function RateCard({ creator }: { creator: { name: string; price: number; priceTe
               <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.55)" }}>{it.note}</p>
             </div>
             <p className="text-[15px] font-extrabold" style={{ color: "white", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-              {base > 0 ? fmt(it.price) : "—"}
+              {base > 0 ? fmt(it.price) : "â€”"}
             </p>
           </div>
         ))}
