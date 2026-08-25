@@ -353,14 +353,17 @@ function AnimatedNumber({ value }: { value: number }) {
   const prev = useRef(0);
 
   useEffect(() => {
-    const from = prev.current;
     const to = value;
-    if (from === to) { setDisplay(to); return; }
-    const start = performance.now();
-    const dur = 950;
+    const from = prev.current;
+    if (from === to) {
+      setDisplay(to);
+      return;
+    }
+    const startAt = performance.now() + 150;
+    const dur = 1500;
     let raf: number;
     const tick = (t: number) => {
-      const p = Math.min(1, (t - start) / dur);
+      const p = Math.min(1, Math.max(0, (t - startAt) / dur));
       const eased = 1 - Math.pow(1 - p, 3);
       const v = Math.round(from + (to - from) * eased);
       setDisplay(v);
@@ -374,7 +377,11 @@ function AnimatedNumber({ value }: { value: number }) {
     return () => cancelAnimationFrame(raf);
   }, [value]);
 
-  return <>{display > 0 ? formatFollowers(display) : "—"}</>;
+  return (
+    <span style={{ fontVariantNumeric: "tabular-nums" }}>
+      {display > 0 ? formatFollowers(display) : "—"}
+    </span>
+  );
 }
 
 function SummaryCard({ title, handle, href, updateLabel, gradient, logo, metricRows, updatedAt, refreshing, onUpdate }: {
