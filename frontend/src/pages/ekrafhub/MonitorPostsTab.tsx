@@ -403,6 +403,79 @@ function SentimentBars() {
   );
 }
 
+const AUDIENCE_SEED =
+  "Audience analysis: 30% akun real high quality (verified, pengikut >200), 65% medium quality (pengikut <200, postingan terbatas), 2% low quality (postingan <3, stalker/buzzer), dan 3% suspected bots yang tidak mengganggu. Kualitas interaksi audiens tergolong sehat.";
+
+const AUD_SEGS = [
+  { label: "Real — High Quality", desc: "verified, pengikut >200", pct: "30%", grad: "linear-gradient(90deg, #4ade80, #15803d)", glow: "0 0 16px rgba(74,222,128,0.45)", color: "#4ade80" },
+  { label: "Real — Medium Quality", desc: "pengikut <200, beberapa postingan", pct: "65%", grad: "linear-gradient(90deg, #38bdf8, #0369a1)", glow: "0 0 14px rgba(56,189,248,0.4)", color: "#38bdf8" },
+  { label: "Real — Low Quality", desc: "postingan <3, stalker/buzzer", pct: "2%", grad: "linear-gradient(90deg, #fbbf24, #b45309)", glow: "0 0 14px rgba(251,191,36,0.4)", color: "#fbbf24" },
+  { label: "Suspected Bots", desc: "tanpa postingan nyata, spam like/comment", pct: "3%", grad: "linear-gradient(90deg, #f87171, #b91c1c)", glow: "0 0 16px rgba(248,113,113,0.5)", color: "#f87171" },
+];
+
+function AudienceBars() {
+  const [widths, setWidths] = useState(["0%", "0%", "0%", "0%"]);
+
+  useEffect(() => {
+    const timers = [
+      window.setTimeout(() => setWidths((w) => ["30%", w[1], w[2], w[3]]), 60),
+      window.setTimeout(() => setWidths((w) => [w[0], "65%", w[2], w[3]]), 280),
+      window.setTimeout(() => setWidths((w) => [w[0], w[1], "2%", w[3]]), 500),
+      window.setTimeout(() => setWidths((w) => [w[0], w[1], w[2], "3%"]), 720),
+    ];
+    return () => timers.forEach((t) => window.clearTimeout(t));
+  }, []);
+
+  return (
+    <div className="mt-4 rounded-[12px] p-4" style={{ background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.08)" }}>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#38bdf8" }} />
+          <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.55)" }}>
+            Audience Quality Distribution
+          </p>
+        </div>
+        <span className="text-[10px] font-semibold" style={{ color: "rgba(255,255,255,0.45)" }}>
+          dari 371 komentator
+        </span>
+      </div>
+
+      <div className="relative h-4 rounded-full flex overflow-hidden" style={{ background: "rgba(255,255,255,0.06)", boxShadow: "0 0 20px rgba(56,189,248,0.12), inset 0 0 0 1px rgba(255,255,255,0.06)" }}>
+        {AUD_SEGS.map((s, i) => (
+          <div
+            key={s.label}
+            className="h-full rounded-full transition-all duration-700 ease-out"
+            style={{
+              width: widths[i],
+              minWidth: widths[i] !== "0%" ? "7px" : undefined,
+              background: s.grad,
+              boxShadow: s.glow,
+              borderRadius: i === 0 ? "9999px 0 0 9999px" : undefined,
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="flex flex-col gap-2.5 mt-3">
+        {AUD_SEGS.map((s, i) => (
+          <div key={s.label} className="flex items-center gap-2.5">
+            <span className="w-3 h-3 rounded-[4px] shrink-0" style={{ background: s.grad, boxShadow: s.glow, opacity: widths[i] === "0%" ? 0.35 : 1 }} />
+            <div className="flex-1 min-w-0">
+              <p className="text-[12px] font-semibold leading-tight" style={{ color: s.label === "Suspected Bots" ? s.color : "rgba(255,255,255,0.85)" }}>
+                {s.label}
+              </p>
+              <p className="text-[10.5px] leading-tight" style={{ color: "rgba(255,255,255,0.45)" }}>
+                {s.desc}
+              </p>
+            </div>
+            <span className="text-[12px] font-extrabold shrink-0" style={{ color: "#e8edf5", fontVariantNumeric: "tabular-nums" }}>{s.pct}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function MonitorPostsTab() {
   const [active, setActive] = useState(1);
   const [showComments, setShowComments] = useState(false);
@@ -416,6 +489,10 @@ export default function MonitorPostsTab() {
   const [rFetched, setRFetched] = useState(false);
   const [analysis, setAnalysis] = useState(false);
   const [typed, setTyped] = useState("");
+  const [analysisTab, setAnalysisTab] = useState<"sentiments" | "audience" | "sna">("sentiments");
+  const [audState, setAudState] = useState<"idle" | "loading" | "done">("idle");
+  const [audProgress, setAudProgress] = useState(0);
+  const [audTyped, setAudTyped] = useState("");
 
   useEffect(() => {
     if (!analysis) {
@@ -430,6 +507,50 @@ export default function MonitorPostsTab() {
     }, 14);
     return () => window.clearInterval(id);
   }, [analysis]);
+
+  const audIvRef = useRef<number | null>(null);
+
+  const openAudience = () => {
+    if (analysisTab === "audience") return;
+    setAnalysisTab("audience");
+    if (audState === "done") return;
+    if (audState === "loading") return;
+    setAudState("loading");
+    setAudProgress(1);
+    if (audIvRef.current) window.clearInterval(audIvRef.current);
+    audIvRef.current = window.setInterval(() => {
+      setAudProgress((p) => (p >= 100 ? 100 : p + 2 + Math.ceil(Math.random() * 6)));
+    }, 150);
+  };
+
+  useEffect(() => {
+    if (audState !== "loading" || audProgress < 100) return;
+    if (audIvRef.current) window.clearInterval(audIvRef.current);
+    tRef.current = window.setTimeout(() => {
+      setAudState("done");
+      setAudProgress(0);
+    }, 450);
+  }, [audState, audProgress]);
+
+  useEffect(() => {
+    if (!analysis || analysisTab !== "audience" || audState !== "done") {
+      if (analysisTab !== "audience") setAudTyped("");
+      return;
+    }
+    let i = 0;
+    const id = window.setInterval(() => {
+      i += 1;
+      setAudTyped(AUDIENCE_SEED.slice(0, i));
+      if (i >= AUDIENCE_SEED.length) window.clearInterval(id);
+    }, 14);
+    return () => window.clearInterval(id);
+  }, [analysis, analysisTab, audState]);
+
+  useEffect(() => {
+    return () => {
+      if (audIvRef.current) window.clearInterval(audIvRef.current);
+    };
+  }, []);
 
   const listRef = useRef<HTMLDivElement>(null);
   const repliesRef = useRef<HTMLDivElement>(null);
@@ -669,29 +790,74 @@ export default function MonitorPostsTab() {
               {analysis && (
                 <>
                   <div className="flex gap-1 p-1 mb-4 rounded-[12px]" style={{ background: "#111a26", boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.06)" }}>
-                    {["Sentiments", "Audience Analysis", "Social Network Analysis"].map((t, i) => (
-                      <div
-                        key={t}
-                        className="flex-1 text-center py-[9px] rounded-[9px] text-[12px] font-bold cursor-pointer transition-colors hover:text-[#e8edf5]"
-                        style={i === 0 ? { background: "rgba(242,101,34,0.16)", color: ORANGE_LIGHT } : { color: "#8a97ab" }}
-                      >
-                        {t}
-                      </div>
-                    ))}
+                    {[
+                      { key: "sentiments" as const, label: "Sentiments" },
+                      { key: "audience" as const, label: "Audience Analysis" },
+                      { key: "sna" as const, label: "Social Network Analysis" },
+                    ].map((t) => {
+                      const activeTab = analysisTab === t.key;
+                      return (
+                        <button
+                          key={t.key}
+                          onClick={() => (t.key === "audience" ? openAudience() : setAnalysisTab(t.key))}
+                          className="flex-1 text-center py-[9px] rounded-[9px] text-[12px] font-bold cursor-pointer transition-colors hover:text-[#e8edf5]"
+                          style={activeTab ? { background: "rgba(242,101,34,0.16)", color: ORANGE_LIGHT } : { color: "#8a97ab" }}
+                        >
+                          {t.label}
+                        </button>
+                      );
+                    })}
                   </div>
-                  <div className="rounded-[12px] p-4 mb-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
-                    <div className="flex items-center gap-2 mb-2.5">
-                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#3fd07f" }} />
-                      <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.55)" }}>
-                        Sentiment Analysis
+                  {analysisTab === "sentiments" && (
+                    <div className="rounded-[12px] p-4 mb-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                      <div className="flex items-center gap-2 mb-2.5">
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#3fd07f" }} />
+                        <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.55)" }}>
+                          Sentiment Analysis
+                        </p>
+                      </div>
+                      <p className="text-[13px] leading-relaxed" style={{ color: "#c6d0dd" }}>
+                        {typed}
+                        <span className="inline-block w-[2px] h-[13px] ml-1 align-middle animate-pulse" style={{ background: ORANGE_LIGHT }} />
+                      </p>
+                      {typed.length >= SENTIMENT_SEED.length && <SentimentBars />}
+                    </div>
+                  )}
+                  {analysisTab === "audience" && audState === "loading" && (
+                    <div className="flex flex-col gap-[9px] px-[18px] py-4 mb-4 rounded-[14px]" style={{ border: "1px solid rgba(255,255,255,0.07)", background: "#0f1621" }}>
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-[12px] font-bold" style={{ color: "#c6d0dd" }}>Analyzing Audience</span>
+                        <span className="ml-auto text-[12px] font-extrabold" style={{ color: ORANGE_LIGHT, fontVariantNumeric: "tabular-nums" }}>
+                          {audProgress}%
+                        </span>
+                      </div>
+                      <div className="h-[6px] rounded-[6px] overflow-hidden" style={{ background: "rgba(255,255,255,0.07)" }}>
+                        <div className="h-full rounded-[6px] transition-all duration-200 ease-linear" style={{ width: `${audProgress}%`, background: ORANGE }} />
+                      </div>
+                    </div>
+                  )}
+                  {analysisTab === "audience" && audState === "done" && (
+                    <div className="rounded-[12px] p-4 mb-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                      <div className="flex items-center gap-2 mb-2.5">
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#38bdf8" }} />
+                        <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.55)" }}>
+                          Audience Analysis
+                        </p>
+                      </div>
+                      <p className="text-[13px] leading-relaxed" style={{ color: "#c6d0dd" }}>
+                        {audTyped}
+                        <span className="inline-block w-[2px] h-[13px] ml-1 align-middle animate-pulse" style={{ background: ORANGE_LIGHT }} />
+                      </p>
+                      {audTyped.length >= AUDIENCE_SEED.length && <AudienceBars />}
+                    </div>
+                  )}
+                  {analysisTab === "sna" && (
+                    <div className="rounded-[12px] px-4 py-8 mb-4 text-center" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                      <p className="text-[12px] font-semibold" style={{ color: "rgba(255,255,255,0.45)" }}>
+                        Social Network Analysis — belum tersedia
                       </p>
                     </div>
-                    <p className="text-[13px] leading-relaxed" style={{ color: "#c6d0dd" }}>
-                      {typed}
-                      <span className="inline-block w-[2px] h-[13px] ml-1 align-middle animate-pulse" style={{ background: ORANGE_LIGHT }} />
-                    </p>
-                    {typed.length >= SENTIMENT_SEED.length && <SentimentBars />}
-                  </div>
+                  )}
                 </>
               )}
 
