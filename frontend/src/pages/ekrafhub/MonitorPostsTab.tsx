@@ -669,7 +669,7 @@ export default function MonitorPostsTab() {
               {analysis && (
                 <>
                   <div className="flex gap-1 p-1 mb-4 rounded-[12px]" style={{ background: "#111a26", boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.06)" }}>
-                    {["Sentiments", "Bot Analysis", "Social Network Analysis"].map((t, i) => (
+                    {["Sentiments", "Audience Analysis", "Social Network Analysis"].map((t, i) => (
                       <div
                         key={t}
                         className="flex-1 text-center py-[9px] rounded-[9px] text-[12px] font-bold cursor-pointer transition-colors hover:text-[#e8edf5]"
