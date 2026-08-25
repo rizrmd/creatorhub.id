@@ -713,12 +713,15 @@ export default function MonitorPostsTab() {
   const [snaState, setSnaState] = useState<"idle" | "loading" | "done">("idle");
   const [snaProgress, setSnaProgress] = useState(0);
   const [snaTyped, setSnaTyped] = useState("");
-  const [range, setRange] = useState<[Date, Date]>([new Date(2026, 5, 12), new Date(2026, 7, 24)]);
-  const [sort, setSort] = useState<"newest" | "oldest">("newest");
-  const setMostRecent = () => {
+  const last7 = (): [Date, Date] => {
     const t = new Date();
-    setRange((r) => (r[0].getTime() > t.getTime() ? [t, t] : [r[0], t]));
+    const f = new Date(t);
+    f.setDate(f.getDate() - 6);
+    return [f, t];
   };
+  const [range, setRange] = useState<[Date, Date]>(last7);
+  const [sort, setSort] = useState<"newest" | "oldest">("newest");
+  const setMostRecent = () => setRange(last7());
 
   useEffect(() => {
     if (!analysis) {
@@ -968,8 +971,8 @@ export default function MonitorPostsTab() {
           <span className="text-[11.5px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap" style={{ color: ORANGE_LIGHT, background: "rgba(242,101,34,0.13)" }}>
             {visible.length} posts
           </span>
+          <RangeCalendar range={range} onChange={setRange} />
           <div className="ml-auto flex items-center gap-2 flex-wrap justify-end">
-            <RangeCalendar range={range} onChange={setRange} />
             <button
               onClick={setMostRecent}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-bold whitespace-nowrap transition-colors hover:bg-orange-400/25"
@@ -977,18 +980,15 @@ export default function MonitorPostsTab() {
             >
               <RefreshCw className="w-3.5 h-3.5" /> Get Most Recent
             </button>
-            <div className="inline-flex items-center rounded-lg overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.12)" }}>
-              {(["newest", "oldest"] as const).map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setSort(s)}
-                  className="px-3 py-1.5 text-[12px] font-bold whitespace-nowrap transition-colors hover:bg-white/10"
-                  style={sort === s ? { background: "rgba(242,101,34,0.16)", color: ORANGE_LIGHT } : { color: "#8a97ab" }}
-                >
-                  {s === "newest" ? "Newest" : "Oldest"}
-                </button>
-              ))}
-            </div>
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value as "newest" | "oldest")}
+              className="px-3 py-1.5 rounded-lg text-[12px] font-bold whitespace-nowrap cursor-pointer focus:outline-none"
+              style={{ background: "#0f1621", border: "1px solid rgba(255,255,255,0.12)", color: "#dbe3ed" }}
+            >
+              <option value="newest">Newest</option>
+              <option value="oldest">Oldest</option>
+            </select>
           </div>
         </div>
         <div className="flex flex-col gap-3.5">
