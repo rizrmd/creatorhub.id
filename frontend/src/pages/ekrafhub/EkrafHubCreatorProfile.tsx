@@ -7,6 +7,7 @@ import { creatorsApi } from "@/lib/api";
 import { formatFollowers, resolveCreatorPhoto } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import MonitorPostsTab from "./MonitorPostsTab";
 import type { PlatformMetric } from "@/types";
 
 const TiktokIcon = ({ className }: { className?: string }) => (
@@ -324,7 +325,7 @@ export default function EkrafHubCreatorProfile() {
 
         {tab === "posts" && (
           <div className="mx-6">
-            <MonitorPosts handle={igMetric?.handle || (creator.platforms.includes("instagram") ? handle : "")} />
+            <MonitorPostsTab />
           </div>
         )}
 
@@ -863,75 +864,6 @@ function InsightTab({ creatorId, creatorName, photoSrc, igHandle, tiktokHandle }
       <p className="text-center text-[10px] pt-1" style={{ color: "rgba(255,255,255,0.45)" }}>
         Sumber: Instagram Insight & TikTok Analytics {creatorName} • Data disajikan dari tampilan yang terlihat pada screenshot
       </p>
-    </div>
-  );
-}
-
-function MonitorPosts({ handle }: { handle: string }) {
-  const token = typeof localStorage !== "undefined" ? localStorage.getItem("auth_token") || "" : "";
-  const [posts, setPosts] = useState<any[] | null>(null);
-  const [loaded, setLoaded] = useState(false);
-  const [forbidden, setForbidden] = useState(false);
-
-  useEffect(() => {
-    if (!handle) { setPosts([]); setLoaded(true); return; }
-    fetch(`/api/v1/instagram-posts?account=${encodeURIComponent(handle)}`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    })
-      .then((r) => {
-        if (r.status === 403) { setForbidden(true); setLoaded(true); return null; }
-        if (!r.ok) throw new Error(String(r.status));
-        return r.json();
-      })
-      .then((data) => setPosts(Array.isArray(data) ? data : data?.posts ?? []))
-      .catch(() => { setLoaded(true); });
-  }, [handle, token]);
-
-  if (!loaded) {
-    return (
-      <div className="rounded-2xl p-5" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", border: "1px solid rgba(255,255,255,0.06)" }}>
-        <p className="text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>Memuat posts...</p>
-      </div>
-    );
-  }
-
-  if (forbidden) {
-    return (
-      <div className="rounded-2xl p-8 text-center" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", border: "1px solid rgba(255,255,255,0.06)" }}>
-        <Eye className="w-8 h-8 mx-auto mb-3" style={{ color: "rgba(255,255,255,0.35)" }} />
-        <p className="text-sm font-bold text-white">Monitoring posts belum diaktifkan</p>
-        <p className="text-[11px] mt-1.5 max-w-md mx-auto" style={{ color: "rgba(255,255,255,0.6)" }}>
-          Fitur monitor posts tersedia untuk akun admin / media monitoring. Hubungi admin untuk mengaktifkan aksesnya.
-        </p>
-      </div>
-    );
-  }
-
-  if ((posts ?? []).length === 0) {
-    return (
-      <div className="rounded-2xl p-8 text-center" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", border: "1px solid rgba(255,255,255,0.06)" }}>
-        <Eye className="w-8 h-8 mx-auto mb-3" style={{ color: "rgba(255,255,255,0.35)" }} />
-        <p className="text-sm font-bold text-white">Belum ada data monitoring</p>
-        <p className="text-[11px] mt-1.5 max-w-md mx-auto" style={{ color: "rgba(255,255,255,0.6)" }}>
-          {handle ? `Posts untuk @${handle} belum tersedia di monitoring. Coba scrape akun ini terlebih dahulu.` : "Handle Instagram belum terdeteksi untuk kreator ini."}
-        </p>
-      </div>
-    );
-  }
-
-  const grid = posts!;
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-      {grid.slice(0, 15).map((p, i) => (
-        <div key={i} className="aspect-[4/5] rounded-xl overflow-hidden relative" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
-          <img src={p.mediaUrl || p.displayUrl || p.thumbnail} alt="Post" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = "none"; }} />
-          {p.likes > 0 && (
-            <span className="absolute bottom-1.5 left-1.5 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-sm text-[10px] font-bold text-white">
-              â™¥ {formatFollowers(Number(p.likes))}
-            </span>
-          )}
-        </div>
-      ))}
     </div>
   );
 }
