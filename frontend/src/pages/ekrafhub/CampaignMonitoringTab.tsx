@@ -72,7 +72,7 @@ export default function CampaignMonitoringTab() {
   { level: "Output", q: "Apa yang telah dipublikasikan?", ind: "Jumlah konten, akun dan kreator aktif, platform, penggunaan #DesaKreatif, wilayah terjangkau, konsistensi jadwal" },
   { level: "Exposure", q: "Seberapa luas konten tersebar?", ind: "Reach, impressions, views, unique viewers, video completion rate, pertumbuhan mentions" },
   { level: "Engagement", q: "Bagaimana respons audiens?", ind: "Likes, comments, shares, saves, engagement rate, engagement per 1.000 views, organic amplification" },
-  { level: "Audience Quality", q: "Siapa yang berinteraksi?", ind: "Akun real vs suspected bots, follower range, lokasi audiens, local audience share, commenter quality" },
+  { level: "Audience Quality", q: "Siapa yang berinteraksi?", ind: "Jejak digital lokal Gampong Nusa: seberapa jauh Desa Kreatif mulai dibicarakan komunitas setempat, lalu menjalar ke kabupaten, provinsi, hingga nasional — dianalisis tren kenaikan share pembahasan dan faktor penggeraknya" },
   { level: "Public Response", q: "Apa yang dibicarakan publik?", ind: "Sentiment, top topics, pertanyaan publik, aspirasi, keluhan, misinformation, share of positive conversation" },
   { level: "Outcome", q: "Tindakan apa yang terjadi?", ind: "Klik informasi, kunjungan profil, pencarian lokasi, pendaftaran program, kunjungan acara, inquiry produk, kontak kemitraan" },
   { level: "Impact", q: "Apa manfaatnya bagi desa?", ind: "Peningkatan wisatawan, penjualan UMKM, pelaku kreatif terlibat, lapangan kerja, kemitraan, dan pendapatan desa" },
