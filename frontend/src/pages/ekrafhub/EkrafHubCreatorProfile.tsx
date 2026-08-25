@@ -33,12 +33,31 @@ const IgLogo = ({ className }: { className?: string }) => (
   </svg>
 );
 
-type TabKey = "profile" | "insight" | "posts" | "rate";
+const HandshakeIcon = ({ className, style }: { className?: string; style?: React.CSSProperties }) => (
+  <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M11 17l2 2a1 1 0 1 0 3-3" />
+    <path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4" />
+    <path d="m21 3 1 11h-2" />
+    <path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3" />
+    <path d="M3 4h8" />
+  </svg>
+);
+
+const MegaphoneIcon = ({ className, style }: { className?: string; style?: React.CSSProperties }) => (
+  <svg className={className} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="m3 11 18-5v12L3 14v-3z" />
+    <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
+  </svg>
+);
+
+type TabKey = "profile" | "collaborations" | "insight" | "posts" | "campaigns" | "rate";
 
 const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
   { key: "profile", label: "Profile", icon: <User className="w-3.5 h-3.5" /> },
+  { key: "collaborations", label: "Collaborations", icon: <HandshakeIcon className="w-3.5 h-3.5" /> },
   { key: "insight", label: "Insight", icon: <BarChart3 className="w-3.5 h-3.5" /> },
   { key: "posts", label: "Content Monitoring", icon: <Eye className="w-3.5 h-3.5" /> },
+  { key: "campaigns", label: "Campaign Monitoring", icon: <MegaphoneIcon className="w-3.5 h-3.5" /> },
   { key: "rate", label: "Rate Card", icon: <CreditCard className="w-3.5 h-3.5" /> },
 ];
 
@@ -319,6 +338,18 @@ export default function EkrafHubCreatorProfile() {
           </div>
         )}
 
+        {tab === "collaborations" && (
+          <div className="mx-6">
+            <div className="rounded-2xl px-4 py-10 text-center" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", border: "1px solid rgba(255,255,255,0.06)" }}>
+              <HandshakeIcon className="w-8 h-8 mx-auto mb-3" style={{ color: "rgba(255,255,255,0.35)" }} />
+              <p className="text-sm font-bold text-white">Collaborations</p>
+              <p className="text-[11px] mt-1.5" style={{ color: "rgba(255,255,255,0.6)" }}>
+                Data kolaborasi kreator belum tersedia.
+              </p>
+            </div>
+          </div>
+        )}
+
         {tab === "insight" && (
           <InsightTab creatorId={creator.id} creatorName={creator.name} photoSrc={photoSrc ?? ""} igHandle={igMetric?.handle || handle} tiktokHandle={tiktokMetric?.handle || handle} />
         )}
@@ -326,6 +357,18 @@ export default function EkrafHubCreatorProfile() {
         {tab === "posts" && (
           <div className="mx-6">
             <MonitorPostsTab />
+          </div>
+        )}
+
+        {tab === "campaigns" && (
+          <div className="mx-6">
+            <div className="rounded-2xl px-4 py-10 text-center" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", border: "1px solid rgba(255,255,255,0.06)" }}>
+              <MegaphoneIcon className="w-8 h-8 mx-auto mb-3" style={{ color: "rgba(255,255,255,0.35)" }} />
+              <p className="text-sm font-bold text-white">Campaign Monitoring</p>
+              <p className="text-[11px] mt-1.5" style={{ color: "rgba(255,255,255,0.6)" }}>
+                Data monitoring kampanye kreator belum tersedia.
+              </p>
+            </div>
           </div>
         )}
 
@@ -385,10 +428,11 @@ function AnimatedNumber({ value }: { value: number }) {
   );
 }
 
-function SummaryCard({ title, handle, href, updateLabel, gradient, logo, metricRows, updatedAt, refreshing, onUpdate }: {
+function SummaryCard({ title, handle, href, createdOn, updateLabel, gradient, logo, metricRows, updatedAt, refreshing, onUpdate }: {
   title: string;
   handle?: string;
   href: string;
+  createdOn?: string;
   updateLabel: string;
   gradient: string;
   logo: React.ReactNode;
@@ -412,9 +456,21 @@ function SummaryCard({ title, handle, href, updateLabel, gradient, logo, metricR
             {href !== "" ? (
               <a href={href} target="_blank" rel="noopener noreferrer" className="text-xs block truncate hover:underline" style={{ color: "rgba(255,255,255,0.55)" }}>
                 @{handle}
+                {createdOn && (
+                  <span className="normal-case"> · Accounts created on&nbsp;
+                    <b style={{ color: "#FB923C", textShadow: "0 0 12px rgba(251,146,60,0.45)" }}>{createdOn}</b>
+                  </span>
+                )}
               </a>
             ) : (
-              <p className="text-xs truncate" style={{ color: "rgba(255,255,255,0.55)" }}>@{handle}</p>
+              <p className="text-xs truncate" style={{ color: "rgba(255,255,255,0.55)" }}>
+                @{handle}
+                {createdOn && (
+                  <span> · Accounts created on&nbsp;
+                    <b style={{ color: "#FB923C", textShadow: "0 0 12px rgba(251,146,60,0.45)" }}>{createdOn}</b>
+                  </span>
+                )}
+              </p>
             )}
           </div>
         </div>
@@ -484,6 +540,7 @@ function AccountPerformanceSummary({ creatorId, igMetric, tiktokMetric, onUpdate
           title="Instagram"
           handle={igMetric?.handle}
           href={igMetric?.handle ? `https://www.instagram.com/${igMetric.handle.replace(/^@/, "")}/` : ""}
+          createdOn="30 Sep 2015"
           updateLabel="Account Performance Summary"
           gradient="linear-gradient(90deg, #FFDC80, #F77737, #FD1D1D, #C13584, #833AB4)"
           logo={<IgLogo className="w-8 h-8" />}
@@ -500,6 +557,7 @@ function AccountPerformanceSummary({ creatorId, igMetric, tiktokMetric, onUpdate
           title="TikTok"
           handle={tiktokMetric?.handle}
           href={tiktokMetric?.handle ? `https://www.tiktok.com/@${tiktokMetric.handle.replace(/^@/, "")}` : ""}
+          createdOn="12 Feb 2019"
           updateLabel="Account Performance Summary"
           gradient="linear-gradient(90deg, #25F4EE, #FE2C55, #25F4EE)"
           logo={<TiktokIcon className="w-6 h-6 text-white" />}
