@@ -255,11 +255,23 @@ func scrapeTikTokTikHub(handle, apiKey string) *ScrapeResult {
 	req.Header.Set("Accept", "application/json")
 
 	resp, err := httpClient.Do(req)
-	if err != nil || resp.StatusCode != 200 {
-		return &ScrapeResult{Success: false}
+	if err != nil {
+		return &ScrapeResult{Success: false, Error: err.Error()}
 	}
 	defer resp.Body.Close()
 	body, _ := io.ReadAll(io.LimitReader(resp.Body, 10<<20))
+	if resp.StatusCode != 200 {
+		msg := fmt.Sprintf("TikHub HTTP %d", resp.StatusCode)
+		var detail struct {
+			Detail struct {
+				Message string `json:"message"`
+			} `json:"detail"`
+		}
+		if json.Unmarshal(body, &detail) == nil && detail.Detail.Message != "" {
+			msg = fmt.Sprintf("TikHub HTTP %d: %s", resp.StatusCode, detail.Detail.Message)
+		}
+		return &ScrapeResult{Success: false, Error: msg}
+	}
 
 	var tikhubResp struct {
 		Code    int    `json:"code"`
