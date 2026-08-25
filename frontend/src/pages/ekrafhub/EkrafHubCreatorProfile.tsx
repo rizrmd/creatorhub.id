@@ -38,7 +38,7 @@ type TabKey = "profile" | "insight" | "posts" | "rate";
 const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
   { key: "profile", label: "Profile", icon: <User className="w-3.5 h-3.5" /> },
   { key: "insight", label: "Insight", icon: <BarChart3 className="w-3.5 h-3.5" /> },
-  { key: "posts", label: "Monitor Posts", icon: <Eye className="w-3.5 h-3.5" /> },
+  { key: "posts", label: "Content Monitoring", icon: <Eye className="w-3.5 h-3.5" /> },
   { key: "rate", label: "Rate Card", icon: <CreditCard className="w-3.5 h-3.5" /> },
 ];
 
