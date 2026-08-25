@@ -358,6 +358,85 @@ func (h *CreatorHandler) RefreshCreatorMetrics(w http.ResponseWriter, r *http.Re
 	})
 }
 
+// CreatorPlatformAvatar fetches (once) and caches the platform profile photo
+// via Apify: /creators/<id>-instagram.jpg | /creators/<id>-tiktok.jpg.
+func (h *CreatorHandler) CreatorPlatformAvatar(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	platform := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("platform")))
+	if platform != "instagram" && platform != "tiktok" {
+		writeError(w, http.StatusBadRequest, "platform must be instagram or tiktok")
+		return
+	}
+
+	handle, err := h.repo.GetPlatformHandle(r.Context(), id, platform)
+	if err != nil || strings.TrimSpace(handle) == "" {
+		writeError(w, http.StatusBadRequest, "no "+platform+" handle for this creator")
+		return
+	}
+
+	staticDir := os.Getenv("STATIC_DIR")
+	if staticDir == "" {
+		staticDir = "/app/static"
+	}
+	creatorsDir := filepath.Join(staticDir, "creators")
+	if err := os.MkdirAll(creatorsDir, 0755); err != nil {
+		writeError(w, http.StatusInternalServerError, "mkdir: "+err.Error())
+		return
+	}
+
+	filename := id + "-" + platform + ".jpg"
+	destPath := filepath.Join(creatorsDir, filename)
+	if _, err := os.Stat(destPath); err == nil {
+		writeJSON(w, http.StatusOK, map[string]any{"photoUrl": "/creators/" + filename})
+		return
+	}
+
+	handle = strings.TrimPrefix(handle, "@")
+	var picURL string
+	if platform == "tiktok" {
+		p, ok := services.ApifyTikTokProfile(handle)
+		if !ok || p.PicURL == "" {
+			writeError(w, http.StatusBadGateway, "tiktok avatar scrape failed (Apify)")
+			return
+		}
+		picURL = p.PicURL
+	} else {
+		p, ok := services.ApifyInstagramProfile(handle)
+		if !ok || p.PicURL == "" {
+			writeError(w, http.StatusBadGateway, "instagram avatar scrape failed (Apify)")
+			return
+		}
+		picURL = p.PicURL
+	}
+
+	client := &http.Client{Timeout: 25 * time.Second}
+	req, err := http.NewRequest("GET", picURL, nil)
+	if err != nil {
+		writeError(w, http.StatusBadGateway, "download request failed")
+		return
+	}
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
+	resp, err := client.Do(req)
+	if err != nil || resp.StatusCode != 200 {
+		writeError(w, http.StatusBadGateway, "avatar download failed")
+		return
+	}
+	defer resp.Body.Close()
+
+	data, err := io.ReadAll(io.LimitReader(resp.Body, 10<<20))
+	if err != nil || len(data) < 3 || data[0] != 0xFF || data[1] != 0xD8 {
+		writeError(w, http.StatusBadGateway, "avatar payload not a jpeg")
+		return
+	}
+	if err := os.WriteFile(destPath, data, 0644); err != nil {
+		writeError(w, http.StatusInternalServerError, "write avatar: "+err.Error())
+		return
+	}
+
+	fmt.Printf("platform avatar cached %s -> /creators/%s\n", platform, filename)
+	writeJSON(w, http.StatusOK, map[string]any{"photoUrl": "/creators/" + filename})
+}
+
 func writeJSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)

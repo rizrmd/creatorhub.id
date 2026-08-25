@@ -252,7 +252,7 @@ func scrapeTikTok(handle string) *ScrapeResult {
 // TiktokApifyProfile is the metric payload extracted from an Apify TikTok run.
 type TiktokApifyProfile struct {
 	Followers, Following, Likes, Posts int64
-	Name, Bio                          string
+	Name, Bio, PicURL                  string
 }
 
 // ApifyTikTokProfile runs the Apify tiktok-scraper actor and extracts profile
@@ -275,6 +275,8 @@ func ApifyTikTokProfile(handle string) (*TiktokApifyProfile, bool) {
 			Name      string `json:"name"`
 			NickName  string `json:"nickName"`
 			Signature string `json:"signature"`
+			Avatar    string `json:"avatar"`
+			Original  string `json:"originalAvatarUrl"`
 			Fans      int64  `json:"fans"`
 			Following int64  `json:"following"`
 			Heart     int64  `json:"heart"`
@@ -293,6 +295,13 @@ func ApifyTikTokProfile(handle string) (*TiktokApifyProfile, bool) {
 	if name == "" {
 		name = m.Name
 	}
+	pic := m.Original
+	if pic == "" {
+		pic = m.Avatar
+	}
+	if strings.HasPrefix(pic, "//") {
+		pic = "https:" + pic
+	}
 
 	return &TiktokApifyProfile{
 		Followers: m.Fans,
@@ -301,6 +310,7 @@ func ApifyTikTokProfile(handle string) (*TiktokApifyProfile, bool) {
 		Posts:     m.Video,
 		Name:      name,
 		Bio:       m.Signature,
+		PicURL:    pic,
 	}, true
 }
 
