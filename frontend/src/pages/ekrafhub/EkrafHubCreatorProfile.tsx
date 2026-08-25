@@ -1,7 +1,7 @@
-﻿import { useEffect, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { MapPin, ArrowLeft, Info, CheckCircle, Circle, Clock, Send, Bookmark, User, Eye, CreditCard, BarChart3, RefreshCw, Loader2 } from "lucide-react";
+import { MapPin, ArrowLeft, Info, CheckCircle, Circle, Clock, Send, Bookmark, User, Eye, CreditCard, BarChart3, RefreshCw, Loader2, ChevronLeft, ChevronRight, CalendarDays, Check } from "lucide-react";
 import { useCreator } from "@/hooks/useCreators";
 import { creatorsApi } from "@/lib/api";
 import { formatFollowers, resolveCreatorPhoto } from "@/lib/utils";
@@ -490,11 +490,111 @@ function Delta({ up, suffix }: { up: boolean; suffix: string }) {
   );
 }
 
-function PanelCard({ title, children }: { title: string; children: React.ReactNode }) {
+function PanelCard({ title, tag, children }: { title: string; tag?: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="rounded-2xl p-5" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", boxShadow: "0 4px 24px rgba(0,0,0,0.35)", border: "1px solid rgba(255,255,255,0.06)" }}>
-      <p className="text-[12px] font-bold text-white mb-4">{title}</p>
+      <div className="flex items-center justify-between gap-2 mb-4">
+        <p className="text-[12px] font-bold text-white">{title}</p>
+        {tag}
+      </div>
       {children}
+    </div>
+  );
+}
+
+const SUBMITTED_TAG = (
+  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-bold whitespace-nowrap"
+    style={{ background: "rgba(59,130,246,0.12)", border: "1px solid rgba(59,130,246,0.35)", color: "#93C5FD" }}>
+    <Check className="w-2.5 h-2.5" /> Submitted by account owner
+  </span>
+);
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+const DAY_LABELS = ["S", "S", "R", "K", "J", "S", "M"];
+
+function CalendarPicker({ range, onChange }: { range: [Date, Date]; onChange: (r: [Date, Date]) => void }) {
+  const [open, setOpen] = useState(false);
+  const [view, setView] = useState(new Date(range[0].getFullYear(), range[0].getMonth(), 1));
+  const [selecting, setSelecting] = useState<"start" | "end">("start");
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [open]);
+
+  const daysBetween = (a: Date, b: Date) => Math.round((b.getTime() - a.getTime()) / 86400000) + 1;
+  const [start, end] = range;
+  const isInRange = (d: Date) => start && end && d.getTime() > start.getTime() && d.getTime() < end.getTime();
+
+  const label = `${start.getDate()} ${MONTHS[start.getMonth()]}–${end.getDate()} ${MONTHS[end.getMonth()]} • ${daysBetween(start, end)} hari terakhir`;
+
+  const grid: (Date | null)[] = [];
+  const firstDay = new Date(view.getFullYear(), view.getMonth(), 1).getDay();
+  const daysInMonth = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
+  for (let i = 0; i < firstDay; i++) grid.push(null);
+  for (let d = 1; d <= daysInMonth; d++) grid.push(new Date(view.getFullYear(), view.getMonth(), d));
+
+  const pick = (d: Date) => {
+    if (selecting === "start") { onChange([d, d]); setSelecting("end"); return; }
+    if (d.getTime() < range[0].getTime()) { onChange([d, range[0]]); setSelecting("end"); return; }
+    onChange([range[0], d]); setSelecting("start"); setOpen(false);
+  };
+
+  return (
+    <div className="relative inline-block" ref={ref}>
+      <button
+        onClick={() => setOpen(!open)}
+        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors hover:bg-white/10"
+        style={{ border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.75)" }}
+      >
+        <CalendarDays className="w-3 h-3" style={{ color: "#F97316" }} />
+        {label}
+      </button>
+
+      {open && (
+        <div className="absolute z-40 mt-2 left-0 w-[248px] rounded-xl p-3"
+          style={{ background: "#0B1120", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 16px 48px rgba(0,0,0,0.6)" }}>
+          <div className="flex items-center justify-between mb-2">
+            <button onClick={() => setView(new Date(view.getFullYear(), view.getMonth() - 1, 1))} className="p-1 rounded hover:bg-white/10">
+              <ChevronLeft className="w-4 h-4" style={{ color: "rgba(255,255,255,0.8)" }} />
+            </button>
+            <p className="text-[12px] font-bold text-white">
+              {MONTHS[view.getMonth()]} {view.getFullYear()}
+            </p>
+            <button onClick={() => setView(new Date(view.getFullYear(), view.getMonth() + 1, 1))} className="p-1 rounded hover:bg-white/10">
+              <ChevronRight className="w-4 h-4" style={{ color: "rgba(255,255,255,0.8)" }} />
+            </button>
+          </div>
+          <p className="text-[10px] mb-1.5 text-center" style={{ color: "rgba(255,255,255,0.45)" }}>
+            {selecting === "start" ? "Pilih tanggal mulai" : "Pilih tanggal selesai"}
+          </p>
+          <div className="grid grid-cols-7 gap-y-0.5">
+            {DAY_LABELS.map((d, i) => (
+              <span key={i} className="text-center text-[9px] font-bold py-1" style={{ color: "rgba(255,255,255,0.35)" }}>{d}</span>
+            ))}
+            {grid.map((d, i) => {
+              if (!d) return <span key={i} />;
+              const isStart = d.getTime() === start.getTime();
+              const isEnd = d.getTime() === end.getTime();
+              const isEdges = isStart || isEnd;
+              const sel = isEdges ? { background: "#F97316", color: "white" } : isInRange(d) ? { background: "rgba(249,115,22,0.2)", color: "white" } : undefined;
+              return (
+                <button
+                  key={i}
+                  onClick={() => pick(d)}
+                  className="h-8 rounded-lg text-[11px] font-semibold transition-colors hover:bg-white/10"
+                  style={sel ?? { color: "rgba(255,255,255,0.7)" }}
+                >
+                  {d.getDate()}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -505,6 +605,8 @@ function InsightTab({ creatorName, photoSrc, igHandle, tiktokHandle }: {
   const panelBorder = { border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.04)" };
   const igBar = "linear-gradient(90deg, #F97316, #FB923C)";
   const ttBar = "linear-gradient(90deg, #22D3EE, #A78BFA)";
+  const [igRange, setIgRange] = useState<[Date, Date]>([new Date(2026, 7, 18), new Date(2026, 8, 16)]);
+  const [ttRange, setTtRange] = useState<[Date, Date]>([new Date(2026, 7, 19), new Date(2026, 8, 15)]);
 
   return (
     <div className="mx-6 space-y-4">
@@ -527,8 +629,8 @@ function InsightTab({ creatorName, photoSrc, igHandle, tiktokHandle }: {
       {/* Platform rows */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {[
-          { title: "Instagram", sub: "18 Agu–16 Sep • 30 hari terakhir", link: `instagram.com/${igHandle}`, href: `https://www.instagram.com/${igHandle.replace(/^@/, "")}`, logo: <IgLogo className="w-7 h-7" />, avatar: photoSrc },
-          { title: "TikTok", sub: "19 Agu–15 Sep • 28 hari terakhir", link: `tiktok.com/${tiktokHandle}`, href: `https://www.tiktok.com/${tiktokHandle.replace(/^@/, "")}`, logo: <TiktokIcon className="w-5 h-5 text-white" />, avatar: photoSrc },
+          { title: "Instagram", link: `instagram.com/${igHandle}`, href: `https://www.instagram.com/${igHandle.replace(/^@/, "")}`, logo: <IgLogo className="w-7 h-7" />, avatar: photoSrc, range: igRange, onRange: setIgRange },
+          { title: "TikTok", link: `tiktok.com/${tiktokHandle}`, href: `https://www.tiktok.com/${tiktokHandle.replace(/^@/, "")}`, logo: <TiktokIcon className="w-5 h-5 text-white" />, avatar: photoSrc, range: ttRange, onRange: setTtRange },
         ].map((p) => (
           <div key={p.title} className="rounded-2xl p-4 flex items-center gap-3" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", border: "1px solid rgba(255,255,255,0.08)" }}>
             <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ background: p.title === "Instagram" ? "linear-gradient(135deg, rgba(253,29,29,0.25), rgba(131,58,180,0.25), rgba(247,119,55,0.25))" : "#000000" }}>
@@ -539,7 +641,9 @@ function InsightTab({ creatorName, photoSrc, igHandle, tiktokHandle }: {
                 <p className="text-[15px] font-bold text-white">{p.title}</p>
                 <span className="px-1.5 py-0.5 rounded text-[9px] font-extrabold tracking-wider text-white" style={{ background: "#F97316" }}>INSIGHT</span>
               </div>
-              <p className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.5)" }}>{p.sub}</p>
+              <div className="mt-1">
+                <CalendarPicker range={p.range} onChange={p.onRange} />
+              </div>
             </div>
             <div className="flex-1" />
             <div className="flex items-center gap-2.5 min-w-0">
@@ -561,7 +665,7 @@ function InsightTab({ creatorName, photoSrc, igHandle, tiktokHandle }: {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
         {/* Left — Instagram */}
         <div className="space-y-4">
-          <PanelCard title="Ringkasan utama">
+          <PanelCard title="Ringkasan utama" tag={SUBMITTED_TAG}>
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-xl p-4" style={{ background: "#1F2937" }}>
                 <p className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: "rgba(255,255,255,0.55)" }}>Tayangan</p>
@@ -632,7 +736,7 @@ function InsightTab({ creatorName, photoSrc, igHandle, tiktokHandle }: {
 
         {/* Right — TikTok */}
         <div className="space-y-4">
-          <PanelCard title="Metrik utama">
+          <PanelCard title="Metrik utama" tag={SUBMITTED_TAG}>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {[
                 { l: "Tayangan postingan", v: "6,5 jt", d: <Delta up suffix="1.5" /> },
