@@ -571,3 +571,29 @@ When deploying new frontend files:
 | DB connection refused | Wrong `DATABASE_URL` or missing `?sslmode=disable` | Fix env var in Coolify; redeploy |
 | Migrations not applied | Container failed before `goose.Up` | Check logs; run `go run ./cmd/migrate status` then `up` manually |
 | Pending migrations after deploy | Old binary without new migration file | Rebuild + redeploy so new SQL is embedded in binary |
+
+## Add Creator (Marketplace dialog) — Rules and Lessons (RECORDED 2026-08-25)
+
+### Verified working state (2026-08-25)
+- TikTok scrape = **Apify** (`clockworks~tiktok-scraper`, input `{"profiles":["https://www.tiktok.com/@handle"]}`, parse `items[0].authorMeta`). TikHub = fallback only. **Never tiktok.com direct.**
+- Instagram scrape = **Apify** (`apify~instagram-scraper`, `directUrls` + `resultsType:details`, parse `items[0]`). Anonymous crawler = fallback.
+- Apify token: env `APIFY_API_TOKEN` or `/app/.apify_token` file (container FS — re-create after any image rebuild).
+- Duplicate creator name → **delete OLD creator, keep NEW** (FKs cascade). 23505 rule in `repo.Create`.
+
+### GATING RULES for the dialog (do not "fix" back)
+- `canCreate = name.trim() && scrapeDone` — category/province are OPTIONAL (payload auto-falls back: category→displayName, city→province→"Jakarta").
+- Province map fetched locally at `/data/peta-id-kabupaten.json` (self-hosted, committed in `frontend/public/data/`). NEVER swap back to an external gist.
+- If Tambah button is dead (no toast, no request in logs) → check `disabled={loading || scraping || !canCreate}` chain FIRST, not the backend.
+
+### VERIFICATION MANDATORY before claiming "works"
+1. Curl scrape BOTH platforms (tiktok+ig) — must return `success:true` + local photo path.
+2. Curl CREATE with the **duplicate** name case (e.g. `Syahreza Ikram`) — must be **201**, NOT 500.
+3. Check prod logs for the USER's real attempts: `docker logs <container> | grep 'POST .*\/api\/v1\/creators'`.
+   - Request reachable + 500 ⇒ server error (read the 101B error body).
+   - No request at all ⇒ client-side gate (button disabled / early return in `handleCreate`).
+4. TikHub credit check before blaming code: `curl api.tikhub.io/api/v1/tikhub/user/get_user_info` — 402 insufficient balance means credits exhausted, code is fine.
+5. Frontend deploy verdict only via `scripts/deploy-frontend.sh` output "ALL CHECKS PASSED" + MARKER hit. Never say "deployed" from a local build.
+
+### Credentials / accounts (prod)
+- TikHub key owner: `officialcreatorhub.id@gmail.com` — top-ups must go to THIS account or replace the key in Coolify (`TIKHUB_API_KEY`).
+- Apify token: `console.apify.com/settings/integrations`.
