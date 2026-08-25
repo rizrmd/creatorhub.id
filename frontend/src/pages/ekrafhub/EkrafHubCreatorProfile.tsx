@@ -8,6 +8,7 @@ import { formatFollowers, resolveCreatorPhoto } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import MonitorPostsTab from "./MonitorPostsTab";
+import CampaignMonitoringTab from "./CampaignMonitoringTab";
 import type { PlatformMetric } from "@/types";
 
 const TiktokIcon = ({ className }: { className?: string }) => (
@@ -459,13 +460,7 @@ export default function EkrafHubCreatorProfile() {
 
         {tab === "campaigns" && (
           <div className="mx-6">
-            <div className="rounded-2xl px-4 py-10 text-center" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", border: "1px solid rgba(255,255,255,0.06)" }}>
-              <MegaphoneIcon className="w-8 h-8 mx-auto mb-3" style={{ color: "rgba(255,255,255,0.35)" }} />
-              <p className="text-sm font-bold text-white">Campaign Monitoring</p>
-              <p className="text-[11px] mt-1.5" style={{ color: "rgba(255,255,255,0.6)" }}>
-                Data monitoring kampanye kreator belum tersedia.
-              </p>
-            </div>
+            <CampaignMonitoringTab />
           </div>
         )}
 
