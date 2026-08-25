@@ -118,7 +118,9 @@ export default function EkrafHubCreatorProfile() {
         </div>
       </div>
 
-      {/* Creator Profile Card */}
+      
+{/* Creator Profile Card (only on Profile tab) */}
+      {tab === "profile" && (
       <div className="mx-6 mt-4 rounded-3xl overflow-hidden" style={{ background: "linear-gradient(180deg, #0d1420 0%, #080d16 100%)", boxShadow: shadow3d, border: "1px solid rgba(255,255,255,0.08)" }}>
         <div className="flex flex-col md:flex-row gap-4 md:gap-6 p-4 md:p-6">
           {/* Left: Photo frame */}
@@ -184,6 +186,7 @@ export default function EkrafHubCreatorProfile() {
           </div>
         </div>
       </div>
+    )}
 
       {/* Tab content */}
       <div className="mt-4">
