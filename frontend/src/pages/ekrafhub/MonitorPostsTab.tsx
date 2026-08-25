@@ -273,7 +273,8 @@ function PostCard({ post, active, sentimentReady, analysis, pinned, selectable =
         </div>
         {post.perfUpdated && (
           <p className="text-[10.5px]" style={{ color: MUTED }}>
-            Performance Data Updated: {post.perfUpdated}
+            Performance Data Updated: <span style={{ color: "#FB923C", fontWeight: 700 }}>{post.perfUpdated.split("·")[0].trim()}</span>
+            <span style={{ color: "#F97316", fontWeight: 700, textShadow: "0 0 12px rgba(249,115,22,0.5)" }}>&nbsp;· {post.perfUpdated.split("·").slice(1).join("·").trim()}</span>
           </p>
         )}
         {post.postType && post.link && (
