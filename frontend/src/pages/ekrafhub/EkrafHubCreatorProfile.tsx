@@ -1,7 +1,7 @@
 ﻿import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { MapPin, ArrowLeft, CheckCircle, Circle, Clock, Send, Bookmark, User, Eye, CreditCard, BarChart3, RefreshCw, Loader2, ChevronLeft, ChevronRight, CalendarDays, Check } from "lucide-react";
+import { MapPin, ArrowLeft, CheckCircle, Circle, Clock, Send, Bookmark, User, Eye, CreditCard, BarChart3, RefreshCw, Loader2, ChevronLeft, ChevronRight, CalendarDays, Check, Mail } from "lucide-react";
 import { useCreator } from "@/hooks/useCreators";
 import { creatorsApi } from "@/lib/api";
 import { formatFollowers, resolveCreatorPhoto } from "@/lib/utils";
@@ -95,7 +95,7 @@ const PREVIOUS_BRANDS: string[][] = [
   ],
 ];
 
-type TabKey = "profile" | "collaborations" | "insight" | "posts" | "campaigns" | "rate";
+type TabKey = "profile" | "collaborations" | "insight" | "posts" | "campaigns" | "rate" | "contact";
 
 const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
   { key: "profile", label: "Profile", icon: <User className="w-3.5 h-3.5" /> },
@@ -104,6 +104,7 @@ const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
   { key: "posts", label: "Content Monitoring", icon: <Eye className="w-3.5 h-3.5" /> },
   { key: "campaigns", label: "Campaign Monitoring", icon: <MegaphoneIcon className="w-3.5 h-3.5" /> },
   { key: "rate", label: "Rate Card", icon: <CreditCard className="w-3.5 h-3.5" /> },
+  { key: "contact", label: "Contact", icon: <Mail className="w-3.5 h-3.5" /> },
 ];
 
 export default function EkrafHubCreatorProfile() {
@@ -467,6 +468,18 @@ export default function EkrafHubCreatorProfile() {
         {tab === "rate" && (
           <div className="mx-6">
             <RateCard />
+          </div>
+        )}
+
+        {tab === "contact" && (
+          <div className="mx-6">
+            <div className="rounded-2xl px-4 py-10 text-center" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", border: "1px solid rgba(255,255,255,0.06)" }}>
+              <Mail className="w-8 h-8 mx-auto mb-3" style={{ color: "rgba(255,255,255,0.35)" }} />
+              <p className="text-sm font-bold text-white">Contact</p>
+              <p className="text-[11px] mt-1.5" style={{ color: "rgba(255,255,255,0.6)" }}>
+                Data kontak kreator belum tersedia.
+              </p>
+            </div>
           </div>
         )}
       </div>
