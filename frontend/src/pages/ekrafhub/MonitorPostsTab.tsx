@@ -67,6 +67,9 @@ const POSTS: Post[] = [
   },
 ];
 
+const SENTIMENT_SEED =
+  "Sentimen mayoritas komentator sangat positif (±92%), emosi dominan lucu dan kagum. Kata kunci '#lucu', '#ngakak' dan 'kejang' paling sering muncul, menandakan respons hangat. Interaksi tinggi: 371 komentar, 22 balasan, keterlibatan audiens kuat pada konten ini.";
+
 const REPLIES: Reply[] = [
   { user: "llyaaww__", text: "@your.neighbour90", text2: "😭😭", time: "30w", likes: "7 likes", avatar: "/monitor/av-llyaaww.png" },
   { user: "enyyna.km", text: "@your.neighbour90 @xyz.sayy @syisyisyifaa_", text2: "😭😭", time: "30w", likes: "3 likes", avatar: "/monitor/av-enyyna.png" },
@@ -351,6 +354,21 @@ export default function MonitorPostsTab() {
   const [rProgress, setRProgress] = useState(0);
   const [rFetched, setRFetched] = useState(false);
   const [analysis, setAnalysis] = useState(false);
+  const [typed, setTyped] = useState("");
+
+  useEffect(() => {
+    if (!analysis) {
+      setTyped("");
+      return;
+    }
+    let i = 0;
+    const id = window.setInterval(() => {
+      i += 1;
+      setTyped(SENTIMENT_SEED.slice(0, i));
+      if (i >= SENTIMENT_SEED.length) window.clearInterval(id);
+    }, 14);
+    return () => window.clearInterval(id);
+  }, [analysis]);
 
   const listRef = useRef<HTMLDivElement>(null);
   const repliesRef = useRef<HTMLDivElement>(null);
@@ -588,17 +606,31 @@ export default function MonitorPostsTab() {
               style={{ background: "#0c131e", boxShadow: "0 10px 26px -16px rgba(0,0,0,0.9),inset 0 0 0 1px rgba(255,255,255,0.06)" }}
             >
               {analysis && (
-                <div className="flex gap-1 p-1 mb-4 rounded-[12px]" style={{ background: "#111a26", boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.06)" }}>
-                  {["Sentiments", "Bot Analysis", "Social Network Analysis"].map((t, i) => (
-                    <div
-                      key={t}
-                      className="flex-1 text-center py-[9px] rounded-[9px] text-[12px] font-bold cursor-pointer transition-colors hover:text-[#e8edf5]"
-                      style={i === 0 ? { background: "rgba(242,101,34,0.16)", color: ORANGE_LIGHT } : { color: "#8a97ab" }}
-                    >
-                      {t}
+                <>
+                  <div className="flex gap-1 p-1 mb-4 rounded-[12px]" style={{ background: "#111a26", boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.06)" }}>
+                    {["Sentiments", "Bot Analysis", "Social Network Analysis"].map((t, i) => (
+                      <div
+                        key={t}
+                        className="flex-1 text-center py-[9px] rounded-[9px] text-[12px] font-bold cursor-pointer transition-colors hover:text-[#e8edf5]"
+                        style={i === 0 ? { background: "rgba(242,101,34,0.16)", color: ORANGE_LIGHT } : { color: "#8a97ab" }}
+                      >
+                        {t}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="rounded-[12px] p-4 mb-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                    <div className="flex items-center gap-2 mb-2.5">
+                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#3fd07f" }} />
+                      <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.55)" }}>
+                        Sentiment Analysis
+                      </p>
                     </div>
-                  ))}
-                </div>
+                    <p className="text-[13px] leading-relaxed" style={{ color: "#c6d0dd" }}>
+                      {typed}
+                      <span className="inline-block w-[2px] h-[13px] ml-1 align-middle animate-pulse" style={{ background: ORANGE_LIGHT }} />
+                    </p>
+                  </div>
+                </>
               )}
 
               {/* Mini post header */}
