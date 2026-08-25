@@ -2,9 +2,12 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"creatorhub/backend/internal/models"
@@ -289,19 +292,38 @@ func (r *CreatorRepository) Create(ctx context.Context, req models.CreateCreator
 		req.Tags = []string{}
 	}
 
-	err := r.db.QueryRow(ctx, `
-		INSERT INTO creators (id, name, handle, city, country, category, followers, followers_text, image_url, bio, tags)
-		VALUES ($1, $2, $3, $4, 'Indonesia', $5, $6, $7, $8, $9, $10)
-		RETURNING id, name, handle, city, country, category, followers, followers_text, engagement_rate,
-			price, price_text, verified, star_creator, rating, fast_response, top_rated,
-			last_seen, image_url, img_path, focus, hue, bio`,
-		id, req.Name, "", req.City, req.Category, totalFollowers, followersText, imageURL, req.Bio, req.Tags,
-	).Scan(
-		&c.ID, &c.Name, &c.Handle, &c.City, &c.Country, &c.Category,
-		&c.Followers, &c.FollowersText, &c.EngagementRate,
-		&c.Price, &c.PriceText, &c.Verified, &c.StarCreator, &c.Rating,
-		&c.FastResponse, &c.TopRated, &c.LastSeen, &c.ImageURL, &c.ImgPath, &c.Focus, &c.Hue, &c.Bio,
-	)
+	row := func(candidate string) pgx.Row {
+		return r.db.QueryRow(ctx, `
+			INSERT INTO creators (id, name, handle, city, country, category, followers, followers_text, image_url, bio, tags)
+			VALUES ($1, $2, $3, $4, 'Indonesia', $5, $6, $7, $8, $9, $10)
+			RETURNING id, name, handle, city, country, category, followers, followers_text, engagement_rate,
+				price, price_text, verified, star_creator, rating, fast_response, top_rated,
+				last_seen, image_url, img_path, focus, hue, bio`,
+			candidate, req.Name, "", req.City, req.Category, totalFollowers, followersText, imageURL, req.Bio, req.Tags,
+		)
+	}
+
+	scan := func(q pgx.Row) error {
+		return q.Scan(
+			&c.ID, &c.Name, &c.Handle, &c.City, &c.Country, &c.Category,
+			&c.Followers, &c.FollowersText, &c.EngagementRate,
+			&c.Price, &c.PriceText, &c.Verified, &c.StarCreator, &c.Rating,
+			&c.FastResponse, &c.TopRated, &c.LastSeen, &c.ImageURL, &c.ImgPath, &c.Focus, &c.Hue, &c.Bio,
+		)
+	}
+
+	err := scan(row(id))
+	if err != nil {
+		// Duplicate slug (same name as an existing creator): remove the OLD
+		// creator — keep the NEW one. FKs (creator_platforms, campaign_creators)
+		// cascade, so no manual cleanup needed.
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			if _, delErr := r.db.Exec(ctx, `DELETE FROM creators WHERE id = $1`, id); delErr == nil {
+				err = scan(row(id))
+			}
+		}
+	}
 	if err != nil {
 		return nil, err
 	}
