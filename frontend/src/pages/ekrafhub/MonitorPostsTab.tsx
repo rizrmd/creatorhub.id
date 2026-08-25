@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { formatFollowers } from "@/lib/utils";
 
 const CARD_BG = "linear-gradient(158deg, #16202f 0%, #101825 55%, #0e1521 100%)";
 const CELL_BG = "#0d141f";
@@ -549,6 +550,83 @@ function SnaBars() {
   );
 }
 
+const MONTHS_ID = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+
+type DateTripleValue = { d: number; m: number; y: number };
+
+type RegularPost = { id: number; caption: string; ms: number; views: number; likes: number; comments: number };
+
+const REGULAR_POSTS: RegularPost[] = [
+  { id: 1, caption: "Cobain roti canai ala Aceh, resep turunan keluarga", ms: new Date(2026, 5, 12).getTime(), views: 412000, likes: 45200, comments: 312 },
+  { id: 2, caption: "Ngikutin tren #freeguy 3 detik aja", ms: new Date(2026, 5, 19).getTime(), views: 268000, likes: 31400, comments: 158 },
+  { id: 3, caption: "Review tempat ngabuburit paling viral di kota", ms: new Date(2026, 5, 26).getTime(), views: 1240000, likes: 88700, comments: 623 },
+  { id: 4, caption: "Tips hemat buat yang hobi keliling posko", ms: new Date(2026, 6, 3).getTime(), views: 640000, likes: 52100, comments: 407 },
+  { id: 5, caption: "Dapet kiriman surprise dari followers😭", ms: new Date(2026, 6, 10).getTime(), views: 987000, likes: 114000, comments: 812 },
+  { id: 6, caption: "BTS campaign kolaborasi brand lokal", ms: new Date(2026, 6, 17).getTime(), views: 512000, likes: 48900, comments: 233 },
+  { id: 7, caption: "Inilah wajah asli pantai saat air surut!", ms: new Date(2026, 6, 24).getTime(), views: 1800000, likes: 156000, comments: 990 },
+  { id: 8, caption: "Jawaban dari semua pertanyaan di DM, part 2", ms: new Date(2026, 7, 2).getTime(), views: 733000, likes: 61300, comments: 526 },
+  { id: 9, caption: "Kuliner malam: martabak duta vs juragan", ms: new Date(2026, 7, 9).getTime(), views: 1100000, likes: 97800, comments: 744 },
+  { id: 10, caption: "POV : satu sore di warung kopi", ms: new Date(2026, 7, 24).getTime(), views: 892000, likes: 78500, comments: 561 },
+];
+
+const msOf = (v: DateTripleValue) => new Date(v.y, v.m, v.d).getTime();
+
+const fmtDate = (ms: number) => {
+  const d = new Date(ms);
+  return `${d.getDate()} ${MONTHS_ID[d.getMonth()]} ${d.getFullYear()}`;
+};
+
+const selectStyle: React.CSSProperties = { background: "#0f1621", border: "1px solid rgba(255,255,255,0.1)", color: "#dbe3ed" };
+
+function DateTriple({ label, value, onChange }: { label: string; value: DateTripleValue; onChange: (v: DateTripleValue) => void }) {
+  const daysInMonth = new Date(value.y, value.m + 1, 0).getDate();
+  const set = (part: keyof DateTripleValue, v: number) => {
+    const next = { ...value, [part]: v };
+    const dImpl = new Date(next.y, next.m + 1, 0).getDate();
+    if (next.d > dImpl) next.d = dImpl;
+    onChange(next);
+  };
+  return (
+    <div className="flex items-center gap-1.5">
+      <span className="text-[11px] font-bold whitespace-nowrap" style={{ color: "#8a97ab" }}>{label}</span>
+      <select value={value.d} onChange={(e) => set("d", Number(e.target.value))} style={selectStyle} className="text-[12px] px-2 py-1 rounded-lg focus:outline-none cursor-pointer">
+        {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((n) => (
+          <option key={n} value={n}>{n}</option>
+        ))}
+      </select>
+      <select value={value.m} onChange={(e) => set("m", Number(e.target.value))} style={selectStyle} className="text-[12px] px-2 py-1 rounded-lg focus:outline-none cursor-pointer">
+        {MONTHS_ID.map((mn, i) => (
+          <option key={mn} value={i}>{mn}</option>
+        ))}
+      </select>
+      <select value={value.y} onChange={(e) => set("y", Number(e.target.value))} style={selectStyle} className="text-[12px] px-2 py-1 rounded-lg focus:outline-none cursor-pointer">
+        {[2026, 2025, 2024].map((yr) => (
+          <option key={yr} value={yr}>{yr}</option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+function RegularPostRow({ p }: { p: RegularPost }) {
+  return (
+    <div
+      className="flex items-center gap-3 rounded-[12px] px-3 py-2.5 transition-colors hover:border-orange-500/40"
+      style={{ background: "linear-gradient(158deg, #131b28 0%, #0f1621 100%)", border: "1px solid rgba(255,255,255,0.06)" }}
+    >
+      <div className="w-12 h-14 rounded-lg overflow-hidden shrink-0" style={{ background: "#1b2432" }}>
+        <img src={`https://picsum.photos/seed/regp${p.id}/96/112`} alt={p.caption} className="w-full h-full object-cover" loading="lazy" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-[12.5px] font-bold truncate" style={{ color: "#e8edf5" }}>{p.caption}</p>
+        <p className="text-[11px] mt-0.5" style={{ color: MUTED }}>
+          {fmtDate(p.ms)} · {formatFollowers(p.views)} views · {formatFollowers(p.likes)} likes · {formatFollowers(p.comments)} komentar
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function MonitorPostsTab() {
   const [active, setActive] = useState(1);
   const [showComments, setShowComments] = useState(false);
@@ -569,6 +647,8 @@ export default function MonitorPostsTab() {
   const [snaState, setSnaState] = useState<"idle" | "loading" | "done">("idle");
   const [snaProgress, setSnaProgress] = useState(0);
   const [snaTyped, setSnaTyped] = useState("");
+  const [from, setFrom] = useState<DateTripleValue>({ d: 12, m: 5, y: 2026 });
+  const [to, setTo] = useState<DateTripleValue>({ d: 24, m: 7, y: 2026 });
 
   useEffect(() => {
     if (!analysis) {
@@ -695,6 +775,7 @@ export default function MonitorPostsTab() {
   }, []);
 
   const post = POSTS.find((p) => p.id === active) ?? POSTS[0];
+  const visible = REGULAR_POSTS.filter((p) => p.ms >= msOf(from) && p.ms <= msOf(to));
 
   const select = (n: number) => {
     if (active === n) return;
@@ -808,11 +889,35 @@ export default function MonitorPostsTab() {
           />
         ))}
 
-        <div
-          className="flex items-center justify-center gap-2 py-3 rounded-[14px] text-[12.5px] font-semibold cursor-pointer transition-colors hover:text-[#e8edf5]"
-          style={{ border: "1px dashed rgba(255,255,255,0.14)", color: "#8a97ab" }}
-        >
-          View 21 more posts
+        {/* Regular Posts */}
+        <div className="flex items-center gap-2.5 mt-1 flex-wrap" style={{ height: 26 }}>
+          <div className="w-[3px] h-[17px] rounded-[2px]" style={{ background: ORANGE }} />
+          <h2 className="text-[17px] font-bold" style={{ color: "#e8edf5" }}>Regular Posts</h2>
+          <span className="text-[11.5px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap" style={{ color: ORANGE_LIGHT, background: "rgba(242,101,34,0.13)" }}>
+            {visible.length} posts
+          </span>
+          <div className="ml-auto flex items-center gap-3 flex-wrap justify-end" style={{ height: "auto", paddingBottom: 20 }}>
+            <DateTriple
+              label="Dari"
+              value={from}
+              onChange={(v) => { setFrom(v); if (msOf(v) > msOf(to)) setTo(v); }}
+            />
+            <DateTriple
+              label="Sampai"
+              value={to}
+              onChange={(v) => { setTo(v); if (msOf(v) < msOf(from)) setFrom(v); }}
+            />
+          </div>
+        </div>
+        <div className="flex flex-col gap-2.5">
+          {visible.map((p) => (
+            <RegularPostRow key={p.id} p={p} />
+          ))}
+          {visible.length === 0 && (
+            <div className="rounded-[14px] px-4 py-8 text-center text-[12px] font-semibold" style={{ border: "1px dashed rgba(255,255,255,0.14)", color: "#8a97ab" }}>
+              Tidak ada posting di rentang tanggal ini.
+            </div>
+          )}
         </div>
       </div>
 
