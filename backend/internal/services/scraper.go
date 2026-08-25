@@ -33,6 +33,9 @@ var httpClient = &http.Client{
 	},
 }
 
+// apifyHTTPClient is slower on purpose: a single actor run can take 30-60s.
+var apifyHTTPClient = &http.Client{Timeout: 90 * time.Second}
+
 var chromeUA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 var mobileUA = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1"
 
@@ -323,6 +326,12 @@ func scrapeTikTokTikHub(handle, apiKey string) *ScrapeResult {
 // --- Instagram ---
 
 func scrapeInstagram(handle string) *ScrapeResult {
+	// Primary: Apify instagram-scraper actor (reliable, login-free for public
+	// profiles). Falls back to the anonymous i.instagram API -> HTML chain.
+	if r := scrapeInstagramApify(handle); r != nil {
+		return r
+	}
+
 	url := fmt.Sprintf("https://i.instagram.com/api/v1/users/web_profile_info/?username=%s", handle)
 	body, status, err := doHTTPGet(url, map[string]string{
 		"X-IG-App-ID":     "936619743392459",
@@ -380,6 +389,77 @@ func scrapeInstagram(handle string) *ScrapeResult {
 		ProfilePictureURL: picURL,
 		FollowerCount:     user.Edge_followed_by.Count,
 		FollowingCount:    user.Edge_follow.Count,
+		Bio:               user.Biography,
+		DisplayName:       name,
+		Success:           true,
+	}
+}
+
+// scrapeInstagramApify fetches user metadata via the Apify instagram-scraper
+// actor. Token comes from env APIFY_API_TOKEN or /app/.apify_token file.
+// Returns nil when no token configured or the run fails, so the caller falls
+// back to the anonymous crawler.
+func scrapeInstagramApify(handle string) *ScrapeResult {
+	token := strings.TrimSpace(os.Getenv("APIFY_API_TOKEN"))
+	if token == "" {
+		if data, err := os.ReadFile("/app/.apify_token"); err == nil {
+			token = strings.TrimSpace(string(data))
+		}
+	}
+	if token == "" {
+		return nil
+	}
+
+	payload := fmt.Sprintf(`{"directUrls":["https://www.instagram.com/%s/"],"resultsType":"details","resultsLimit":1}`, handle)
+	apiURL := fmt.Sprintf("https://api.apify.com/v2/acts/apify~instagram-scraper/run-sync-get-dataset-items?token=%s&timeout=75", token)
+
+	req, err := http.NewRequest("POST", apiURL, strings.NewReader(payload))
+	if err != nil {
+		return nil
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := apifyHTTPClient.Do(req)
+	if err != nil {
+		fmt.Printf("apify scrape request failed for %s: %v\n", handle, err)
+		return nil
+	}
+	defer resp.Body.Close()
+	body, _ := io.ReadAll(io.LimitReader(resp.Body, 20<<20))
+
+	var items []struct {
+		URL             string `json:"url"`
+		UserName        string `json:"username"`
+		FullName        string `json:"fullName"`
+		Biography       string `json:"biography"`
+		FollowersCount  int64  `json:"followersCount"`
+		FollowsCount    int64  `json:"followsCount"`
+		Private         bool   `json:"private"`
+		ProfilePicURL   string `json:"profilePicUrl"`
+		ProfilePicURLHD string `json:"profilePicUrlHD"`
+	}
+	if err := json.Unmarshal(body, &items); err != nil {
+		fmt.Printf("apify parse failed for %s: %v\n", handle, err)
+		return nil
+	}
+	if len(items) == 0 || items[0].UserName == "" && items[0].ProfilePicURL == "" && items[0].ProfilePicURLHD == "" {
+		return nil
+	}
+
+	user := items[0]
+	picURL := user.ProfilePicURLHD
+	if picURL == "" {
+		picURL = user.ProfilePicURL
+	}
+	name := user.FullName
+	if name == "" {
+		name = handle
+	}
+
+	return &ScrapeResult{
+		ProfilePictureURL: picURL,
+		FollowerCount:     user.FollowersCount,
+		FollowingCount:    user.FollowsCount,
 		Bio:               user.Biography,
 		DisplayName:       name,
 		Success:           true,
