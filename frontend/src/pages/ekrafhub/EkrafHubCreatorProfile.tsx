@@ -50,6 +50,50 @@ const MegaphoneIcon = ({ className, style }: { className?: string; style?: React
   </svg>
 );
 
+const EXISTING_BRANDS: { name: string; icon: string; bg: string; color: string; border?: string }[] = [
+  { name: "Yamaha", icon: "Y", bg: "#D01325", color: "#fff" },
+  { name: "Honda", icon: "H", bg: "#E60012", color: "#fff" },
+  { name: "Shopee", icon: "S", bg: "#EE4D2D", color: "#fff" },
+  { name: "Aceh", icon: "A", bg: "#22456B", color: "#fff" },
+  { name: "Indosat", icon: "i", bg: "#E62B1E", color: "#FFD400" },
+  { name: "McDonald's", icon: "M", bg: "#FFC72C", color: "#DA291C" },
+  { name: "KFC", icon: "K", bg: "#B5050A", color: "#fff" },
+  { name: "Scarlett", icon: "S", bg: "#FFFFFF", color: "#111111", border: "#111111" },
+  { name: "Teh Kotak", icon: "T", bg: "#6D4C2F", color: "#fff" },
+  { name: "Yupi", icon: "Y", bg: "#EC1E24", color: "#fff" },
+  { name: "Tokopedia", icon: "T", bg: "#F7F4E9", color: "#17A053", border: "#17A053" },
+  { name: "Telkomsel", icon: "T", bg: "#ED0101", color: "#fff" },
+  { name: "Lemonilo", icon: "L", bg: "#EFF5E3", color: "#7BA839", border: "#7BA839" },
+  { name: "MS Glow", icon: "M", bg: "#101010", color: "#fff" },
+  { name: "Smartfren", icon: "S", bg: "#EE4E9B", color: "#fff" },
+];
+
+const PREVIOUS_BRANDS: string[][] = [
+  [
+    "Tokopedia", "Beudelab", "Shopee", "Sunscreen Wardah", "Ghost Pepper",
+    "Masker Helwa Beuty", "Scarlet", "Bakso Paknu", "Masker", "Slimilly.id",
+    "Bakso Aci Boci", "Anggola", "Beute Lab.Inc", "Marcks", "Minyak Kayu PutihDragon",
+    "Youvit Multivitamin", "Seed Perapat.id", "Moko moko", "KFC", "Mustika Ratu",
+    "VIP", "Lemonilo", "AONEZ", "Bio Aqua", "Aero Clinmax",
+    "Chatime", "Lefregence Parfume", "Mo Uung", "Elumor", "MS GLow",
+    "Focallure", "Riveno.official", "Skinufia", "O.twoo Kosmetik", "Hanriver",
+    "Makarizo", "Makuku Air Diapers", "SR 12", "Speed", "Viorra Skincare",
+    "Eatsambel", "Alfisa Beuty", "Mamabear", "We Love it Official", "Whiteinc",
+    "Jimeiline", "Azarine", "Madu Urai", "Joar", "Sushimei",
+  ],
+  [
+    "Bumbei", "Luxus", "Gmbeer", "Indoganic", "Nasi Kulit Malam Minggu",
+    "King Fried Chicken", "Mochichantik", "Metoo", "D'cost", "Mujigae",
+    "Teh Kotak", "Honda", "Gojoudokk", "N.Pure", "Indomaret",
+    "Kotty Cosmetic", "Pinanthi.official", "Mixio", "Byebadskin", "Alfamart",
+    "PS Aesthetic Clinic", "Oasis in Dubai", "Dr ZLim Official", "Dorly 29 Estetika", "dr Dini Skincare",
+    "Breaktime", "Freshcare Smash", "Papa Steak", "Banda Banana", "Aa Clinic",
+    "Yupi", "Petede", "Yamaha", "McDonalds", "Orang Mercon Merah Putih",
+    "HDLV", "We Drink", "DISBUDPAR", "Benings Clinic", "Namz Bakery",
+    "Mamesaka", "Plum Hotel Lading", "Telkomsel", "Smartfren", "Hifi",
+  ],
+];
+
 type TabKey = "profile" | "collaborations" | "insight" | "posts" | "campaigns" | "rate";
 
 const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
@@ -339,13 +383,58 @@ export default function EkrafHubCreatorProfile() {
         )}
 
         {tab === "collaborations" && (
-          <div className="mx-6">
-            <div className="rounded-2xl px-4 py-10 text-center" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", border: "1px solid rgba(255,255,255,0.06)" }}>
-              <HandshakeIcon className="w-8 h-8 mx-auto mb-3" style={{ color: "rgba(255,255,255,0.35)" }} />
-              <p className="text-sm font-bold text-white">Collaborations</p>
-              <p className="text-[11px] mt-1.5" style={{ color: "rgba(255,255,255,0.6)" }}>
-                Data kolaborasi kreator belum tersedia.
-              </p>
+          <div className="mx-6 space-y-6">
+            {/* Existing Collaborations */}
+            <div>
+              <div className="flex items-center gap-2.5 mb-3" style={{ height: 26 }}>
+                <div className="w-[3px] h-[17px] rounded-[2px]" style={{ background: "#f26522" }} />
+                <h2 className="text-[17px] font-bold text-white">Existing Collaborations</h2>
+              </div>
+              <div className="rounded-3xl p-6 md:p-8" style={{ background: "#F4EBDD", border: "1px solid #DDCBA8" }}>
+                <p className="text-center text-[13px] italic font-semibold mb-0.5" style={{ color: "#8A7A5C" }}>Latest</p>
+                <h3 className="text-center text-xl md:text-2xl font-extrabold tracking-wide mb-6" style={{ color: "#1E2735", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                  BRAND COLLABORATION
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-4 gap-y-5">
+                  {EXISTING_BRANDS.map((b) => (
+                    <div key={b.name} className="flex flex-col items-center gap-1.5">
+                      <div
+                        className="w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-extrabold border-2"
+                        style={{ background: b.bg, color: b.color, borderColor: b.border ?? "transparent", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                      >
+                        {b.icon}
+                      </div>
+                      <span className="text-[12px] font-bold text-center" style={{ color: "#1E2735" }}>{b.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Previous Collaborations */}
+            <div>
+              <div className="flex items-center gap-2.5 mb-3" style={{ height: 26 }}>
+                <div className="w-[3px] h-[17px] rounded-[2px]" style={{ background: "#f26522" }} />
+                <h2 className="text-[17px] font-bold text-white">Previous Collaborations</h2>
+              </div>
+              {PREVIOUS_BRANDS.map((group, gi) => (
+                <div key={gi} className="rounded-3xl px-5 py-6 mb-4 last:mb-0" style={{ background: "#F4EBDD", border: "1px solid #DDCBA8" }}>
+                  <h3 className="text-center text-base md:text-lg font-extrabold tracking-widest mb-5" style={{ color: "#1E2735", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                    OTHERS BRAND COLLABORATION
+                  </h3>
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {group.map((name) => (
+                      <span
+                        key={name}
+                        className="px-3.5 py-1.5 rounded-full text-[12px] font-semibold whitespace-nowrap"
+                        style={{ background: "#FBF6EC", border: "1px solid rgba(30,39,53,0.25)", color: "#1E2735" }}
+                      >
+                        {name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -374,7 +463,7 @@ export default function EkrafHubCreatorProfile() {
 
         {tab === "rate" && (
           <div className="mx-6">
-            <RateCard creator={creator} />
+            <RateCard />
           </div>
         )}
       </div>
@@ -926,58 +1015,116 @@ function InsightTab({ creatorId, creatorName, photoSrc, igHandle, tiktokHandle }
   );
 }
 
-function RateCard({ creator }: { creator: { name: string; price: number; priceText: string; engagementRate: number; followers: number } }) {
-  const base = creator.price || 0;
-  const fmt = (n: number) => {
-    if (n <= 0) return "â€”";
-    return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(Math.round(n))
-      .replace(/\sRp/g, "").replace(/Rp(\d)/, "Rp $1");
-  };
-  const items = [
-    { label: "IG Feed / Promo", price: base, note: "satu postingan feed" },
-    { label: "IG Reel", price: base * 1.3, note: "reel pendek + story" },
-    { label: "TikTok Video", price: base * 0.85, note: "satu konten video" },
-    { label: "Paket Kampanye (3 konten)", price: base * 2.5, note: "feed x1 + reel x1 + tiktok x1" },
-  ];
+const RATE_TIKTOK: { l: string; p: string }[] = [
+  { l: "1 Video (Non-Visit) + Bonus 1 Instastory", p: "500K" },
+  { l: "1 Video (Visit) + 1 Instastory", p: "800K" },
+  { l: "1 Video (Non-Visit) + Reels Mirroring + 1 Instastory", p: "800K" },
+  { l: "1 Video (Visit) + Reels Mirroring + 3 Instastory – Sony Max 3 Camera", p: "1.800K" },
+  { l: "1 Video (Visit) + Reels Mirroring + 3 Instastory – HP", p: "1.200K" },
+];
 
+const RATE_INSTAGRAM: { l: string; p: string }[] = [
+  { l: "Paid Promote (per Slide)", p: "150K" },
+  { l: "Review Product (Max 1 menit + Editing) - Instastory", p: "300K" },
+  { l: "Reels (Non-Visit) + Instagram Story", p: "400K" },
+  { l: "Reels (Visit) + Instastory", p: "650K" },
+  { l: "Reels (Visit) + Instagram Story – Sony Max 3 Camera", p: "1.000K" },
+];
+
+const BRAND_AMBASSADOR: { t: string; s?: string }[] = [
+  { t: "Exclusevie Tiktok Video", s: "(3 Video with Sony Max III Camera)" },
+  { t: "Non Exclusive Tiktok Video", s: "(3 Video)" },
+  { t: "30 Instastory" },
+  { t: "12 Short Reels", s: "(Up To 30 sec)" },
+  { t: "Free Product/Studio Phoshoot" },
+  { t: "6 Instagram Feeds Post" },
+];
+
+const TERMS: string[] = [
+  "Full Payment H-3",
+  "Untuk review/produk yang dikirimkan (diusahakan good condition)",
+  "Review bersifat jujur",
+  "Produk yang akan di kirimkan harus di kirim h-5 sbeelum proses shoot endorsee produk",
+  "wajib mengirim brief & knowledge produk",
+  "Revisi max 1 kali",
+  "Tambahan biaya apabila tempat visit jauh",
+];
+
+function RateCard() {
   return (
-    <div className="rounded-2xl p-6" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.06)" }}>
-      <div className="flex items-center gap-2 mb-5">
-        <div className="w-1 h-5 rounded-full" style={{ background: "linear-gradient(180deg, #F97316, #EA580C)", boxShadow: "0 0 10px rgba(249,115,22,0.5)" }} />
-        <h3 className="text-sm font-bold text-white">Rate Card â€” {creator.name}</h3>
-      </div>
-
-      <div className="flex items-center justify-between rounded-xl px-4 py-3 mb-5" style={{ background: "rgba(249,115,22,0.08)", border: "1px solid rgba(249,115,22,0.2)" }}>
-        <div>
-          <p className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: "rgba(255,255,255,0.6)" }}>Base Rate (Rp)</p>
-          <p className="text-2xl font-extrabold" style={{ color: "#F97316", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            {base > 0 ? fmt(base) : creator.priceText || "Hubungi kreator"}
-          </p>
-        </div>
-        <div className="text-right">
-          <p className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: "rgba(255,255,255,0.6)" }}>Followers</p>
-          <p className="text-lg font-extrabold text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{formatFollowers(creator.followers || 0)}</p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {items.map((it) => (
-          <div key={it.label} className="flex items-center justify-between rounded-xl p-4" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
-            <div>
-              <p className="text-[13px] font-bold text-white">{it.label}</p>
-              <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.55)" }}>{it.note}</p>
+    <div className="space-y-6">
+      <div className="rounded-3xl p-6 md:p-8" style={{ background: "#F4EBDD", border: "1px solid #DDCBA8" }}>
+        <h3 className="text-center text-xl md:text-2xl font-extrabold tracking-wide mb-7" style={{ color: "#1E2735", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+          PRICELIST
+        </h3>
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_0.9fr] gap-5 items-start">
+          {/* TikTok */}
+          <div className="rounded-2xl p-5" style={{ background: "#131B2E", boxShadow: "0 10px 30px rgba(30,39,53,0.2)" }}>
+            <div className="flex items-center gap-2.5 mb-4">
+              <p className="text-lg font-extrabold text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Tiktok</p>
+              <span className="px-2.5 py-0.5 rounded-lg text-[11px] font-bold" style={{ background: "#F4EBDD", color: "#1E2735" }}>266K Followers</span>
             </div>
-            <p className="text-[15px] font-extrabold" style={{ color: "white", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-              {base > 0 ? fmt(it.price) : "â€”"}
-            </p>
+            <div className="space-y-2.5">
+              {RATE_TIKTOK.map((r) => (
+                <div key={r.l} className="flex items-center justify-between gap-3">
+                  <p className="text-[12px] leading-snug" style={{ color: "#E8EDF5" }}>{r.l}</p>
+                  <span className="px-2 py-0.5 rounded-[6px] text-[11px] font-extrabold whitespace-nowrap shrink-0" style={{ background: "#F4EBDD", color: "#1E2735" }}>{r.p}</span>
+                </div>
+              ))}
+            </div>
           </div>
-        ))}
+
+          {/* Instagram */}
+          <div className="rounded-2xl p-5" style={{ background: "#131B2E", boxShadow: "0 10px 30px rgba(30,39,53,0.2)" }}>
+            <div className="flex items-center gap-2.5 mb-4">
+              <p className="text-lg font-extrabold text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Instagram</p>
+              <span className="px-2.5 py-0.5 rounded-lg text-[11px] font-bold" style={{ background: "#F4EBDD", color: "#1E2735" }}>26K Followers</span>
+            </div>
+            <div className="space-y-2.5">
+              {RATE_INSTAGRAM.map((r) => (
+                <div key={r.l} className="flex items-center justify-between gap-3">
+                  <p className="text-[12px] leading-snug" style={{ color: "#E8EDF5" }}>{r.l}</p>
+                  <span className="px-2 py-0.5 rounded-[6px] text-[11px] font-extrabold whitespace-nowrap shrink-0" style={{ background: "#F4EBDD", color: "#1E2735" }}>{r.p}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Brand Ambassador */}
+          <div className="rounded-2xl p-5" style={{ background: "#131B2E", boxShadow: "0 10px 30px rgba(30,39,53,0.2)" }}>
+            <p className="text-lg font-extrabold text-white mt-1 mb-3" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Brand Ambassador</p>
+            <span className="inline-block px-2.5 py-0.5 rounded-lg text-[11px] font-extrabold mb-5" style={{ background: "#F4EBDD", color: "#1E2735" }}>
+              15.000K /3Months
+            </span>
+            <ul className="space-y-3">
+              {BRAND_AMBASSADOR.map((b) => (
+                <li key={b.t} className="flex items-start gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style={{ background: "#F4EBDD" }} />
+                  <div>
+                    <p className="text-[13px] font-bold leading-snug" style={{ color: "#fff" }}>{b.t}</p>
+                    {b.s && <p className="text-[11px] leading-snug" style={{ color: "rgba(255,255,255,0.55)" }}>{b.s}</p>}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
 
-      <p className="text-[10px] mt-4" style={{ color: "rgba(255,255,255,0.5)" }}>
-        {base > 0 ? "Estimasi berdasarkan base rate; hubungi kreator untuk harga final per paket." : "Rate belum dikonfigurasi. Hubungi kreator untuk penawaran."}
-        {creator.engagementRate > 0 ? ` ER: ${creator.engagementRate}%` : ""}
-      </p>
+      {/* Term & Condition */}
+      <div className="rounded-3xl p-6 md:p-8" style={{ background: "#F4EBDD", border: "1px solid #DDCBA8" }}>
+        <h3 className="text-center text-xl md:text-2xl font-extrabold tracking-widest mb-6" style={{ color: "#1E2735", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+          TERM & CONDITION
+        </h3>
+        <ul className="max-w-2xl mx-auto space-y-2.5">
+          {TERMS.map((t) => (
+            <li key={t} className="flex items-start gap-2.5">
+              <span className="mt-1.5 text-[14px] shrink-0" style={{ color: "#1E2735" }}>•</span>
+              <p className="text-[13.5px] font-semibold leading-snug" style={{ color: "#1E2735" }}>{t}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
