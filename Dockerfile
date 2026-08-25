@@ -50,10 +50,14 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 FROM alpine:3.21 AS runner
 WORKDIR /app
 
-RUN apk add --no-cache ca-certificates curl
+RUN apk add --no-cache ca-certificates curl nodejs npm
 
 COPY --from=backend-builder /creatorhub /app/creatorhub
 COPY --from=frontend-builder /app/frontend/dist /app/static
+
+# IG metadata tool (instatouch) — used by the backend for Instagram scraping
+COPY backend/igtool /app/igtool
+RUN cd /app/igtool && npm ci --omit=dev
 
 ENV PORT=3000
 ENV STATIC_DIR=/app/static

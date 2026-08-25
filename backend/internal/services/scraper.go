@@ -1,11 +1,13 @@
 ﻿package services
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
 	"regexp"
 	"strconv"
 	"strings"
@@ -323,6 +325,13 @@ func scrapeTikTokTikHub(handle, apiKey string) *ScrapeResult {
 // --- Instagram ---
 
 func scrapeInstagram(handle string) *ScrapeResult {
+	// Primary: instatouch (drawrowfly) with our IG session cookie — passes IG's
+	// login-wall checks. When INSTAGRAM_SESSION is unset or the tool fails,
+	// fall back to the anonymous API -> HTML chain.
+	if r := scrapeInstagramInstaTouch(handle); r != nil {
+		return r
+	}
+
 	url := fmt.Sprintf("https://i.instagram.com/api/v1/users/web_profile_info/?username=%s", handle)
 	body, status, err := doHTTPGet(url, map[string]string{
 		"X-IG-App-ID":     "936619743392459",
@@ -381,6 +390,70 @@ func scrapeInstagram(handle string) *ScrapeResult {
 		FollowerCount:     user.Edge_followed_by.Count,
 		FollowingCount:    user.Edge_follow.Count,
 		Bio:               user.Biography,
+		DisplayName:       name,
+		Success:           true,
+	}
+}
+
+// scrapeInstagramInstaTouch fetches user metadata via the bundled instatouch
+// (drawrowfly/instagram-scraper) Node tool. Returns nil when the tool is not
+// usable (no session / not installed / failed) so the caller can fall back.
+func scrapeInstagramInstaTouch(handle string) *ScrapeResult {
+	session := strings.TrimSpace(os.Getenv("INSTAGRAM_SESSION"))
+	if session == "" {
+		return nil
+	}
+	dir := os.Getenv("IGTOOL_DIR")
+	if dir == "" {
+		dir = "/app/igtool"
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Second)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "node", "igmeta.cjs", handle)
+	cmd.Dir = dir
+	cmd.Env = append(os.Environ(), "INSTAGRAM_SESSION="+session)
+
+	out, err := cmd.Output()
+	if err != nil {
+		return nil
+	}
+
+	var payload struct {
+		Error             string `json:"error"`
+		UserName          string `json:"username"`
+		FullName          string `json:"full_name"`
+		Biography         string `json:"biography"`
+		ProfilePicURLHD   string `json:"profile_pic_url_hd"`
+		ProfilePicURL     string `json:"profile_pic_url"`
+		EdgeFollowedBy    struct {
+			Count int64 `json:"count"`
+		} `json:"edge_followed_by"`
+		EdgeFollow struct {
+			Count int64 `json:"count"`
+		} `json:"edge_follow"`
+	}
+	if err := json.Unmarshal(out, &payload); err != nil {
+		return nil
+	}
+	if payload.Error != "" || payload.ProfilePicURLHD == "" && payload.ProfilePicURL == "" {
+		return nil
+	}
+
+	picURL := payload.ProfilePicURLHD
+	if picURL == "" {
+		picURL = payload.ProfilePicURL
+	}
+	name := payload.FullName
+	if name == "" {
+		name = handle
+	}
+
+	return &ScrapeResult{
+		ProfilePictureURL: picURL,
+		FollowerCount:     payload.EdgeFollowedBy.Count,
+		FollowingCount:    payload.EdgeFollow.Count,
+		Bio:               payload.Biography,
 		DisplayName:       name,
 		Success:           true,
 	}
