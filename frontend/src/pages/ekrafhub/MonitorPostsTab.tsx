@@ -138,12 +138,12 @@ function PinBadge() {
   );
 }
 
-function Thumb({ post }: { post: Post }) {
+function Thumb({ post, pinned }: { post: Post; pinned?: boolean }) {
   if (post.thumbnail) {
     return (
       <div className="relative w-24 h-[132px] shrink-0 rounded-[11px] overflow-hidden" style={{ background: "#151d29" }}>
         <img src={post.thumbnail} alt={post.caption} className="w-full h-full object-cover" />
-        <PinBadge />
+        {pinned && <PinBadge />}
       </div>
     );
   }
@@ -152,7 +152,7 @@ function Thumb({ post }: { post: Post }) {
       className="relative w-24 h-[132px] shrink-0 rounded-[11px] overflow-hidden flex items-end justify-center"
       style={{ background: "repeating-linear-gradient(135deg,#1b2432 0 7px,#151d29 7px 14px)" }}
     >
-      <PinBadge />
+      {pinned && <PinBadge />}
       <span className="text-[10px] leading-[1] text-center pb-2" style={{ fontFamily: "ui-monospace,Menlo,monospace", color: "#6d7c92" }}>
         thumbnail
         <br />
@@ -198,11 +198,13 @@ function StatCell({ label, value, isComments, active, onClick }: {
   );
 }
 
-function PostCard({ post, active, sentimentReady, analysis, onSelect, onToggleComments, onToggleAnalyze }: {
+function PostCard({ post, active, sentimentReady, analysis, pinned, selectable = true, onSelect, onToggleComments, onToggleAnalyze }: {
   post: Post;
   active: boolean;
   sentimentReady: boolean;
   analysis: boolean;
+  pinned?: boolean;
+  selectable?: boolean;
   onSelect: () => void;
   onToggleComments: () => void;
   onToggleAnalyze: () => void;
@@ -211,8 +213,8 @@ function PostCard({ post, active, sentimentReady, analysis, onSelect, onToggleCo
     "inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[9px] text-[12px] font-semibold whitespace-nowrap transition-colors";
   return (
     <div
-      onClick={onSelect}
-      className="relative rounded-2xl p-[14px] flex gap-3.5 cursor-pointer transition-all"
+      onClick={selectable ? onSelect : undefined}
+      className={`relative rounded-2xl p-[14px] flex gap-3.5 transition-all ${selectable ? "cursor-pointer" : ""}`}
       style={{
         background: CARD_BG,
         border: "1px solid",
@@ -225,7 +227,7 @@ function PostCard({ post, active, sentimentReady, analysis, onSelect, onToggleCo
       {active && (
         <div className="absolute left-0 top-4 bottom-4 w-[3px] rounded-r-[3px]" style={{ background: "linear-gradient(#ff9a3c,#f26522)" }} />
       )}
-      <Thumb post={post} />
+      <Thumb post={post} pinned={pinned} />
       <div className="flex-1 min-w-0 flex flex-col gap-3">
         <div className="flex items-start gap-2.5">
           <div className="flex-1 min-w-0">
@@ -261,7 +263,7 @@ function PostCard({ post, active, sentimentReady, analysis, onSelect, onToggleCo
           <StatCell label="LIKES" value={post.stats.likes} isComments={false} active={active} />
           <StatCell label="SHARES" value={post.stats.shares} isComments={false} active={active} />
           <StatCell label="REPOST" value={post.stats.repost} isComments={false} active={active} />
-          <StatCell label="COMMENTS" value={post.stats.comments} isComments active={active} onClick={(e) => { e.stopPropagation(); onToggleComments(); }} />
+          <StatCell label="COMMENTS" value={post.stats.comments} isComments active={active} onClick={selectable ? (e) => { e.stopPropagation(); onToggleComments(); } : undefined} />
         </div>
         {post.postType && post.link && (
           <div className="flex flex-wrap gap-2">
@@ -608,24 +610,22 @@ function DateTriple({ label, value, onChange }: { label: string; value: DateTrip
   );
 }
 
-function RegularPostRow({ p }: { p: RegularPost }) {
-  return (
-    <div
-      className="flex items-center gap-3 rounded-[12px] px-3 py-2.5 transition-colors hover:border-orange-500/40"
-      style={{ background: "linear-gradient(158deg, #131b28 0%, #0f1621 100%)", border: "1px solid rgba(255,255,255,0.06)" }}
-    >
-      <div className="w-12 h-14 rounded-lg overflow-hidden shrink-0" style={{ background: "#1b2432" }}>
-        <img src={`https://picsum.photos/seed/regp${p.id}/96/112`} alt={p.caption} className="w-full h-full object-cover" loading="lazy" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-[12.5px] font-bold truncate" style={{ color: "#e8edf5" }}>{p.caption}</p>
-        <p className="text-[11px] mt-0.5" style={{ color: MUTED }}>
-          {fmtDate(p.ms)} · {formatFollowers(p.views)} views · {formatFollowers(p.likes)} likes · {formatFollowers(p.comments)} komentar
-        </p>
-      </div>
-    </div>
-  );
-}
+const regularToPost = (p: RegularPost): Post => ({
+  id: p.id,
+  caption: p.caption,
+  meta: `Main Grid · ${fmtDate(p.ms)}`,
+  thumbnail: `https://picsum.photos/seed/regp${p.id}/96/132`,
+  postType: "Main Grid",
+  link: "https://www.instagram.com/",
+  stats: {
+    views: formatFollowers(p.views),
+    likes: formatFollowers(p.likes),
+    shares: formatFollowers(Math.round(p.likes * 0.13)),
+    repost: Math.round(p.comments * 17).toLocaleString("en-US"),
+    comments: formatFollowers(p.comments),
+  },
+  commentsCount: formatFollowers(p.comments),
+});
 
 export default function MonitorPostsTab() {
   const [active, setActive] = useState(1);
@@ -890,13 +890,13 @@ export default function MonitorPostsTab() {
         ))}
 
         {/* Regular Posts */}
-        <div className="flex items-center gap-2.5 mt-1 flex-wrap" style={{ height: 26 }}>
+        <div className="flex items-center gap-2.5 flex-wrap" style={{ minHeight: 26 }}>
           <div className="w-[3px] h-[17px] rounded-[2px]" style={{ background: ORANGE }} />
           <h2 className="text-[17px] font-bold" style={{ color: "#e8edf5" }}>Regular Posts</h2>
           <span className="text-[11.5px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap" style={{ color: ORANGE_LIGHT, background: "rgba(242,101,34,0.13)" }}>
             {visible.length} posts
           </span>
-          <div className="ml-auto flex items-center gap-3 flex-wrap justify-end" style={{ height: "auto", paddingBottom: 20 }}>
+          <div className="ml-auto flex items-center gap-3 flex-wrap justify-end">
             <DateTriple
               label="Dari"
               value={from}
@@ -909,9 +909,19 @@ export default function MonitorPostsTab() {
             />
           </div>
         </div>
-        <div className="flex flex-col gap-2.5">
+        <div className="flex flex-col gap-3.5">
           {visible.map((p) => (
-            <RegularPostRow key={p.id} p={p} />
+            <PostCard
+              key={p.id}
+              post={regularToPost(p)}
+              active={false}
+              selectable={false}
+              sentimentReady={false}
+              analysis={false}
+              onSelect={() => {}}
+              onToggleComments={() => {}}
+              onToggleAnalyze={() => {}}
+            />
           ))}
           {visible.length === 0 && (
             <div className="rounded-[14px] px-4 py-8 text-center text-[12px] font-semibold" style={{ border: "1px dashed rgba(255,255,255,0.14)", color: "#8a97ab" }}>
