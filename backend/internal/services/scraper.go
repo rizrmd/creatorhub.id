@@ -258,7 +258,7 @@ func scrapeTikTokApify(handle string) *ScrapeResult {
 		return nil
 	}
 
-	payload := fmt.Sprintf(`{"profiles":["https://www.tiktok.com/@%s"]}`, handle)
+	payload := fmt.Sprintf(`{"profiles":["https://www.tiktok.com/@%s"],"resultsLimit":1}`, handle)
 	result, ok := apifyRun(token, "clockworks~tiktok-scraper", payload)
 	if !ok {
 		return nil
@@ -286,27 +286,22 @@ func scrapeTikTokApify(handle string) *ScrapeResult {
 		return nil
 	}
 
-	picURL := meta.OriginalAvatarURL
-	if picURL == "" {
-		picURL = meta.Avatar
-	}
-	if strings.HasPrefix(picURL, "//") {
-		picURL = "https:" + picURL
-	}
-
 	name := meta.NickName
 	if name == "" {
 		name = meta.Name
 	}
 
+	// Cost-saver (2026-08-25): profile photo for the Add Creator button is
+	// taken from Instagram ONLY. Do NOT return/download the TikTok photo —
+	// follower/likes/bio/name metrics keep coming from the TikTok run.
 	return &ScrapeResult{
-		ProfilePictureURL: picURL,
+		ProfilePictureURL: "",
 		FollowerCount:     meta.Fans,
 		FollowingCount:    meta.Following,
 		LikesCount:        meta.Heart,
 		Bio:               meta.Signature,
 		DisplayName:       name,
-		Success:           picURL != "" || meta.Fans > 0,
+		Success:           true,
 	}
 }
 
