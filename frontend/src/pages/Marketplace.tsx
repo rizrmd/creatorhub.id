@@ -402,6 +402,7 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
 
   const photoSrc = resolveCreatorPhoto(creator.img, creator.imageUrl);
   const gradientBg = `hsl(${creator.hue ?? 220}, 60%, 85%)`;
+  const chBlueCard = creator.id === "ainul-mardhiah-lubis";
 
   return (
     <div
@@ -417,8 +418,8 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
       onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLElement).style.boxShadow = selected ? "0 0 0 2px var(--ch-primary)" : "var(--ch-shadow-sm)"; }}
     >
       {/* Photo header — 220px */}
-      <div className="relative w-full overflow-hidden" style={{ height: 220, background: gradientBg }}>
-        {photoSrc && (
+      <div className="relative w-full overflow-hidden" style={{ height: 220, background: chBlueCard ? "linear-gradient(135deg, var(--ch-primary), #1E3A8A)" : gradientBg }}>
+        {photoSrc && !chBlueCard && (
           <img
             src={photoSrc}
             alt={creator.name}
@@ -429,8 +430,8 @@ function CreatorCard({ creator, selected, favorited, onToggle, onCardClick, onFa
           />
         )}
         {reveal && <CountdownReveal onDone={() => onRevealDone?.()} />}
-        <div className="absolute inset-0 flex items-center justify-center text-5xl font-bold text-white/40 pointer-events-none select-none">
-          {!photoSrc && creator.name[0]}
+        <div className={`absolute inset-0 flex items-center justify-center text-5xl font-bold pointer-events-none select-none ${chBlueCard ? "text-white/60" : "text-white/40"}`}>
+          {(!photoSrc || chBlueCard) && creator.name[0]}
         </div>
 
         {/* Verified chip — top-left — DISABLED */}
@@ -1515,6 +1516,7 @@ function HomelessMediaTab() {
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
             {filtered.map((m) => {
               const gradientBg = `hsl(${m.hue}, 60%, 85%)`;
+              const chBlueCard = m.id === "ainul-mardhiah-lubis";
               return (
                 <div
                   key={m.id}
@@ -1524,14 +1526,16 @@ function HomelessMediaTab() {
                   onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLElement).style.boxShadow = "var(--ch-shadow-sm)"; }}
                 >
                   {/* Photo header — 220px */}
-                  <div className="relative w-full overflow-hidden" style={{ height: 220, background: gradientBg }}>
-                    <img
-                      src={m.imageUrl}
-                      alt={m.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => { e.currentTarget.style.display = "none"; }}
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center text-5xl font-bold text-white/40 pointer-events-none select-none">
+                  <div className="relative w-full overflow-hidden" style={{ height: 220, background: chBlueCard ? "linear-gradient(135deg, #2563EB, #1E3A8A)" : gradientBg }}>
+                    {!chBlueCard && (
+                      <img
+                        src={m.imageUrl}
+                        alt={m.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => { e.currentTarget.style.display = "none"; }}
+                      />
+                    )}
+                    <div className={`absolute inset-0 flex items-center justify-center text-5xl font-bold pointer-events-none select-none ${chBlueCard ? "text-white/60" : "text-white/40"}`}>
                       {m.name[0]}
                     </div>
 
