@@ -21,6 +21,7 @@ type Post = {
   er?: { value: string; color: string };
   stats: Stats;
   commentsCount: string;
+  perfUpdated?: string;
 };
 
 type CommentBase = {
@@ -41,12 +42,13 @@ const POSTS: Post[] = [
   {
     id: 1,
     caption: "pov : punya temen , beda selera humor😭",
-    meta: "Data updated on Aug 25, 2026 | 09:12",
+    meta: "Posted: Aug 25, 2026 · 9:12 AM",
     thumbnail: "/monitor/post-pov-temen.jpg",
     postType: "Reels",
     link: "https://www.instagram.com/p/DTo5kHOEc51/",
     stats: { views: "4.4M", likes: "215K", shares: "28.2K", repost: "6,545", comments: "371" },
     commentsCount: "371",
+    perfUpdated: "Aug 26, 2026 · 1:35 PM",
   },
   {
     id: 2,
@@ -269,6 +271,11 @@ function PostCard({ post, active, sentimentReady, analysis, pinned, selectable =
           <StatCell label="REPOST" value={post.stats.repost} isComments={false} active={active} />
           <StatCell label="COMMENTS" value={post.stats.comments} isComments active={active} onClick={selectable ? (e) => { e.stopPropagation(); onToggleComments(); } : undefined} />
         </div>
+        {post.perfUpdated && (
+          <p className="text-[10.5px]" style={{ color: MUTED }}>
+            Performance Data Updated: {post.perfUpdated}
+          </p>
+        )}
         {post.postType && post.link && (
           <div className="flex flex-wrap gap-2">
             <a
