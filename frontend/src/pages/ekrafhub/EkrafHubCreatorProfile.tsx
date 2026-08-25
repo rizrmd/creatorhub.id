@@ -92,30 +92,32 @@ export default function EkrafHubCreatorProfile() {
   return (
     <div className="min-h-screen pb-8" style={{ background: "#080c18" }}>
       {/* Tab bar (replaces Marketplace / Profile breadcrumb) */}
-      <div className="mx-6 mt-4 flex items-center gap-2 overflow-x-auto">
-        {TABS.map((t) => {
-          const active = tab === t.key;
-          return (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-[12px] font-bold transition-all whitespace-nowrap ${active ? "text-white" : ""}`}
-              style={active
-                ? { background: "linear-gradient(135deg, #F97316, #EA580C)", boxShadow: "0 8px 20px rgba(249,115,22,0.3)", fontFamily: "'Plus Jakarta Sans', sans-serif" }
-                : { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.65)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-            >
-              {t.icon} {t.label}
-            </button>
-          );
-        })}
-        <div className="flex-1" />
-        <button
-          onClick={() => navigate("/dashboard/ekrafhub/marketplace")}
-          className="profile-back-btn inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-bold text-white transition-all hover:brightness-110 shrink-0"
-          style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}
-        >
-          <ArrowLeft className="w-3.5 h-3.5" /> Kembali
-        </button>
+      <div className="mx-6 mt-4 rounded-2xl p-2" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)" }}>
+        <div className="flex items-center gap-2 overflow-x-auto">
+          {TABS.map((t) => {
+            const active = tab === t.key;
+            return (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-[12px] font-bold transition-all whitespace-nowrap ${active ? "text-white" : ""}`}
+                style={active
+                  ? { background: "linear-gradient(135deg, #F97316, #EA580C)", boxShadow: "0 8px 20px rgba(249,115,22,0.3)", fontFamily: "'Plus Jakarta Sans', sans-serif" }
+                  : { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.8)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+              >
+                {t.icon} {t.label}
+              </button>
+            );
+          })}
+          <div className="flex-1" />
+          <button
+            onClick={() => navigate("/dashboard/ekrafhub/marketplace")}
+            className="profile-back-btn inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-bold text-white transition-all hover:brightness-110 shrink-0"
+            style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}
+          >
+            <ArrowLeft className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Kembali</span>
+          </button>
+        </div>
       </div>
 
       {/* Creator Profile Card */}
@@ -143,7 +145,6 @@ export default function EkrafHubCreatorProfile() {
 
           {/* Right: Info */}
           <div className="flex-1 min-w-0 flex flex-col justify-center">
-            <p className="text-[11px] font-bold uppercase tracking-widest mb-1.5" style={{ color: "#F97316", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Creator Profile</p>
             <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.1 }}>
               {creator.name}
             </h1>
@@ -167,10 +168,10 @@ export default function EkrafHubCreatorProfile() {
             </div>
 
             {/* Bio + handle */}
-            <p className="text-[13px] mt-3 leading-snug max-w-xl line-clamp-2" style={{ color: "rgba(255,255,255,0.75)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            <p className="text-[13px] mt-3 leading-snug max-w-xl line-clamp-2" style={{ color: "rgba(255,255,255,0.8)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
               {creator.bio || "Content Creator & Social Media Influencer"}
             </p>
-            <p className="text-[13px]" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>@{handle}</p>
+            <p className="text-[13px]" style={{ color: "rgba(255,255,255,0.6)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>@{handle}</p>
 
             {/* Action buttons */}
             <div className="flex items-center gap-3 mt-4">
@@ -190,7 +191,7 @@ export default function EkrafHubCreatorProfile() {
       {/* Tab content */}
       <div className="mt-4">
         {tab === "profile" && (
-          <div className="mx-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="mx-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Tentang Kreator */}
             <div className="rounded-2xl p-5" style={panel}>
               <div className="flex items-center gap-2 mb-5">
@@ -200,28 +201,28 @@ export default function EkrafHubCreatorProfile() {
 
               <div className="flex items-start gap-3 mb-5">
                 <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "rgba(255,255,255,0.06)" }}>
-                  <svg className="w-5 h-5" style={{ color: "rgba(255,255,255,0.35)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <svg className="w-5 h-5" style={{ color: "rgba(255,255,255,0.5)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" />
                   </svg>
                 </div>
                 <div>
                   <p className="text-xs font-bold" style={{ color: "#F97316" }}>About Me</p>
                   <p className="text-[11px] mt-1.5 leading-relaxed" style={{ color: "rgba(255,255,255,0.85)" }}>
-                    {creator.bio || "Hai, kenalin aku Ainul Mardhiah Lubis, tapi cukup panggil Banuun aja biar lebih akrab! Aku lahir tahun 1997 dan tinggal di Banda Aceh. Sejak tahun 2015, aku aktif berbagi konten di Instagram & TikTok dengan nama @itsbanuun."}
+                    {creator.bio || "Bio kreator belum tersedia."}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
                 <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "rgba(255,255,255,0.06)" }}>
-                  <svg className="w-5 h-5" style={{ color: "rgba(255,255,255,0.35)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <svg className="w-5 h-5" style={{ color: "rgba(255,255,255,0.5)" }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                     <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" />
                   </svg>
                 </div>
                 <div>
                   <p className="text-xs font-bold" style={{ color: "#F97316" }}>Background</p>
                   <p className="text-[11px] mt-1.5 leading-relaxed" style={{ color: "rgba(255,255,255,0.85)" }}>
-                    Sejak kecil aku sudah punya passion besar di dunia kuliner. Dari hobi makan, akhirnya berkembang menjadi perjalanan karier sebagai Food Content Creator & Vlogger di berbagai platform sosial media. Di setiap konten, aku selalu membawa energi positif dengan tagline khas: <span className="font-bold" style={{ color: "#F97316" }}>"MARI KITA RIPHIUUU!"</span>
+                    Background kreator belum tersedia.
                   </p>
                 </div>
               </div>
@@ -237,18 +238,17 @@ export default function EkrafHubCreatorProfile() {
               <div className="space-y-4">
                 {[
                   { icon: <TagIcon />, label: "Kategori", value: creator.category.split(",").map((c) => categoryDisplay[c.trim().toLowerCase()] || c.trim()).join(" & ") },
-                  { icon: <PinIcon />, label: "Lokasi", value: creator.city || "Banda Aceh" },
-                  { icon: <CalendarIcon />, label: "Aktif Sejak", value: "2015" },
+                  { icon: <PinIcon />, label: "Lokasi", value: creator.city || "—" },
                   { icon: <GlobeIcon />, label: "Platform", value: creator.platforms.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(" & ") },
-                  { icon: <StarIcon />, label: "Tagline", value: "MARI KITA RIPHIUUU!", highlight: true },
+                  ...(creator.tags?.length ? [{ icon: <StarIcon />, label: "Tag", value: creator.tags.join(", "), highlight: true } as const] : []),
                 ].map((item) => (
                   <div key={item.label} className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: "rgba(255,255,255,0.06)" }}>
-                      <span style={{ color: "rgba(255,255,255,0.35)" }}>{item.icon}</span>
+                      <span style={{ color: "rgba(255,255,255,0.5)" }}>{item.icon}</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[10px] uppercase tracking-wider font-medium" style={{ color: "rgba(255,255,255,0.3)" }}>{item.label}</p>
-                      <p className={`text-[13px] font-semibold mt-0.5 ${item.highlight ? "uppercase" : ""}`} style={{ color: item.highlight ? "#F97316" : "rgba(255,255,255,0.8)" }}>
+                      <p className="text-[10px] uppercase tracking-wider font-medium" style={{ color: "rgba(255,255,255,0.55)" }}>{item.label}</p>
+                      <p className={`text-[13px] font-semibold mt-0.5 ${item.highlight ? "uppercase" : ""}`} style={{ color: item.highlight ? "#F97316" : "rgba(255,255,255,0.85)" }}>
                         {item.value}
                       </p>
                     </div>
@@ -258,7 +258,7 @@ export default function EkrafHubCreatorProfile() {
             </div>
 
             {/* Kesiapan Data */}
-            <div className="rounded-2xl p-5" style={panel}>
+            <div className="rounded-2xl p-5 md:col-span-2 lg:col-span-1" style={panel}>
               <div className="flex items-center gap-2 mb-5">
                 <div className="w-1 h-5 rounded-full" style={{ background: "linear-gradient(180deg, #25F4EE, #FE2C55)", boxShadow: "0 0 10px rgba(37,244,238,0.5)" }} />
                 <h3 className="text-sm font-bold text-white">Kesiapan Data</h3>
@@ -316,20 +316,20 @@ export default function EkrafHubCreatorProfile() {
                     </div>
                     <div>
                       <p className="text-base font-bold text-white">Instagram</p>
-                      <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>@{igMetric?.handle || handle}</p>
+                      <p className="text-xs" style={{ color: "rgba(255,255,255,0.55)" }}>@{igMetric?.handle || handle}</p>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     {[
                       { label: "Followers", value: igFollowers > 0 ? formatFollowers(igFollowers) : "Belum dihitung", muted: igFollowers <= 0 },
-                      { label: "Following", value: "—" },
-                      { label: "Likes / Post", value: "Data tidak tersedia", muted: true },
-                      { label: "Engagement Rate", value: "Belum dihitung", muted: true },
+                      { label: "Engagement Rate", value: igMetric?.engagementRate ? `${iqFormat(igMetric.engagementRate)}%` : "Belum dihitung", muted: !igMetric?.engagementRate },
+                      { label: "Likes / Post", value: "Metrik tersedia setelah monitoring", muted: true },
+                      { label: "Following", value: "Metrik tersedia setelah monitoring", muted: true },
                     ].map((s) => (
                       <div key={s.label}>
-                        <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.3)" }}>{s.label}</p>
-                        <p className={`text-lg font-extrabold mt-1 ${s.muted ? "text-xs font-semibold" : ""}`}
-                          style={{ color: s.muted ? "rgba(255,255,255,0.4)" : "white", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                        <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.55)" }}>{s.label}</p>
+                        <p className={`text-lg font-extrabold mt-1 ${s.muted ? "text-[11px] font-semibold leading-snug" : ""}`}
+                          style={{ color: s.muted ? "rgba(255,255,255,0.55)" : "white", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                           {s.value}
                         </p>
                       </div>
@@ -352,20 +352,20 @@ export default function EkrafHubCreatorProfile() {
                     </div>
                     <div>
                       <p className="text-base font-bold text-white">TikTok</p>
-                      <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>@{tiktokMetric?.handle || handle}</p>
+                      <p className="text-xs" style={{ color: "rgba(255,255,255,0.55)" }}>@{tiktokMetric?.handle || handle}</p>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     {[
                       { label: "Followers", value: tiktokFollowers > 0 ? formatFollowers(tiktokFollowers) : "Belum dihitung", muted: tiktokFollowers <= 0 },
-                      { label: "Likes", value: "—" },
-                      { label: "Reach / Views", value: "Data tidak tersedia", muted: true },
-                      { label: "Video Count", value: "—", muted: true },
+                      { label: "Engagement Rate", value: tiktokMetric?.engagementRate ? `${iqFormat(tiktokMetric.engagementRate)}%` : "Belum dihitung", muted: !tiktokMetric?.engagementRate },
+                      { label: "Likes / Heart", value: "Metrik tersedia setelah monitoring", muted: true },
+                      { label: "Video Count", value: "Metrik tersedia setelah monitoring", muted: true },
                     ].map((s) => (
                       <div key={s.label}>
-                        <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.3)" }}>{s.label}</p>
-                        <p className={`text-lg font-extrabold mt-1 ${s.muted ? "text-xs font-semibold" : ""}`}
-                          style={{ color: s.muted ? "rgba(255,255,255,0.4)" : "white", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                        <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.55)" }}>{s.label}</p>
+                        <p className={`text-lg font-extrabold mt-1 ${s.muted ? "text-[11px] font-semibold leading-snug" : ""}`}
+                          style={{ color: s.muted ? "rgba(255,255,255,0.55)" : "white", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                           {s.value}
                         </p>
                       </div>
@@ -400,37 +400,57 @@ export default function EkrafHubCreatorProfile() {
   );
 }
 
+function iqFormat(n: number): string {
+  return new Intl.NumberFormat("id-ID").format(n);
+}
+
 function MonitorPosts({ handle }: { handle: string }) {
   const token = typeof localStorage !== "undefined" ? localStorage.getItem("auth_token") || "" : "";
   const [posts, setPosts] = useState<any[] | null>(null);
   const [loaded, setLoaded] = useState(false);
-  const [error, setError] = useState(false);
+  const [forbidden, setForbidden] = useState(false);
 
   useEffect(() => {
     if (!handle) { setPosts([]); setLoaded(true); return; }
     fetch(`/api/v1/instagram-posts?account=${encodeURIComponent(handle)}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     })
-      .then((r) => r.ok ? r.json() : Promise.reject(new Error(String(r.status))))
-      .then((data) => setPosts(Array.isArray(data) ? data : data.posts ?? []))
-      .catch(() => { setError(true); setLoaded(true); });
+      .then((r) => {
+        if (r.status === 403) { setForbidden(true); setLoaded(true); return null; }
+        if (!r.ok) throw new Error(String(r.status));
+        return r.json();
+      })
+      .then((data) => setPosts(Array.isArray(data) ? data : data?.posts ?? []))
+      .catch(() => { setLoaded(true); });
   }, [handle, token]);
 
   if (!loaded) {
     return (
       <div className="rounded-2xl p-5" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", border: "1px solid rgba(255,255,255,0.06)" }}>
-        <p className="text-sm text-white/60">Memuat posts...</p>
+        <p className="text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>Memuat posts...</p>
       </div>
     );
   }
 
-  if (error || (posts ?? []).length === 0) {
+  if (forbidden) {
     return (
       <div className="rounded-2xl p-8 text-center" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", border: "1px solid rgba(255,255,255,0.06)" }}>
-        <Eye className="w-8 h-8 mx-auto mb-3" style={{ color: "rgba(255,255,255,0.25)" }} />
+        <Eye className="w-8 h-8 mx-auto mb-3" style={{ color: "rgba(255,255,255,0.35)" }} />
+        <p className="text-sm font-bold text-white">Monitoring posts belum diaktifkan</p>
+        <p className="text-[11px] mt-1.5 max-w-md mx-auto" style={{ color: "rgba(255,255,255,0.6)" }}>
+          Fitur monitor posts tersedia untuk akun admin / media monitoring. Hubungi admin untuk mengaktifkan aksesnya.
+        </p>
+      </div>
+    );
+  }
+
+  if ((posts ?? []).length === 0) {
+    return (
+      <div className="rounded-2xl p-8 text-center" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", border: "1px solid rgba(255,255,255,0.06)" }}>
+        <Eye className="w-8 h-8 mx-auto mb-3" style={{ color: "rgba(255,255,255,0.35)" }} />
         <p className="text-sm font-bold text-white">Belum ada data monitoring</p>
-        <p className="text-[11px] mt-1.5 max-w-md mx-auto" style={{ color: "rgba(255,255,255,0.45)" }}>
-          {handle ? `Posts untuk @${handle} belum tersedia di monitoring. Tab ini otomatis menampilkan hasil monitor posts platform.` : "Handle Instagram belum terdeteksi untuk kreator ini."}
+        <p className="text-[11px] mt-1.5 max-w-md mx-auto" style={{ color: "rgba(255,255,255,0.6)" }}>
+          {handle ? `Posts untuk @${handle} belum tersedia di monitoring. Coba scrape akun ini terlebih dahulu.` : "Handle Instagram belum terdeteksi untuk kreator ini."}
         </p>
       </div>
     );
@@ -476,13 +496,13 @@ function RateCard({ creator }: { creator: { name: string; price: number; priceTe
 
       <div className="flex items-center justify-between rounded-xl px-4 py-3 mb-5" style={{ background: "rgba(249,115,22,0.08)", border: "1px solid rgba(249,115,22,0.2)" }}>
         <div>
-          <p className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: "rgba(255,255,255,0.45)" }}>Base Rate (Rp)</p>
+          <p className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: "rgba(255,255,255,0.6)" }}>Base Rate (Rp)</p>
           <p className="text-2xl font-extrabold" style={{ color: "#F97316", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             {base > 0 ? fmt(base) : creator.priceText || "Hubungi kreator"}
           </p>
         </div>
         <div className="text-right">
-          <p className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: "rgba(255,255,255,0.45)" }}>Followers</p>
+          <p className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: "rgba(255,255,255,0.6)" }}>Followers</p>
           <p className="text-lg font-extrabold text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{formatFollowers(creator.followers || 0)}</p>
         </div>
       </div>
@@ -492,7 +512,7 @@ function RateCard({ creator }: { creator: { name: string; price: number; priceTe
           <div key={it.label} className="flex items-center justify-between rounded-xl p-4" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
             <div>
               <p className="text-[13px] font-bold text-white">{it.label}</p>
-              <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.4)" }}>{it.note}</p>
+              <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.55)" }}>{it.note}</p>
             </div>
             <p className="text-[15px] font-extrabold" style={{ color: "white", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
               {base > 0 ? fmt(it.price) : "—"}
@@ -501,7 +521,7 @@ function RateCard({ creator }: { creator: { name: string; price: number; priceTe
         ))}
       </div>
 
-      <p className="text-[10px] mt-4" style={{ color: "rgba(255,255,255,0.35)" }}>
+      <p className="text-[10px] mt-4" style={{ color: "rgba(255,255,255,0.5)" }}>
         {base > 0 ? "Estimasi berdasarkan base rate; hubungi kreator untuk harga final per paket." : "Rate belum dikonfigurasi. Hubungi kreator untuk penawaran."}
         {creator.engagementRate > 0 ? ` ER: ${creator.engagementRate}%` : ""}
       </p>
@@ -514,9 +534,6 @@ function TagIcon() {
 }
 function PinIcon() {
   return <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" /></svg>;
-}
-function CalendarIcon() {
-  return <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>;
 }
 function GlobeIcon() {
   return <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" /></svg>;
