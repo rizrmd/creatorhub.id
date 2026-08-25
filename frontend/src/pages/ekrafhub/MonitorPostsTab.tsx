@@ -342,6 +342,67 @@ function CommentRow({ c, size }: { c: TopComment | Reply; size?: "lg" | "sm" }) 
   );
 }
 
+const SENTIMENT_SEGS = [
+  { label: "Positif", pct: "70%", grad: "linear-gradient(90deg, #4ade80, #15803d)", glow: "0 0 16px rgba(74,222,128,0.45)" },
+  { label: "Netral", pct: "29%", grad: "linear-gradient(90deg, #f8fafc, #b6c2d2)", glow: "0 0 12px rgba(226,232,240,0.35)" },
+  { label: "Negatif", pct: "1%", grad: "linear-gradient(90deg, #f87171, #b91c1c)", glow: "0 0 16px rgba(248,113,113,0.45)" },
+];
+
+function SentimentBars() {
+  const [widths, setWidths] = useState(["0%", "0%", "0%"]);
+
+  useEffect(() => {
+    const timers = [
+      window.setTimeout(() => setWidths((w) => ["70%", w[1], w[2]]), 60),
+      window.setTimeout(() => setWidths((w) => [w[0], "29%", w[2]]), 280),
+      window.setTimeout(() => setWidths((w) => [w[0], w[1], "1%"]), 500),
+    ];
+    return () => timers.forEach((t) => window.clearTimeout(t));
+  }, []);
+
+  return (
+    <div className="mt-4 rounded-[12px] p-4" style={{ background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.08)" }}>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: "#3fd07f" }} />
+          <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.55)" }}>
+            Sentiment Distribution
+          </p>
+        </div>
+        <span className="text-[10px] font-semibold" style={{ color: "rgba(255,255,255,0.45)" }}>
+          dari 371 komentar
+        </span>
+      </div>
+
+      <div className="relative h-4 rounded-full flex overflow-hidden" style={{ background: "rgba(255,255,255,0.06)", boxShadow: "0 0 20px rgba(74,222,128,0.12), inset 0 0 0 1px rgba(255,255,255,0.06)" }}>
+        {SENTIMENT_SEGS.map((s, i) => (
+          <div
+            key={s.label}
+            className="h-full rounded-full transition-all duration-700 ease-out"
+            style={{
+              width: widths[i],
+              minWidth: widths[i] !== "0%" ? "7px" : undefined,
+              background: s.grad,
+              boxShadow: s.glow,
+              borderRadius: i === 0 ? "9999px 0 0 9999px" : undefined,
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="flex items-center flex-wrap gap-x-5 gap-y-2 mt-3">
+        {SENTIMENT_SEGS.map((s) => (
+          <div key={s.label} className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-[4px] shrink-0" style={{ background: s.grad, boxShadow: s.glow, opacity: widths[SENTIMENT_SEGS.indexOf(s)] === "0%" ? 0.35 : 1 }} />
+            <span className="text-[12px]" style={{ color: "rgba(255,255,255,0.7)" }}>{s.label}</span>
+            <span className="text-[12px] font-extrabold" style={{ color: "#e8edf5", fontVariantNumeric: "tabular-nums" }}>{s.pct}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function MonitorPostsTab() {
   const [active, setActive] = useState(1);
   const [showComments, setShowComments] = useState(false);
@@ -629,12 +690,13 @@ export default function MonitorPostsTab() {
                       {typed}
                       <span className="inline-block w-[2px] h-[13px] ml-1 align-middle animate-pulse" style={{ background: ORANGE_LIGHT }} />
                     </p>
+                    {typed.length >= SENTIMENT_SEED.length && <SentimentBars />}
                   </div>
                 </>
               )}
 
               {/* Mini post header */}
-              <div className="flex items-center gap-3 mb-4 pb-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+              <div className={`flex items-center gap-3 mb-4 pb-4 ${analysis ? "mt-4" : ""}`} style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
                 {post.thumbnail ? (
                   <img src={post.thumbnail} alt={post.caption} className="w-9 h-9 rounded-lg object-cover shrink-0" />
                 ) : (
