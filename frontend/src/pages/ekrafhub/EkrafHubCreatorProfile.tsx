@@ -319,7 +319,7 @@ export default function EkrafHubCreatorProfile() {
         )}
 
         {tab === "insight" && (
-          <InsightTab creatorName={creator.name} photoSrc={photoSrc ?? ""} igHandle={igMetric?.handle || handle} tiktokHandle={tiktokMetric?.handle || handle} />
+          <InsightTab creatorId={creator.id} creatorName={creator.name} photoSrc={photoSrc ?? ""} igHandle={igMetric?.handle || handle} tiktokHandle={tiktokMetric?.handle || handle} />
         )}
 
         {tab === "posts" && (
@@ -599,14 +599,21 @@ function CalendarPicker({ range, onChange }: { range: [Date, Date]; onChange: (r
   );
 }
 
-function InsightTab({ creatorName, photoSrc, igHandle, tiktokHandle }: {
-  creatorName: string; photoSrc: string; igHandle: string; tiktokHandle: string;
+function InsightTab({ creatorId, creatorName, photoSrc, igHandle, tiktokHandle }: {
+  creatorId: string; creatorName: string; photoSrc: string; igHandle: string; tiktokHandle: string;
 }) {
   const panelBorder = { border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.04)" };
   const igBar = "linear-gradient(90deg, #F97316, #FB923C)";
   const ttBar = "linear-gradient(90deg, #22D3EE, #A78BFA)";
   const [igRange, setIgRange] = useState<[Date, Date]>([new Date(2026, 7, 18), new Date(2026, 8, 16)]);
   const [ttRange, setTtRange] = useState<[Date, Date]>([new Date(2026, 7, 19), new Date(2026, 8, 15)]);
+  const [igAvatarUrl, setIgAvatarUrl] = useState<string | null>(null);
+  const [ttAvatarUrl, setTtAvatarUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    creatorsApi.platformAvatar(creatorId, "instagram").then((r) => setIgAvatarUrl(r.photoUrl)).catch(() => {});
+    creatorsApi.platformAvatar(creatorId, "tiktok").then((r) => setTtAvatarUrl(r.photoUrl)).catch(() => {});
+  }, [creatorId]);
 
   return (
     <div className="mx-6 space-y-4">
@@ -629,8 +636,8 @@ function InsightTab({ creatorName, photoSrc, igHandle, tiktokHandle }: {
       {/* Platform rows */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {[
-          { title: "Instagram", link: `instagram.com/${igHandle}`, href: `https://www.instagram.com/${igHandle.replace(/^@/, "")}`, logo: <IgLogo className="w-7 h-7" />, avatar: photoSrc, range: igRange, onRange: setIgRange },
-          { title: "TikTok", link: `tiktok.com/${tiktokHandle}`, href: `https://www.tiktok.com/${tiktokHandle.replace(/^@/, "")}`, logo: <TiktokIcon className="w-5 h-5 text-white" />, avatar: photoSrc, range: ttRange, onRange: setTtRange },
+          { title: "Instagram", link: `instagram.com/${igHandle}`, href: `https://www.instagram.com/${igHandle.replace(/^@/, "")}`, logo: <IgLogo className="w-7 h-7" />, avatar: igAvatarUrl || photoSrc, range: igRange, onRange: setIgRange },
+          { title: "TikTok", link: `tiktok.com/${tiktokHandle}`, href: `https://www.tiktok.com/${tiktokHandle.replace(/^@/, "")}`, logo: <TiktokIcon className="w-5 h-5 text-white" />, avatar: ttAvatarUrl || photoSrc, range: ttRange, onRange: setTtRange },
         ].map((p) => (
           <div key={p.title} className="rounded-2xl p-4 flex items-center gap-3" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", border: "1px solid rgba(255,255,255,0.08)" }}>
             <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ background: p.title === "Instagram" ? "linear-gradient(135deg, rgba(253,29,29,0.25), rgba(131,58,180,0.25), rgba(247,119,55,0.25))" : "#000000" }}>

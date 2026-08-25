@@ -46,6 +46,8 @@ export const creatorsApi = {
     api.post<{ success: boolean; platform: string; followers: number; posts: number; following: number; likes: number; updatedAt: string; handle: string }>(
       `/creators/${id}/refresh-metrics?platform=${platform}`
     ).then((r) => r.data),
+  platformAvatar: (id: string, platform: string) =>
+    api.post<{ photoUrl: string }>(`/creators/${id}/platform-avatar?platform=${platform}`).then((r) => r.data),
   create: (data: CreateCreatorRequest) =>
     api.post<Creator>("/creators", data).then((r) => r.data),
 };
