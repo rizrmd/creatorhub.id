@@ -91,16 +91,27 @@ export default function EkrafHubCreatorProfile() {
 
   return (
     <div className="min-h-screen pb-8" style={{ background: "#080c18" }}>
-      {/* Breadcrumb + Back */}
-      <div className="flex items-center justify-between px-6 py-3 text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
-        <div className="flex items-center gap-2">
-          <button onClick={() => navigate("/dashboard/ekrafhub/marketplace")} className="hover:text-white transition-colors" style={{ color: "#F97316" }}>Marketplace</button>
-          <span>/</span>
-          <span style={{ color: "rgba(255,255,255,0.6)" }}>Profile</span>
-        </div>
+      {/* Tab bar (replaces Marketplace / Profile breadcrumb) */}
+      <div className="mx-6 mt-4 flex items-center gap-2 overflow-x-auto">
+        {TABS.map((t) => {
+          const active = tab === t.key;
+          return (
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-[12px] font-bold transition-all whitespace-nowrap ${active ? "text-white" : ""}`}
+              style={active
+                ? { background: "linear-gradient(135deg, #F97316, #EA580C)", boxShadow: "0 8px 20px rgba(249,115,22,0.3)", fontFamily: "'Plus Jakarta Sans', sans-serif" }
+                : { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.65)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+            >
+              {t.icon} {t.label}
+            </button>
+          );
+        })}
+        <div className="flex-1" />
         <button
           onClick={() => navigate("/dashboard/ekrafhub/marketplace")}
-          className="profile-back-btn inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-bold text-white transition-all hover:brightness-110"
+          className="profile-back-btn inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-bold text-white transition-all hover:brightness-110 shrink-0"
           style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}
         >
           <ArrowLeft className="w-3.5 h-3.5" /> Kembali
@@ -108,7 +119,7 @@ export default function EkrafHubCreatorProfile() {
       </div>
 
       {/* Creator Profile Card */}
-      <div className="mx-6 rounded-3xl overflow-hidden" style={{ background: "linear-gradient(180deg, #0d1420 0%, #080d16 100%)", boxShadow: shadow3d, border: "1px solid rgba(255,255,255,0.08)" }}>
+      <div className="mx-6 mt-4 rounded-3xl overflow-hidden" style={{ background: "linear-gradient(180deg, #0d1420 0%, #080d16 100%)", boxShadow: shadow3d, border: "1px solid rgba(255,255,255,0.08)" }}>
         <div className="flex flex-col md:flex-row gap-4 md:gap-6 p-4 md:p-6">
           {/* Left: Photo frame */}
           <div className="shrink-0 mx-auto md:mx-0">
@@ -174,26 +185,6 @@ export default function EkrafHubCreatorProfile() {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Tab bar */}
-      <div className="mx-6 mt-4 flex items-center gap-2 overflow-x-auto">
-        {TABS.map((t) => {
-          const active = tab === t.key;
-          return (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-[12px] font-bold transition-all whitespace-nowrap ${active ? "text-white" : ""}`}
-              style={active
-                ? { background: "linear-gradient(135deg, #F97316, #EA580C)", boxShadow: "0 8px 20px rgba(249,115,22,0.3)", fontFamily: "'Plus Jakarta Sans', sans-serif" }
-                : { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.65)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-            >
-              {t.icon} {t.label}
-            </button>
-          );
-        })}
-        <div className="flex-1" />
       </div>
 
       {/* Tab content */}
