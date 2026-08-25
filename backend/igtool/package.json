@@ -1,1 +1,0 @@
-{"name":"creatorhub-igtool","version":"1.0.0","private":true,"description":"Instagram user metadata scraper (instatouch) used by the Go backend","dependencies":{"instatouch":"2.3.22"}}
