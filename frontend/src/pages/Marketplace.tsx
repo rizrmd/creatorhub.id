@@ -41,7 +41,7 @@ const CATEGORIES = [
   { label: "Gaming", value: "gaming" },
   { label: "Parenting", value: "parent" },
 ];
-const KABUPATEN_KOTA_URL = "https://gist.githubusercontent.com/ajie31/3144875bad9705e2b2b544909c022276/raw/Peta%20Indonesia%20Kota%20Kabupaten%20simplified.json";
+const KABUPATEN_KOTA_URL = "/data/peta-id-kabupaten.json";
 
 const TAG_OPTIONS = ["CreatorHub Aceh"];
 
@@ -1003,7 +1003,7 @@ function AddCreatorDialog({ open, onOpenChange, onCreated }: {
 
   const scrapeDone = !!(tiktokData || instagramData);
   const cities = province && provinceCityMap[province] ? provinceCityMap[province] : [];
-  const canCreate = name.trim() && scrapeDone && selectedCategories.length > 0 && province;
+  const canCreate = name.trim() && scrapeDone;
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) resetForm(); onOpenChange(v); }}>
