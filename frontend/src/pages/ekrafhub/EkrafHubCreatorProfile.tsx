@@ -50,22 +50,22 @@ const MegaphoneIcon = ({ className, style }: { className?: string; style?: React
   </svg>
 );
 
-const EXISTING_BRANDS: { name: string; logo: string; light?: boolean }[] = [
+const EXISTING_BRANDS: { name: string; logo: string }[] = [
   { name: "Yamaha", logo: "/collaborations/yamaha.svg" },
   { name: "Honda", logo: "/collaborations/honda.svg" },
   { name: "Shopee", logo: "/collaborations/shopee.svg" },
-  { name: "Aceh", logo: "/collaborations/aceh.png", light: true },
+  { name: "Aceh", logo: "/collaborations/aceh.png" },
   { name: "Indosat", logo: "/collaborations/indosat.svg" },
   { name: "McDonald's", logo: "/collaborations/mcdonalds.png" },
-  { name: "KFC", logo: "/collaborations/kfc.png", light: true },
-  { name: "Scarlett", logo: "/collaborations/scarlett.svg", light: true },
+  { name: "KFC", logo: "/collaborations/kfc.png" },
+  { name: "Scarlett", logo: "/collaborations/scarlett.svg" },
   { name: "Teh Kotak", logo: "/collaborations/tehkotak.png" },
   { name: "Yupi", logo: "/collaborations/yupi.png" },
   { name: "Tokopedia", logo: "/collaborations/tokopedia.svg" },
   { name: "Telkomsel", logo: "/collaborations/telkomsel.svg" },
   { name: "Lemonilo", logo: "/collaborations/lemonilo.png" },
-  { name: "MS Glow", logo: "/collaborations/msglow.png", light: true },
-  { name: "Smartfren", logo: "/collaborations/smartfren.svg", light: true },
+  { name: "MS Glow", logo: "/collaborations/msglow.png" },
+  { name: "Smartfren", logo: "/collaborations/smartfren.svg" },
 ];
 
 const PREVIOUS_BRANDS: string[][] = [
@@ -390,37 +390,29 @@ export default function EkrafHubCreatorProfile() {
                 <div className="w-[3px] h-[17px] rounded-[2px]" style={{ background: "#f26522" }} />
                 <h2 className="text-[17px] font-bold text-white">Existing Collaborations</h2>
               </div>
-              <div className="rounded-3xl p-6 md:p-8" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                <p className="text-center text-[13px] italic font-semibold mb-0.5" style={{ color: "#FF9A5C" }}>Latest</p>
-                <h3 className="text-center text-xl md:text-2xl font-extrabold tracking-wide mb-6" style={{ color: "#fff", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                  BRAND COLLABORATION
-                </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-5 gap-y-7">
+              <div className="rounded-3xl p-5 md:p-6" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-5">
                   {EXISTING_BRANDS.map((b) => (
-                    <div key={b.name} className="flex flex-col items-center gap-2.5">
+                    <div key={b.name} className="flex flex-col items-center gap-2">
                       <div
-                        className="w-[88px] h-[88px] rounded-[22px] flex items-center justify-center"
+                        className="w-[96px] h-[96px] rounded-[24px] flex items-center justify-center"
                         style={{
-                          background: "rgba(255,255,255,0.05)",
+                          background: "rgba(255,255,255,0.06)",
                           border: "1px solid rgba(255,255,255,0.16)",
-                          boxShadow: "0 0 16px rgba(255,255,255,0.22), inset 0 1px 0 rgba(255,255,255,0.12)",
+                          boxShadow: "0 0 18px rgba(255,255,255,0.22), inset 0 1px 0 rgba(255,255,255,0.12)",
                         }}
                       >
-                        {b.light ? (
-                          <div
-                            className="w-[68px] h-[68px] rounded-[16px] flex items-center justify-center"
-                            style={{
-                              background: "linear-gradient(140deg, #ffffff 0%, #E9EDF5 100%)",
-                              boxShadow: "0 8px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.9)",
-                            }}
-                          >
-                            <img src={b.logo} alt={b.name} className="object-contain max-h-[50px] max-w-[58px]" />
-                          </div>
-                        ) : (
-                          <img src={b.logo} alt={b.name} className="object-contain max-h-[56px] max-w-[66px] drop-shadow-[0_4px_10px_rgba(0,0,0,0.45)]" />
-                        )}
+                        <div
+                          className="w-[78px] h-[78px] rounded-[18px] flex items-center justify-center"
+                          style={{
+                            background: "linear-gradient(140deg, #ffffff 0%, #E9EDF5 100%)",
+                            boxShadow: "0 10px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.9)",
+                          }}
+                        >
+                          <img src={b.logo} alt={b.name} className="object-contain max-h-[60px] max-w-[70px]" />
+                        </div>
                       </div>
-                      <span className="text-[11.5px] font-semibold text-center" style={{ color: "rgba(255,255,255,0.7)" }}>{b.name}</span>
+                      <span className="text-[12px] font-semibold text-center leading-tight" style={{ color: "rgba(255,255,255,0.75)" }}>{b.name}</span>
                     </div>
                   ))}
                 </div>
@@ -434,16 +426,16 @@ export default function EkrafHubCreatorProfile() {
                 <h2 className="text-[17px] font-bold text-white">Previous Collaborations</h2>
               </div>
               {PREVIOUS_BRANDS.map((group, gi) => (
-                <div key={gi} className="rounded-3xl px-5 py-6 mb-4 last:mb-0" style={{ background: "#F4EBDD", border: "1px solid #DDCBA8" }}>
-                  <h3 className="text-center text-base md:text-lg font-extrabold tracking-widest mb-5" style={{ color: "#1E2735", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                <div key={gi} className="rounded-3xl px-5 py-6 mb-4 last:mb-0" style={{ background: "linear-gradient(180deg, #111827 0%, #0d1525 100%)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                  <h3 className="text-center text-base md:text-lg font-extrabold tracking-widest mb-5" style={{ color: "#fff", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                     OTHERS BRAND COLLABORATION
                   </h3>
                   <div className="flex flex-wrap gap-2 justify-center">
                     {group.map((name) => (
                       <span
                         key={name}
-                        className="px-3.5 py-1.5 rounded-full text-[12px] font-semibold whitespace-nowrap"
-                        style={{ background: "#FBF6EC", border: "1px solid rgba(30,39,53,0.25)", color: "#1E2735" }}
+                        className="px-3.5 py-1.5 rounded-full text-[12px] font-semibold whitespace-nowrap transition-colors hover:border-orange-500/50"
+                        style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.14)", color: "rgba(255,255,255,0.85)" }}
                       >
                         {name}
                       </span>
