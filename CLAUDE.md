@@ -601,41 +601,71 @@ When deploying new frontend files:
 
 ## ⛔ INTERACTION LAW #0 — NEVER ACT BEYOND THE LAST PROMPT (RECORDED 2026-08-25, MANDATORY)
 
-**The scope of work = the LAST user prompt, verbatim. Anything else = initiative — and initiative is FORBIDDEN until you ASK.**
+### THE PRINCIPLE
+**Initiative is DANGEROUS.** The prompter's time and production data have been destroyed by it — measured, logged, CLASS-1 UNACCEPTABLE (see TIME-LOST record below).
+- **The scope of work = the LAST user prompt, verbatim. Nothing more.**
+- **You do not infer intent. You do not fill in "what they obviously meant". You do not guess "they must want X too".**
+- **You do NOT act on a *belief* — only on an explicit instruction in the last prompt.**
 
-### The gate (run this mentally before EVERY action)
-> "Did the user ask for THIS exact action?" If the answer is not an unqualified YES → STOP, ASK ONE QUESTION, wait for the answer.
+### THE GATE (run before EVERY tool call)
+> "Did the user ask for THIS exact action, in the LAST prompt?"
+> - YES, verbatim → act (within the sanctioned workflow below).
+> - NOT SURE → **STOP. Do NOTHING. ASK one question. Wait for the answer.**
+> - ANY doubt → same as "not sure".
 
-### ASK FIRST — always, no exceptions:
-- git `--force-with-lease` / history rewrite / rebase / delete branches
-- `taskkill` / killing ANY process on the user's machine
-- `DELETE` / mass `UPDATE` / any mutation on PRODUCTION data (creators, platforms, users, campaigns)
-- replacing or re-creating EXISTING production records — even to "fix" them
-- restarting / swapping the production binary or container
-- Cloudflare cache purge / anything CDN
-- removing UI or features "because it seems redundant/simpler"
-- interpreting "remove from X" — if X is a VIEW, it means THE VIEW ONLY. Ask before touching any other occurrence.
-- two conflicting past instructions → do NOT pick one. Ask.
-- continuing a batch ("while I'm at it…") → do NOT. One task per prompt.
+### CLASSIFICATION — dangerous = irreversible OR affects the user's things OR affects the user's time
+These ALWAYS require an explicit ask (no exceptions, no "but it seemed obvious"):
 
-### No-initiative examples recorded this session (LESSON: these caused real damage):
-1. Removed the Account Performance Summary from EVERYWHERE when the user only said to remove it from the Insight tab view.
+**A. Irreversible / history:**
+- git force-push, rebase, history rewrite, branch deletion, dropping stashes
+- deleting/rewriting ANY committed or deployed artifact
+
+**B. The user's machine (mine to touch? NO):**
+- `taskkill`, killing/stopping ANY process, deleting local files/dirs, moving things in their file system
+
+**C. PRODUCTION data:**
+- DELETE / mass UPDATE on prod DB rows; replacing or re-creating EXISTING records (even "to fix")
+- mutations on creators, platforms, users, campaigns, messages
+- testing fixes against REAL named records — tests use `zz-test-*` idents only, and cleanup is a separate ask
+
+**D. Production runtime:**
+- restarting/swapping binary/container, image rebuilds, migration application outside deploy workflow
+- Cloudflare purge / CDN / cache invalidation
+
+**E. User-facing product decisions:**
+- removing UI/features/copy "because it looks redundant", restyling, renaming, deleting what they can see
+- **"remove from X" where X is a VIEW → THE VIEW ONLY. Any other occurrence = ASK FIRST.**
+- choosing colors/layout/content/tone without being told
+- swapping a platform/tool/architecture (e.g. replace TikHub with Apify) beyond the literal instruction
+- continuing a batch ("while I'm at it…") — ONE task per prompt, even if tempting
+
+**F. Ambiguity between instructions:**
+- two past instructions conflict → do NOT pick one. ASK.
+- a past instruction resolved something already → the new one changes it? ASK before re-touching.
+
+### OK WITHOUT ASKING (repo-sanctioned workflow ONLY, and only for work that came from the LAST prompt):
+- `npm run build`, typecheck, Go build
+- `git commit` + `git push` of that exact work
+- `scripts/deploy-frontend.sh` after a completed frontend change (CLAUDE.md workflow)
+- read-only verification (curl GET, psql SELECT, logs) — read-only ONLY
+
+### HARD RULES
+1. ONE question per ambiguity, then WAIT. No "let me also just fix…" side-quests.
+2. If I announced an action in an earlier turn and it is not the last prompt's subject — still ASK before executing it.
+3. When unsure whether something counts as scope — it counts as initiative. DO NOTHING.
+4. Being annoying beats being destructive. Every single time.
+5. If damage WAS done: report it IMMEDIATELY with the measured time loss (ms) and record it in this file.
+
+### No-initiative examples recorded 2026-08-25 (these caused real damage):
+1. Removed the Account Performance Summary from EVERYWHERE when the user only said to remove it from the Insight tab view. → **21 min 11 s 689 ms 1,271,689 ms lost.**
 2. Force-pushed `main` (history rewrite) from a mere mention.
 3. `taskkill /T /F` killed the worker process tree without permission.
 4. Tested the duplicate-creator fix against the REAL "Syahreza Ikram" row → replaced a production record.
 5. Auto-executed 205-row DB updates as "continuation" after a single yes.
-
-### OK without asking (repo-sanctioned workflow only):
-- `npm run build`, typecheck, Go build
-- `git commit` + `git push` for work produced from the LAST prompt
-- frontend deploy via `scripts/deploy-frontend.sh` after a completed frontend change (CLAUDE.md workflow)
-- read-only verification (curl GET, psql SELECT, logs)
-
-### If you are ever unsure — default to ASKING. Being annoying beats being destructive.
-
+6. Chose the photo background color myself; restyled colors on my own judgment; added an extra bio change into an unrelated deploy.
 
 ### ⛔ TIME-LOST BY PROMPTER = UNACCEPTABLE — RECORDED 2026-08-25 (MANDATORY)
-**CLASSIFIer: any overreach that forces the prompter to wait for rework is CLASS-1 UNACCEPTABLE. Log it.**
+**Any overreach that forces the prompter to wait for rework is CLASS-1 UNACCEPTABLE. Log it.**
 
 - Incident: "Account Performance Summary deleted globally by initiative" (me reading 'remove from Insight view' as 'delete everywhere').
 - Measured prompter wait (live-UI removal → restore live): **21 min 11 s 689 ms (1,271,689 ms)**.
