@@ -181,7 +181,9 @@ restore_dump_if_present() {
 sync_repo() {
   mkdir -p "$ROOT"
   if [ -d "${ROOT}/.git" ]; then
-    log "repo already present"
+    log "updating repo"
+    git -C "$ROOT" fetch --depth 1 origin main
+    git -C "$ROOT" reset --hard origin/main
     return 0
   fi
   log "cloning creatorhub.id"
@@ -235,14 +237,15 @@ ensure_frontend() {
 
 ensure_binary() {
   mkdir -p "${ROOT}/bin"
+  if [ -f "${ROOT}/backend/creatorhub-linux" ]; then
+    if [ ! -x "${ROOT}/bin/creatorhub" ] || [ "${ROOT}/backend/creatorhub-linux" -nt "${ROOT}/bin/creatorhub" ]; then
+      log "installing committed creatorhub-linux"
+      cp "${ROOT}/backend/creatorhub-linux" "${ROOT}/bin/creatorhub"
+      chmod +x "${ROOT}/bin/creatorhub"
+    fi
+  fi
   if [ -x "${ROOT}/bin/creatorhub" ]; then
     log "using ${ROOT}/bin/creatorhub"
-    return 0
-  fi
-  if [ -f "${ROOT}/backend/creatorhub-linux" ]; then
-    log "installing committed creatorhub-linux"
-    cp "${ROOT}/backend/creatorhub-linux" "${ROOT}/bin/creatorhub"
-    chmod +x "${ROOT}/bin/creatorhub"
     return 0
   fi
   if ! command -v go >/dev/null 2>&1; then
@@ -263,23 +266,29 @@ write_env() {
     log "copying ${secrets} -> ${envfile}"
     cp "$secrets" "$envfile"
   fi
+  upsert_env() {
+    local file="$1" key="$2" val="$3"
+    if grep -q "^${key}=" "$file"; then
+      sed -i "s|^${key}=.*|${key}=${val}|" "$file"
+    else
+      printf '%s=%s\n' "$key" "$val" >> "$file"
+    fi
+  }
+  merge_secret() {
+    local key="$1"
+    local val
+    [ -f "$secrets" ] || return 0
+    val="$(grep "^${key}=" "$secrets" | tail -1 | cut -d= -f2-)"
+    [ -n "$val" ] || return 0
+    upsert_env "$envfile" "$key" "$val"
+  }
   if [ -f "$envfile" ]; then
     # Always point sandbox at local postgres + local static files.
-    if grep -q '^DATABASE_URL=' "$envfile"; then
-      sed -i "s|^DATABASE_URL=.*|DATABASE_URL=postgres://postgres@127.0.0.1:${PGPORT}/chub?sslmode=disable|" "$envfile"
-    else
-      echo "DATABASE_URL=postgres://postgres@127.0.0.1:${PGPORT}/chub?sslmode=disable" >> "$envfile"
-    fi
-    if grep -q '^STATIC_DIR=' "$envfile"; then
-      sed -i "s|^STATIC_DIR=.*|STATIC_DIR=${ROOT}/frontend/dist|" "$envfile"
-    else
-      echo "STATIC_DIR=${ROOT}/frontend/dist" >> "$envfile"
-    fi
-    if grep -q '^PORT=' "$envfile"; then
-      sed -i "s|^PORT=.*|PORT=3000|" "$envfile"
-    else
-      echo "PORT=3000" >> "$envfile"
-    fi
+    upsert_env "$envfile" DATABASE_URL "postgres://postgres@127.0.0.1:${PGPORT}/chub?sslmode=disable"
+    upsert_env "$envfile" STATIC_DIR "${ROOT}/frontend/dist"
+    upsert_env "$envfile" PORT "3000"
+    merge_secret BASIC_AUTH_USER
+    merge_secret BASIC_AUTH_PASS
     log "using ${envfile}"
     return 0
   fi
@@ -291,6 +300,8 @@ STATIC_DIR=${ROOT}/frontend/dist
 JWT_SECRET=${JWT_SECRET:-change-me-sandbox}
 TIKHUB_API_KEY=${TIKHUB_API_KEY:-}
 WORKER_SECRET=${WORKER_SECRET:-}
+BASIC_AUTH_USER=${BASIC_AUTH_USER:-}
+BASIC_AUTH_PASS=${BASIC_AUTH_PASS:-}
 EOF
 }
 

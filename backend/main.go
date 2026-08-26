@@ -62,6 +62,11 @@ func main() {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.RealIP)
+	if cfg.BasicAuthUser != "" && cfg.BasicAuthPass != "" {
+		r.Use(authmw.NoIndex)
+		r.Use(authmw.BasicAuth(cfg.BasicAuthUser, cfg.BasicAuthPass))
+		log.Printf("HTTP basic auth enabled (user=%s); site is noindex", cfg.BasicAuthUser)
+	}
 
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
