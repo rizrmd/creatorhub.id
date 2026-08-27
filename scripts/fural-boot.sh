@@ -287,6 +287,8 @@ write_env() {
     upsert_env "$envfile" DATABASE_URL "postgres://postgres@127.0.0.1:${PGPORT}/chub?sslmode=disable"
     upsert_env "$envfile" STATIC_DIR "${ROOT}/frontend/dist"
     upsert_env "$envfile" PORT "3000"
+    upsert_env "$envfile" BASIC_AUTH_USER "${BASIC_AUTH_USER:-a}"
+    upsert_env "$envfile" BASIC_AUTH_PASS "${BASIC_AUTH_PASS:-a}"
     merge_secret BASIC_AUTH_USER
     merge_secret BASIC_AUTH_PASS
     log "using ${envfile}"
@@ -300,8 +302,8 @@ STATIC_DIR=${ROOT}/frontend/dist
 JWT_SECRET=${JWT_SECRET:-change-me-sandbox}
 TIKHUB_API_KEY=${TIKHUB_API_KEY:-}
 WORKER_SECRET=${WORKER_SECRET:-}
-BASIC_AUTH_USER=${BASIC_AUTH_USER:-}
-BASIC_AUTH_PASS=${BASIC_AUTH_PASS:-}
+BASIC_AUTH_USER=${BASIC_AUTH_USER:-a}
+BASIC_AUTH_PASS=${BASIC_AUTH_PASS:-a}
 EOF
 }
 
