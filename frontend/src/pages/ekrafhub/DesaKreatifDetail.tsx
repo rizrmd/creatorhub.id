@@ -24,11 +24,9 @@ export default function DesaKreatifDetail() {
         ref={ref}
         src="/desa-kreatif-gampongnusa.html"
         style={{
-          width: "1440px",
+          width: "100%",
           height: "900px",
           border: "none",
-          transformOrigin: "top left",
-          transform: "scale(1)",
         }}
         title="Desa Kreatif Gampong Nusa"
       />
