@@ -1,30 +1,52 @@
 import { useEffect, useRef } from "react";
 
+const SCALE = 0.85;
+const CONTENT_W = 1440;
+
 export default function DesaKreatifDetail() {
   const ref = useRef<HTMLIFrameElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const iframe = ref.current;
-    if (!iframe) return;
-    const handler = () => {
-      try {
-        const doc = iframe.contentDocument;
-        if (doc && doc.body) {
-          iframe.style.height = doc.body.scrollHeight + "px";
-        }
-      } catch {}
+    const wrapper = wrapperRef.current;
+    if (!iframe || !wrapper) return;
+
+    let ticking = false;
+    const resize = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        try {
+          const doc = iframe.contentDocument;
+          if (doc && doc.body) {
+            const h = Math.max(doc.body.scrollHeight, 900);
+            iframe.style.height = h + "px";
+            wrapper.style.height = h * SCALE + "px";
+          }
+        } catch {}
+        ticking = false;
+      });
     };
-    iframe.addEventListener("load", handler);
-    return () => iframe.removeEventListener("load", handler);
+
+    iframe.addEventListener("load", resize);
+    return () => iframe.removeEventListener("load", resize);
   }, []);
 
   return (
-    <div style={{ width: "100%", minHeight: "100vh", background: "#0a0e17" }}>
+    <div
+      ref={wrapperRef}
+      style={{
+        width: CONTENT_W * SCALE + "px",
+        height: "900px",
+        overflow: "hidden",
+      }}
+    >
       <iframe
         ref={ref}
         src="/desa-kreatif-gampongnusa.html"
         style={{
-          width: "100%",
+          width: CONTENT_W + "px",
           height: "900px",
           border: "none",
         }}
