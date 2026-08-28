@@ -12,25 +12,31 @@ export default function DesaKreatifDetail() {
     const wrapper = wrapperRef.current;
     if (!iframe || !wrapper) return;
 
-    let ticking = false;
-    const resize = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        try {
-          const doc = iframe.contentDocument;
-          if (doc && doc.body) {
-            const h = Math.max(doc.body.scrollHeight, 900);
-            iframe.style.height = h + "px";
-            wrapper.style.height = h * SCALE + "px";
-          }
-        } catch {}
-        ticking = false;
-      });
+    const onMsg = (e: MessageEvent) => {
+      if (e.data?.type === "dc-resize" && typeof e.data.h === "number") {
+        const h = Math.max(e.data.h, 900);
+        iframe.style.height = h + "px";
+        wrapper.style.height = h * SCALE + "px";
+      }
     };
 
-    iframe.addEventListener("load", resize);
-    return () => iframe.removeEventListener("load", resize);
+    const onLoad = () => {
+      try {
+        const doc = iframe.contentDocument;
+        if (doc && doc.body) {
+          const h = Math.max(doc.body.scrollHeight, 900);
+          iframe.style.height = h + "px";
+          wrapper.style.height = h * SCALE + "px";
+        }
+      } catch {}
+    };
+
+    iframe.addEventListener("load", onLoad);
+    window.addEventListener("message", onMsg);
+    return () => {
+      iframe.removeEventListener("load", onLoad);
+      window.removeEventListener("message", onMsg);
+    };
   }, []);
 
   return (

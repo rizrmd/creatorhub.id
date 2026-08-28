@@ -48,6 +48,14 @@ step "3. Copy new files"
 docker cp "$SRC/index.html" "$CONTAINER:/app/static/index.html" || bad "cp index.html"
 docker cp "$JS"  "$CONTAINER:/app/static/assets/$JS_NAME"  || bad "cp $JS_NAME"
 docker cp "$CSS" "$CONTAINER:/app/static/assets/$CSS_NAME" || bad "cp $CSS_NAME"
+if [ -f "$SRC/desa-kreatif-gampongnusa.html" ]; then
+  docker cp "$SRC/desa-kreatif-gampongnusa.html" "$CONTAINER:/app/static/desa-kreatif-gampongnusa.html" || bad "cp desa-kreatif-gampongnusa.html"
+  ok "desa-kreatif-gampongnusa.html"
+fi
+if [ -f "$SRC/support.js" ]; then
+  docker cp "$SRC/support.js" "$CONTAINER:/app/static/support.js" || bad "cp support.js"
+  ok "support.js"
+fi
 
 step "4. Verify byte sizes (staged vs container)"
 check_size() {
@@ -73,6 +81,11 @@ done
 step "6. Verify no stale index-* assets remain"
 STALE=$(docker exec "$CONTAINER" ls /app/static/assets | grep -E '^index-.*\.(js|css)$' | grep -v -e "$JS_NAME" -e "$CSS_NAME" || true)
 if [ -n "$STALE" ]; then bad "stale: $STALE"; else ok "none"; fi
+
+step "6b. Verify static extras"
+docker exec "$CONTAINER" test -f /app/static/desa-kreatif-gampongnusa.html && ok "desa-kreatif-gampongnusa.html" || bad "desa-kreatif-gampongnusa.html MISSING"
+docker exec "$CONTAINER" test -f /app/static/support.js && ok "support.js" || bad "support.js MISSING"
+docker exec "$CONTAINER" test -L /app/static/uploads && ok "uploads symlink" || { docker exec "$CONTAINER" sh -c 'cd /app/static && rm -rf uploads && ln -s gampongnusa uploads' && ok "uploads symlink created"; }
 
 step "7. Purge Cloudflare cache"
 ENVF="$HOME/.creatorhub-deploy.env"

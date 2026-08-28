@@ -18,7 +18,7 @@
   a:hover{color:#ffa54d}
 </style>
 </helmet>
-<div style="width:1440px;min-height:900px;background:#0a0e17;">
+<div style="width:1440px;min-height:900px;background:#0a0e17;transform:scale(0.85);transform-origin:top left;">
 
   <div style="display:flex;flex-direction:column;">
 
@@ -40,9 +40,8 @@
                 <img src="uploads/pasted-1787753721123-0.png" alt="Wisata Desa Gampong Nusa, Aceh Besar" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
               </div>
               <div style="flex:1;display:flex;flex-direction:column;">
-                <p style="margin:0 0 12px;font-size:14px;line-height:1.7;font-weight:600;color:#ffffff;">Hai, kenalin aku Ainul Mardhiah Lubis, tapi cukup panggil Banuun aja biar lebih akrab! Aku lahir tahun 1997 dan tinggal di Banda Aceh. Sejak tahun 2015, aku aktif berbagi konten di Instagram &amp; TikTok dengan nama @itsbanuun.</p>
-                <p style="margin:0;font-size:13px;line-height:1.75;color:rgba(255,255,255,.68);text-wrap:pretty;">Aku memulai perjalanan digital dari nol, belajar sendiri mulai dari cara ambil foto yang aesthetic, nulis caption yang Nyambung, sampai ngerti algoritma supaya konten bisa menjangkau lebih banyak orang. Bersama tim digital desa, aku sekarang mengkoordinasikan konten-konten yang bercerita tentang potensi Gampong Nusa — mulai dari wisata, kuliner, kriya, hingga cerita warga.</p>
-                <p style="margin:8px 0 0;font-size:13px;line-height:1.75;color:rgba(255,255,255,.68);text-wrap:pretty;">Bagiku, konten bukan cuma soal angka like atau view — tapi soal gimana kita bisa bikin orang merasa dekat dengan desa, meski belum pernah ke sana. Kalau kamu punya pertanyaan atau butuh bantuan soal strategi konten, langsung aja hubungi aku!</p>
+                <p style="margin:0 0 12px;font-size:14px;line-height:1.7;font-weight:600;color:#ffffff;">Gampong Nusa memiliki potensi kuat sebagai desa ekonomi kreatif digital karena menggabungkan wisata berbasis komunitas, homestay, kuliner lokal, kriya, budaya, dan kekayaan intelektual dalam satu ekosistem desa.</p>
+                <p style="margin:0;font-size:13px;line-height:1.75;color:rgba(255,255,255,.68);text-wrap:pretty;">Karakter lokal yang kuat membuat Gampong Nusa mudah dikembangkan menjadi konten digital, mulai dari storytelling budaya, video perjalanan, katalog produk, hingga promosi paket wisata. Kehadiran homestay dan aktivitas warga juga membuka peluang experience tourism yang autentik. Melalui dukungan kreator lokal, citizen journalist, media sosial, dan marketplace digital, potensi Gampong Nusa dapat diperluas menjadi produk kreatif, kampanye destinasi, serta model desa kreatif yang berkelanjutan.</p>
                 <div style="display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:16px;">
                   <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(245,132,31,.12);border:1px solid #f5841f;color:#f5841f;font-size:11.5px;font-weight:700;padding:5px 12px;border-radius:6px;"><span style="width:5px;height:5px;border-radius:50%;background:#f5841f;"></span>Profil Desa</span>
                   <span style="width:1px;height:20px;background:rgba(255,255,255,.12);"></span>
@@ -1195,6 +1194,16 @@ class Component extends DCLogic {
     };
   }
 }
+</script>
+<script>
+(function(){
+  function send(){
+    try{window.parent.postMessage({type:'dc-resize',h:document.body.scrollHeight},'*');}catch(e){}
+  }
+  new MutationObserver(send).observe(document.body,{childList:true,subtree:true,attributes:true});
+  window.addEventListener('load',send);
+  setTimeout(send,500);setTimeout(send,1500);setTimeout(send,3000);
+})();
 </script>
 </body>
 </html>
