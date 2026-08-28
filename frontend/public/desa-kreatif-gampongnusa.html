@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=1440">
+<style>
+  @font-face{font-family:'sysui';src:local('Helvetica Neue');}
+  body{margin:0;background:#0a0e17;font-family:-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;color:#e7eaf2;}
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:4px}
+  a{color:#f5841f;text-decoration:none}
+  a:hover{color:#ffa54d}
+</style>
+</helmet>
+<div style="width:1440px;min-height:900px;background:#0a0e17;display:flex;">
+
+  <div style="width:220px;flex:none;background:#080b12;border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;padding:20px 14px;box-sizing:border-box;min-height:900px;">
+    <div style="display:flex;align-items:center;gap:8px;padding:0 8px 22px;">
+      <div style="width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#ff7a1a,#f5841f);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#0a0e17;">C</div>
+      <div style="font-weight:700;font-size:15px;letter-spacing:.2px;">CreatorHub<span style="color:rgba(255,255,255,.4)">.ID</span></div>
+    </div>
+    <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="8">
+      <div style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;margin-bottom:2px;cursor:pointer;background:{{ item.bg }};color:{{ item.color }};font-size:13px;font-weight:{{ item.weight }};">
+        <span style="width:16px;height:16px;border-radius:4px;background:{{ item.dot }};flex:none;"></span>
+        {{ item.label }}
+      </div>
+    </sc-for>
+    <div style="margin-top:auto;padding:14px 10px;border-top:1px solid rgba(255,255,255,.06);font-size:12px;">
+      <div style="color:rgba(255,255,255,.55);margin-bottom:4px;">Need Help?</div>
+      <div style="color:#f5841f;font-weight:600;">Contact Support</div>
+    </div>
+  </div>
+
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
+    <div style="height:56px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.06);">
+      <div style="font-size:13px;color:rgba(255,255,255,.6);">Aug 26, 2026 • Wednesday | 12:54 PM</div>
+      <div style="display:flex;align-items:center;gap:18px;">
+        <span style="font-size:15px;color:rgba(255,255,255,.6);position:relative;">💬<span style="position:absolute;top:-6px;right:-10px;background:#f5841f;color:#0a0e17;font-size:9px;font-weight:700;border-radius:8px;padding:1px 4px;">7</span></span>
+        <span style="font-size:15px;color:rgba(255,255,255,.6);position:relative;">🔔<span style="position:absolute;top:-6px;right:-10px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;border-radius:8px;padding:1px 4px;">2</span></span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:30px;height:30px;border-radius:50%;overflow:hidden;background:#1a2233;"><img src="uploads/pasted-1787728284146-0.png" alt="Ainul Mardhiah Lubis" style="width:100%;height:100%;object-fit:cover;object-position:50% 12%;display:block;"></div>
+          <div>
+            <div style="font-size:12.5px;font-weight:600;">Ainul Mardhiah Lubis</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.45);">Network Coordinator</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:4px;padding:8px 24px 0;border-bottom:1px solid #f5841f;align-items:flex-end;">
+      <sc-for list="{{ tabs }}" as="tab" hint-placeholder-count="2">
+        <div onClick="{{ tab.select }}" style="font-size:16px;font-weight:800;letter-spacing:-.2px;padding:11px 22px;border-radius:10px 10px 0 0;cursor:pointer;background:{{ tab.bg }};color:{{ tab.color }};">{{ tab.label }}</div>
+      </sc-for>
+    </div>
+
+    <div style="padding:22px 24px 40px;">
+
+      <sc-if value="{{ isEkosistem }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;gap:20px;">
+
+          <div style="background:#111726;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:22px 24px;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;margin-bottom:14px;"><span style="width:16px;height:16px;border-radius:4px;background:linear-gradient(135deg,#f5841f,#84cc16);"></span>Tentang Desa Kreatif Digital Gampong Nusa</div>
+            <div style="display:flex;gap:20px;">
+              <div style="width:400px;aspect-ratio:750/473;flex:none;border-radius:8px;overflow:hidden;background:#1a2233;">
+                <img src="uploads/pasted-1787753721123-0.png" alt="Wisata Desa Gampong Nusa, Aceh Besar" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;">
+                <p style="margin:0 0 12px;font-size:15px;line-height:1.6;font-weight:600;color:#ffffff;text-wrap:pretty;">Gampong Nusa memiliki potensi kuat sebagai desa ekonomi kreatif digital karena menggabungkan wisata berbasis komunitas, homestay, kuliner lokal, kriya, budaya, dan kekayaan intelektual dalam satu ekosistem desa.</p>
+                <p style="margin:0;font-size:13px;line-height:1.75;color:rgba(255,255,255,.68);text-wrap:pretty;">Karakter lokal yang kuat membuat Gampong Nusa mudah dikembangkan menjadi konten digital, mulai dari storytelling budaya, video perjalanan, katalog produk, hingga promosi paket wisata. Kehadiran homestay dan aktivitas warga juga membuka peluang experience tourism yang autentik. Melalui dukungan kreator lokal, citizen journalist, media sosial, dan marketplace digital, potensi Gampong Nusa dapat diperluas menjadi produk kreatif, kampanye destinasi, serta model desa kreatif yang berkelanjutan.</p>
+                <div style="display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:16px;">
+                  <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(245,132,31,.12);border:1px solid #f5841f;color:#f5841f;font-size:11.5px;font-weight:700;padding:5px 12px;border-radius:6px;"><span style="width:5px;height:5px;border-radius:50%;background:#f5841f;"></span>Profil Desa</span>
+                  <span style="width:1px;height:20px;background:rgba(255,255,255,.12);"></span>
+                  <span style="font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.4);">Subsektor Unggulan</span>
+                  <span style="background:rgba(132,204,22,.14);border:1px solid rgba(132,204,22,.5);color:#84cc16;font-size:11.5px;font-weight:700;padding:5px 12px;border-radius:6px;">Kuliner</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#111726;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:22px 24px;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;margin-bottom:14px;"><span style="width:16px;height:16px;border-radius:4px;background:linear-gradient(135deg,#f5841f,#84cc16);"></span>Tipologi Desa/Kelurahan</div>
+            <div style="position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">
+              <div style="position:absolute;left:8%;right:8%;top:44px;height:2px;background:linear-gradient(90deg,#e0342a,#f5841f,#eab308,#84cc16,#22c55e);opacity:.3;"></div>
+              <sc-for list="{{ typologies }}" as="t" hint-placeholder-count="4">
+                <div style="position:relative;background:{{ t.cardBg }};border:1px solid {{ t.border }};border-radius:12px;padding:16px 14px 18px;box-shadow:{{ t.shadow }};overflow:hidden;">
+                  <div style="position:absolute;top:0;left:0;right:0;height:3px;background:{{ t.iconBg }};opacity:{{ t.stripOpacity }};"></div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                    <div style="width:40px;height:40px;border-radius:12px;background:{{ t.iconBg }};display:flex;align-items:center;justify-content:center;box-shadow:{{ t.iconShadow }};">
+                      <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="#0a0e17" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="{{ t.icon }}"></path>
+                      </svg>
+                    </div>
+                    <span style="font-size:20px;font-weight:800;color:{{ t.iconBg }};opacity:.34;letter-spacing:-.5px;">{{ t.step }}</span>
+                  </div>
+                  <div style="font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:4px;">Tahap {{ t.step }}</div>
+                  <div style="font-size:13px;font-weight:700;line-height:1.35;color:{{ t.textColor }};margin-bottom:10px;">{{ t.label }}</div>
+                  <sc-if value="{{ t.current }}" hint-placeholder-val="{{ false }}">
+                    <span style="display:inline-flex;align-items:center;gap:5px;background:#f5841f;color:#0a0e17;font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px;"><span style="width:5px;height:5px;border-radius:50%;background:#0a0e17;"></span>Posisi Saat Ini</span>
+                  </sc-if>
+                  <sc-if value="{{ t.next }}" hint-placeholder-val="{{ false }}">
+                    <span style="display:inline-block;border:1px dashed rgba(255,255,255,.22);color:rgba(255,255,255,.45);font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;">Target Berikutnya</span>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="background:#111726;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:24px 26px;">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:24px;">
+              <div>
+                <div style="font-size:14px;font-weight:700;">Score Desa Kreatif Digital</div>
+                <div style="font-size:12.5px;color:rgba(255,255,255,.6);margin-top:6px;max-width:420px;line-height:1.6;">Skor mencerminkan kualitas, pemanfaatan, dan dampak konten digital desa. Semakin tinggi skor, semakin siap desa memasarkan potensinya secara digital.</div>
+              </div>
+              <div style="flex:none;text-align:right;">
+                <div style="display:flex;align-items:baseline;gap:4px;justify-content:flex-end;"><span style="font-size:40px;font-weight:800;line-height:1;color:#84cc16;letter-spacing:-1.5px;">72</span><span style="font-size:14px;font-weight:700;color:rgba(255,255,255,.4);">/100</span></div>
+                <div style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;background:rgba(132,204,22,.14);border:1px solid rgba(132,204,22,.55);color:#84cc16;font-size:11px;font-weight:700;padding:4px 11px;border-radius:20px;"><span style="width:5px;height:5px;border-radius:50%;background:#84cc16;"></span>Kategori: Baik</div>
+              </div>
+            </div>
+            <div style="margin-top:26px;position:relative;">
+              <div style="position:absolute;left:68.9%;top:-32px;margin-left:12px;color:rgba(255,255,255,.75);font-size:11px;font-weight:700;letter-spacing:.2px;white-space:nowrap;z-index:3;">Posisi desa</div>
+              <img src="uploads/pasted-1787859574580-0.png" alt="Posisi desa" style="position:absolute;left:68.9%;top:-37px;width:40px;height:40px;transform:translateX(-74%);z-index:2;display:block;">
+              <div style="display:flex;gap:3px;align-items:flex-end;">
+                <sc-for list="{{ heatCells }}" as="c" hint-placeholder-count="18">
+                  <div style="flex:1;height:{{ c.height }};border-radius:3px;background:{{ c.color }};opacity:{{ c.opacity }};outline:{{ c.outline }};outline-offset:2px;"></div>
+                </sc-for>
+              </div>
+              <div style="position:relative;height:15px;margin-top:7px;">
+                <sc-for list="{{ ticks }}" as="tk" hint-placeholder-count="10">
+                  <span style="position:absolute;left:{{ tk.pos }};transform:translateX(-50%);font-size:10px;font-weight:600;color:{{ tk.color }};">{{ tk.label }}</span>
+                </sc-for>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07);">
+                <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+                  <sc-for list="{{ scoreBands }}" as="b" hint-placeholder-count="4">
+                    <span style="display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:600;color:{{ b.labelColor }};"><span style="width:10px;height:10px;border-radius:3px;background:{{ b.color }};opacity:{{ b.opacity }};box-shadow:{{ b.glow }};"></span>{{ b.label }} <span style="color:rgba(255,255,255,.3);font-weight:500;">{{ b.range }}</span></span>
+                  </sc-for>
+                </div>
+                <div style="flex:none;font-size:11.5px;font-weight:600;color:#84cc16;">Konten rutin, terkurasi, dan mulai berdampak.</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;">
+            <div style="background:#111726;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:22px 24px;display:flex;flex-direction:column;min-width:0;">
+              <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;margin-bottom:8px;"><span style="width:16px;height:16px;border-radius:4px;background:linear-gradient(135deg,#f5841f,#84cc16);"></span>Tim Digital Desa</div>
+              <div style="font-size:12.5px;color:rgba(255,255,255,.7);line-height:1.6;margin-bottom:14px;">Tim digital memproduksi, mengelola, dan mendistribusikan aset konten desa untuk memperkuat promosi potensi desa secara berkelanjutan. Selain itu, tim juga melakukan listing, kurasi, dan pemetaan KOC, akun komunitas, serta homeless media yang aktif mempublikasikan konten terkait potensi, aktivitas, dan perkembangan desa.</div>
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;">
+                <sc-for list="{{ teamMembers }}" as="m" hint-placeholder-count="6">
+                  <div style="background:#0d1320;border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:12px;">
+                    <div style="display:flex;gap:10px;align-items:flex-start;">
+                      <div style="width:34px;height:34px;border-radius:50%;flex:none;background:{{ m.avatar }};overflow:hidden;"><sc-if value="{{ m.hasPhoto }}" hint-placeholder-val="{{ false }}"><div style="width:100%;height:100%;background-image:{{ m.photoCss }};background-size:cover;background-position:{{ m.photoPos }};"></div></sc-if></div>
+                      <div style="flex:1;min-width:0;">
+                        <div style="font-size:12.5px;font-weight:700;">{{ m.name }}</div>
+                        <div style="font-size:11px;color:rgba(255,255,255,.5);font-weight:600;">{{ m.role }}</div>
+                      </div>
+                    </div>
+                    <div style="font-size:11.5px;line-height:1.55;color:rgba(255,255,255,.7);margin-top:8px;">{{ m.desc }}</div>
+                    <div style="display:flex;justify-content:flex-end;align-items:center;margin-top:10px;">
+                      <span style="background:rgba(245,132,31,.14);border:1px solid rgba(245,132,31,.5);color:#f5841f;font-size:10px;font-weight:700;padding:2px 9px;border-radius:5px;">Chat</span>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="background:#111726;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:22px 24px;display:flex;flex-direction:column;min-width:0;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;margin-bottom:6px;"><span style="width:16px;height:16px;border-radius:4px;background:linear-gradient(135deg,#f5841f,#84cc16);"></span>Key Opinion Community</div>
+            <div style="font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.6;margin-bottom:16px;max-width:900px;">Figur publik atau kreator di desa Gampong Nusa yang memiliki pengaruh digital berdasarkan kekuatan akun, jangkauan audiens, tingkat interaksi, dan konsistensi aktivitas di berbagai platform media sosial.</div>
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;">
+              <sc-for list="{{ kocs }}" as="k" hint-placeholder-count="5">
+                <div style="background:#0d1320;border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:12px;">
+                  <div style="display:flex;gap:10px;align-items:flex-start;">
+                    <div style="width:34px;height:34px;border-radius:50%;flex:none;background:{{ k.avatar }};overflow:hidden;"><sc-if value="{{ k.hasPhoto }}" hint-placeholder-val="{{ false }}"><div style="width:100%;height:100%;background-image:{{ k.photoCss }};background-size:{{ k.photoSize }};background-position:{{ k.photoPos }};"></div></sc-if></div>
+                    <div style="flex:1;min-width:0;">
+                      <div style="font-size:12.5px;font-weight:700;">{{ k.name }}</div>
+                      <div style="font-size:11px;color:rgba(255,255,255,.5);font-weight:600;">{{ k.bio }}</div>
+                    </div>
+                  </div>
+                  <div style="font-size:11.5px;line-height:1.55;color:rgba(255,255,255,.7);margin-top:8px;height:54px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">{{ k.note }}</div>
+                  <div style="display:flex;flex-direction:column;gap:6px;margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07);">
+                    <div style="display:flex;align-items:center;gap:7px;font-size:9.5px;font-weight:700;letter-spacing:.4px;color:rgba(255,255,255,.38);">
+                      <span style="width:18px;flex:none;"></span>
+                      <span style="flex:1;min-width:0;">HANDLER</span>
+                      <span style="width:56px;flex:none;text-align:right;">FOLLOWERS</span>
+                      <span style="width:64px;flex:none;text-align:right;">ENG. RATE</span>
+                    </div>
+                    <sc-for list="{{ k.platforms }}" as="p" hint-placeholder-count="2">
+                      <div style="display:flex;align-items:center;gap:7px;font-size:11.5px;">
+                        <span style="width:18px;height:18px;border-radius:4px;background:{{ p.dot }};flex:none;display:inline-flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" width="11" height="11" fill="#fff" fill-rule="evenodd"><path d="{{ p.icon }}"></path></svg></span>
+                        <span style="color:rgba(255,255,255,.55);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ p.handle }}</span>
+                        <span style="width:56px;flex:none;text-align:right;font-weight:700;">{{ p.followers }}</span>
+                        <span style="width:64px;flex:none;text-align:right;color:#22c55e;font-weight:700;">{{ p.er }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            </div>
+          </div>
+
+          <div style="background:#111726;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:22px 24px;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;margin-bottom:14px;"><span style="width:16px;height:16px;border-radius:4px;background:linear-gradient(135deg,#f5841f,#84cc16);"></span>Akun Komunitas</div>
+            <div style="font-size:12.5px;color:rgba(255,255,255,.7);line-height:1.6;margin-bottom:14px;max-width:980px;">Akun milik komunitas dan warga yang rutin memublikasikan aktivitas desa, dipetakan sebagai kanal pendukung distribusi konten.</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <sc-for list="{{ activeAccounts }}" as="c" hint-placeholder-count="1">
+                <div style="background:#0d1320;border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:14px 16px;display:flex;align-items:center;gap:20px;">
+                  <div style="display:flex;gap:10px;align-items:center;width:230px;flex:none;">
+                    <div style="width:34px;height:34px;border-radius:50%;flex:none;overflow:hidden;background-image:url(uploads/pasted-1787858746521-0.png);background-size:cover;background-position:center;"></div>
+                    <div style="min-width:0;">
+                      <div style="font-size:12.5px;font-weight:700;">{{ c.name }}</div>
+                      <div style="font-size:11px;color:rgba(255,255,255,.5);font-weight:600;">{{ c.bio }}</div>
+                    </div>
+                  </div>
+                  <div style="flex:1;min-width:0;font-size:11.5px;line-height:1.55;color:rgba(255,255,255,.7);">Dikelola bergantian oleh pemuda desa sejak 2022. Membagikan agenda gotong royong, kegiatan wisata, dan pengumuman warga.</div>
+                  <div style="width:420px;flex:none;display:flex;flex-direction:column;gap:6px;padding-left:20px;border-left:1px solid rgba(255,255,255,.07);">
+                    <div style="display:flex;align-items:center;gap:7px;font-size:9.5px;font-weight:700;letter-spacing:.4px;color:rgba(255,255,255,.38);">
+                      <span style="width:18px;flex:none;"></span>
+                      <span style="flex:1;min-width:0;">HANDLER</span>
+                      <span style="width:76px;flex:none;">TYPE</span>
+                      <span style="width:70px;flex:none;text-align:right;">FOLLOWERS</span>
+                      <span style="width:88px;flex:none;text-align:right;">ENGAGEMENT RATE</span>
+                    </div>
+                    <sc-for list="{{ c.platforms }}" as="p" hint-placeholder-count="3">
+                      <div style="display:flex;align-items:center;gap:7px;font-size:11.5px;">
+                        <span style="width:18px;height:18px;border-radius:4px;background:{{ p.dot }};flex:none;display:inline-flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" width="11" height="11" fill="#fff" fill-rule="evenodd"><path d="{{ p.icon }}"></path></svg></span>
+                        <span style="color:rgba(255,255,255,.55);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ p.handle }}</span>
+                        <span style="width:76px;flex:none;color:rgba(255,255,255,.75);">{{ p.type }}</span>
+                        <span style="width:70px;flex:none;text-align:right;font-weight:700;">{{ p.followers }}</span>
+                        <span style="width:88px;flex:none;text-align:right;color:#22c55e;font-weight:700;">{{ p.er }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isAset }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:20px;">
+        <div style="background:#111726;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:22px 24px;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;margin-bottom:8px;"><span style="width:16px;height:16px;border-radius:4px;background:linear-gradient(135deg,#f5841f,#84cc16);"></span>Pusat Aset Konten</div>
+          <div style="font-size:12.5px;color:rgba(255,255,255,.7);line-height:1.6;margin-bottom:16px;max-width:980px;">Pusat penyimpanan aset digital desa yang mencakup dokumentasi foto, video, siaran pers, katalog produk, informasi destinasi, dan materi promosi yang dikumpulkan, dikurasi, serta siap digunakan untuk kebutuhan publikasi dan kampanye digital.</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+            <div>
+              <div style="aspect-ratio:16/10;border-radius:6px;overflow:hidden;background:#1a2233;">
+                <img src="uploads/pasted-1787726694502-0.png" alt="Gampong Nusa" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
+              </div>
+              <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,.9);margin-top:9px;">Photos</div>
+            </div>
+            <div>
+              <div style="aspect-ratio:16/10;border-radius:6px;overflow:hidden;background:#1a2233;">
+                <img src="uploads/pasted-1787726710046-0.png" alt="Videos" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
+              </div>
+              <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,.9);margin-top:9px;">Videos</div>
+            </div>
+            <div>
+              <div style="aspect-ratio:16/10;border-radius:6px;overflow:hidden;background:#1a2233;">
+                <img src="uploads/pasted-1787726728046-0.png" alt="Katalog Digital" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
+              </div>
+              <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,.9);margin-top:9px;">Katalog Digital</div>
+            </div>
+            <div>
+              <div style="aspect-ratio:16/10;border-radius:6px;overflow:hidden;background:#1a2233;">
+                <img src="uploads/pasted-1787726743582-0.png" alt="Press Release" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">
+              </div>
+              <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,.9);margin-top:9px;">Press Release</div>
+            </div>
+          </div>
+          <div style="display:inline-block;background:#f5841f;color:#fff;font-size:13px;font-weight:700;padding:11px 18px;border-radius:8px;margin-top:16px;cursor:pointer;">Buka Pusat Aset Konten &#8599;</div>
+        </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isPostingan }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:20px;">
+
+          <div style="background:#111726;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:24px 26px;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;margin-bottom:14px;"><span style="width:16px;height:16px;border-radius:4px;background:linear-gradient(135deg,#f5841f,#84cc16);"></span>Desa Kreatif Digital</div>
+            <div style="display:flex;gap:24px;align-items:flex-start;">
+              <div style="flex:1;">
+                <div style="font-size:13px;line-height:1.7;color:rgba(255,255,255,.75);">Gampong Nusa di Aceh Besar adalah ladang konten visual yang sangat kaya. Baik untuk kebutuhan Feeds/Grid estetis, video pendek (Reels/TikTok), maupun dokumenter, desa wisata ini menawarkan perpaduan lanskap alam yang magis dan kehangatan budaya. Berikut adalah rangkuman ide konten video dan foto yang bisa Anda garap di Gampong Nusa, yang dikelompokkan berdasarkan tema.</div>
+                <div style="display:flex;align-items:center;gap:14px;margin-top:18px;">
+                  <div style="font-size:10.5px;font-weight:700;letter-spacing:.6px;color:rgba(255,255,255,.4);white-space:nowrap;">KONTRIBUTOR</div>
+                  <div style="display:flex;align-items:center;">
+                    <sc-for list="{{ contributors }}" as="m" hint-placeholder-count="5">
+                      <div title="{{ m.name }}" style="width:34px;height:34px;border-radius:50%;flex:none;background:{{ m.avatar }};overflow:hidden;border:2px solid #111726;margin-right:-9px;">
+                        <sc-if value="{{ m.hasPhoto }}" hint-placeholder-val="{{ false }}">
+                          <div style="width:100%;height:100%;background-image:{{ m.photoCss }};background-size:cover;background-position:{{ m.photoPos }};"></div>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="font-size:11.5px;color:rgba(255,255,255,.5);margin-left:16px;">{{ contributorNames }}</div>
+                </div>
+              </div>
+              <div style="width:300px;flex:none;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;">
+                <sc-for list="{{ campaignStats }}" as="cs" hint-placeholder-count="4">
+                  <div style="background:#0d1320;border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:12px;display:flex;flex-direction:column;justify-content:center;min-height:64px;box-sizing:border-box;">
+                    <div style="font-size:18px;font-weight:800;color:{{ cs.color }};line-height:1.1;">{{ cs.value }}</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px;white-space:nowrap;">{{ cs.label }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+
+
+
+          <div style="margin:16px 0 0;">
+            <div style="display:flex;align-items:flex-end;gap:3px;flex-wrap:wrap;position:relative;z-index:2;">
+              <sc-for list="{{ flowTabs }}" as="ft" hint-placeholder-count="5">
+                <div onClick="{{ ft.select }}" style="font-size:13.5px;font-weight:800;letter-spacing:-.1px;padding:8px 16px;border-radius:8px 8px 0 0;cursor:pointer;background:{{ ft.bg }};color:{{ ft.color }};">{{ ft.label }}</div>
+              </sc-for>
+            </div>
+            <div style="background:rgba(245,132,31,.035);border:1px solid rgba(245,132,31,.32);border-top-color:#f5841f;border-radius:0 10px 10px 10px;padding:16px 16px 18px;position:relative;z-index:1;">
+            <div style="font-size:13px;color:rgba(255,255,255,.75);margin-bottom:14px;line-height:1.7;text-wrap:pretty;">{{ flowSubtitle }}</div>
+
+          <sc-if value="{{ isFlowStory }}" hint-placeholder-val="{{ true }}">
+          <div>
+          <div style="display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;border-bottom:1px solid rgba(245,132,31,.35);padding-left:16px;">
+            <sc-for list="{{ storyTabs }}" as="st" hint-placeholder-count="2">
+              <span onClick="{{ st.select }}" style="font-size:12.5px;font-weight:800;padding:0 2px 8px;border-bottom:2px solid {{ st.underline }};margin-bottom:-1px;cursor:pointer;color:{{ st.color }};transition:color .15s;" style-hover="color:#ffa54d;">{{ st.label }}</span>
+            </sc-for>
+          </div>
+          <div style="background:#0d1320;border-radius:0 0 12px 12px;">
+          <sc-if value="{{ isStoryJelajah }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;">
+          <sc-for list="{{ campaignThemes }}" as="theme" hint-placeholder-count="5">
+            <div style="padding:22px 24px;border-top:{{ theme.topRule }};">
+              <div style="display:flex;align-items:center;gap:14px;">
+                <div style="flex:none;width:34px;height:34px;border-radius:9px;background:{{ theme.tint }};border:1px solid {{ theme.color }};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:{{ theme.color }};">{{ theme.num }}</div>
+                <div style="flex:1;min-width:0;">
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:3px;">Tema</div>
+                  <div style="font-size:15px;font-weight:700;letter-spacing:-.1px;line-height:1.25;">{{ theme.title }}</div>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px;">
+                <sc-for list="{{ theme.ideas }}" as="idea" hint-placeholder-count="3">
+                  <div style="background:#0d1320;border:1px solid rgba(255,255,255,.06);border-radius:10px;display:flex;flex-direction:column;">
+                    <div style="aspect-ratio:16/9;border-radius:9px 9px 0 0;overflow:hidden;background:repeating-linear-gradient(45deg,#1a2233,#1a2233 10px,#20293c 10px,#20293c 20px);display:flex;align-items:center;justify-content:center;font-family:ui-monospace,monospace;font-size:10px;color:rgba(255,255,255,.4);text-align:center;padding:8px;box-sizing:border-box;overflow:hidden;position:relative;">{{ idea.slot }}<sc-if value="{{ idea.hasImg }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;background-color:#0d1320;background-image:{{ idea.imgCss }};background-size:{{ idea.imgSize }};background-position:{{ idea.imgPos }};background-repeat:no-repeat;"></div></sc-if><sc-if value="{{ idea.hasVideo }}" hint-placeholder-val="{{ false }}"><video src="uploads/Golden hour terbaik ✨Rute gowes sore ini bener-bener definisi healing. Jalan desa, langit jingga.mp4" playsInline="{{ true }}" controls="{{ true }}" preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#000;"></video></sc-if></div>
+                    <div style="padding:14px;display:flex;flex-direction:column;gap:8px;">
+                      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                        <sc-for list="{{ idea.formats }}" as="fmt" hint-placeholder-count="2">
+                          <span style="font-size:10px;font-weight:700;color:rgba(255,255,255,.6);background:rgba(255,255,255,.06);padding:3px 8px;border-radius:5px;white-space:nowrap;">{{ fmt }}</span>
+                        </sc-for>
+                      </div>
+                      <div style="font-size:13px;font-weight:700;line-height:1.35;">{{ idea.title }}</div>
+                      <div style="font-size:12px;line-height:1.6;color:rgba(255,255,255,.6);">{{ idea.desc }}</div>
+                      <div onMouseEnter="{{ idea.onEnter }}" onMouseLeave="{{ idea.onLeave }}" style="position:relative;display:flex;align-items:center;gap:8px;margin-top:2px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07);">
+                        <div style="position:absolute;left:0;top:calc(100% + 6px);background:#fdf6d8;border:1px solid #d9c98a;border-radius:4px;padding:5px 9px;font-size:11px;font-weight:600;color:#3a3320;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.35);pointer-events:none;opacity:{{ idea.tipOpacity }};transition:opacity .16s;z-index:5;">Assigned by: Ainul Mardhiah Lubis</div>
+                        <span style="font-size:10.5px;font-weight:700;letter-spacing:.3px;color:rgba(255,255,255,.4);">Assigned to</span>
+                        <div style="width:22px;height:22px;border-radius:50%;flex:none;background:{{ idea.assigneeAvatar }};overflow:hidden;"><sc-if value="{{ idea.assigneeHasPhoto }}" hint-placeholder-val="{{ false }}"><div style="width:100%;height:100%;background-image:{{ idea.assigneePhotoCss }};background-size:{{ idea.assigneePhotoSize }};background-position:{{ idea.assigneePhotoPos }};"></div></sc-if></div>
+                        <span style="font-size:11.5px;font-weight:700;color:rgba(255,255,255,.85);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ idea.assignee }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ isStoryPeran }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:22px 24px;">
+            <sc-for list="{{ statCards }}" as="s" hint-placeholder-count="4">
+              <div style="background:#111726;border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:18px 20px;">
+                <div style="width:34px;height:34px;border-radius:9px;background:{{ s.iconBg }};margin-bottom:12px;"></div>
+                <div style="font-size:22px;font-weight:700;">{{ s.value }}</div>
+                <div style="font-size:12px;color:rgba(255,255,255,.55);margin-top:2px;">{{ s.label }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="padding:22px 24px;border-top:1px solid rgba(255,255,255,.06);">
+            <div style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;margin-bottom:6px;"><span style="width:16px;height:16px;border-radius:4px;background:linear-gradient(135deg,#f5841f,#84cc16);"></span>Program &amp; Pelibatan Warga</div>
+            <div style="font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.6;margin-bottom:16px;max-width:900px;">Aktivitas pelatihan, pendampingan, dan partisipasi warga dalam pengembangan ekosistem konten desa kreatif digital.</div>
+            <div style="display:grid;grid-template-columns:2.4fr 1.3fr 1.3fr 1fr;gap:0;font-size:10.5px;color:rgba(255,255,255,.4);font-weight:700;letter-spacing:.4px;padding:0 4px 10px;border-bottom:1px solid rgba(255,255,255,.08);">
+              <div>PROGRAM</div><div>PESERTA</div><div>PERIODE</div><div>STATUS</div>
+            </div>
+            <sc-for list="{{ programs }}" as="pr" hint-placeholder-count="6">
+              <div style="display:grid;grid-template-columns:2.4fr 1.3fr 1.3fr 1fr;gap:0;align-items:center;padding:12px 4px;border-bottom:1px solid rgba(255,255,255,.05);">
+                <div style="font-size:13px;font-weight:600;">{{ pr.name }}</div>
+                <div style="font-size:12.5px;color:rgba(255,255,255,.65);">{{ pr.participants }} warga</div>
+                <div style="font-size:12.5px;color:rgba(255,255,255,.65);">{{ pr.period }}</div>
+                <div><span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;background:{{ pr.statusBg }};color:{{ pr.statusColor }};">{{ pr.status }}</span></div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+          </sc-if>
+
+          <sc-if value="{{ isStoryProduk }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;">
+          <div style="padding:22px 24px;">
+            <div style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.7;max-width:980px;">Gampong Nusa, Aceh Besar, mengelola produk kreatif unggulannya secara kolektif berbasis komunitas di bawah naungan Lembaga Pariwisata Nusa (LPN). Sebagian besar usaha ekonomi kreatif di desa ini dijalankan oleh kelompok ibu-ibu dan pemuda setempat melalui unit-unit usaha kreatif terintegrasi.</div>
+            <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+              <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(245,132,31,.12);border:1px solid #f5841f;color:#f5841f;font-size:11.5px;font-weight:700;padding:5px 12px;border-radius:6px;"><span style="width:5px;height:5px;border-radius:50%;background:#f5841f;"></span>Lembaga Pariwisata Nusa (LPN)</span>
+              <span style="background:rgba(255,255,255,.06);color:rgba(255,255,255,.6);font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:6px;">Nusa Festival</span>
+              <span style="background:rgba(255,255,255,.06);color:rgba(255,255,255,.6);font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:6px;">Anugerah Desa Wisata Indonesia (ADWI)</span>
+              <span style="background:rgba(255,255,255,.06);color:rgba(255,255,255,.6);font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:6px;">Jadesta Kemenparekraf</span>
+            </div>
+          </div>
+
+          <sc-for list="{{ productGroups }}" as="g" hint-placeholder-count="5">
+            <div style="padding:22px 24px;border-top:1px solid rgba(255,255,255,.06);">
+              <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:14px;">
+                <span style="width:10px;height:10px;border-radius:3px;background:{{ g.color }};flex:none;"></span>
+                <div style="font-size:14px;font-weight:700;">{{ g.title }}</div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+                <sc-for list="{{ g.items }}" as="p" hint-placeholder-count="3">
+                  <div style="background:#0d1320;border:1px solid rgba(255,255,255,.06);border-radius:10px;display:flex;flex-direction:column;">
+                    <div style="aspect-ratio:16/9;border-radius:9px 9px 0 0;overflow:hidden;background:repeating-linear-gradient(45deg,#1a2233,#1a2233 10px,#20293c 10px,#20293c 20px);display:flex;align-items:center;justify-content:center;font-family:ui-monospace,monospace;font-size:10px;color:rgba(255,255,255,.4);text-align:center;padding:8px;box-sizing:border-box;position:relative;">{{ p.slot }}<sc-if value="{{ p.hasImg }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;background-image:{{ p.imgCss }};background-size:cover;background-position:{{ p.imgPos }};"></div></sc-if><sc-if value="{{ p.hasEmbed }}" hint-placeholder-val="{{ false }}"><iframe src="{{ p.embed }}" title="{{ p.name }}" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen="{{ true }}" referrerPolicy="strict-origin-when-cross-origin" style="position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#000;"></iframe></sc-if></div>
+                    <div style="padding:14px;display:flex;flex-direction:column;gap:8px;">
+                      <span style="align-self:flex-start;font-size:10px;font-weight:700;color:{{ g.color }};background:rgba(255,255,255,.06);padding:3px 8px;border-radius:5px;">{{ p.unit }}</span>
+                      <div style="font-size:13px;font-weight:700;line-height:1.35;">{{ p.name }}</div>
+                      <div style="font-size:12px;line-height:1.6;color:rgba(255,255,255,.6);">{{ p.desc }}</div>
+                      <div onMouseEnter="{{ p.onEnter }}" onMouseLeave="{{ p.onLeave }}" style="position:relative;display:flex;align-items:center;gap:8px;margin-top:2px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07);">
+                        <div style="position:absolute;left:0;top:calc(100% + 6px);background:#fdf6d8;border:1px solid #d9c98a;border-radius:4px;padding:5px 9px;font-size:11px;font-weight:600;color:#3a3320;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.35);pointer-events:none;opacity:{{ p.tipOpacity }};transition:opacity .16s;z-index:5;">Assigned by: Ainul Mardhiah Lubis</div>
+                        <span style="font-size:10.5px;font-weight:700;letter-spacing:.3px;color:rgba(255,255,255,.4);">Assigned to</span>
+                        <div style="width:22px;height:22px;border-radius:50%;flex:none;background:{{ p.assigneeAvatar }};overflow:hidden;"><sc-if value="{{ p.assigneeHasPhoto }}" hint-placeholder-val="{{ false }}"><div style="width:100%;height:100%;background-image:{{ p.assigneePhotoCss }};background-size:{{ p.assigneePhotoSize }};background-position:{{ p.assigneePhotoPos }};"></div></sc-if></div>
+                        <span style="font-size:11.5px;font-weight:700;color:rgba(255,255,255,.85);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ p.assignee }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+
+          <div style="padding:20px 24px;border-top:1px solid rgba(255,255,255,.06);font-size:12.5px;line-height:1.7;color:rgba(255,255,255,.6);">Seluruh produk kriya dan kuliner kreatif ini juga kerap dipamerkan dalam ajang tahunan desa seperti Nusa Festival untuk menarik minat pasar internasional. Inisiatif pengembangan portofolio kreatif ini merupakan bagian dari komitmen berkelanjutan pasca desa memperoleh penghargaan Anugerah Desa Wisata Indonesia (ADWI).</div>
+        </div>
+          </sc-if>
+          </div>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ isFlowHub }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#0d1320;border:1px solid rgba(255,255,255,.07);border-radius:12px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 20px;">
+                <div style="font-size:17px;font-weight:800;letter-spacing:-.3px;">Content Production Pipeline ({{ hubCount }})</div>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div style="display:flex;align-items:center;gap:8px;background:#111726;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 12px;width:230px;">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M16.5 16.5 21 21"></path></svg>
+                    <span style="font-size:12px;color:rgba(255,255,255,.4);">Cari konten atau kreator...</span>
+                  </div>
+                  <span style="background:#f5841f;color:#fff;font-size:12.5px;font-weight:700;padding:9px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;">+ Create Topic</span>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:2.5fr 1.5fr 1.25fr 1.5fr 1.7fr 1.6fr 44px;gap:0;font-size:10.5px;font-weight:700;letter-spacing:.5px;color:rgba(255,255,255,.42);background:#111726;padding:11px 20px;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);">
+                <div>TEMA/TOPIK</div><div>KONTEN KREATOR</div><div>LINK DIGITAL ASSET</div><div>TARGET POSTING</div><div>CONTENT TYPE</div><div>PROGRESS</div><div></div>
+              </div>
+              <sc-for list="{{ hubRows }}" as="h" hint-placeholder-count="11">
+                <div style="display:grid;grid-template-columns:2.5fr 1.5fr 1.25fr 1.5fr 1.7fr 1.6fr 44px;gap:0;align-items:center;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.05);position:relative;">
+                  <div style="display:flex;align-items:center;gap:11px;padding-right:14px;">
+                    <div style="position:relative;width:52px;height:34px;border-radius:6px;flex:none;background:repeating-linear-gradient(45deg,#1a2233,#1a2233 6px,#20293c 6px,#20293c 12px);overflow:hidden;"><sc-if value="{{ h.isVideoRow }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;right:3px;bottom:3px;z-index:2;width:18px;height:13px;border-radius:3px;background:#ff0000;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.5);"><span style="width:0;height:0;border-left:5px solid #fff;border-top:3.5px solid transparent;border-bottom:3.5px solid transparent;margin-left:1px;"></span></span></sc-if><sc-if value="{{ h.hasThumb }}" hint-placeholder-val="{{ false }}"><div style="width:100%;height:100%;background-image:{{ h.thumbCss }};background-size:cover;background-position:center;"></div></sc-if><sc-if value="{{ h.hasVideoThumb }}" hint-placeholder-val="{{ false }}"><video src="uploads/Golden hour terbaik ✨Rute gowes sore ini bener-bener definisi healing. Jalan desa, langit jingga.mp4" muted="{{ true }}" playsInline="{{ true }}" preload="metadata" style="width:100%;height:100%;object-fit:cover;display:block;background:#000;"></video></sc-if></div>
+                    <div style="font-size:13px;font-weight:700;line-height:1.35;min-width:0;">{{ h.topic }}</div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:9px;">
+                    <div style="width:30px;height:30px;border-radius:50%;flex:none;background:{{ h.avatar }};overflow:hidden;"><sc-if value="{{ h.hasPhoto }}" hint-placeholder-val="{{ false }}"><div style="width:100%;height:100%;background-image:{{ h.photoCss }};background-size:{{ h.photoSize }};background-position:{{ h.photoPos }};"></div></sc-if></div>
+                    <div>
+                      <div style="font-size:12.5px;font-weight:700;">{{ h.creator }}</div>
+                      <div style="font-size:11px;color:rgba(255,255,255,.45);">{{ h.role }}</div>
+                    </div>
+                  </div>
+                  <div style="display:flex;flex-wrap:wrap;gap:5px;padding-right:14px;">
+                    <sc-for list="{{ h.assetLinks }}" as="al" hint-placeholder-count="3">
+                      <span style="font-size:10.5px;font-weight:700;color:{{ al.color }};background:{{ al.bg }};border:1px solid {{ al.border }};padding:3px 8px;border-radius:5px;cursor:pointer;white-space:nowrap;">{{ al.label }}</span>
+                    </sc-for>
+                  </div>
+                  <div style="position:relative;padding-right:14px;">
+                    <div onClick="{{ h.toggle }}" style="display:flex;align-items:center;gap:7px;font-size:12px;color:rgba(255,255,255,.8);cursor:pointer;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:6px 9px;" style-hover="border-color:rgba(245,132,31,.6);">
+                      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#f5841f" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>
+                      <span style="flex:1;min-width:0;white-space:nowrap;">{{ h.target }}</span>
+                      <span style="color:rgba(255,255,255,.4);font-size:9px;">&#9660;</span>
+                    </div>
+                    <sc-if value="{{ h.open }}" hint-placeholder-val="{{ false }}">
+                      <div style="position:absolute;left:0;top:calc(100% + 6px);z-index:20;background:#111726;border:1px solid rgba(255,255,255,.14);border-radius:9px;padding:12px;box-shadow:0 14px 34px rgba(0,0,0,.55);width:242px;display:flex;flex-direction:column;gap:10px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                          <div onClick="{{ h.prevMonth }}" style="width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:11px;color:rgba(255,255,255,.7);cursor:pointer;" style-hover="background:rgba(245,132,31,.25);">&#8249;</div>
+                          <div style="font-size:12px;font-weight:700;">{{ h.monthLabel }}</div>
+                          <div onClick="{{ h.nextMonth }}" style="width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:11px;color:rgba(255,255,255,.7);cursor:pointer;" style-hover="background:rgba(245,132,31,.25);">&#8250;</div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;">
+                          <sc-for list="{{ h.weekdays }}" as="w" hint-placeholder-count="7">
+                            <div style="text-align:center;font-size:9px;font-weight:700;color:rgba(255,255,255,.35);padding-bottom:2px;">{{ w }}</div>
+                          </sc-for>
+                          <sc-for list="{{ h.cells }}" as="c" hint-placeholder-count="35">
+                            <div onClick="{{ c.select }}" style="height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;background:{{ c.bg }};color:{{ c.color }};font-weight:{{ c.weight }};" style-hover="background:rgba(255,255,255,.1);">{{ c.label }}</div>
+                          </sc-for>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px;font-size:9.5px;font-weight:700;letter-spacing:.4px;color:rgba(255,255,255,.4);border-top:1px solid rgba(255,255,255,.08);padding-top:9px;">
+                          <span>JAM</span>
+                          <select value="{{ h.hour }}" onChange="{{ h.setHour }}" style="flex:1;background:#0d1320;color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:6px;padding:6px;font-size:12px;font-family:inherit;">
+                            <sc-for list="{{ h.hourOpts }}" as="o" hint-placeholder-count="24"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+                          </select>
+                          <span style="color:rgba(255,255,255,.5);font-size:12px;">:</span>
+                          <select value="{{ h.minute }}" onChange="{{ h.setMinute }}" style="flex:1;background:#0d1320;color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:6px;padding:6px;font-size:12px;font-family:inherit;">
+                            <sc-for list="{{ h.minuteOpts }}" as="o" hint-placeholder-count="12"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+                          </select>
+                        </div>
+                        <div style="display:flex;justify-content:flex-end;gap:8px;">
+                          <div onClick="{{ h.toggle }}" style="color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.16);font-size:11.5px;font-weight:700;padding:6px 12px;border-radius:6px;cursor:pointer;" style-hover="color:#fff;border-color:rgba(255,255,255,.32);">Close</div>
+                          <div onClick="{{ h.toggle }}" style="background:#f5841f;color:#fff;font-size:11.5px;font-weight:700;padding:6px 12px;border-radius:6px;cursor:pointer;">Set</div>
+                        </div>
+                      </div>
+                    </sc-if>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:5px;padding-right:14px;">
+                    <sc-for list="{{ h.platforms }}" as="p" hint-placeholder-count="2">
+                      <div style="display:flex;align-items:center;gap:7px;font-size:11.5px;color:rgba(255,255,255,.75);">
+                        <span style="width:18px;height:18px;border-radius:5px;background:{{ p.dot }};flex:none;display:inline-flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" width="11" height="11" fill="#fff" fill-rule="evenodd"><path d="{{ p.icon }}"></path></svg></span>
+                        <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ p.type }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="padding-right:18px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;font-size:11.5px;font-weight:700;margin-bottom:5px;">
+                      <span>{{ h.steps }}</span><span style="color:#f5841f;">{{ h.pct }}</span>
+                    </div>
+                    <div style="height:4px;border-radius:3px;background:rgba(255,255,255,.09);overflow:hidden;">
+                      <div style="height:100%;width:{{ h.pct }};background:#f5841f;border-radius:3px;"></div>
+                    </div>
+                    <div style="font-size:10.5px;color:rgba(255,255,255,.45);margin-top:5px;">{{ h.completed }}</div>
+                  </div>
+                  <div style="display:flex;justify-content:flex-end;position:relative;">
+                    <div onClick="{{ h.toggleMenu }}" style="width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;gap:2px;cursor:pointer;color:rgba(255,255,255,.6);" style-hover="background:rgba(255,255,255,.08);color:#fff;">
+                      <span style="width:3px;height:3px;border-radius:50%;background:currentColor;"></span>
+                      <span style="width:3px;height:3px;border-radius:50%;background:currentColor;"></span>
+                      <span style="width:3px;height:3px;border-radius:50%;background:currentColor;"></span>
+                    </div>
+                    <sc-if value="{{ h.menuOpen }}" hint-placeholder-val="{{ false }}">
+                      <div style="position:absolute;right:0;top:calc(100% + 6px);z-index:20;background:#111726;border:1px solid rgba(255,255,255,.14);border-radius:9px;padding:5px;box-shadow:0 14px 34px rgba(0,0,0,.55);width:132px;display:flex;flex-direction:column;">
+                        <sc-for list="{{ h.menuItems }}" as="mi" hint-placeholder-count="4">
+                          <div onClick="{{ mi.select }}" style="font-size:12px;font-weight:600;color:{{ mi.color }};padding:7px 10px;border-radius:6px;cursor:pointer;" style-hover="background:rgba(255,255,255,.08);">{{ mi.label }}</div>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isFlowMonitoring }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+              <span style="width:3px;height:16px;border-radius:2px;background:#f5841f;"></span>
+              <span style="font-size:15px;font-weight:800;letter-spacing:-.2px;">Pinned Posts</span>
+              <span style="font-size:11px;font-weight:700;color:#f5841f;background:rgba(245,132,31,.12);border:1px solid rgba(245,132,31,.4);padding:3px 9px;border-radius:6px;">{{ monitorCount }} disematkan</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <sc-for list="{{ monitorRows }}" as="m" hint-placeholder-count="20">
+                <div onClick="{{ m.selectPost }}" style="background:#0d1320;border:1px solid {{ m.cardBorder }};border-radius:12px;padding:14px;display:flex;gap:14px;cursor:pointer;">
+                  <div style="position:relative;width:76px;align-self:stretch;min-height:118px;border-radius:8px;flex:none;background:repeating-linear-gradient(45deg,#1a2233,#1a2233 6px,#20293c 6px,#20293c 12px);overflow:hidden;">
+                    <sc-if value="{{ m.hasThumb }}" hint-placeholder-val="{{ false }}"><div style="width:100%;height:100%;background-image:{{ m.thumbCss }};background-size:cover;background-position:center;"></div></sc-if>
+                    <sc-if value="{{ m.hasVideoThumb }}" hint-placeholder-val="{{ false }}"><video src="uploads/Golden hour terbaik ✨Rute gowes sore ini bener-bener definisi healing. Jalan desa, langit jingga.mp4" muted="{{ true }}" playsInline="{{ true }}" preload="metadata" style="width:100%;height:100%;object-fit:cover;display:block;background:#000;"></video></sc-if>
+                    <span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;"><span style="width:0;height:0;border-left:7px solid #fff;border-top:5px solid transparent;border-bottom:5px solid transparent;margin-left:2px;"></span></span>
+                  </div>
+                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:10px;">
+                    <div style="display:flex;align-items:flex-start;gap:14px;">
+                      <div style="flex:1;min-width:0;">
+                        <div style="font-size:14px;font-weight:800;letter-spacing:-.2px;line-height:1.35;">{{ m.topic }}</div>
+                        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:11.5px;color:rgba(255,255,255,.45);margin-top:5px;">
+                          <span>Posted by</span>
+                          <span style="width:20px;height:20px;border-radius:50%;flex:none;background:{{ m.posterAvatar }};overflow:hidden;display:inline-block;"><sc-if value="{{ m.posterHasPhoto }}" hint-placeholder-val="{{ false }}"><span style="display:block;width:100%;height:100%;background-image:{{ m.posterPhotoCss }};background-size:{{ m.posterPhotoSize }};background-position:{{ m.posterPhotoPos }};"></span></sc-if></span>
+                          <span style="color:rgba(255,255,255,.85);font-weight:700;">{{ m.poster }}</span>
+                          <span>on {{ m.onDate }} · {{ m.type }} ·</span>
+                          <span style="color:#f5841f;font-weight:700;cursor:pointer;">{{ m.shortLink }}</span>
+                        </div>
+                      </div>
+                      <span style="flex:none;display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:#f5841f;border:1px solid rgba(245,132,31,.5);border-radius:7px;padding:6px 12px;cursor:pointer;" style-hover="background:rgba(245,132,31,.12);">
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#f5841f" stroke-width="2"><path d="M4 19h16M7 16V9M12 16V5M17 16v-5"></path></svg>Analyze
+                      </span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;background:#0f1626;border:1px solid rgba(255,255,255,.08);border-radius:8px;max-width:560px;">
+                      <sc-for list="{{ m.stats }}" as="s" hint-placeholder-count="5">
+                        <div style="position:relative;background:transparent;padding:9px 8px;text-align:center;border:1px solid {{ s.border }};border-radius:7px;border-left:1px solid {{ s.divider }};">
+                          <div style="font-size:9.5px;font-weight:700;letter-spacing:.6px;color:{{ s.labelColor }};">{{ s.label }}</div>
+                          <div style="font-size:15px;font-weight:800;margin-top:4px;color:{{ s.color }};">{{ s.value }}</div>
+                          <span style="position:absolute;right:-2px;top:50%;transform:translateY(-50%);width:5px;height:26px;border-radius:3px;background:{{ s.bar }};"></span>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:11px;color:rgba(255,255,255,.4);">
+                      <span>Performance Data Updated: <span style="color:#f5841f;font-weight:700;">{{ m.updated }}</span></span>
+                    </div>
+                    <div style="display:flex;gap:9px;flex-wrap:wrap;">
+                      <span style="display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:{{ m.typeColor }};background:{{ m.typeBg }};border:1px solid {{ m.typeBorder }};border-radius:7px;padding:6px 12px;">
+                        <span style="width:15px;height:15px;border-radius:4px;background:{{ m.dot }};display:inline-flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" width="9" height="9" fill="#fff" fill-rule="evenodd"><path d="{{ m.icon }}"></path></svg></span>{{ m.type }}
+                      </span>
+                      <sc-for list="{{ m.actions }}" as="a" hint-placeholder-count="3">
+                        <span style="font-size:11.5px;font-weight:600;color:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.14);border-radius:7px;padding:6px 12px;cursor:pointer;" style-hover="color:#fff;border-color:rgba(255,255,255,.3);">{{ a }}</span>
+                      </sc-for>
+                    </div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isFlowOther }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#111726;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:40px 26px;text-align:center;">
+              <div style="font-size:14px;font-weight:700;color:rgba(255,255,255,.8);">{{ flowEmptyTitle }}</div>
+              <div style="font-size:12.5px;color:rgba(255,255,255,.5);margin-top:6px;">{{ flowEmptyDesc }}</div>
+            </div>
+          </sc-if>
+          </div>
+          </div>
+
+        </div>
+      </sc-if>
+
+
+
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  static blankPx = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
+  static memberPhotos = {
+    'Ainul Mardhiah Lubis': ['uploads/pasted-1787728284146-0.png', '50% 12%'],
+    'Tengku Putri Isna': ['uploads/pasted-1787757067589-0.png', '52% 22%'],
+    'Cut Dhara Maulydistira': ['uploads/pasted-1787757082493-0.png', '30% 18%'],
+    'M. Rais Syahizinda': ['uploads/pasted-1787757151189-0.png', '50% 22%'],
+    'Maulinda Yani': ['uploads/pasted-1787757174654-0.png', '48% 20%']
+  };
+
+  state = { activePost: '0-0', tab: 'ekosistem', audience: 'nano', flow: 'story', story: 'jelajah', hoverIdea: null, hoverProduct: null, openDate: null, dates: {}, openMenu: null };
+
+  static igTypes = ['Feed Photo', 'Feed Video', 'Carousel', 'Reels', 'Instagram Story', 'Instagram LIVE', 'Collab Post', 'Broadcast Channel'];
+
+  static ttTypes = ['Short Video', 'Photo Mode/Carousel', 'TikTok Story', 'TikTok LIVE', 'Duet', 'Stitch', 'Branded Content', 'Spark Ads'];
+
+  static months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+  assignPool() {
+    if (this._pool) return this._pool;
+    this._pool = [
+      ...this.team.map(([name, , , avatar]) => ({ name, role: 'Tim Digital Desa', avatar, photo: (Component.memberPhotos[name] || [])[0], pos: (Component.memberPhotos[name] || [])[1] || 'center', size: 'cover' })),
+      ...this.kocData.map(([name, bio, avatar]) => ({ name, role: bio, avatar, photo: Component.kocPhotos[name], pos: Component.kocPhotoPos[name] || 'center', size: Component.kocPhotoSize[name] || 'cover' }))
+    ].filter((p, i, arr) => arr.findIndex(q => q.name === p.name) === i);
+    return this._pool;
+  }
+
+  ideaFlat() {
+    if (this._flat) return this._flat;
+    const pool = this.assignPool();
+    let n = 0;
+    const flat = [];
+    this.themesData.forEach(([, , color, ideas], ti) => ideas.forEach(([title, desc, formats, slot], ii) => {
+      flat.push({ key: ti + '-' + ii, ti, ii, title, desc, formats, slot, themeColor: color, thumb: this.ideaPhotos[title], video: title === '2. Golden Hour Bersepeda', person: pool[(n++ * 7) % pool.length] });
+    }));
+    this._flat = flat;
+    return flat;
+  }
+
+  productFlat() {
+    if (this._pflat) return this._pflat;
+    const pool = this.assignPool();
+    let pn = 3;
+    const flat = [];
+    this.productGroupsData.forEach(([, color, items], gi) => items.forEach(([name, unit], ii) => {
+      const emb = this.productEmbeds[name];
+      const ytId = emb ? emb.split('/').pop() : null;
+      flat.push({ key: 'p' + gi + '-' + ii, title: name, unit, themeColor: color, formats: ['Foto'], yt: !!ytId, thumb: ytId ? 'https://img.youtube.com/vi/' + ytId + '/hqdefault.jpg' : (this.productPhotos[name] || [])[0], person: pool[(pn++ * 7) % pool.length] });
+    }));
+    this._pflat = flat;
+    return flat;
+  }
+
+  pipelineRows() {
+    return [...this.ideaFlat(), ...this.productFlat()];
+  }
+
+  typeFor(f, i) {
+    const plat = i % 2 === 0 ? 'Instagram' : 'TikTok';
+    if (plat === 'Instagram') return { plat, type: Component.igTypes[(i * 3 + 1) % 8] };
+    const base = Component.ttTypes[(i * 5 + 2) % 8];
+    if (/^20\./.test(f.title)) return { plat, type: 'Spark Ads' };
+    return { plat, type: base === 'Spark Ads' ? 'Photo Mode/Carousel' : base };
+  }
+
+  dateFor(key, i) {
+    const set = this.state.dates[key];
+    if (set) return set;
+    return { d: 3 + (i * 2) % 25, m: (7 + i) % 12, y: 2026, h: 9 + (i % 9), min: (i * 15) % 60 };
+  }
+
+  dateLabel(v) {
+    return v.d + ' ' + Component.months[v.m] + ' ' + v.y + ', ' + String(v.h).padStart(2, '0') + ':' + String(v.min == null ? 0 : v.min).padStart(2, '0');
+  }
+
+  calendarFor(key, i) {
+    const v = this.dateFor(key, i);
+    const first = new Date(v.y, v.m, 1).getDay();
+    const lead = (first + 6) % 7;
+    const days = new Date(v.y, v.m + 1, 0).getDate();
+    const cells = [];
+    for (let k = 0; k < lead; k++) cells.push({ label: '', blank: true, bg: 'transparent', color: 'transparent', weight: 400, select: () => {} });
+    for (let d = 1; d <= days; d++) {
+      const active = d === v.d;
+      cells.push({
+        label: String(d), blank: false,
+        bg: active ? '#f5841f' : 'transparent',
+        color: active ? '#fff' : 'rgba(255,255,255,.75)',
+        weight: active ? 800 : 500,
+        select: () => this.setDatePart(key, i, 'd', d)
+      });
+    }
+    return cells;
+  }
+
+  shiftMonth(key, i, delta) {
+    const v = this.dateFor(key, i);
+    let m = v.m + delta, y = v.y;
+    if (m < 0) { m = 11; y -= 1; }
+    if (m > 11) { m = 0; y += 1; }
+    const maxD = new Date(y, m + 1, 0).getDate();
+    this.setState(s => ({ dates: { ...s.dates, [key]: { ...v, m, y, d: Math.min(v.d, maxD) } } }));
+  }
+
+  setDatePart(key, i, part, value) {
+    const cur = this.dateFor(key, i);
+    this.setState(s => ({ dates: { ...s.dates, [key]: { ...cur, [part]: value } } }));
+  }
+
+  hubData = [
+    ['Konten Edukasi tentang Sumatera Utara', 'Budi Wijaya', '#f5841f'],
+    ['Konten Edukasi tentang Sumatera Barat', 'Ani Suryani', '#eab308'],
+    ['Konten Edukasi tentang Sumatera Selatan', 'Cahya Putra', '#84cc16'],
+    ['Konten Edukasi tentang DKI Jakarta', 'Dewi Lestari', '#22c55e'],
+    ['Konten Edukasi tentang Jawa Barat', 'Eko Prasetyo', '#e0342a']
+  ];
+
+  flowDefs = [
+    ['story', 'Story Ideas', 'Bahan baku konten yang siap ditangkap Tim Digital Desa dan Key Opinion Community, lalu dikemas menjadi Feeds/Carousel dan Reels di Instagram atau Video TikTok.'],
+    ['hub', 'Content Hub', 'Ruang kurasi tempat ide yang sudah diproduksi dikumpulkan, ditinjau, lalu dijadwalkan tayang per kanal.'],
+    ['monitoring', 'Campaign Monitoring', 'Pemantauan performa konten setelah tayang: jangkauan, interaksi, dan dampaknya pada kunjungan serta penjualan produk desa.'],
+    ['boost', 'Boost Ads', 'Rencana dan realisasi iklan berbayar untuk mendorong konten pilihan menjangkau audiens baru.'],
+    ['reports', 'Executive Reports', 'Ringkasan berkala untuk pemangku kepentingan desa: capaian, pembelajaran, dan rekomendasi langkah berikutnya.']
+  ];
+
+  storyDefs = [
+    ['jelajah', 'Jelajah Desa'],
+    ['produk', 'Produk & Ekonomi Kreatif'],
+    ['peran', 'Peran Aktif Masyarakat']
+  ];
+
+  navConfig = [
+    ['Dashboard', false], ['Desa Kreatif', true], ['Creative Hub', false],
+    ['Marketplace', false], ['Boost Ads', false], ['Media Monitoring', false], ['Messages', false], ['Settings', false]
+  ];
+
+  bandConfig = [
+    ['Perlu Ditingkatkan', '10–32', '#e0342a', 'Konten belum rutin dan belum terarah.'],
+    ['Cukup', '33–55', '#f5841f', 'Konten mulai jalan, jangkauan masih kecil.'],
+    ['Baik', '56–78', '#84cc16', 'Konten rutin, terkurasi, dan mulai berdampak.'],
+    ['Sangat Baik', '79–100', '#22c55e', 'Konten mendorong kunjungan dan penjualan.']
+  ];
+
+  typologyConfig = [
+    ['Desa/Kel Kreatif Rintisan', '#331a12', '#f5841f', '#f5841f', true, 'M7 20h10M10 20c5.5-2.5.8-6.4 3-10M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8zM14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z'],
+    ['Desa/Kel Kreatif Produktif', '#2a2410', 'rgba(255,255,255,.08)', '#eab308', false, 'M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2zM17 18h1M12 18h1M7 18h1'],
+    ['Desa/Kel Kreatif Berdaya', '#1c2a10', 'rgba(255,255,255,.08)', '#84cc16', false, 'M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z'],
+    ['Desa/Kel Kreatif Mandiri', '#0e2418', 'rgba(255,255,255,.08)', '#22c55e', false, 'M11.56 3.27a.5.5 0 0 1 .88 0l2.95 5.6a1 1 0 0 0 1.51.29l4.28-3.66a.5.5 0 0 1 .8.52l-2.84 10.25a1 1 0 0 1-.95.73H5.81a1 1 0 0 1-.96-.73L2.02 6.02a.5.5 0 0 1 .8-.52L7.1 9.16a1 1 0 0 0 1.51-.29zM5 21h14']
+  ];
+
+  team = [
+    ['Ainul Mardhiah Lubis', 'Digital Coordinator', ['Instagram', 'TikTok'], '#f5841f', 'Menyusun kalender konten, mengoordinasi tim produksi, dan memastikan publikasi desa berjalan konsisten di seluruh kanal.'],
+    ['M. Rais Syahizinda', 'Storytelling & Content', ['Instagram', 'YouTube'], '#e879f9', 'Menulis naskah dan caption, mengemas cerita budaya serta aktivitas warga menjadi konten yang layak publikasi.'],
+    ['Tengku Putri Isna', 'Visual Documentation', ['Instagram', 'TikTok'], '#4d8dfa', 'Mendokumentasikan foto dan video kegiatan desa, mengedit, serta mengarsipkan aset ke Pusat Aset Konten.'],
+    ['Cut Dhara Maulydistira', 'Social Media & Community Officer', ['TikTok', 'Facebook'], '#f472b6', 'Mengelola akun resmi desa, menjadwalkan unggahan, dan membalas interaksi audiens serta komunitas.'],
+    ['Maulinda Yani', 'Nano Influencer Coordinator', ['Instagram', 'TikTok'], '#ef4444', 'Melakukan listing dan pendampingan nano influencer desa serta mengukur performa kolaborasi konten.']
+  ];
+
+  static brand = { TikTok: '#010101', Instagram: '#e1306c', YouTube: '#ff0000', X: '#010101', Facebook: '#1877f2' };
+
+  static glyph = {
+    TikTok: 'M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.1v12.4a2.6 2.6 0 1 1-1.8-2.5V9.8a5.9 5.9 0 1 0 4.9 5.8V8.7a7.3 7.3 0 0 0 4.4 1.4V7a4.3 4.3 0 0 1-3.3-1.2z',
+    Instagram: 'M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 0 1 12 7.5zm0 2A2.5 2.5 0 1 0 14.5 12 2.5 2.5 0 0 0 12 9.5zM17.4 5.9a1.2 1.2 0 1 1-1.2 1.2 1.2 1.2 0 0 1 1.2-1.2z',
+    YouTube: 'M21.6 7.2s-.2-1.4-.8-2c-.8-.8-1.7-.8-2.1-.9C16.9 4.1 12 4.1 12 4.1s-4.9 0-6.7.2c-.4.1-1.3.1-2.1.9-.6.6-.8 2-.8 2S2 8.8 2 10.4v1.5c0 1.6.2 3.2.2 3.2s.2 1.4.8 2c.8.8 1.8.8 2.2.9 1.8.2 6.8.2 6.8.2s4.9 0 6.7-.2c.4-.1 1.3-.1 2.1-.9.6-.6.8-2 .8-2s.2-1.6.2-3.2v-1.5c0-1.6-.2-3.2-.2-3.2zM10 14.6V8.9l5.2 2.9-5.2 2.8z',
+    X: 'M17.7 3h3.2l-7 8 7.4 10h-5.6l-4.4-6-5 6H3.1l7.3-8.6L3.2 3h5.7l4.1 5.6L17.7 3z',
+    Facebook: 'M13.5 22v-8h2.7l.4-3.2h-3.1V8.7c0-.9.3-1.6 1.7-1.6h1.5V4.2c-.3 0-1.4-.1-2.6-.1-2.6 0-4.4 1.6-4.4 4.5v2.2H7v3.2h2.7V22h3.8z'
+  };
+
+  static kocPhotos = {
+    'Ainul Mardhiah Lubis': 'uploads/pasted-1787728284146-0.png',
+    'Cut Intan': 'uploads/pasted-1787858916858-0.png',
+    'Ponjria': 'uploads/pasted-1787859092682-0.png',
+    'Rayhanna Bella Syakilla': 'uploads/pasted-1787859160594-0.png',
+    'Avisena': 'uploads/pasted-1787859192655-0.png'
+  };
+
+  static kocPhotoSize = {
+    'Ponjria': '300%',
+    'Rayhanna Bella Syakilla': '175%',
+    'Avisena': '380%'
+  };
+
+  static kocPhotoPos = {
+    'Ainul Mardhiah Lubis': '50% 12%',
+    'Cut Intan': '50% 22%',
+    'Ponjria': '38% 36%',
+    'Rayhanna Bella Syakilla': '50% 18%',
+    'Avisena': '48% 42%'
+  };
+
+  kocNotes = {
+    'Ainul Mardhiah Lubis': 'Cukup dikenal di Desa Gampong, selain mengkoordinasikan tim digital, Ainul juga menjadi brand ambassador digital.',
+    'Rayhanna Bella Syakilla': 'Aktif di TikTok sejak 2021. Mengulas warung dan jajanan rumahan Aceh Besar, sesekali memasak resep khas bersama warga.',
+    'Cut Intan': 'Aktif sejak akhir 2020. Padu-padan busana harian dengan kain dan sulaman Aceh bersama penjahit desa.',
+    'Avisena': 'Ngonten di X sejak 2019. Menulis utas humor soal kehidupan desa dan obrolan warung kopi yang ramai dibagikan warga.',
+    'Ponjria': 'Vlogger YouTube sejak 2018. Merekam perjalanan ke destinasi Aceh, termasuk rute dan biaya homestay warga.'
+  };
+
+  kocData = [
+    ['Ainul Mardhiah Lubis', 'Brand Ambassador', '#22c55e', [['TikTok','#111','@ainulmardhiah','22.1K','9.2%'],['Instagram','#e1306c','@ainulmardhiah','6.3K','7.1%']]],
+    ['Rayhanna Bella Syakilla', 'Influencer Kuliner', '#f472b6', [['TikTok','#111','@rayhannabella','5.2K','6.3%']]],
+    ['Cut Intan', 'Influencer Fashion', '#a855f7', [['Instagram','#e1306c','@cutintan','2.1K','4.8%'],['TikTok','#111','@cutintan','103.6K','5.5%']]],
+    ['Avisena', 'Influencer Komedi', '#f5841f', [['X','#111','@avisena','2.4K','3.8%']]],
+    ['Ponjria', 'Influencer Travel', '#eab308', [['YouTube','#ff0000','@ponjria','12.1K','7.2%']]]
+  ];
+
+  accountsByAudience = {
+    nano: [
+      ['Nura Sahirah', 'Travel & Culture', '#e1306c', 'Instagram', '@nurasahirah', '2,017', '0.8%', '#f472b6'],
+      ['Warga Gampong Nusa', 'Community Account', '#111', 'X', '@wargagampongnusa', '2,100', '2.9%', '#4d8dfa'],
+      ['Komunitas Gampong Nusa', 'Community Hub', '#1877f2', 'Facebook', 'KomunitasGN', '3,200', '3.8%', '#22c55e'],
+      ['sr.king__', 'Travel Content', '#e1306c', 'Instagram', '@sr.king__', '8,432', '3.2%', '#f59e0b'],
+      ['endang.supriyati', 'Kuliner & UMKM', '#e1306c', 'Instagram', '@endang.supriyati', '5,127', '4.1%', '#a855f7'],
+      ['arrofimoez', 'Lifestyle & Creative', '#e1306c', 'Instagram', '@arrofimoez', '9,814', '2.7%', '#ef4444'],
+      ['mearvic', 'Travel & Culture', '#e1306c', 'Instagram', '@mearvic', '6,543', '3.9%', '#22c55e']
+    ],
+    micro: [
+      ['Desa Wisata Aceh', 'Regional Tourism', '#e1306c', 'Instagram', '@desawisataaceh', '18,900', '2.1%', '#4d8dfa'],
+      ['Kopi Nusantara Aceh', 'Kuliner & Kopi', '#e1306c', 'Instagram', '@kopinusantara.aceh', '24,500', '3.4%', '#f59e0b'],
+      ['Jelajah Aceh Besar', 'Travel Guide', '#ff0000', 'YouTube', 'JelajahAcehBesar', '31,200', '2.8%', '#22c55e']
+    ],
+    homeless: [
+      ['Info Aceh Besar', 'Citizen Journalism', '#111', 'X', '@infoacehbesar', '14,200', '1.4%', '#4d8dfa'],
+      ['Kabar Gampong', 'Local News Aggregator', '#1877f2', 'Facebook', 'KabarGampong', '9,800', '2.0%', '#a855f7'],
+      ['Suara Aceh Besar', 'Regional News', '#e1306c', 'Instagram', '@suaraacehbesar', '21,000', '1.7%', '#ef4444']
+    ]
+  };
+
+  ideaPhotos = {
+    '1. Persawahan Berlatar Bukit Barisan': 'uploads/pasted-1787729493836-0.png',
+    '3. Jembatan Kayu & Sungai': 'uploads/pasted-1787729963131-0.png',
+    '4. Tari Tradisional & Rapai': 'uploads/pasted-1787730670740-0.png',
+    '5. Permainan Tradisional': 'uploads/pasted-1787730721435-0.png',
+    '6. Momen Adat & Kenduri': 'uploads/pasted-1787730847112-0.png',
+    '8. Storytelling Resiliensi Tsunami': 'uploads/pasted-1787730912367-0.png',
+    '7. Daur Ulang Sampah Kreatif': 'uploads/pasted-1787730948180-0.png',
+    '9. Cooking Class Kuliner Khas': 'uploads/pasted-1787731086695-0.png',
+    '10. Produk Kreatif Keripik Daun Temurui': 'uploads/Kripik Gampong Nusa.jpg',
+    '11. Homestay Berstandar ASEAN': 'uploads/pasted-1787731209549-0.png'
+  };
+
+  ideaPhotoPos = { '5. Permainan Tradisional': '50% 22%' };
+
+  ideaPhotoFit = {};
+
+  themesData = [
+    ['Lanskap Alam Estetis', 'Cocok untuk Cinematic Video & Prewedding', '#22c55e', [
+      ['1. Persawahan Berlatar Bukit Barisan', 'Spot paling ikonik di sini adalah hamparan sawah hijau atau kuning yang dikelilingi oleh megahnya gugusan Bukit Barisan. Tempat ini sering menjadi pilihan utama untuk foto prewedding outdoor.', ['Foto', 'Prewedding'], 'foto sawah & bukit barisan'],
+      ['2. Golden Hour Bersepeda', 'Rekam video POV atau drone shot anak-anak lokal atau wisatawan mengayuh sepeda di atas pematang sawah saat matahari terbit atau terbenam.', ['POV', 'Drone'], 'video golden hour'],
+      ['3. Jembatan Kayu & Sungai', 'Terdapat area santai berupa jembatan kayu di atas sungai kecil jernih yang mengalir membelah desa. Sangat pas untuk konten bernuansa tenang (healing/ambient video).', ['Ambient', 'Reels'], 'foto jembatan kayu']
+    ]],
+    ['Kebudayaan & Atraksi Tradisional', 'Cocok untuk Konten Vlog & Budaya', '#f5841f', [
+      ['4. Tari Tradisional & Rapai', 'Dokumentasikan keindahan gerak tari selamat datang atau tabuhan Rapai yang dinamis dalam balutan pakaian adat Aceh yang penuh warna.', ['Vlog', 'Video'], 'video tari & rapai'],
+      ['5. Permainan Tradisional', 'Buat video seru (fun/reels) yang interaktif dengan merekam momen wisatawan bermain galah panjang, patok lele, atau boie bersama anak-anak gampong.', ['Reels', 'Fun'], 'video permainan tradisional'],
+      ['6. Momen Adat & Kenduri', 'Jika datang di waktu yang tepat, abadikan kemeriahan tradisi lokal seperti Khanduri Maulid, Meugang Day, atau Khanduri Pade yang sarat akan nilai kebersamaan.', ['Foto', 'Dokumenter'], 'foto kenduri']
+    ]],
+    ['Wisata Edukasi & Eco-Tourism', 'Cocok untuk Konten Naratif & Inspiratif', '#84cc16', [
+      ['7. Daur Ulang Sampah Kreatif', 'Gampong Nusa terkenal dengan sistem waste management-nya. Ambil video proses aesthetic pembuatan kerajinan tangan dari sampah plastik dan rotan, seperti tas, bunga, atau kotak tisu.', ['Proses', 'Reels'], 'video kerajinan daur ulang'],
+      ['8. Storytelling Resiliensi Tsunami', 'Buat konten dokumenter mini yang menyentuh hati mengenai bagaimana desa ini bangkit dari puing tsunami 2004 hingga memenangkan penghargaan internasional.', ['Dokumenter', 'Naratif'], 'foto situs tsunami']
+    ]],
+    ['Kuliner Tradisional Aceh', 'Cocok untuk Konten Foodies & ASMR', '#eab308', [
+      ['9. Cooking Class Kuliner Khas', 'Buat video tutorial atau ASMR memasak Kuah Pliek U, Ayam Tangkap, Gulai Ikan Sawah, atau Ikan Kayu (Keumamah) bersama ibu-ibu lokal di dapur warga.', ['Tutorial', 'ASMR'], 'video cooking class'],
+      ['10. Produk Kreatif Keripik Daun Temurui', 'Ambil visual detail (close-up) pembuatan keripik unik dari daun temurui (daun kari) yang menjadi camilan unggulan desa.', ['Close-up', 'Foto'], 'foto keripik temurui']
+    ]],
+    ['Pengalaman Menginap', 'Cocok untuk Konten Review & Travel-Inspo', '#e0842a', [
+      ['11. Homestay Berstandar ASEAN', 'Buat konten room tour atau review jujur mengenai pengalaman tinggal langsung di rumah kayu panggung milik warga yang asri dan telah tersertifikasi kelayakannya di tingkat Asia Tenggara.', ['Room Tour', 'Review'], 'foto homestay panggung']
+    ]]
+  ];
+
+  postsData = [
+    ['15 Aug 2026', 'Instagram', '#e1306c', 'Menyusuri jalan setapak menuju homestay Gampong Nusa di pagi hari.', '482', '31', '12', 'foto homestay'],
+    ['14 Aug 2026', 'TikTok', '#111', 'Proses menganyam tikar pandan khas Gampong Nusa oleh Ibu Rahma.', '1.2K', '87', '64', 'video kriya anyaman'],
+    ['12 Aug 2026', 'Instagram', '#e1306c', 'Sarapan kuah pliek u, kuliner khas Aceh Besar buatan warga.', '390', '22', '9', 'foto kuliner'],
+    ['10 Aug 2026', 'YouTube', '#ff0000', 'Vlog perjalanan: sehari mengikuti aktivitas nelayan Gampong Nusa.', '2.4K', '145', '58', 'thumbnail vlog nelayan'],
+    ['08 Aug 2026', 'Facebook', '#1877f2', 'Dokumentasi gotong royong warga membersihkan area wisata mangrove.', '210', '18', '7', 'foto gotong royong'],
+    ['06 Aug 2026', 'Instagram', '#e1306c', 'Katalog produk kriya bambu terbaru dari kelompok kreatif desa.', '560', '34', '19', 'foto produk bambu'],
+    ['04 Aug 2026', 'TikTok', '#111', 'Tur singkat menara pandang di kawasan wisata Gampong Nusa.', '3.1K', '201', '96', 'video menara pandang'],
+    ['02 Aug 2026', 'X', '#111', 'Update kegiatan pelatihan konten digital bagi pemuda desa.', '145', '11', '6', 'foto pelatihan']
+  ];
+
+  productPhotos = {
+    '12. Tempe Kacang Koro': ['uploads/pasted-1787880292973-0.png', '50% 45%'],
+    '13. Pliek U dan Asam Sunti Modern': ['uploads/pasted-1787880412768-0.png', '50% 50%'],
+    '14. Kue Timpan Instan / Frozen': ['uploads/pasted-1787880453481-0.png', '50% 50%'],
+    '15. Suvenir Kriya Sampah Plastik': ['uploads/pasted-1787880569318-0.png', '50% 45%'],
+    '16. Cooking Class & Workshop Ekowisata': ['uploads/pasted-1787880862730-0.png', '50% 50%'],
+    '17. Kerajinan Anyaman Rotan': ['uploads/pasted-1787880970245-0.png', '35% 50%'],
+    '19. Kuliner Toet Tumpoe': ['uploads/pasted-1787881253700-0.png', '45% 55%']
+  };
+
+  productEmbeds = {
+    '18. Anyaman Keranjang & Kreasi Daun Kelapa (Bleut)': 'https://www.youtube.com/embed/IPwOHF0fgJs',
+    '20. Paket Lauk Premium Khas Lhoknga': 'https://www.youtube.com/embed/Wo-jEUenEbA'
+  };
+
+  productGroupsData = [
+    ['Kuliner & Pangan Alternatif Inovatif', '#f5841f', [
+      ['12. Tempe Kacang Koro', 'Rumah Tempe Nusa', 'Produk ini dikembangkan oleh Rumah Tempe Nusa sebagai alternatif tempe berbasis pangan lokal non-kedelai untuk memperluas pilihan pangan sehat.', 'foto tempe kacang koro'],
+      ['13. Pliek U dan Asam Sunti Modern', 'Kelompok Kuliner LPN', 'Kuliner tradisional bumbu khas Aceh (patana bumbu) yang diproduksi oleh Kelompok Kuliner LPN. Produk dikemas secara higienis agar tahan lama sebagai oleh-oleh premium bagi wisatawan.', 'foto kemasan pliek u'],
+      ['14. Kue Timpan Instan / Frozen', 'Komunitas Ibu-Ibu Lokal', 'Inovasi kue basah tradisional khas Aceh yang diproduksi massal oleh komunitas ibu-ibu lokal agar bisa dibawa keluar daerah.', 'foto kue timpan']
+    ]],
+    ['Kerajinan Tangan & Kriya Daur Ulang', '#22c55e', [
+      ['15. Suvenir Kriya Sampah Plastik', 'Unit Usaha Kriya LPN', 'Produk tas, dompet rajut, dan kotak tisu berbahan limbah ini diproduksi secara terpusat oleh Unit Usaha Kriya Lembaga Pariwisata Nusa (LPN). Pemasaran produk suvenir ini mulai dikembangkan ke ranah digital guna menjangkau konsumen yang lebih luas.', 'foto suvenir daur ulang']
+    ]],
+    ['Paket Wisata Edukasi Kreatif', '#eab308', [
+      ['16. Cooking Class & Workshop Ekowisata', 'Lembaga Pariwisata Nusa (LPN)', 'Dikelola langsung secara swakelola oleh Lembaga Pariwisata Nusa (LPN). Mereka menawarkan paket pengalaman langsung bagi wisatawan untuk belajar membuat keripik daun temurui, mengolah asam sunti, hingga mendaur ulang sampah menjadi barang seni.', 'foto workshop ekowisata']
+    ]],
+    ['Kerajinan Kriya & Tradisional', '#84cc16', [
+      ['17. Kerajinan Anyaman Rotan', 'Unit Kriya LPN', 'Berkolaborasi erat dengan perajin dari desa tetangga (Gampong Keude Bieng), Unit Kriya LPN memasarkan wadah, keranjang, dan hiasan dinding rotan autentik untuk melengkapi portofolio suvenir ramah lingkungan di Gampong Nusa.', 'foto anyaman rotan'],
+      ['18. Anyaman Keranjang & Kreasi Daun Kelapa (Bleut)', 'Komunitas Ibu-Ibu Lansia Gampong Nusa', 'Edukasi pembuatan bleut (anyaman daun kelapa tradisional) yang diproduksi langsung oleh Komunitas Ibu-Ibu Lansia Gampong Nusa sebagai wadah estetis serbaguna bagi wisatawan.', 'foto anyaman daun kelapa']
+    ]],
+    ['Kuliner & Produk Pangan Tradisional Lanjutan', '#f5841f', [
+      ['19. Kuliner Toet Tumpoe', 'UMKM Kue Tradisional LPN', 'Warisan hidangan zaman kesultanan berbahan tepung beras, gula, dan pisang ambon goreng yang dihidangkan bersama ketan. Kuliner legendaris ini diproduksi oleh UMKM Kue Tradisional LPN demi menjaga kelestarian kuliner Nusantara yang mulai langka.', 'foto toet tumpoe'],
+      ['20. Paket Lauk Premium Khas Lhoknga', 'Kelompok Dapur Kuliner Nusa', 'Dikemas praktis oleh Kelompok Dapur Kuliner Nusa, produk siap saji seperti Keumamah (ikan kayu), Udeung Tumeh (tumis udang Aceh), dan Nambai Sawi Laut (salad sayur pesisir) kini bisa dipesan langsung dalam kemasan steril.', 'foto lauk premium']
+    ]]
+  ];
+
+  productsData = [
+    ['Kopi Nusa Robusta', 'Kuliner', 'Kopi Tani Gampong Nusa', 'Rp 45.000', 'kemasan kopi bubuk'],
+    ['Tikar Pandan Motif Aceh', 'Kriya', 'Kelompok Anyaman Ibu Rahma', 'Rp 180.000', 'foto tikar pandan'],
+    ['Keripik Pisang Salai', 'Kuliner', 'UMKM Salai Gampong Nusa', 'Rp 25.000', 'foto keripik pisang'],
+    ['Paket Homestay 2D1N', 'Wisata', 'Homestay Warga Gampong Nusa', 'Rp 350.000', 'foto homestay'],
+    ['Kerajinan Bambu Multifungsi', 'Kriya', 'Kelompok Kriya Bambu', 'Rp 95.000', 'foto kerajinan bambu'],
+    ['Paket Wisata Mangrove', 'Wisata', 'Pokdarwis Gampong Nusa', 'Rp 120.000', 'foto wisata mangrove'],
+    ['Sirup Markisa Aceh Besar', 'Kuliner', 'UMKM Sirup Nusa', 'Rp 38.000', 'foto botol sirup'],
+    ['Tas Rajut Motif Lokal', 'Kriya', 'Kelompok Rajut Ibu Siti', 'Rp 75.000', 'foto tas rajut']
+  ];
+
+  statCardsData = [
+    ['312', 'Warga Terlibat Aktif', '#f5841f'],
+    ['18', 'Pelatihan Digital Diikuti', '#eab308'],
+    ['47', 'UMKM Aktif Berpromosi', '#84cc16'],
+    ['620', 'Konten Dihasilkan Warga', '#22c55e']
+  ];
+
+  programsData = [
+    ['Pelatihan Fotografi & Videografi Ponsel', 32, 'Jun 2026', 'Selesai', '#0e1f16', '#22c55e'],
+    ['Workshop Storytelling Budaya Desa', 28, 'Jul 2026', 'Selesai', '#0e1f16', '#22c55e'],
+    ['Pendampingan Digital Marketing UMKM', 40, 'Ags 2026', 'Berjalan', '#3a2414', '#f5841f'],
+    ['Pelatihan Pengelolaan Homestay', 15, 'Ags 2026', 'Berjalan', '#3a2414', '#f5841f'],
+    ['Gotong Royong Dokumentasi Wisata Mangrove', 60, 'Sep 2026', 'Terjadwal', '#2a2410', '#eab308'],
+    ['Bootcamp Content Creator Muda Desa', 22, 'Okt 2026', 'Terjadwal', '#2a2410', '#eab308']
+  ];
+
+  renderVals() {
+    const tab = this.state.tab;
+    const setTab = t => () => this.setState({ tab: t });
+    const tabDefs = [
+      ['ekosistem', 'Ekosistem Konten'],
+      ['postingan', 'Digital Campaigns'],
+      ['aset', 'Pusat Aset Konten'],
+    ];
+
+    return {
+      navItems: this.navConfig.map(([label, active]) => ({
+        label, weight: active ? 700 : 500,
+        bg: active ? '#f5841f' : 'transparent',
+        color: active ? '#0a0e17' : 'rgba(255,255,255,.75)',
+        dot: active ? '#0a0e17' : 'rgba(255,255,255,.3)'
+      })),
+      tabs: tabDefs.map(([key, label]) => ({
+        label, select: setTab(key),
+        bg: tab === key ? '#f5841f' : 'rgba(255,255,255,.04)',
+        color: tab === key ? '#fff' : 'rgba(255,255,255,.55)'
+      })),
+      isEkosistem: tab === 'ekosistem',
+      isPostingan: tab === 'postingan',
+      isAset: tab === 'aset',
+      flowTabs: this.flowDefs.map(([key, label], i) => ({
+        label,
+        bg: this.state.flow === key ? '#f5841f' : 'rgba(255,255,255,.04)',
+        color: this.state.flow === key ? '#fff' : 'rgba(255,255,255,.55)',
+        select: () => this.setState({ flow: key })
+      })),
+      flowSubtitle: (this.flowDefs.find(f => f[0] === this.state.flow) || this.flowDefs[0])[2],
+      isFlowStory: this.state.flow === 'story',
+      isFlowHub: this.state.flow === 'hub',
+      isFlowMonitoring: this.state.flow === 'monitoring',
+      isFlowOther: this.state.flow !== 'story' && this.state.flow !== 'hub' && this.state.flow !== 'monitoring',
+      monitorCount: this.pipelineRows().length,
+      monitorRows: this.pipelineRows().map((f, i) => {
+        const views = 4200 + ((i * 977 + 31) % 96) * 105;
+        const likes = Math.round(views * (0.03 + ((i * 13) % 30) / 400));
+        const tp = this.typeFor(f, i); const plat = tp.plat; const type = tp.type;
+        const d = this.dateFor(f.key, i);
+        const fmt = n => n >= 1000 ? (n / 1000).toFixed(1) + 'K' : String(n);
+        const cmt = String(40 + (i * 17) % 320);
+        return {
+          topic: f.title,
+          hasThumb: !!f.thumb, thumbCss: f.thumb ? 'url("' + f.thumb + '")' : 'none',
+          onDate: d.d + ' ' + Component.months[d.m] + ' ' + d.y,
+          shortLink: (plat === 'Instagram' ? 'ig.me/' : 'vt.tiktok.com/') + (100234 + i * 47).toString(36).toUpperCase(),
+          updated: '26 Agu 2026 · 13:35',
+          poster: f.person.name,
+          posterAvatar: f.person.avatar,
+          posterHasPhoto: !!f.person.photo,
+          posterPhotoCss: f.person.photo ? 'url("' + f.person.photo + '")' : 'none',
+          posterPhotoPos: f.person.pos, posterPhotoSize: f.person.size,
+          cardBorder: this.state.activePost === f.key ? 'rgba(245,132,31,.55)' : 'rgba(255,255,255,.06)',
+          selectPost: () => this.setState({ activePost: f.key }),
+          hasVideoThumb: !!f.video,
+          stats: [
+            { divider: 'transparent', label: 'VIEWS', value: fmt(views), color: '#fff', labelColor: 'rgba(255,255,255,.4)', bg: '#0d1320', border: 'transparent', bar: 'transparent' },
+            { divider: 'rgba(255,255,255,.07)', label: 'LIKES', value: fmt(likes), color: '#fff', labelColor: 'rgba(255,255,255,.4)', bg: '#0d1320', border: 'transparent', bar: 'transparent' },
+            { divider: 'rgba(255,255,255,.07)', label: 'SHARES', value: i % 4 === 0 ? String(12 + i * 3) : '—', color: 'rgba(255,255,255,.55)', labelColor: 'rgba(255,255,255,.4)', bg: '#0d1320', border: 'transparent', bar: 'transparent' },
+            { divider: 'rgba(255,255,255,.07)', label: 'REPOST', value: '—', color: 'rgba(255,255,255,.55)', labelColor: 'rgba(255,255,255,.4)', bg: '#0d1320', border: 'transparent', bar: 'transparent' },
+            (() => { const on = this.state.activePost === f.key && cmt !== '—'; return { label: 'COMMENTS', value: cmt, color: cmt === '—' ? 'rgba(255,255,255,.55)' : '#fff', labelColor: on ? '#f5841f' : 'rgba(255,255,255,.4)', divider: 'rgba(255,255,255,.07)', bg: '#0d1320', border: on ? 'rgba(245,132,31,.75)' : 'transparent', bar: on ? '#f5841f' : 'transparent' }; })()
+          ],
+          type, dot: Component.brand[plat], icon: Component.glyph[plat],
+          typeColor: '#f5841f', typeBg: 'rgba(245,132,31,.12)', typeBorder: 'rgba(245,132,31,.4)',
+          actions: ['View Post', 'Update', 'Insight']
+        };
+      }),
+      hubCount: this.pipelineRows().length,
+      hubRows: this.pipelineRows().map((f, i) => {
+        const v = this.dateFor(f.key, i);
+        const p = f.person;
+        return {
+          topic: f.title, creator: p.name, role: p.role, avatar: p.avatar,
+          hasPhoto: !!p.photo, photoCss: p.photo ? 'url("' + p.photo + '")' : 'none', photoPos: p.pos, photoSize: p.size,
+          assetLinks: [
+            { label: 'Drive', color: '#facc15', bg: 'rgba(250,204,21,.12)', border: 'rgba(250,204,21,.45)' },
+            { label: 'Canva', color: '#4d8dfa', bg: 'rgba(77,141,250,.12)', border: 'rgba(77,141,250,.45)' },
+            { label: 'CapCut', color: '#22c55e', bg: 'rgba(34,197,94,.12)', border: 'rgba(34,197,94,.45)' }
+          ],
+          target: this.dateLabel(v),
+          open: this.state.openDate === f.key,
+          toggle: () => this.setState(s => ({ openDate: s.openDate === f.key ? null : f.key })),
+          day: v.d, month: v.m, year: v.y, hour: v.h,
+          cells: this.calendarFor(f.key, i),
+          monthLabel: Component.months[v.m] + ' ' + v.y,
+          prevMonth: () => this.shiftMonth(f.key, i, -1),
+          nextMonth: () => this.shiftMonth(f.key, i, 1),
+          weekdays: ['S', 'S', 'R', 'K', 'J', 'S', 'M'],
+          yearOpts: [2026, 2027, 2028],
+          hourOpts: Array.from({ length: 24 }, (_, k) => ({ label: String(k).padStart(2, '0'), value: k })),
+          minute: v.min == null ? 0 : v.min,
+          minuteOpts: [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map(k => ({ label: String(k).padStart(2, '0'), value: k })),
+          setMinute: e => this.setDatePart(f.key, i, 'min', Number(e.target.value)),
+          setDay: e => this.setDatePart(f.key, i, 'd', Number(e.target.value)),
+          setMonth: e => this.setDatePart(f.key, i, 'm', Number(e.target.value)),
+          setYear: e => this.setDatePart(f.key, i, 'y', Number(e.target.value)),
+          setHour: e => this.setDatePart(f.key, i, 'h', Number(e.target.value)),
+          menuOpen: this.state.openMenu === f.key,
+          toggleMenu: () => this.setState(s => ({ openMenu: s.openMenu === f.key ? null : f.key })),
+          menuItems: ['View', 'Edit', 'Save', 'Delete'].map(label => ({
+            label, color: label === 'Delete' ? '#ef4444' : 'rgba(255,255,255,.8)',
+            select: () => this.setState({ openMenu: null })
+          })),
+          steps: '2/8 Steps', pct: '25%', completed: 'Completed: Brief & Konsep',
+          platforms: [
+            { key: 'Instagram', type: Component.igTypes[(i * 3 + 1) % 8] },
+            { key: 'TikTok', type: this.typeFor(f, i * 2 + 1).type }
+          ].map(p => ({ dot: Component.brand[p.key], icon: Component.glyph[p.key], type: p.type })),
+          hasVideoThumb: !!f.video,
+          isVideoRow: !!f.video || !!f.yt,
+          hasThumb: !!f.thumb,
+          thumbCss: f.thumb ? 'url("' + f.thumb + '")' : 'none'
+        };
+      }),
+      flowEmptyTitle: ((this.flowDefs.find(f => f[0] === this.state.flow) || [])[1] || '') + ' belum diisi',
+      flowEmptyDesc: 'Bagian ini menyusul setelah materinya siap.',
+      storyTabs: this.storyDefs.map(([key, label]) => ({
+        label,
+        underline: this.state.story === key ? '#f5841f' : 'transparent',
+        color: this.state.story === key ? '#f5841f' : 'rgba(255,255,255,.5)',
+        select: () => this.setState({ story: key })
+      })),
+      isStoryJelajah: this.state.story === 'jelajah',
+      isStoryProduk: this.state.story === 'produk',
+      isStoryPeran: this.state.story === 'peran',
+
+      profileTags: ['Seni dan Budaya', 'Kuliner', 'Kriya', 'Teknologi dan Konten Digital', 'Konten Digital'],
+      heatCells: Array.from({ length: 18 }, (_, i) => {
+        const lo = 10 + i * 5, active = 72 >= lo && 72 < lo + 5;
+        const t = i / 17, stops = [[0, [224, 52, 42]], [.3, [245, 132, 31]], [.52, [234, 179, 8]], [.74, [132, 204, 22]], [1, [34, 197, 94]]];
+        let c = stops[0][1];
+        for (let s = 1; s < stops.length; s++) {
+          if (t <= stops[s][0]) {
+            const [p0, a] = stops[s - 1], [p1, b] = stops[s], k = (t - p0) / (p1 - p0);
+            c = a.map((v, j) => Math.round(v + (b[j] - v) * k));
+            break;
+          }
+        }
+        return {
+          color: 'rgb(' + c.join(',') + ')',
+          height: (12 + Math.round(t * 10)) + 'px',
+          opacity: active ? 1 : 0.5,
+          outline: 'none'
+        };
+      }),
+      ticks: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map(v => ({
+        label: String(v),
+        pos: ((v - 10) / 90 * 100).toFixed(1) + '%',
+        color: v === 70 ? 'rgba(255,255,255,.9)' : 'rgba(255,255,255,.45)'
+      })),
+      scoreBands: this.bandConfig.map(([label, range, color, desc], i) => ({
+        label, range, color, desc,
+        opacity: i === 2 ? 1 : 0.42,
+        glow: i === 2 ? '0 0 0 3px rgba(132,204,22,.2)' : 'none',
+        labelColor: i === 2 ? color : 'rgba(255,255,255,.6)',
+        descColor: i === 2 ? 'rgba(255,255,255,.72)' : 'rgba(255,255,255,.34)'
+      })),
+      typologies: this.typologyConfig.map(([label, bg, border, iconBg, current, icon], i) => {
+        const isCurrent = current, isNext = !current && i === this.typologyConfig.findIndex(c => c[4]) + 1;
+        return {
+          label, border: isCurrent ? iconBg : 'rgba(255,255,255,.08)', iconBg, current: isCurrent, next: isNext, icon,
+          step: '0' + (i + 1),
+          cardBg: isCurrent ? 'linear-gradient(160deg,' + bg + ' 0%,#141a29 100%)' : 'linear-gradient(160deg,' + bg + ' 0%,#0f1421 100%)',
+          shadow: isCurrent ? '0 0 0 3px rgba(245,132,31,.14)' : 'none',
+          iconShadow: isCurrent ? '0 4px 14px rgba(245,132,31,.4)' : 'none',
+          stripOpacity: isCurrent ? 1 : 0.45,
+          textColor: isCurrent ? '#f5841f' : 'rgba(255,255,255,.86)'
+        };
+      }),
+      teamMembers: this.team.map(([name, role, platforms, avatar, desc]) => {
+        const p = Component.memberPhotos[name];
+        return { name, role, platforms, avatar, desc, hasPhoto: !!p, photoCss: p ? 'url("' + p[0] + '")' : 'none', photoPos: p ? p[1] : 'center' };
+      }),
+
+      kocs: this.kocData.map(([name, bio, avatar, platforms]) => ({
+        name, bio, location: 'Desa Gampong Nusa, Aceh Besar, Aceh', avatar,
+        note: this.kocNotes[name],
+        hasPhoto: !!Component.kocPhotos[name],
+        photoCss: 'url(' + (Component.kocPhotos[name] || '') + ')',
+        photoPos: Component.kocPhotoPos[name] || 'center',
+        photoSize: Component.kocPhotoSize[name] || 'cover',
+        platforms: platforms.map(([name, dot, handle, followers, er]) => ({ name, dot: Component.brand[name] || dot, icon: Component.glyph[name] || '', handle, followers, er }))
+      })),
+
+      audienceTabs: [['nano','Nano Accounts'],['micro','Micro Accounts'],['homeless','Homeless Media']].map(([key,label]) => ({
+        label, select: () => this.setState({ audience: key }),
+        bg: this.state.audience === key ? '#f5841f' : 'rgba(255,255,255,.06)',
+        color: this.state.audience === key ? '#0a0e17' : 'rgba(255,255,255,.6)'
+      })),
+      activeAccounts: [{
+        name: 'Gampong Nusa Lhoknga', bio: 'Community Hub', avatar: '#22c55e',
+        platforms: [
+          { key: 'Facebook', type: 'FB Group', handle: '@gampongnusaku', followers: '3,200', er: '3.8%' },
+          { key: 'Instagram', type: 'Akun', handle: '@gampongnusaku', followers: '—', er: '—' },
+          { key: 'TikTok', type: 'Akun', handle: 'desawisatanusa', followers: '—', er: '—' }
+        ].map(p => ({ ...p, dot: Component.brand[p.key], icon: Component.glyph[p.key] }))
+      }],
+
+      contributors: this.team.slice(0, 5).map(([name, role, platforms, avatar]) => {
+        const p = Component.memberPhotos[name];
+        return { name, avatar, hasPhoto: !!p, photoCss: p ? 'url("' + p[0] + '")' : 'none', photoPos: p ? p[1] : 'center' };
+      }),
+      contributorNames: this.team.slice(0, 5).map(m => m[0]).join(' · '),
+      campaignStats: [
+        { value: '5', label: 'Tema kampanye', color: '#4d8dfa' },
+        { value: '11', label: 'Ide konten', color: '#f5841f' },
+        { value: '4', label: 'Kanal distribusi', color: '#22c55e' },
+        { value: '3', label: 'Spot ikonik', color: '#a855f7' }
+      ],
+      campaignThemes: (() => {
+        const flat = this.ideaFlat();
+        const pick = key => { const p = flat.find(f => f.key === key).person; return { assignee: p.name, assigneeAvatar: p.avatar, assigneeHasPhoto: !!p.photo, assigneePhotoCss: p.photo ? 'url("' + p.photo + '")' : 'none', assigneePhotoPos: p.pos, assigneePhotoSize: p.size }; };
+        return this.themesData.map(([title, fit, color, ideas], ti) => ({
+        title, fit, color,
+        num: '0' + (ti + 1),
+        topRule: ti === 0 ? 'none' : '1px solid rgba(255,255,255,.06)',
+        tint: color + '1f',
+        border: color + '80',
+        ideas: ideas.map(([title, desc, formats, slot], ii) => ({ ...pick(ti + '-' + ii),
+          tipOpacity: this.state.hoverIdea === ti + '-' + ii ? 1 : 0,
+          onEnter: () => this.setState({ hoverIdea: ti + '-' + ii }),
+          onLeave: () => this.setState({ hoverIdea: null }), title, desc, formats, slot, imgCss: this.ideaPhotos[title] ? 'url("' + this.ideaPhotos[title] + '")' : 'none', imgSize: (this.ideaPhotoFit[title] || 'cover') === 'contain' ? 'contain' : 'cover', imgPos: this.ideaPhotoPos[title] || '50% 50%', imgFit: this.ideaPhotoFit[title] || 'cover', hasImg: !!this.ideaPhotos[title], hasVideo: title === '2. Golden Hour Bersepeda' }))
+        }));
+      })(),
+
+      productGroups: (() => {
+        const pool = this.assignPool();
+        let pn = 3;
+        return this.productGroupsData.map(([title, color, items]) => ({
+        title, color, items: items.map(([name, unit, desc, slot]) => {
+          const ph = this.productPhotos[name];
+          const per = pool[(pn++ * 7) % pool.length];
+          return { name, unit, desc, slot, embed: this.productEmbeds[name], hasEmbed: !!this.productEmbeds[name], hasImg: !!ph,
+            assignee: per.name, assigneeAvatar: per.avatar, assigneeHasPhoto: !!per.photo,
+            assigneePhotoCss: per.photo ? 'url("' + per.photo + '")' : 'none', assigneePhotoPos: per.pos, assigneePhotoSize: per.size,
+            tipOpacity: this.state.hoverProduct === name ? 1 : 0,
+            onEnter: () => this.setState({ hoverProduct: name }),
+            onLeave: () => this.setState({ hoverProduct: null }), imgCss: ph ? 'url("' + ph[0] + '")' : 'none', imgPos: ph ? ph[1] : 'center' };
+        })
+        }));
+      })(),
+
+      statCards: this.statCardsData.map(([value, label, iconBg]) => ({ value, label, iconBg })),
+      programs: this.programsData.map(([name, participants, period, status, statusBg, statusColor]) => ({
+        name, participants, period, status, statusBg, statusColor
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>
