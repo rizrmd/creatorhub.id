@@ -320,17 +320,31 @@ export default function DemokratMediaMonitoring() {
         </div>
 
         {/* Date range bar */}
-        <div className="flex items-center gap-2 mb-4 flex-wrap">
-          <span className="text-[11px] font-bold rounded-lg px-2.5 py-1.5" style={{ background: "#0B1220", border: "1px solid #1E293B", color: "#CBD5E1" }}>
-            2026-08-26 â€” 2026-09-03
+        <div className="flex items-center gap-2.5 mb-4 flex-wrap">
+          <span className="inline-flex items-center gap-1.5 cursor-pointer" style={{ fontSize: 11.5, fontWeight: 700, color: "#94A3B8" }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 12a9 9 0 0 1-15 6.7L3 16"></path><path d="M21 4v4h-4M3 20v-4h4"></path></svg>
+            Bersihkan filter
           </span>
-          <span className="text-[11px] font-bold rounded-lg px-2 py-1.5 cursor-pointer" style={{ color: "#CBD5E1", border: "1px solid #334155" }}>âœ• Bersihkan filter</span>
-          <span className="text-[11px] font-bold rounded-lg px-2 py-1.5 cursor-pointer" style={{ color: "#CBD5E1", border: "1px solid #334155" }}>ðŸ—„ Simpan filter</span>
-          <span className="text-[11px] font-bold rounded-lg px-2 py-1.5 cursor-pointer" style={{ color: "#CBD5E1", border: "1px solid #334155" }}>â¬‡ Ekspor</span>
-          <span className="text-[11px] font-bold rounded-lg px-2.5 py-1.5" style={{ background: "#0B1220", border: "1px solid #1E293B", color: "#CBD5E1", marginLeft: "auto" }}>
-            2026-08-28 â€” 2026-09-03
+          <span className="inline-flex items-center gap-1.5 cursor-pointer" style={{ fontSize: 11.5, fontWeight: 700, color: "#60A5FA" }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 4h12v16l-6-4-6 4z"></path></svg>
+            Simpan filter
           </span>
-          <button className="text-[11.5px] font-extrabold text-white rounded-lg px-4 py-1.5 cursor-pointer" style={{ background: "#1D4ED8" }}>â˜° Filter</button>
+          <span style={{ flex: 1 }} />
+          <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11.5, fontWeight: 700, color: "#475569" }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 4v11M8 11l4 4 4-4M4 20h16"></path></svg>
+            Ekspor
+          </span>
+          <span className="w-7 h-7 rounded-lg inline-flex items-center justify-center cursor-pointer" style={{ border: "1px solid #1E293B", background: "#0F172A" }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4"></path></svg>
+          </span>
+          <span className="inline-flex items-center gap-2 cursor-pointer" style={{ background: "#0F172A", border: "1px solid #1E293B", borderRadius: 8, padding: "6px 11px", fontSize: 11.5, fontWeight: 700, color: "#CBD5E1", fontVariantNumeric: "tabular-nums" }}>
+            2026-08-26 &#8212; 2026-09-03
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round"><path d="m6 9 6 6 6-6"></path></svg>
+          </span>
+          <span className="inline-flex items-center gap-[7px] cursor-pointer" style={{ background: "#1D4ED8", borderRadius: 999, padding: "7px 15px", fontSize: 11.5, fontWeight: 800, color: "#fff" }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M4 6h16M7 12h10M10 18h4"></path></svg>
+            Filter
+          </span>
         </div>
 
         {/* Analysis tab (default per mockup) */}
