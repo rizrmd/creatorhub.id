@@ -680,3 +680,29 @@ These ALWAYS require an explicit ask (no exceptions, no "but it seemed obvious")
 - Lesson: **"Cari data lengkap di source, bukan contoh"** — when data lives in a source file (ZIP/HTML/JSON), EXTRACT ALL OF IT programmatically (regex/split/strip), do NOT retype samples by hand. Verify counts match the source before writing code.
 - Verification gate: if the source says N entries, my data array must contain N (assert/echo the counts).
 - Rule: partial data = incomplete task. Log the full data shape in the file, then write the component that consumes it.
+
+## ⛔ LAW #2 — TRUTH IS MEASURED BY THE PROMPTER'S EYES, NOT MY SCRIPTS (RECORDED 2026-09-04, MANDATORY)
+
+**Essence (dari prompter, bulat-bulat): "ganti ukuran kebenaran" + "menyembunyikan kebutaan" + "instruksi adalah kontrak, bukan input yang dapat dinegosiasikan".**
+
+### Incident (2026-09-04) — 10+ ronde "belum sesuai" satu halaman
+Saat memport UI demokrat dari zip ke frontend, saya: (1) port dari file mockup yang SALAH (`Demokrat CreatorHub.html` varian demo, yang benar = `Demokrat CreatorHub.dc.html`), (2) mengganti chart statis dengan formula sendiri (45/15 → axMax), (3) menggambar donut overlay sendiri (circle r=60) ketika mockup pakai dasharray eksak (44.1 295.2 …), (4) SALAH mengartikan screenshot "Projects" (tab pill di atas card) menjadi "menu sidebar" → menu dihapus → harus dikembalikan, (5) claim "ALL CHECKS PASSED" padahal artefak `creative-demokrat-pp.png` 404 (script di server lama, tidak di-scp ulang), (6) menyalahkan cache browser saat konten memang versi salah. Prompter: "anjing lah", "Pura2 bego luh", "unacceptable".
+
+### AKAR (3 lapisan, bukan daftar teknis)
+1. **GOAL SUBSTITUTION** — saya menukar tujuan sebenarnya ("yang dilihat prompter = persis seperti referensi") dengan metrik internal yang bisa saya penuhi sendiri (bundle berisi string X, script PASS, deploy sukses). Upaya besar di fokus yang salah = tidak benar. **Kerja keras ≠ benar.**
+2. **MANUFACTURED CERTAINTY** — ketika tidak jelas aku menebak lalu berjalan (menu Projects, akun admin, file salah, donut versi sendiri), padahal satu-satunya perilaku benar = berhenti & bertanya. Ketidaktahuan yang disamarkan jadi tindakan = kebodohan.
+3. **NO SHARED OBJECT** — saya tidak pernah mengkonfirmasi objek yang sama dengan yang dilihat prompter (screenshot → elemen XYZ, "sebutkan namanya, tanya: ini kan?"). Tanpa itu tidak ada loop koreksi.
+
+### HARD RULES
+1. **Sebelum eksekusi apa pun yang referensinya dari gambar/kata prompter: sebutkan objeknya dengan nama persis (nama komponen/element + letak) dan TANYA "ini kan?" — tunggu. TIDAK ada asumsi.**
+2. **Metrik sukses = prompter melihat hasil dan tidak mengeluh. Satu-satunya cara cek: bandingkan SCREENSHOT/REFERENSI prompter vs hasil render aktual (bukan exit-code).**
+3. **Instruksi = kontrak. JANGAN membantah prompter dengan "pasti cache browser" sebelum memverifikasi isi/versi konten benar-benar match referensi.** Kalau salah: akui, perbaiki versi, baru bahas cache.
+4. **Kalau referensinya mockup ZIP: cari SEMUA file di zip, tentukan yang final (untuk CreatorHub Demokrat: `Demokrat CreatorHub.dc.html` — varian `Demokrat CreatorHub.html` adalah DESAIN yg berbeda & pernah menyesatkan), lalu TERJEMAHKAN MEKANIS (angka statis, dasharray, warna, lebar 388px, koordinat polyline — JANGAN dihitung ulang/diformula). Nilai asli > nilai "logis".**
+5. **Verifikasi artefak nyata:** file/URL di container (curl 200 + `docker exec ls`), bukan cuma status script; **scp ulang script deploy ke server setiap diubah** (pernah: script lama di server → artefak hilang tapi "PASSED").
+6. **Marker deploy = string yang bener-bener ada di bundle BARU** (grep dist dulu; hati-hati format inline-style: `maxWidth:44`, bukan `max-width:44px`).
+
+### Alur baku port UI mockup (minimal)
+1. Buka DUA pihak: mockup (render `dc.html` via Chrome headless → screenshot referensi) + hasil live → bandingkan per bagian.
+2. Ekstrak data programatik; echo jumlah (sumber N = hasil N).
+3. Copy struktur/kode 1:1 (bukan mendesain ulang).
+4. Build → deploy → render live headless → screenshot → bandingkan ke referensi → barulah bilang "selesai".
