@@ -2,8 +2,20 @@
 import { useNavigate } from "react-router-dom";
 import { Briefcase, Clock, CheckCircle2, User, Plus } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useRole } from "@/context/RoleContext";
 
 const projects = [
+  {
+    id: "demokrat-creative",
+    name: "Partai Demokrat",
+    project: "Lomba Kreasi Biru — Demokrat Creative Challenge",
+    brief: "Lomba kreator digital dalam rangka HUT ke-25 Partai Demokrat: Video Pendek, Poster Digital, Bumper Logo HUT, dan Voice Over. Memantau performa kanal @creativedemokrat di Instagram dan TikTok.",
+    status: "active" as const,
+    timeline: "26 Agu – 8 Sep 2026",
+    deliverables: "148 karya dari 96 peserta, 4 mata lomba",
+    hue: 220,
+    logo: "",
+  },
   {
     id: "komdigi",
     name: "Komdigi",
@@ -96,70 +108,85 @@ const leadStatusConfig: Record<string, { label: string; bg: string; color: strin
 export default function Analytics() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("projects");
+  const { effectiveRole } = useRole();
+
+  const visibleProjects = effectiveRole === "demokrat"
+    ? projects.filter(p => p.id === "demokrat-creative")
+    : projects;
 
   return (
     <div className="p-4 md:p-6 space-y-6" style={{ background: "var(--ch-bg)" }}>
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]"
             style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             Projects
           </h1>
           <p className="text-[14px] mt-1" style={{ color: "var(--ch-text-muted)" }}>
-            Manage and track your projects and leads.
+            {effectiveRole !== "demokrat" && "Manage and track your projects and leads."}
           </p>
         </div>
-        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold text-white shrink-0"
-          style={{ background: "var(--ch-primary)" }}>
-          <Plus style={{ width: 13, height: 13 }} />
-          {activeTab === "leads" ? "New Lead" : "New Project"}
-        </button>
+        {effectiveRole !== "demokrat" && (
+          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold text-white shrink-0"
+            style={{ background: "var(--ch-primary)" }}>
+            <Plus style={{ width: 13, height: 13 }} />
+            {activeTab === "leads" ? "New Lead" : "New Project"}
+          </button>
+        )}
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList variant="line" className="border-b w-full justify-start gap-0">
-          <TabsTrigger value="projects"
-            className={`text-[13px] font-bold px-3 py-1.5 rounded-lg transition-all ${activeTab === "projects" ? "bg-orange-500 text-white shadow-md shadow-orange-500/20" : "text-white/50 hover:text-white/80"}`}
-            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            <Briefcase className="w-4 h-4 mr-1.5" />Projects
-          </TabsTrigger>
-          <TabsTrigger value="leads"
-            className={`text-[13px] font-bold px-3 py-1.5 rounded-lg transition-all ${activeTab === "leads" ? "bg-orange-500 text-white shadow-md shadow-orange-500/20" : "text-white/50 hover:text-white/80"}`}
-            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            <User className="w-4 h-4 mr-1.5" />Leads
-          </TabsTrigger>
-        </TabsList>
+        {effectiveRole !== "demokrat" && (
+          <TabsList variant="line" className="border-b w-full justify-start gap-0">
+            <TabsTrigger value="projects"
+              className={`text-[13px] font-bold px-3 py-1.5 rounded-lg transition-all ${activeTab === "projects" ? "bg-orange-500 text-white shadow-md shadow-orange-500/20" : "text-white/50 hover:text-white/80"}`}
+              style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+              <Briefcase className="w-4 h-4 mr-1.5" />Projects
+            </TabsTrigger>
+            <TabsTrigger value="leads"
+              className={`text-[13px] font-bold px-3 py-1.5 rounded-lg transition-all ${activeTab === "leads" ? "bg-orange-500 text-white shadow-md shadow-orange-500/20" : "text-white/50 hover:text-white/80"}`}
+              style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+              <User className="w-4 h-4 mr-1.5" />Leads
+            </TabsTrigger>
+          </TabsList>
+        )}
 
         <TabsContent value="projects" className="mt-4">
           <div className="flex flex-col gap-4">
-            {projects.map((p) => {
+            {visibleProjects.map((p) => {
               const status = statusConfig[p.status];
               const StatusIcon = status.icon;
+              const isDemokrat = p.id === "demokrat-creative";
               return (
-                <div key={p.id} onClick={() => navigate(`/dashboard/projects/${p.id}`)}
+                <div key={p.id} onClick={() => navigate(isDemokrat ? `/dashboard/projects/demokrat-creative` : `/dashboard/projects/${p.id}`)}
                   className="rounded-[14px] border overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
-                  style={{ background: "var(--ch-surface)", borderColor: "var(--ch-border)", boxShadow: "var(--ch-shadow-sm)" }}>
+                  style={{ background: isDemokrat ? "#0F172A" : "var(--ch-surface)", borderColor: isDemokrat ? "rgba(37,99,235,.4)" : "var(--ch-border)", boxShadow: isDemokrat ? "0 0 0 1px rgba(37,99,235,.12), 0 4px 14px rgba(37,99,235,.1)" : "var(--ch-shadow-sm)" }}>
                   <div className="flex flex-col sm:flex-row">
                     <div className="w-full sm:w-48 h-32 sm:h-auto flex items-center justify-center shrink-0"
-                      style={{ background: `hsl(${p.hue}, 80%, 95%)` }}>
+                      style={{ background: isDemokrat ? "linear-gradient(135deg, rgba(37,99,235,.2), rgba(29,78,216,.15))" : `hsl(${p.hue}, 80%, 95%)` }}>
                       {"logo" in p && p.logo ? (
                         <img src={p.logo} alt={p.name} className="w-20 h-20 object-contain" />
+                      ) : isDemokrat ? (
+                        <img src="/creative-demokrat-pp.png" alt="Creative Demokrat" className="w-16 h-16 object-contain" />
                       ) : (
                         <Briefcase className="w-8 h-8" style={{ color: `hsl(${p.hue}, 60%, 45%)` }} />
                       )}
                     </div>
                     <div className="flex-1 p-4 sm:p-5 space-y-2">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: `hsl(${p.hue}, 60%, 45%)` }}>{p.name}</span>
-                        <span className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: status.bg, color: status.color }}>
+                        <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: isDemokrat ? "#93C5FD" : `hsl(${p.hue}, 60%, 45%)` }}>{p.name}</span>
+                        <span className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: isDemokrat ? "rgba(34,197,94,.12)" : status.bg, color: isDemokrat ? "#4ADE80" : status.color }}>
                           <StatusIcon className="w-3 h-3 mr-1" />{status.label}
                         </span>
+                        {isDemokrat && (
+                          <span className="inline-flex items-center text-[10px] font-extrabold px-2 py-0.5 rounded" style={{ background: "rgba(37,99,235,.14)", color: "#93C5FD", border: "1px solid rgba(37,99,235,.4)" }}>Rp63,5 jt</span>
+                        )}
                       </div>
-                      <p className="text-[15px] font-bold leading-tight" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{p.project}</p>
-                      <p className="text-[12px] leading-relaxed line-clamp-2" style={{ color: "var(--ch-text-muted)" }}>{p.brief}</p>
+                      <p className="text-[15px] font-bold leading-tight" style={{ color: isDemokrat ? "#F8FAFC" : "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{p.project}</p>
+                      <p className="text-[12px] leading-relaxed line-clamp-2" style={{ color: isDemokrat ? "#94A3B8" : "var(--ch-text-muted)" }}>{p.brief}</p>
                       <div className="flex flex-wrap items-center gap-4 pt-1">
-                        <span className="text-[11px] flex items-center gap-1" style={{ color: "var(--ch-text-muted)" }}><Clock className="w-3 h-3" /> {p.timeline}</span>
-                        <span className="text-[11px]" style={{ color: "var(--ch-text-muted)" }}>{p.deliverables}</span>
+                        <span className="text-[11px] flex items-center gap-1" style={{ color: isDemokrat ? "#64748B" : "var(--ch-text-muted)" }}><Clock className="w-3 h-3" /> {p.timeline}</span>
+                        <span className="text-[11px]" style={{ color: isDemokrat ? "#64748B" : "var(--ch-text-muted)" }}>{p.deliverables}</span>
                       </div>
                     </div>
                   </div>

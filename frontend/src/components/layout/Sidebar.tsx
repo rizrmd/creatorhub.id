@@ -68,6 +68,7 @@ const ekrafHubNavItems: NavItem[] = [
 ];
 
 const demokratNavItems: NavItem[] = [
+  { to: "/dashboard/projects",          icon: FolderKanban,    label: "Projects" },
   { to: "/dashboard/media-monitoring",  icon: Radio,           label: "Media Monitoring" },
   { to: "/dashboard/settings",          icon: Settings,       label: "Settings" },
 ];
