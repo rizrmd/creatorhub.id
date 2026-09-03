@@ -643,7 +643,7 @@ export default function DemokratMediaMonitoring() {
             </div>
             <div className="flex-1 min-w-0 rounded-xl p-3.5" style={{ background: "#0B1220", border: "1px solid #1E293B" }}>
               <div className="text-[14.5px] font-extrabold" style={{ color: "#F8FAFC", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>The most popular emojis</div>
-              <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 px-4 py-5" style={{ flex: 1, alignContent: "space-around" }}>
+              <div style={{ flex: 1, display: "flex", flexWrap: "wrap", alignItems: "center", alignContent: "space-around", justifyContent: "center", gap: "14px 26px", padding: "18px 10px 12px" }}>
                 {ANA_EMOJI.map(([e, s], i) => (
                   <span key={i} style={{ fontSize: s, lineHeight: 1 }}>{e}</span>
                 ))}
@@ -669,9 +669,9 @@ export default function DemokratMediaMonitoring() {
 
           {/* Trending hashtags | links | sites */}
           <div className="flex gap-3.5 items-start">
-            {[{ title: "Trending hashtags", rows: ANA_HASHTAGS, cols: ["HASHTAG", "MENTIONS"] },
-              { title: "Trending links", rows: ANA_LINKS, cols: ["LINK", "MENTIONS"] },
-              { title: "Most active sites", rows: ANA_SITES, cols: ["SOURCE", "MENTIONS"] }
+            {[{ title: "Trending hashtags", rows: ANA_HASHTAGS, cols: ["HASHTAG", "MENTIONS"], pager: ["1", "2", "3", "4", "5", "…"] },
+              { title: "Trending links", rows: ANA_LINKS, cols: ["LINK", "MENTIONS"], pager: ["1", "2", "3", "4", "…"] },
+              { title: "Most active sites", rows: ANA_SITES, cols: ["SOURCE", "MENTIONS"], pager: ["1", "2", "…"], sites: true }
             ].map((s) => (
               <div key={s.title} className="flex-1 min-w-0 rounded-xl p-3.5" style={{ background: "#0B1220", border: "1px solid #1E293B" }}>
                 <div className="text-[14.5px] font-extrabold" style={{ color: "#F8FAFC", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{s.title}</div>
@@ -680,10 +680,33 @@ export default function DemokratMediaMonitoring() {
                 </div>
                 {s.rows.map(([t, c], i) => (
                   <div key={i} className="flex items-center gap-2.5 py-2.5 border-b" style={{ borderColor: "rgba(30,41,59,.6)" }}>
+                    {(s.sites
+                      ? <span className="w-[22px] h-[22px] shrink-0 rounded-full flex items-center justify-center"
+                          style={t === "tiktok.com" ? { background: "#0F172A", border: "1px solid #334155" }
+                            : t === "instagram.com" ? { background: "linear-gradient(135deg,#F58529,#DD2A7B 50%,#8134AF)" }
+                            : t === "x.com" ? { background: "#0F172A", border: "1px solid #334155" }
+                            : t === "facebook.com" ? { background: "#1877F2" } : { background: "#7C3AED" }}>
+                          {t === "tiktok.com" ? <svg width="12" height="12" viewBox="0 0 24 24" fill="#22D3EE"><path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.1v12.4a2.6 2.6 0 1 1-1.8-2.5V9.8a5.9 5.9 0 1 0 4.9 5.8V8.7a7.3 7.3 0 0 0 4.4 1.4V7a4.3 4.3 0 0 1-3.3-1.2z"/></svg>
+                            : t === "instagram.com" ? <svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 0 1 12 7.5zm0 2A2.5 2.5 0 1 0 14.5 12 2.5 2.5 0 0 0 12 9.5zM17.4 5.9a1.2 1.2 0 1 1-1.2 1.2 1.2 1.2 0 0 1 1.2-1.2z"/></svg>
+                            : t === "x.com" ? <svg width="11" height="11" viewBox="0 0 24 24" fill="#F1F5F9"><path d="M18.9 2H22l-6.7 7.6L22.6 22h-6.3l-4.4-6.1L6.4 22H3.3l7-8L2.8 2h6.4l4 5.7zm-1.2 18h1.7L7.4 3.8H5.6z"/></svg>
+                            : t === "facebook.com" ? <svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M13.5 22v-8h2.8l.4-3.2h-3.2V8.6c0-.9.3-1.5 1.6-1.5h1.7V4.2c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.2v2.5H7.3V14h2.8v8h3.4z"/></svg>
+                            : <svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M4 5h4l4 10 4-10h4l-6 14h-4L4 5z"/></svg>}
+                        </span>
+                      : null)}
                     <span className="flex-1 min-w-0 text-[12.5px] font-extrabold truncate" style={{ color: "#93C5FD" }}>{t}</span>
                     <span className="text-[12.5px] font-extrabold tabular-nums" style={{ color: "#F1F5F9" }}>{c}</span>
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#334155" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><path d="M14 4h6v6M20 4l-8 8M18 14v6H4V6h6"></path></svg>
                   </div>
                 ))}
+                <div className="flex items-center justify-end gap-0.5 pt-2.5">
+                  {s.pager.map((l, i) => (
+                    <span key={i} className="min-w-[22px] h-[22px] rounded flex items-center justify-center text-[11px] font-bold cursor-pointer"
+                      style={{ background: i === 0 ? "rgba(37,99,235,.16)" : "transparent", color: i === 0 ? "#93C5FD" : "#64748B" }}>{l}</span>
+                  ))}
+                  <span className="w-[22px] h-[22px] rounded flex items-center justify-center cursor-pointer" style={{ color: "#64748B" }}>
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><path d="m9 6 6 6-6 6"></path></svg>
+                  </span>
+                </div>
               </div>
             ))}
           </div>
@@ -693,42 +716,53 @@ export default function DemokratMediaMonitoring() {
             <div className="flex-1 min-w-0 rounded-xl p-3.5" style={{ background: "#0B1220", border: "1px solid #1E293B" }}>
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-[14.5px] font-extrabold" style={{ color: "#F8FAFC", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Hot Hours</span>
-                <span className="ml-auto inline-flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[11px] font-bold" style={{ background: "#0F172A", border: "1px solid #1E293B", color: "#CBD5E1" }}>
+                <span className="inline-flex items-center gap-2 rounded-lg ml-auto" style={{ background: "#0F172A", border: "1px solid #1E293B", padding: "6px 11px", fontSize: 11, fontWeight: 700, color: "#CBD5E1", cursor: "pointer" }}>
                   Asia/Jakarta (GMT+7)
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round"><path d="m6 9 6 6 6-6"></path></svg>
                 </span>
-                <div className="flex gap-0.5 rounded-lg p-0.5" style={{ background: "#0F172A", border: "1px solid #1E293B" }}>
+                <div className="flex gap-[3px] rounded-lg" style={{ background: "#0F172A", border: "1px solid #1E293B", padding: 3, flex: "none" }}>
                   {["Mentions", "Reach", "Interactions"].map((l, i) => (
-                    <button key={l} onClick={() => setHotTab(i)} className="text-[11px] font-bold px-2.5 py-1 rounded cursor-pointer"
-                      style={{ background: i === hotTab ? "#1D4ED8" : "transparent", color: i === hotTab ? "#fff" : "#64748B" }}>{l}</button>
+                    <button key={l} onClick={() => setHotTab(i)} className="text-[11px] font-bold rounded cursor-pointer"
+                      style={{ padding: "5px 11px", background: i === hotTab ? "#1D4ED8" : "transparent", color: i === hotTab ? "#fff" : "#64748B" }}>{l}</button>
                   ))}
                 </div>
               </div>
-              <div className="text-[11px] text-center mt-2" style={{ color: "#64748B" }}>
-                Mentions written on Friday at 12 AM generate the most <span className="font-bold" style={{ color: "#CBD5E1" }}>{["mentions", "reach", "interactions"][hotTab]}</span>
+              <div className="text-[12px] font-extrabold text-center mt-3.5" style={{ color: "#CBD5E1" }}>
+                Mentions written on Friday at 12 AM generate the most {["mentions", "reach", "interactions"][hotTab]}
               </div>
-              <div className="flex gap-2 overflow-x-auto mt-2">
+              <div className="flex gap-[3px] mt-3 pl-[34px]">
+                {Array.from({ length: 24 }, (_, h) => (
+                  <span key={h} className="flex-1 min-w-0 text-center whitespace-nowrap" style={{ fontSize: 8.5, color: "#64748B", transform: "rotate(-45deg)", transformOrigin: "center" }}>
+                    {(h % 12 === 0 ? 12 : h % 12) + (h < 12 ? " AM" : " PM")}
+                  </span>
+                ))}
+              </div>
+              <div className="flex flex-col gap-1 mt-1.5">
                 {Object.entries(ANA_HOT_ROWS).map(([day, cells]) => (
-                  <div key={day} className="flex flex-col gap-1">
-                    <span className="text-center text-[9.5px] font-bold" style={{ color: "#64748B" }}>{day}s</span>
-                    <div className="flex flex-col gap-[2px]">
-                      {Array.from({ length: 24 }, (_, h) => {
-                        const lv = cells[h] || 0;
-                        return (
-                          <span key={h} className="w-[22px] h-[14px] rounded-[3px] flex items-center justify-center text-[8px] font-bold"
-                            style={{ background: HOT_BG[lv], color: lv >= 3 ? "#0B1220" : "rgba(148,163,184,.6)" }}>
-                            {h % 12 === 0 ? 12 : h % 12}{h < 12 ? "a" : "p"}
-                          </span>
-                        );
-                      })}
-                    </div>
+                  <div key={day} className="flex items-center gap-[3px]">
+                    <span className="w-[31px] shrink-0 text-[10px] font-bold" style={{ color: "#64748B" }}>{day}</span>
+                    {Array.from({ length: 24 }, (_, h) => {
+                      const lv = cells[h] || 0;
+                      const s = [11, 12, 14, 15, 17][lv];
+                      return (
+                        <span key={h} className="flex-1 min-w-0 flex items-center justify-center" style={{ height: 19 }}>
+                          <span style={{ width: s, height: s, borderRadius: "50%", background: HOT_BG[lv] }} />
+                        </span>
+                      );
+                    })}
                   </div>
                 ))}
               </div>
-              <div className="flex items-center justify-center gap-2.5 mt-2.5">
-                <span className="text-[9.5px] font-semibold" style={{ color: "#64748B" }}>Lowest {["mentions", "reach", "interactions"][hotTab]}</span>
-                <span className="flex items-center gap-1">{HOT_BG.slice(1).map((b, i) => <span key={i} className="w-[14px] h-[8px] rounded" style={{ background: b }} />)}</span>
-                <span className="text-[9.5px] font-semibold" style={{ color: "#64748B" }}>Greatest {["mentions", "reach", "interactions"][hotTab]}</span>
+              <div className="flex flex-col items-center gap-1.5 mt-4">
+                <div className="flex w-[330px] max-w-full h-[9px] rounded-[3px] overflow-hidden">
+                  <span className="flex-1" style={{ background: "#1E293B" }} />
+                  <span className="flex-1" style={{ background: "#3B82F6" }} />
+                  <span className="flex-1" style={{ background: "#7C3AED" }} />
+                </div>
+                <div className="flex w-[330px] max-w-full justify-between text-[9.5px] font-semibold" style={{ color: "#64748B" }}>
+                  <span>Lowest {["mentions", "reach", "interactions"][hotTab]}</span>
+                  <span>Greatest {["mentions", "reach", "interactions"][hotTab]}</span>
+                </div>
               </div>
             </div>
             <div className="w-[388px] shrink-0 rounded-xl p-3.5" style={{ background: "#0B1220", border: "1px solid #1E293B" }}>
