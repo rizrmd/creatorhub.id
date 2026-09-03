@@ -424,84 +424,115 @@ export default function DemokratMediaMonitoring() {
             </div>
           </div>
 
-          {/* Penyebutan & Jangkauan chart */}
-          <div className="rounded-xl p-3.5 pb-2.5" style={{ background: "#0B1220", border: "1px solid #1E293B" }}>
-            <div className="flex items-center gap-3">
-              <div className="text-[14.5px] font-extrabold" style={{ color: "#F8FAFC", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Penyebutan &amp; Jangkauan</div>
-              <div className="flex-1" />
-              <div className="flex gap-0.5 rounded-lg p-0.5" style={{ background: "#0F172A", border: "1px solid #1E293B" }}>
-                {["Hari", "Minggu", "Bulan"].map((l, i) => (
-                  <button key={l} onClick={() => setGran(i)} className="text-[11px] font-bold px-2 py-1.5 rounded cursor-pointer"
-                    style={{ background: i === gran ? "rgba(37,99,235,.2)" : "transparent", color: i === gran ? "#93C5FD" : "#64748B" }}>{l}</button>
-                ))}
+          {/* Penyebutan & Jangkauan chart | Penyebutan per kategori */}
+          <div className="flex gap-3.5 items-start">
+            <div className="flex-1 min-w-0 rounded-xl p-3.5 pb-2" style={{ background: "#0B1220", border: "1px solid #1E293B" }}>
+              <div className="flex items-center gap-3">
+                <div className="text-[14.5px] font-extrabold" style={{ color: "#F8FAFC", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Penyebutan &amp; Jangkauan</div>
+                <div className="ml-auto flex gap-[3px] rounded-lg" style={{ background: "#0F172A", border: "1px solid #1E293B", padding: 3, flex: "none" }}>
+                  {["Hari", "Minggu", "Bulan"].map((l, i) => (
+                    <button key={l} onClick={() => setGran(i)} className="text-[11px] font-bold rounded cursor-pointer"
+                      style={{ padding: "5px 10px", background: i === gran ? "rgba(37,99,235,.2)" : "transparent", color: i === gran ? "#93C5FD" : "#64748B" }}>{l}</button>
+                  ))}
+                </div>
+              </div>
+              <svg viewBox="0 0 800 172" width="100%" height="172" style={{ display: "block", marginTop: 8, overflow: "visible" }}>
+                <g stroke="#1E293B" strokeWidth="1">
+                  <line x1="30" y1="20" x2="750" y2="20"></line>
+                  <line x1="30" y1="72.5" x2="750" y2="72.5"></line>
+                  <line x1="30" y1="125" x2="750" y2="125"></line>
+                </g>
+                <g fill="#475569" fontFamily="Inter, sans-serif" fontSize="9.5" textAnchor="end">
+                  <text x="24" y="23">45</text><text x="24" y="76">15</text><text x="24" y="128">0</text>
+                </g>
+                <g fill="#475569" fontFamily="Inter, sans-serif" fontSize="9.5" textAnchor="start">
+                  <text x="756" y="23">45 K</text><text x="756" y="76">15 K</text><text x="756" y="128">0</text>
+                </g>
+                <line x1="210" y1="20" x2="210" y2="125" stroke="#334155" strokeWidth="1" strokeDasharray="3 3"></line>
+                <rect x="199" y="6" width="22" height="15" rx="4" fill="#2563EB"></rect>
+                <text x="210" y="17" fill="#fff" fontFamily="Inter, sans-serif" fontSize="9.5" fontWeight="700" textAnchor="middle">40</text>
+                <polyline points="30,122.7 120,115.7 210,31.7 300,36.3 390,120.3 480,122.7 570,122.7 660,104 750,108.7" fill="none" stroke="#3B82F6" strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round"></polyline>
+                <polyline points="30,59.7 120,106.3 210,34 300,97 390,121.5 480,122.7 570,122.7 660,118 750,122.7" fill="none" stroke="#059669" strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round"></polyline>
+                <g fill="#64748B" fontFamily="Inter, sans-serif" fontSize="9.5" textAnchor="middle">
+                  <text x="30" y="143">26 Agu</text><text x="120" y="143">27 Agu</text><text x="210" y="143">28 Agu</text><text x="300" y="143">29 Agu</text><text x="390" y="143">30 Agu</text><text x="480" y="143">31 Agu</text><text x="570" y="143">01 Sep</text><text x="660" y="143">02 Sep</text><text x="750" y="143">03 Sep</text>
+                </g>
+              </svg>
+              <div className="flex items-center gap-[18px]" style={{ padding: "2px 0 4px 30px" }}>
+                <div className="flex items-center gap-1.5"><span style={{ width: 14, height: 2.5, borderRadius: 2, background: "#3B82F6" }}></span><span className="text-[10.5px] font-semibold" style={{ color: "#94A3B8" }}>Penyebutan</span></div>
+                <div className="flex items-center gap-1.5"><span style={{ width: 14, height: 2.5, borderRadius: 2, background: "#059669" }}></span><span className="text-[10.5px] font-semibold" style={{ color: "#94A3B8" }}>Jangkauan</span></div>
               </div>
             </div>
-            <svg viewBox="0 0 800 172" width="100%" height="150" className="block mt-1.5 overflow-visible">
-              <g stroke="#1E293B" strokeWidth="1">
-                <line x1="30" y1="20" x2="750" y2="20"></line>
-                <line x1="30" y1="72.5" x2="750" y2="72.5"></line>
-                <line x1="30" y1="125" x2="750" y2="125"></line>
-              </g>
-              <g fill="#475569" fontFamily="Inter, sans-serif" fontSize="9.5" textAnchor="end">
-                <text x="24" y="23">{axMax}</text><text x="24" y="76">{Math.round(axMax / 2)}</text><text x="24" y="128">0</text>
-              </g>
-              <g fill="#475569" fontFamily="Inter, sans-serif" fontSize="9.5" textAnchor="start">
-                <text x="756" y="23">{rMax} rb</text><text x="756" y="76">{Math.round(rMax / 2)} rb</text><text x="756" y="128">0</text>
-              </g>
-              <line x1={30 + peakI * 90} y1="20" x2={30 + peakI * 90} y2="125" stroke="#334155" strokeWidth="1" strokeDasharray="3 3"></line>
-              <polyline points={px(K.m, axMax)} fill="none" stroke="#3B82F6" strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round"></polyline>
-              <polyline points={px(K.r, rMax)} fill="none" stroke="#059669" strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round"></polyline>
-              <g fill="#64748B" fontFamily="Inter, sans-serif" fontSize="9.5" textAnchor="middle">
-                {MM_DATES.map((d, i) => <text key={d} x={30 + i * 90} y="143">{d}</text>)}
-              </g>
-            </svg>
-            <div className="flex items-center gap-4 px-[30px] py-0.5">
-              <span className="flex items-center gap-1.5"><span className="w-3.5 h-[2.5px] rounded" style={{ background: "#3B82F6" }} /><span className="text-[10.5px] font-semibold" style={{ color: "#94A3B8" }}>Penyebutan</span></span>
-              <span className="flex items-center gap-1.5"><span className="w-3.5 h-[2.5px] rounded" style={{ background: "#059669" }} /><span className="text-[10.5px] font-semibold" style={{ color: "#94A3B8" }}>Jangkauan</span></span>
+            <div className="w-[388px] shrink-0 rounded-xl p-3.5" style={{ background: "#0B1220", border: "1px solid #1E293B" }}>
+              <div className="text-[14.5px] font-extrabold" style={{ color: "#F8FAFC", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Penyebutan per kategori</div>
+              <div className="flex items-center gap-3 mt-3">
+                <svg viewBox="0 0 120 120" width="130" height="130" className="shrink-0">
+                  {(() => {
+                    const C = 2 * Math.PI * 60;
+                    let cum = 0;
+                    return ANA_CATS.map(([label, pct, color]) => {
+                      const p = parseFloat(pct);
+                      if (p <= 0) return null;
+                      const len = (p / 100) * C;
+                      const rot = -90 + cum * 3.6;
+                      cum += p;
+                      return <circle key={label as string} cx="60" cy="60" r="60" fill="none" stroke={color} strokeWidth="22" strokeDasharray={`${len.toFixed(1)} ${(C - len).toFixed(1)}`} transform={`rotate(${rot} 60 60)`} />;
+                    });
+                  })()}
+                  <circle cx="60" cy="60" r="47" fill="#0B1220"></circle>
+                </svg>
+                <div className="flex-1 min-w-0 flex flex-col gap-[7px]">
+                  {ANA_CATS.map(([label, pct, color]) => (
+                    <div key={label} className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: parseFloat(pct) > 0 ? color : "#334155" }} />
+                      <span className="flex-1 text-[10.5px] leading-tight" style={{ color: parseFloat(pct) > 0 ? "#CBD5E1" : "#64748B" }}>{label}</span>
+                      <span className="text-[10.5px] font-extrabold tabular-nums" style={{ color: parseFloat(pct) > 0 ? "#F1F5F9" : "#64748B" }}>{pct}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Penyebutan per kategori | Sentimen | Sentimen per kategori */}
+          {/* Sentimen chart | Sentimen per kategori */}
           <div className="flex gap-3.5 items-start">
-            <div className="flex-[1.3] min-w-0 rounded-xl p-3.5" style={{ background: "#0B1220", border: "1px solid #1E293B" }}>
-              <div className="text-[14.5px] font-extrabold" style={{ color: "#F8FAFC", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Penyebutan per kategori</div>
-              <div className="flex flex-col mt-2">
-                {ANA_CATS.map(([label, pct, color], i) => (
-                  <div key={label} className="flex items-center gap-2.5 py-[7px]" style={{ borderTop: i > 0 ? "1px solid rgba(30,41,59,.6)" : "none" }}>
-                    <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
-                    <span className="flex-1 text-[11.5px]" style={{ color: "#CBD5E1" }}>{label}</span>
-                    <span className="text-[11.5px] font-extrabold tabular-nums" style={{ color: "#F1F5F9" }}>{pct}</span>
-                  </div>
-                ))}
+            <div className="flex-1 min-w-0 rounded-xl p-3.5 pb-2" style={{ background: "#0B1220", border: "1px solid #1E293B" }}>
+              <div className="flex items-center gap-3">
+                <div className="text-[14.5px] font-extrabold" style={{ color: "#F8FAFC", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Sentimen</div>
+                <div className="ml-auto flex gap-[3px] rounded-lg" style={{ background: "#0F172A", border: "1px solid #1E293B", padding: 3, flex: "none" }}>
+                  {["Hari", "Minggu", "Bulan"].map((l, i) => (
+                    <button key={l} onClick={() => setGran(i)} className="text-[11px] font-bold rounded cursor-pointer"
+                      style={{ padding: "5px 10px", background: i === gran ? "rgba(37,99,235,.2)" : "transparent", color: i === gran ? "#93C5FD" : "#64748B" }}>{l}</button>
+                  ))}
+                </div>
               </div>
-            </div>
-            <div className="flex-1 min-w-0 rounded-xl p-3.5 flex flex-col items-center" style={{ background: "#0B1220", border: "1px solid #1E293B" }}>
-              <div className="text-[14.5px] font-extrabold self-start" style={{ color: "#F8FAFC", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Sentimen</div>
-              <svg viewBox="0 0 120 120" width="130" height="130" className="my-1">
-                <circle cx="60" cy="60" r="46" fill="none" stroke="#1E293B" strokeWidth="15" />
-                <circle cx="60" cy="60" r="46" fill="none" stroke="#22C55E" strokeWidth="15" strokeDasharray={`${(289.03 * K.sent[0] / 100).toFixed(1)} 289.03`} transform="rotate(-90 60 60)" />
-                <circle cx="60" cy="60" r="46" fill="none" stroke="#475569" strokeWidth="15" strokeDasharray={`${(289.03 * K.sent[1] / 100).toFixed(1)} 289.03`} transform={`rotate(${-90 + K.sent[0] * 3.6} 60 60)`} />
-                <circle cx="60" cy="60" r="46" fill="none" stroke="#DC2626" strokeWidth="15" strokeDasharray={`${(289.03 * K.sent[2] / 100).toFixed(1)} 289.03`} transform={`rotate(${-90 + (K.sent[0] + K.sent[1]) * 3.6} 60 60)`} />
-                <text x="60" y="60" fill="#F8FAFC" fontFamily="'Plus Jakarta Sans', sans-serif" fontSize="17" fontWeight="800" textAnchor="middle" dominantBaseline="central">{kwTotal}</text>
+              <svg viewBox="0 0 800 172" width="100%" height="172" style={{ display: "block", marginTop: 8, overflow: "visible" }}>
+                <g stroke="#1E293B" strokeWidth="1">
+                  <line x1="30" y1="20" x2="750" y2="20"></line>
+                  <line x1="30" y1="72.5" x2="750" y2="72.5"></line>
+                  <line x1="30" y1="125" x2="750" y2="125"></line>
+                </g>
+                <g fill="#475569" fontFamily="Inter, sans-serif" fontSize="9.5" textAnchor="end">
+                  <text x="24" y="23">60</text><text x="24" y="76">20</text><text x="24" y="128">0</text>
+                </g>
+                <polyline points="30,123.3 120,121.5 210,52.5 300,56.8 390,121.5 480,123.3 570,123.3 660,102.3 750,112.8" fill="none" stroke="#22C55E" strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round"></polyline>
+                <polyline points="30,124.5 120,124.5 210,124.5 300,124.5 390,124.5 480,124.5 570,124.5 660,124.5 750,124.5" fill="none" stroke="#DC2626" strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round"></polyline>
+                <g fill="#64748B" fontFamily="Inter, sans-serif" fontSize="9.5" textAnchor="middle">
+                  <text x="30" y="143">26 Agu</text><text x="120" y="143">27 Agu</text><text x="210" y="143">28 Agu</text><text x="300" y="143">29 Agu</text><text x="390" y="143">30 Agu</text><text x="480" y="143">31 Agu</text><text x="570" y="143">01 Sep</text><text x="660" y="143">02 Sep</text><text x="750" y="143">03 Sep</text>
+                </g>
               </svg>
-              <div className="flex flex-col gap-1.5 pb-1">
-                {[["Positif", "#22C55E"], ["Netral", "#475569"], ["Negatif", "#DC2626"]].map(([label, color]) => (
-                  <div key={label} className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full" style={{ background: color }} />
-                    <span className="text-[10.5px]" style={{ color: "#94A3B8" }}>{label}</span>
-                    <span className="text-[10.5px] font-extrabold tabular-nums ml-auto" style={{ color: "#F1F5F9" }}>{K.sent[["Positif", "Netral", "Negatif"].indexOf(label as string)]}%</span>
-                  </div>
-                ))}
+              <div className="flex items-center gap-[18px]" style={{ padding: "2px 0 4px 30px" }}>
+                <div className="flex items-center gap-1.5"><span style={{ width: 14, height: 2.5, borderRadius: 2, background: "#22C55E" }}></span><span className="text-[10.5px] font-semibold" style={{ color: "#94A3B8" }}>Positif</span></div>
+                <div className="flex items-center gap-1.5"><span style={{ width: 14, height: 2.5, borderRadius: 2, background: "#DC2626" }}></span><span className="text-[10.5px] font-semibold" style={{ color: "#94A3B8" }}>Negatif</span></div>
               </div>
             </div>
-            <div className="flex-1 min-w-0 rounded-xl p-3.5" style={{ background: "#0B1220", border: "1px solid #1E293B" }}>
+            <div className="w-[388px] shrink-0 rounded-xl p-3.5" style={{ background: "#0B1220", border: "1px solid #1E293B" }}>
               <div className="text-[14.5px] font-extrabold" style={{ color: "#F8FAFC", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Sentimen per kategori</div>
-              <div className="flex items-center justify-between text-[9.5px] mt-1.5" style={{ color: "#475569" }}>
-                <span>0</span><span>25</span><span>50</span><span>75</span><span>100</span>
+              <div className="flex items-center justify-between text-[9.5px] mt-2" style={{ color: "#475569" }}>
+                <span>100</span><span>75</span><span>50</span><span>25</span><span>0</span>
               </div>
               {[["X (Twitter)", 25], ["Facebook", 17], ["Berita", 0], ["Instagram", 82], ["TikTok", 84]].map(([label, v]) => (
                 <div key={label as string} className="flex items-center gap-2.5 mt-2">
-                  <span className="w-[110px] shrink-0 text-[10.5px]" style={{ color: "#94A3B8" }}>{label}</span>
+                  <span className="w-[96px] shrink-0 text-[10.5px]" style={{ color: "#94A3B8" }}>{label}</span>
                   <div className="flex-1 h-[14px] rounded" style={{ background: "linear-gradient(90deg, rgba(34,197,94,.35) 0%, #22C55E " + v + "%, #1E293B " + v + "%)" }} />
                   <span className="w-[26px] shrink-0 text-right text-[10.5px] font-bold tabular-nums" style={{ color: "#F1F5F9" }}>{v}</span>
                 </div>
@@ -522,10 +553,10 @@ export default function DemokratMediaMonitoring() {
                 <span className="text-left">NAMA PROFIL</span><span>PENYEBUTAN</span><span>JANGKAUAN</span><span>SHARE OF VOICE</span>
               </div>
               {ANA_SOV.map((r, i) => (
-                <div key={i} className="grid items-center text-center" style={{ gridTemplateColumns: "minmax(0,1.3fr) 92px 92px 108px", borderBottom: "1px solid rgba(30,41,59,.6)", padding: "10px 0" }}>
+                <div key={i} className="grid items-center text-center" style={{ gridTemplateColumns: "minmax(0,1.3fr) 92px 92px 108px", borderBottom: "1px solid rgba(30,41,59,.6)", padding: "9px 0" }}>
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="w-[22px] h-[22px] shrink-0 rounded-full flex items-center justify-center text-[9px] font-extrabold"
-                      style={{ background: r[1] === "instagram.com" ? "linear-gradient(135deg,#F58529,#DD2A7B 50%,#8134AF)" : "#0F172A", border: "1px solid #1E293B", color: "#CBD5E1" }}>{r[0].charAt(0).toUpperCase()}</span>
+                      style={{ background: r[1] === "instagram.com" ? "linear-gradient(135deg,#F58529,#DD2A7B 50%,#8134AF)" : r[1] === "facebook.com" ? "#2563EB" : "#0F172A", border: "1px solid #1E293B", color: "#CBD5E1" }}>{r[0].charAt(0).toUpperCase()}</span>
                     <span className="min-w-0"><span className="block text-[11.5px] font-extrabold truncate" style={{ color: "#F1F5F9" }}>{r[0]}</span><span className="block text-[9.5px]" style={{ color: "#64748B" }}>{r[1]}</span></span>
                   </div>
                   <span className="text-[11px] font-extrabold tabular-nums" style={{ color: "#F1F5F9" }}>{r[2]}</span>
@@ -533,6 +564,15 @@ export default function DemokratMediaMonitoring() {
                   <span className="text-[11px] font-extrabold tabular-nums" style={{ color: "#93C5FD" }}>{r[4]}</span>
                 </div>
               ))}
+              <div className="flex items-center justify-end gap-0.5 pt-2.5">
+                {["1", "2", "3", "4", "5", "…", "13"].map((l, i) => (
+                  <span key={i} className="min-w-[22px] h-[22px] rounded flex items-center justify-center text-[11px] font-bold cursor-pointer"
+                    style={{ background: i === 0 ? "rgba(37,99,235,.16)" : "transparent", color: i === 0 ? "#93C5FD" : "#64748B" }}>{l}</span>
+                ))}
+                <span className="w-[22px] h-[22px] rounded flex items-center justify-center cursor-pointer" style={{ color: "#64748B" }}>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><path d="m9 6 6 6-6 6"></path></svg>
+                </span>
+              </div>
             </div>
             <div className="flex-1 min-w-0 rounded-xl p-3.5" style={{ background: "#0B1220", border: "1px solid #1E293B" }}>
               <div className="text-[14.5px] font-extrabold" style={{ color: "#F8FAFC", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Pengikut terbanyak</div>
@@ -540,18 +580,32 @@ export default function DemokratMediaMonitoring() {
                 <span className="text-left">NAMA PROFIL</span><span>PENYEBUTAN</span><span>JANGKAUAN</span><span>PENGIKUT</span><span>SKOR PENGARUH</span>
               </div>
               {ANA_FOL.map((r, i) => (
-                <div key={i} className="grid items-center text-center" style={{ gridTemplateColumns: "minmax(0,1.3fr) 80px 84px 108px 92px", borderBottom: "1px solid rgba(30,41,59,.6)", padding: "10px 0" }}>
+                <div key={i} className="grid items-center text-center" style={{ gridTemplateColumns: "minmax(0,1.3fr) 80px 84px 108px 92px", borderBottom: "1px solid rgba(30,41,59,.6)", padding: "9px 0" }}>
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="w-[22px] h-[22px] shrink-0 rounded-full flex items-center justify-center text-[9px] font-extrabold"
-                      style={{ background: r[1] === "facebook.com" ? "rgba(59,130,246,.25)" : "#0F172A", border: "1px solid #1E293B", color: "#CBD5E1" }}>{r[0].charAt(0).toUpperCase()}</span>
+                      style={{ background: r[1] === "facebook.com" ? "#2563EB" : r[1] === "tiktok.com" ? "#1D4ED8" : "#0F172A", border: "1px solid #1E293B", color: "#CBD5E1" }}>{r[0].charAt(0).toUpperCase()}</span>
                     <span className="min-w-0"><span className="block text-[11.5px] font-extrabold truncate" style={{ color: "#F1F5F9" }}>{r[0]}</span><span className="block text-[9.5px]" style={{ color: "#64748B" }}>{r[1]}</span></span>
                   </div>
                   <span className="text-[11px] font-extrabold tabular-nums" style={{ color: "#F1F5F9" }}>{r[2]}</span>
                   <span className="text-[11px] font-extrabold tabular-nums" style={{ color: "#F1F5F9" }}>{r[3]}</span>
                   <span className="text-[11px] font-extrabold tabular-nums" style={{ color: "#F1F5F9" }}>{r[4]}</span>
-                  <span className="text-[11px] font-extrabold tabular-nums" style={{ color: "#93C5FD" }}>{r[5]}/10</span>
+                  <span className="flex items-center justify-end gap-1.5">
+                    <span className="w-[30px] h-[3px] rounded-full overflow-hidden" style={{ background: "#1E293B" }}>
+                      <span className="block h-full rounded-full" style={{ width: "100%", background: "#3B82F6" }} />
+                    </span>
+                    <span className="text-[11px] font-extrabold tabular-nums" style={{ color: "#93C5FD" }}>{r[5]}</span>
+                  </span>
                 </div>
               ))}
+              <div className="flex items-center justify-end gap-0.5 pt-2.5">
+                {["1", "2", "3", "4", "5", "…", "13"].map((l, i) => (
+                  <span key={i} className="min-w-[22px] h-[22px] rounded flex items-center justify-center text-[11px] font-bold cursor-pointer"
+                    style={{ background: i === 0 ? "rgba(37,99,235,.16)" : "transparent", color: i === 0 ? "#93C5FD" : "#64748B" }}>{l}</span>
+                ))}
+                <span className="w-[22px] h-[22px] rounded flex items-center justify-center cursor-pointer" style={{ color: "#64748B" }}>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><path d="m9 6 6 6-6 6"></path></svg>
+                </span>
+              </div>
             </div>
           </div>
 
