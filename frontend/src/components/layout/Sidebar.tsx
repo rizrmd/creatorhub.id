@@ -5,7 +5,7 @@ import {
   MessageSquare, CreditCard, Settings, HelpCircle,
   Rocket, Briefcase, Coins, Network,
   Lightbulb, User, Home, Mail, Database, FolderOpen, Sparkles,
-  LayoutDashboard, GraduationCap, Sprout, Building2, Globe2, type LucideIcon,
+  LayoutDashboard, GraduationCap, Sprout, Building2, type LucideIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -60,11 +60,16 @@ const ekrafHubNavItems: NavItem[] = [
   { to: "/dashboard/ekrafhub",                    icon: LayoutDashboard, label: "Dashboard" },
   { to: "/dashboard/ekrafhub/desa-kreatif",       icon: Sprout,         label: "Desa Kreatif" },
   { to: "/dashboard/ekrafhub/creative-hub",       icon: Building2,       label: "Creative Hub" },
-  { to: "/dashboard/ekrafhub/creative-indonesia", icon: Globe2,          label: "Creative by Indonesia" },
   { to: "/dashboard/ekrafhub/marketplace",        icon: Store,           label: "Marketplace" },
   { to: "/dashboard/ekrafhub/boost-ads",          icon: Rocket,          label: "Boost Ads" },
+  { to: "/dashboard/ekrafhub/messages",           icon: MessageSquare,   label: "Messages" },
   { to: "/dashboard/ekrafhub/media-monitoring",   icon: Radio,           label: "Media Monitoring" },
   { to: "/dashboard/ekrafhub/settings",           icon: Settings,        label: "Settings" },
+];
+
+const demokratNavItems: NavItem[] = [
+  { to: "/dashboard/media-monitoring",  icon: Radio,           label: "Media Monitoring" },
+  { to: "/dashboard/settings",          icon: Settings,       label: "Settings" },
 ];
 
 export default function Sidebar() {
@@ -73,8 +78,9 @@ export default function Sidebar() {
   const kreatorStats = useKreatorStatsOptional();
   const { effectiveRole } = useRole();
   const isKreatorView = effectiveRole === "kreator";
-  const navActiveBg = isKreatorView ? "#16A34A" : "#F97316";
-  const navActiveShadow = isKreatorView ? "0 4px 14px rgba(22,163,74,.35)" : "0 4px 14px rgba(249,115,22,.35)";
+  const isDemokratView = effectiveRole === "demokrat";
+  const navActiveBg = isKreatorView ? "#16A34A" : isDemokratView ? "#2563EB" : "#f5841f";
+  const navActiveShadow = isKreatorView ? "0 4px 14px rgba(22,163,74,.35)" : isDemokratView ? "0 4px 14px rgba(37,99,235,.35)" : "0 4px 14px rgba(245,132,31,.35)";
   const effectiveCollapsed = false;
   const [showSupport, setShowSupport] = useState(false);
   const [supportForm, setSupportForm] = useState({ email: "", message: "" });
@@ -83,7 +89,7 @@ export default function Sidebar() {
     closeMobile();
   }, [pathname, closeMobile]);
 
-  const navItems = effectiveRole === "kreator" ? kreatorNavItems : effectiveRole === "media_monitoring" ? mediaMonitoringNavItems : effectiveRole === "ekrafhub" ? ekrafHubNavItems : brandNavItems;
+  const navItems = effectiveRole === "kreator" ? kreatorNavItems : effectiveRole === "media_monitoring" ? mediaMonitoringNavItems : effectiveRole === "ekrafhub" ? ekrafHubNavItems : effectiveRole === "demokrat" ? demokratNavItems : brandNavItems;
 
   const resolveBadge = (item: NavItem) => {
     if (item.badgeKey && kreatorStats) {
@@ -133,15 +139,15 @@ export default function Sidebar() {
           className="flex items-center shrink-0 overflow-hidden no-underline"
           style={{ padding: effectiveCollapsed ? "10px" : "12px 14px" }}
         >
-          <div className={cn("flex items-center gap-3", effectiveCollapsed ? "justify-center" : "")}>
+          <div className={cn("flex items-center gap-1", effectiveCollapsed ? "justify-center" : "")}>
             <img
               src="/favicon.png?v=14"
               alt="CreatorHub"
               className="shrink-0"
-              style={{ width: effectiveCollapsed ? 38 : 40, height: effectiveCollapsed ? 38 : 40 }}
+              style={{ width: effectiveCollapsed ? 38 : 42, height: effectiveCollapsed ? 38 : 42 }}
             />
             {!effectiveCollapsed && (
-              <span className="text-[16px] font-extrabold tracking-tight" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1 }}>CreatorHub.ID</span>
+              <span className="text-[19px] font-extrabold tracking-tight" style={{ color: "var(--ch-text)", fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1 }}>CreatorHub.ID</span>
             )}
           </div>
         </Link>
@@ -174,7 +180,7 @@ export default function Sidebar() {
               className={({ isActive }) =>
                 cn(
                   "flex items-center rounded-lg transition-all duration-150 relative cursor-pointer",
-                  effectiveCollapsed ? "justify-center w-9 h-9 mx-auto" : "gap-2 px-2.5 py-1.5",
+                  effectiveCollapsed ? "justify-center w-9 h-9 mx-auto" : "gap-2 px-[18px] py-1.5",
                   isActive
                     ? "text-white"
                     : "hover:text-white"
@@ -193,7 +199,7 @@ export default function Sidebar() {
                   <Icon className="w-3.5 h-3.5 shrink-0" />
                   {!effectiveCollapsed && (
                     <>
-                      <span className="flex-1 text-[12px] font-semibold leading-none">{label}</span>
+                      <span className="flex-1 text-[15px] font-semibold leading-none">{label}</span>
                       {badge !== undefined && !isActive && (
                         <span className="min-w-[18px] h-4 rounded-full text-[9px] font-bold flex items-center justify-center px-1"
                           style={{ background: "var(--ch-orange)", color: "#FFFFFF" }}>
