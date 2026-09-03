@@ -228,25 +228,15 @@ func scrapeYouTubeHTML(handle string) *ScrapeResult {
 
 // --- TikTok ---
 
-// scrapeTikTok uses Apify (clockworks/tiktok-scraper) FIRST, then TikHub as
-// fallback. NEVER fall back to tiktok.com scraping (oEmbed / web API / HTML /
-// Playwright) — TikTok blocks datacenter IPs, which is exactly what caused
-// the "photo disappeared" bugs before. LESSON RECORDED IN CLAUDE.md.
+// scrapeTikTok uses Apify (clockworks/tiktok-scraper) ONLY. NEVER fall back
+// to tiktok.com scraping (oEmbed / web API / HTML / Playwright) — TikTok
+// blocks datacenter IPs, which is exactly what caused the "photo disappeared"
+// bugs before. LESSON RECORDED IN CLAUDE.md.
 func scrapeTikTok(handle string) *ScrapeResult {
 	if r := scrapeTikTokApify(handle); r != nil {
 		return r
 	}
-
-	apiKey := os.Getenv("TIKHUB_API_KEY")
-	if apiKey == "" {
-		return &ScrapeResult{Success: false, Error: "TIKHUB_API_KEY not configured"}
-	}
-
-	result := scrapeTikTokTikHub(handle, apiKey)
-	if !result.Success {
-		return &ScrapeResult{Success: false, Error: result.Error}
-	}
-	return result
+	return &ScrapeResult{Success: false, Error: "TikTok scrape failed (Apify)"}
 }
 
 // TiktokApifyProfile is the metric payload extracted from an Apify TikTok run.
@@ -315,8 +305,7 @@ func ApifyTikTokProfile(handle string) (*TiktokApifyProfile, bool) {
 }
 
 // scrapeTikTokApify fetches the user profile via the Apify tiktok-scraper
-// actor. Returns nil when the token is missing or the run fails, so the
-// caller can fall back (TikHub).
+// actor. Returns nil when the token is missing or the run fails.
 func scrapeTikTokApify(handle string) *ScrapeResult {
 	meta, ok := ApifyTikTokProfile(handle)
 	if !ok {
@@ -336,96 +325,6 @@ func scrapeTikTokApify(handle string) *ScrapeResult {
 		Success:           true,
 	}
 }
-
-func scrapeTikTokTikHub(handle, apiKey string) *ScrapeResult {
-	url := fmt.Sprintf("https://api.tikhub.io/api/v1/tiktok/web/fetch_user_profile?uniqueId=%s", handle)
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return &ScrapeResult{Success: false}
-	}
-	req.Header.Set("Authorization", "Bearer "+apiKey)
-	req.Header.Set("Accept", "application/json")
-
-	resp, err := httpClient.Do(req)
-	if err != nil {
-		return &ScrapeResult{Success: false, Error: err.Error()}
-	}
-	defer resp.Body.Close()
-	body, _ := io.ReadAll(io.LimitReader(resp.Body, 10<<20))
-	if resp.StatusCode != 200 {
-		msg := fmt.Sprintf("TikHub HTTP %d", resp.StatusCode)
-		var detail struct {
-			Detail struct {
-				Message string `json:"message"`
-			} `json:"detail"`
-		}
-		if json.Unmarshal(body, &detail) == nil && detail.Detail.Message != "" {
-			msg = fmt.Sprintf("TikHub HTTP %d: %s", resp.StatusCode, detail.Detail.Message)
-		}
-		return &ScrapeResult{Success: false, Error: msg}
-	}
-
-	var tikhubResp struct {
-		Code    int    `json:"code"`
-		Message string `json:"message"`
-		Data    struct {
-			StatusCode int `json:"statusCode"`
-			StatusMsg  string `json:"statusMsg"`
-			UserInfo   struct {
-				User struct {
-					Nickname     string `json:"nickname"`
-					AvatarLarger string `json:"avatarLarger"`
-					Signature    string `json:"signature"`
-					UniqueID     string `json:"uniqueId"`
-				} `json:"user"`
-				Stats struct {
-					FollowerCount  int64 `json:"followerCount"`
-					FollowingCount int64 `json:"followingCount"`
-					HeartCount     int64 `json:"heartCount"`
-					VideoCount     int64 `json:"videoCount"`
-				} `json:"stats"`
-			} `json:"userInfo"`
-		} `json:"data"`
-	}
-
-	if err := json.Unmarshal(body, &tikhubResp); err != nil {
-		return &ScrapeResult{Success: false, Error: "failed to parse TikHub response"}
-	}
-	if tikhubResp.Code != 200 && tikhubResp.Code != 0 {
-		return &ScrapeResult{Success: false, Error: fmt.Sprintf("TikHub error code %d: %s", tikhubResp.Code, tikhubResp.Message)}
-	}
-	// TikTok inner status: 0 = OK. Else (e.g. 10221) = TikTok rejected the
-	// profile request at TikHub's upstream â€” surface it, don't silently fail.
-	if tikhubResp.Data.StatusCode != 0 && tikhubResp.Data.StatusCode != 200 {
-		msg := tikhubResp.Data.StatusMsg
-		if msg == "" {
-			msg = fmt.Sprintf("TikTok upstream status %d", tikhubResp.Data.StatusCode)
-		}
-		return &ScrapeResult{Success: false, Error: msg}
-	}
-
-	user := tikhubResp.Data.UserInfo
-	picURL := user.User.AvatarLarger
-	if strings.HasPrefix(picURL, "//") {
-		picURL = "https:" + picURL
-	}
-
-	name := user.User.Nickname
-	if name == "" {
-		name = handle
-	}
-
-	return &ScrapeResult{
-		ProfilePictureURL: picURL,
-		FollowerCount:     user.Stats.FollowerCount,
-		FollowingCount:    user.Stats.FollowingCount,
-		LikesCount:        user.Stats.HeartCount,
-		Bio:               user.User.Signature,
-		DisplayName:       name,
-		Success:           picURL != "" || user.Stats.FollowerCount > 0,
-	}
-}
-
 
 // --- Instagram ---
 

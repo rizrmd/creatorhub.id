@@ -160,12 +160,11 @@ onValueChange={(v) => setFilter(v === "all" ? undefined : v)}
 ## Backend
 
 > ### ⚠️ LESSON RECORDED (MANDATORY, NEVER FORGET)
-> **TikTok scraping MUST ALWAYS use TikHub. NEVER EVER fall back to scraping tiktok.com directly** (oEmbed, `www.tiktok.com/api`, HTML regex, Playwright). TikTok blocks datacenter IPs and rate-limits aggressively — falling back is exactly what caused the "photo shows then disappears" bugs (broken data + expiring CDN URLs).
+> **TikTok scraping uses Apify ONLY. NEVER EVER fall back to scraping tiktok.com directly** (oEmbed, `www.tiktok.com/api`, HTML regex, Playwright). TikTok blocks datacenter IPs and rate-limits aggressively — falling back is exactly what caused the "photo shows then disappears" bugs (broken data + expiring CDN URLs).
 >
-> `scrapeTikTok()` in `backend/internal/services/scraper.go` is **TikHub-ONLY** by design. `TIKHUB_API_KEY` is set in production env. The TikHub response has TWO status layers — check both:
-> - outer `code` (200/0 = ok) and **inner `data.statusCode`** (0/200 = ok; e.g. `10221` = TikTok upstream refused the profile). Surface inner errors; never silently fail, never fall back.
+> `scrapeTikTok()` in `backend/internal/services/scraper.go` is **Apify-ONLY** by design (`clockworks~tiktok-scraper` through `ApifyTikTokProfile()`). TikHub has been REMOVED (2026-09-04) — `TIKHUB_API_KEY` is no longer used anywhere.
 >
-> When asked to "fix TikTok scrape", always start from TikHub. Never re-introduce tiktok.com fallbacks.
+> When asked to "fix TikTok scrape", always start from Apify. Never re-introduce tiktok.com fallbacks or TikHub.
 
 Go 1.22+ server (`backend/`). Serves the API at `/api/v1/*` and the built frontend SPA at `/*`.
 
@@ -575,7 +574,7 @@ When deploying new frontend files:
 ## Add Creator (Marketplace dialog) — Rules and Lessons (RECORDED 2026-08-25)
 
 ### Verified working state (2026-08-25)
-- TikTok scrape = **Apify** (`clockworks~tiktok-scraper`, input `{"profiles":["https://www.tiktok.com/@handle"]}`, parse `items[0].authorMeta`). TikHub = fallback only. **Never tiktok.com direct.**
+- TikTok scrape = **Apify** (`clockworks~tiktok-scraper`, input `{"profiles":["https://www.tiktok.com/@handle"]}`, parse `items[0].authorMeta`). **Never tiktok.com direct.**
 - Instagram scrape = **Apify** (`apify~instagram-scraper`, `directUrls` + `resultsType:details`, parse `items[0]`). Anonymous crawler = fallback.
 - Apify token: env `APIFY_API_TOKEN` or `/app/.apify_token` file (container FS — re-create after any image rebuild).
 - Duplicate creator name → **delete OLD creator, keep NEW** (FKs cascade). 23505 rule in `repo.Create`.
@@ -591,11 +590,10 @@ When deploying new frontend files:
 3. Check prod logs for the USER's real attempts: `docker logs <container> | grep 'POST .*\/api\/v1\/creators'`.
    - Request reachable + 500 ⇒ server error (read the 101B error body).
    - No request at all ⇒ client-side gate (button disabled / early return in `handleCreate`).
-4. TikHub credit check before blaming code: `curl api.tikhub.io/api/v1/tikhub/user/get_user_info` — 402 insufficient balance means credits exhausted, code is fine.
+4. Apify credit check before blaming code: `curl https://api.apify.com/v2/usage?token=<APIFY_TOKEN> or check console.apify.com — 402/insufficient means credits exhausted, code is fine.
 5. Frontend deploy verdict only via `scripts/deploy-frontend.sh` output "ALL CHECKS PASSED" + MARKER hit. Never say "deployed" from a local build.
 
 ### Credentials / accounts (prod)
-- TikHub key owner: `officialcreatorhub.id@gmail.com` — top-ups must go to THIS account or replace the key in Coolify (`TIKHUB_API_KEY`).
 - Apify token: `console.apify.com/settings/integrations`.
 
 
@@ -673,3 +671,12 @@ These ALWAYS require an explicit ask (no exceptions, no "but it seemed obvious")
   - 16:54:53.689 WIB — summary back on live (deploy of 5fe8fe2)
 - Avoidance (already in Law #0): scope = LAST PROMPT VERBATIM; "remove from VIEW X" = THE VIEW ONLY, otherwise ASK.
 - If a measured loss occurs AGAIN: report the ms immediately, no excuses, no "it works" claims before deploy verification.
+
+## ⛔ LAW #1 — NEVER BE LAZY IN FULFILLING THE PROMPT (RECORDED 2026-09-03, MANDATORY)
+
+**The prompt was fulfilled half-heartedly → prompter caught it → rework.**
+
+- Incident: When asked to implement the Media Monitoring Mentions tab from `Partai Demokrat CreatorHub UI Mockups.zip`, I manually typed only ~5 sample mention entries instead of extracting the FULL data (41 entries across 4 paginated lists + 6 keywords each with complete m/r/topics/gender/age/geo/infl/list arrays). The prompter said "jangan malas kau" — the work was shallow.
+- Lesson: **"Cari data lengkap di source, bukan contoh"** — when data lives in a source file (ZIP/HTML/JSON), EXTRACT ALL OF IT programmatically (regex/split/strip), do NOT retype samples by hand. Verify counts match the source before writing code.
+- Verification gate: if the source says N entries, my data array must contain N (assert/echo the counts).
+- Rule: partial data = incomplete task. Log the full data shape in the file, then write the component that consumes it.
