@@ -5,6 +5,7 @@ import {
   Calendar, Heart, Info, Users, Download, TrendingUp,
 } from "lucide-react";
 import { toast } from "sonner";
+import { CONTENT_POSTS, type ContentPost } from "./demokrat-content-data";
 
 // â”€â”€â”€ Data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -72,23 +73,6 @@ const JURY = [
   { cat: "Poster Digital", body: "ADGI \u2014 Asosiasi Desainer Grafis Indonesia \u00b7 art director senior." },
   { cat: "Voice Over", body: "Voice Institute Indonesia \u2014 voice talent profesional." },
   { cat: "Bumper Logo", body: "Boogie Wijayanto (Storikka), pemenang logo HUT ke-25." },
-];
-
-// Content Hub pipeline
-interface PipelineItem {
-  key: string; topic: string; hashtags: string[]; creator: string; role: string;
-  avatar: string; igType: string; ttType: string; d: number; h: number; min: number;
-  steps: string; pct: string; slot: string; video: boolean;
-}
-const PIPELINE: PipelineItem[] = [
-  { key:"p0", topic:"Highlight Finalis Video Pendek", hashtags:["#KreasiBiru2026","#demokratcreativechallenge"], creator:"Rizki Ananda", role:"Tim Kreatif Digital", avatar:"#2563EB", igType:"Reels", ttType:"TikTok Video", d:8, h:8, min:0, steps:"8/8", pct:"100%", slot:"thumbnail\nreels", video:true },
-  { key:"p1", topic:"Pengumuman 20 Karya Terpilih", hashtags:["#KreasiBiru2026","#20KaryaTerpilih"], creator:"Salsabila Putri", role:"Editor Konten", avatar:"#1D4ED8", igType:"Instagram Carousel", ttType:"TikTok Photo Mode", d:4, h:10, min:0, steps:"6/8", pct:"75%", slot:"thumbnail\ncarousel", video:false },
-  { key:"p2", topic:"Behind the Scene Penjurian", hashtags:["#KreasiBiru2026","#ProsesPenjurian"], creator:"Bagas Nugroho", role:"Videografer", avatar:"#0EA5E9", igType:"Instagram Reels", ttType:"TikTok Video", d:5, h:20, min:0, steps:"5/8", pct:"62%", slot:"thumbnail\nreels", video:true },
-  { key:"p3", topic:"Countdown HUT ke-25", hashtags:["#25tahunpartaidemokrat","#HUTke25"], creator:"Nadia Rahmawati", role:"Desainer Grafis", avatar:"#3B82F6", igType:"Instagram Feed", ttType:"TikTok Photo Mode", d:6, h:18, min:0, steps:"4/8", pct:"50%", slot:"thumbnail\nfeed", video:false },
-  { key:"p4", topic:"Kompilasi Voice Over Terbaik", hashtags:["#KreasiBiru2026","#VoiceOver"], creator:"Yoga Pratama", role:"Audio & VO", avatar:"#1E40AF", igType:"Instagram Reels", ttType:"TikTok Video", d:7, h:19, min:30, steps:"3/8", pct:"37%", slot:"thumbnail\nreels", video:true },
-  { key:"p5", topic:"Profil Juri Praktisi BPI & ADGI", hashtags:["#KreasiBiru2026","#DewanJuri"], creator:"Salsabila Putri", role:"Editor Konten", avatar:"#1D4ED8", igType:"Instagram Carousel", ttType:"TikTok Photo Mode", d:8, h:11, min:0, steps:"3/8", pct:"37%", slot:"thumbnail\ncarousel", video:false },
-  { key:"p6", topic:"Testimoni Peserta Luar Jabodetabek", hashtags:["#KreasiBiru2026","#SuaraPeserta"], creator:"Rizki Ananda", role:"Tim Kreatif Digital", avatar:"#2563EB", igType:"Instagram Reels", ttType:"TikTok Video", d:9, h:20, min:0, steps:"2/8", pct:"25%", slot:"thumbnail\nreels", video:true },
-  { key:"p7", topic:"Bumper Logo HUT Terpilih", hashtags:["#25tahunpartaidemokrat","#BumperLogo"], creator:"Nadia Rahmawati", role:"Desainer Grafis", avatar:"#3B82F6", igType:"Instagram Feed Video", ttType:"TikTok Video", d:10, h:17, min:0, steps:"1/8", pct:"12%", slot:"thumbnail\nbumper", video:true },
 ];
 
 const HUB_STAGES = [
@@ -625,17 +609,26 @@ function RingkasanTab() {
 
 // â”€â”€â”€ Content Hub Tab â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+const MONTHS_SHORT = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+const STATUS_STYLE: Record<string, { c: string; bg: string; b: string }> = {
+  SUCCESS: { c: "#4ADE80", bg: "rgba(34,197,94,.12)", b: "rgba(34,197,94,.4)" },
+  PROCESS: { c: "#93C5FD", bg: "rgba(37,99,235,.14)", b: "rgba(37,99,235,.45)" },
+  REVISION: { c: "#FBBF24", bg: "rgba(251,191,36,.12)", b: "rgba(251,191,36,.4)" },
+  PLANNED: { c: "#94A3B8", bg: "rgba(148,163,184,.1)", b: "rgba(148,163,184,.3)" },
+};
+
 function ContentHubTab() {
   const [query, setQuery] = useState("");
   const [openDate, setOpenDate] = useState<string | null>(null);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [readOpen, setReadOpen] = useState<string | null>(null);
   const [dates, setDates] = useState<Record<string, { d: number; m: number; y: number; h: number; min: number }>>({});
 
   const filtered = query.trim()
-    ? PIPELINE.filter(f => (f.topic + " " + f.creator + " " + f.role + " " + f.hashtags.join(" ")).toLowerCase().includes(query.toLowerCase()))
-    : PIPELINE;
+    ? CONTENT_POSTS.filter(f => (f.topic + " " + f.pillar + " " + f.contentType + " " + f.status + " " + f.body + " " + f.caption + " " + f.creator + " " + f.role).toLowerCase().includes(query.trim().toLowerCase()))
+    : CONTENT_POSTS;
 
-  const getDate = (f: PipelineItem) => dates[f.key] ?? { d: f.d, m: 8, y: 2026, h: f.h, min: f.min };
+  const getDate = (f: ContentPost) => dates[f.key] ?? { d: f.d, m: f.m, y: 2026, h: f.h, min: f.min };
 
   return (
     <div className="flex flex-col gap-4">
@@ -676,8 +669,8 @@ function ContentHubTab() {
 
         {/* Header row */}
         <div className="grid text-[11px] font-extrabold tracking-wider"
-          style={{ gridTemplateColumns: "44px 100px 1.5fr 1.4fr 1fr 1.3fr 1.4fr 1fr 42px", color: "#CBD5E1", background: "#0B1220", borderTop: "1px solid rgba(255,255,255,.07)", borderBottom: "1px solid rgba(37,99,235,.6)" }}>
-          {["NO.","THUMBNAIL","TOPICS & HASHTAG","CONTENT CREATORS","DIGITAL ASSET LINKS","POST SCHEDULE","CONTENT TYPE","PROGRESS",""].map((h, i) => (
+          style={{ gridTemplateColumns: "40px 122px minmax(0,1.1fr) 112px minmax(0,1.2fr) minmax(0,1.5fr) minmax(0,1.5fr) 94px 38px", color: "#CBD5E1", background: "#0B1220", borderTop: "1px solid rgba(255,255,255,.07)", borderBottom: "1px solid rgba(37,99,235,.6)" }}>
+          {["NO.","DATE POST","CONTENT TYPE","CONTENT PILLAR","JUDUL CONTENT","BODY COPY","CAPTION","STATUS",""].map((h, i) => (
             <div key={i} className="px-2 py-2.5 text-center leading-tight" style={{ borderRight: i < 8 ? "1px solid rgba(255,255,255,.07)" : "none" }}>{h}</div>
           ))}
         </div>
@@ -689,40 +682,10 @@ function ContentHubTab() {
         {filtered.map((f, i) => {
           const v = getDate(f);
           return (
-            <div key={f.key} className="grid items-stretch"
-              style={{ gridTemplateColumns: "44px 100px 1.5fr 1.4fr 1fr 1.3fr 1.4fr 1fr 42px", background: i % 2 === 1 ? "rgba(255,255,255,.015)" : "transparent" }}>
-              <div className="flex items-center px-3 py-3 text-xs font-bold tabular-nums" style={{ color: "#64748B", borderRight: "1px solid rgba(255,255,255,.07)", borderBottom: "1px solid rgba(255,255,255,.07)" }}>
+            <div key={f.key} className="grid items-stretch relative"
+              style={{ gridTemplateColumns: "40px 122px minmax(0,1.1fr) 112px minmax(0,1.2fr) minmax(0,1.5fr) minmax(0,1.5fr) 94px 38px", background: i % 2 === 1 ? "rgba(255,255,255,.015)" : "transparent" }}>
+              <div className="flex items-center px-2 py-3 text-xs font-bold tabular-nums" style={{ color: "#64748B", borderRight: "1px solid rgba(255,255,255,.07)", borderBottom: "1px solid rgba(255,255,255,.07)" }}>
                 {String(i + 1).padStart(2, "0")}
-              </div>
-              <div className="flex items-center justify-center px-2 py-2" style={{ borderRight: "1px solid rgba(255,255,255,.07)", borderBottom: "1px solid rgba(255,255,255,.07)" }}>
-                <div className={`rounded flex items-center justify-center font-mono text-[8.5px] text-center leading-tight ${f.video ? "w-[86px] h-12" : "w-[54px] h-[90px]"}`}
-                  style={{ background: "repeating-linear-gradient(45deg,#1E293B,#1E293B 6px,#334155 6px,#334155 12px)", color: "#64748B" }}>
-                  {f.slot.split("\n").map((l, j) => <span key={j} className="block">{l}</span>)}
-                </div>
-              </div>
-              <div className="flex flex-col justify-center gap-1 px-3 py-3" style={{ borderRight: "1px solid rgba(255,255,255,.07)", borderBottom: "1px solid rgba(255,255,255,.07)" }}>
-                <div className="text-xs font-bold leading-snug" style={{ color: "#F1F5F9" }}>{f.topic}</div>
-                <div className="flex flex-wrap gap-1.5">
-                  {f.hashtags.map((t, j) => <span key={j} className="text-[11.5px]" style={{ color: "#60A5FA" }}>{t}</span>)}
-                </div>
-              </div>
-              <div className="flex items-center gap-2.5 px-3 py-3" style={{ borderRight: "1px solid rgba(255,255,255,.07)", borderBottom: "1px solid rgba(255,255,255,.07)" }}>
-                <span className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-[11px] font-extrabold text-white" style={{ background: f.avatar }}>
-                  {f.creator.split(" ").map(w => w[0]).slice(0, 2).join("")}
-                </span>
-                <span className="flex-1 min-w-0">
-                  <span className="block text-xs font-bold truncate" style={{ color: "#F1F5F9" }}>{f.creator}</span>
-                  <span className="block text-[11px]" style={{ color: "#64748B" }}>{f.role}</span>
-                </span>
-              </div>
-              <div className="flex items-center flex-wrap gap-1.5 px-3 py-3" style={{ borderRight: "1px solid rgba(255,255,255,.07)", borderBottom: "1px solid rgba(255,255,255,.07)" }}>
-                {[{ l: "Drive", c: "#FBBF24", bg: "rgba(251,191,36,.12)", b: "rgba(251,191,36,.45)" },
-                  { l: "Canva", c: "#60A5FA", bg: "rgba(96,165,250,.12)", b: "rgba(96,165,250,.45)" },
-                  { l: "CapCut", c: "#4ADE80", bg: "rgba(74,222,128,.12)", b: "rgba(74,222,128,.45)" }
-                ].map((a, j) => (
-                  <span key={j} className="text-[11px] font-bold px-2 py-0.5 rounded cursor-pointer whitespace-nowrap"
-                    style={{ color: a.c, background: a.bg, border: `1px solid ${a.b}` }}>{a.l}</span>
-                ))}
               </div>
               <div className="relative flex items-center px-3 py-3" style={{ borderRight: "1px solid rgba(255,255,255,.07)", borderBottom: "1px solid rgba(255,255,255,.07)" }}>
                 <button onClick={() => setOpenDate(openDate === f.key ? null : f.key)}
@@ -730,7 +693,7 @@ function ContentHubTab() {
                   style={{ background: "#1E293B", border: "1px solid #334155", color: "#CBD5E1" }}>
                   <Calendar className="w-3 h-3" style={{ color: "#60A5FA" }} />
                   <span className="flex flex-col leading-tight">
-                    <span className="text-[11.5px]">{v.d} {MONTHS_ID[v.m]} {v.y}</span>
+                    <span className="text-[11.5px]">{v.d} {MONTHS_SHORT[v.m]} {v.y}</span>
                     <span className="text-[11px]" style={{ color: "#94A3B8" }}>{String(v.h).padStart(2, "0")}.{String(v.min).padStart(2, "0")} WIB</span>
                   </span>
                   <ChevronDown className="w-2.5 h-2.5" style={{ color: "#64748B" }} />
@@ -780,23 +743,55 @@ function ContentHubTab() {
                   </div>
                 )}
               </div>
-              <div className="flex flex-col justify-center gap-1 px-3 py-3" style={{ borderRight: "1px solid rgba(255,255,255,.07)", borderBottom: "1px solid rgba(255,255,255,.07)" }}>
-                <div className="flex items-center gap-2 text-[11.5px]" style={{ color: "#CBD5E1" }}>
-                  <span className="w-4 h-4 flex items-center justify-center"><svg viewBox="0 0 24 24" width="14" height="14" fill="#F04E23" fillRule="evenodd"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 0 1 12 7.5zm0 2A2.5 2.5 0 1 0 14.5 12 2.5 2.5 0 0 0 12 9.5zM17.4 5.9a1.2 1.2 0 1 1-1.2 1.2 1.2 1.2 0 0 1 1.2-1.2z"/></svg></span>
-                  <span className="whitespace-nowrap overflow-hidden text-ellipsis">{f.igType}</span>
-                </div>
-                <div className="flex items-center gap-2 text-[11.5px]" style={{ color: "#CBD5E1" }}>
-                  <span className="w-4 h-4 flex items-center justify-center"><svg viewBox="0 0 24 24" width="14" height="14" fill="#F1F5F9" fillRule="evenodd"><path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.1v12.4a2.6 2.6 0 1 1-1.8-2.5V9.8a5.9 5.9 0 1 0 4.9 5.8V8.7a7.3 7.3 0 0 0 4.4 1.4V7a4.3 4.3 0 0 1-3.3-1.2z"/></svg></span>
-                  <span className="whitespace-nowrap overflow-hidden text-ellipsis">{f.ttType}</span>
+              <div className="flex flex-col justify-center gap-1.5 px-3 py-3" style={{ borderRight: "1px solid rgba(255,255,255,.07)", borderBottom: "1px solid rgba(255,255,255,.07)" }}>
+                <div className="text-[11.5px] font-bold leading-snug" style={{ color: "#F1F5F9" }}>{f.contentType}</div>
+                <div className="flex items-center gap-1">
+                  <span className="w-4 h-4 flex items-center justify-center"><svg viewBox="0 0 24 24" width="13" height="13" fill="#F04E23" fillRule="evenodd"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 0 1 12 7.5zm0 2A2.5 2.5 0 1 0 14.5 12 2.5 2.5 0 0 0 12 9.5zM17.4 5.9a1.2 1.2 0 1 1-1.2 1.2 1.2 1.2 0 0 1 1.2-1.2z"/></svg></span>
+                  <span className="w-4 h-4 flex items-center justify-center"><svg viewBox="0 0 24 24" width="13" height="13" fill="#F1F5F9" fillRule="evenodd"><path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.1v12.4a2.6 2.6 0 1 1-1.8-2.5V9.8a5.9 5.9 0 1 0 4.9 5.8V8.7a7.3 7.3 0 0 0 4.4 1.4V7a4.3 4.3 0 0 1-3.3-1.2z"/></svg></span>
                 </div>
               </div>
-              <div className="flex items-center gap-2 px-3 py-3" style={{ borderRight: "1px solid rgba(255,255,255,.07)", borderBottom: "1px solid rgba(255,255,255,.07)" }}>
-                <div className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
-                  style={{ background: `conic-gradient(#3B82F6 ${f.pct}, rgba(255,255,255,.1) 0)` }}>
-                  <div className="w-[31px] h-[31px] rounded-full flex items-center justify-center text-[10px] font-extrabold tabular-nums"
-                    style={{ background: "#0F172A", color: "#93C5FD" }}>{f.pct}</div>
-                </div>
-                <span className="text-[11.5px] tabular-nums" style={{ color: "#94A3B8" }}>{f.steps} Steps</span>
+              <div className="flex items-center px-3 py-3" style={{ borderRight: "1px solid rgba(255,255,255,.07)", borderBottom: "1px solid rgba(255,255,255,.07)" }}>
+                <span className="text-[10.5px] font-extrabold leading-tight rounded px-2 py-1"
+                  style={{ color: "#93C5FD", background: "rgba(37,99,235,.12)", border: "1px solid rgba(37,99,235,.4)" }}>{f.pillar}</span>
+              </div>
+              <div className="flex flex-col justify-center gap-1 px-3 py-3" style={{ borderRight: "1px solid rgba(255,255,255,.07)", borderBottom: "1px solid rgba(255,255,255,.07)" }}>
+                <div className="text-xs font-bold leading-snug" style={{ color: "#F1F5F9" }}>{f.topic}</div>
+              </div>
+              <div className="relative flex flex-col justify-center gap-1.5 px-3 py-3" style={{ borderRight: "1px solid rgba(255,255,255,.07)", borderBottom: "1px solid rgba(255,255,255,.07)" }}>
+                <span title={f.body} className="text-[10.5px] leading-relaxed" style={{ color: "#94A3B8", display: "-webkit-box", WebkitLineClamp: 4, WebkitBoxOrient: "vertical", overflow: "hidden", cursor: "help" }}>{f.body}</span>
+                <button onClick={() => setReadOpen(readOpen === f.key + "b" ? null : f.key + "b")}
+                  className="self-start text-[10px] font-extrabold rounded px-2 py-0.5 cursor-pointer"
+                  style={{ color: "#60A5FA", border: "1px solid rgba(96,165,250,.4)", background: "rgba(37,99,235,.12)" }}>Read More</button>
+                {readOpen === f.key + "b" && (
+                  <div className="relative z-40 rounded-lg"
+                    style={{ position: "absolute", left: 8, right: 8, width: 320, maxHeight: 260, overflow: "auto", background: "#0B1220", border: "1px solid #334155", borderRadius: 10, boxShadow: "0 18px 42px rgba(0,0,0,.6)", padding: "12px 13px", ...(i >= filtered.length - 3 ? { bottom: "calc(100% - 8px)" } : { top: "calc(100% - 8px)" }) }}>
+                    <div className="flex items-center gap-2">
+                      <span className="flex-1 text-[10px] font-extrabold tracking-wider" style={{ color: "#64748B" }}>{f.topic}</span>
+                      <button onClick={() => setReadOpen(null)} className="text-[11px] font-extrabold cursor-pointer" style={{ color: "#94A3B8" }}>&#10005;</button>
+                    </div>
+                    <div className="text-[11px] whitespace-pre-line mt-2 leading-relaxed" style={{ color: "#CBD5E1" }}>{f.body}</div>
+                  </div>
+                )}
+              </div>
+              <div className="relative flex flex-col justify-center gap-1.5 px-3 py-3" style={{ borderRight: "1px solid rgba(255,255,255,.07)", borderBottom: "1px solid rgba(255,255,255,.07)" }}>
+                <span title={f.caption} className="text-[10.5px] leading-relaxed" style={{ color: "#94A3B8", display: "-webkit-box", WebkitLineClamp: 4, WebkitBoxOrient: "vertical", overflow: "hidden", cursor: "help" }}>{f.caption}</span>
+                <button onClick={() => setReadOpen(readOpen === f.key + "c" ? null : f.key + "c")}
+                  className="self-start text-[10px] font-extrabold rounded px-2 py-0.5 cursor-pointer"
+                  style={{ color: "#60A5FA", border: "1px solid rgba(96,165,250,.4)", background: "rgba(37,99,235,.12)" }}>Read More</button>
+                {readOpen === f.key + "c" && (
+                  <div className="relative z-40 rounded-lg"
+                    style={{ position: "absolute", left: 8, right: 8, width: 320, maxHeight: 260, overflow: "auto", background: "#0B1220", border: "1px solid #334155", borderRadius: 10, boxShadow: "0 18px 42px rgba(0,0,0,.6)", padding: "12px 13px", ...(i >= filtered.length - 3 ? { bottom: "calc(100% - 8px)" } : { top: "calc(100% - 8px)" }) }}>
+                    <div className="flex items-center gap-2">
+                      <span className="flex-1 text-[10px] font-extrabold tracking-wider" style={{ color: "#64748B" }}>{f.topic}</span>
+                      <button onClick={() => setReadOpen(null)} className="text-[11px] font-extrabold cursor-pointer" style={{ color: "#94A3B8" }}>&#10005;</button>
+                    </div>
+                    <div className="text-[11px] whitespace-pre-line mt-2 leading-relaxed" style={{ color: "#CBD5E1" }}>{f.caption}</div>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center justify-center px-2 py-3" style={{ borderRight: "1px solid rgba(255,255,255,.07)", borderBottom: "1px solid rgba(255,255,255,.07)" }}>
+                <span className="text-[10px] font-extrabold tracking-wide rounded px-2 py-0.5"
+                  style={{ color: (STATUS_STYLE[f.status] ?? STATUS_STYLE.PLANNED).c, background: (STATUS_STYLE[f.status] ?? STATUS_STYLE.PLANNED).bg, border: `1px solid ${(STATUS_STYLE[f.status] ?? STATUS_STYLE.PLANNED).b}` }}>{f.status}</span>
               </div>
               <div className="relative flex items-center justify-center px-2 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,.07)" }}>
                 <button onClick={() => setOpenMenu(openMenu === f.key ? null : f.key)}
@@ -1708,7 +1703,7 @@ export default function DemokratCreative() {
             Lomba Kreasi Biru &mdash; Demokrat Creative Challenge
           </div>
           <div className="text-xs mt-1 leading-relaxed max-w-[720px]" style={{ color: "#94A3B8" }}>
-            Memantau performa dua kanal resmi Creative Demokrat &mdash; Instagram dan TikTok <span className="font-bold" style={{ color: "#CBD5E1" }}>@creativedemokrat</span> &mdash; mulai dari 26 Agustus 2026.
+            Memantau performa dua kanal resmi kreatif partai &mdash; Instagram dan TikTok <span className="font-bold" style={{ color: "#CBD5E1" }}>@creativedemokrat</span> &mdash; sejak 1 Juli 2026.
           </div>
         </div>
       </div>
