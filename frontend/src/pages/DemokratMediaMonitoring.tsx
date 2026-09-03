@@ -522,27 +522,27 @@ export default function DemokratMediaMonitoring() {
               <div className="flex items-center gap-2.5">
                 <span className="text-[14.5px] font-extrabold" style={{ color: "#F8FAFC", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>Sentimen per kategori</span>
               </div>
-              <div className="flex gap-2 mt-2">
-                <div className="flex flex-col justify-between h-[132px] pr-1.5" style={{ fontSize: 9.5, color: "#475569", textAlign: "right", fontVariantNumeric: "tabular-nums" }}>
+              <div className="flex gap-2.5 mt-3.5">
+                <div className="flex flex-col justify-between h-[132px]" style={{ fontSize: 9.5, color: "#475569", textAlign: "right", fontVariantNumeric: "tabular-nums" }}>
                   <span>100</span><span>75</span><span>50</span><span>25</span><span>0</span>
                 </div>
-                <div className="flex-1 flex items-end gap-[10px]">
+                <div className="flex-1 flex items-end gap-2.5 h-[132px] pb-0" style={{ borderBottom: "1px solid #1E293B" }}>
                   {[["X (Twitter)", 25], ["Facebook", 17], ["Berita", 0], ["Instagram", 82], ["TikTok", 84]].map(([label, v]) => (
-                    <div key={label as string} className="flex-1 flex flex-col items-center justify-end h-full">
-                      <span className="w-full rounded-t" style={{ height: Math.round((v as number) / 100 * 122) + "px", background: "linear-gradient(180deg,#34D399,#10B981)" }} />
+                    <div key={label as string} className="flex-1 h-full flex items-end justify-center">
+                      <span style={{ width: "100%", maxWidth: 44, borderRadius: "3px 3px 0 0", background: "#10B981", height: Math.round((v as number) / 100 * 131) + "px" }} />
                     </div>
                   ))}
                 </div>
               </div>
-                <div className="flex gap-[10px] mt-1.5 pl-[22px]">
+              <div className="flex gap-2.5 mt-1.5" style={{ paddingLeft: 32 }}>
                 {[["X (Twitter)", 25], ["Facebook", 17], ["Berita", 0], ["Instagram", 82], ["TikTok", 84]].map(([label]) => (
-                  <div key={label as string} className="flex-1 text-center text-[8px] leading-tight" style={{ color: "#64748B" }}>{label}</div>
+                  <span key={label as string} className="flex-1 text-center" style={{ fontSize: 9.5, fontWeight: 600, color: "#64748B" }}>{label}</span>
                 ))}
               </div>
-              <div className="flex items-center gap-3 mt-3 pt-2 border-t" style={{ borderColor: "#1E293B" }}>
-                <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full" style={{ background: "#DC2626" }} /><span className="text-[9.5px]" style={{ color: "#64748B" }}>Negatif</span></span>
-                <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full" style={{ background: "#64748B" }} /><span className="text-[9.5px]" style={{ color: "#64748B" }}>Netral</span></span>
-                <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full" style={{ background: "#22C55E" }} /><span className="text-[9.5px]" style={{ color: "#64748B" }}>Positif</span></span>
+              <div className="flex items-center justify-center gap-3.5 mt-3">
+                <span className="flex items-center gap-1.5"><span style={{ width: 8, height: 8, borderRadius: "50%", background: "#DC2626" }} /><span style={{ fontSize: 10, fontWeight: 700, color: "#94A3B8" }}>Negatif</span></span>
+                <span className="flex items-center gap-1.5"><span style={{ width: 8, height: 8, borderRadius: "50%", background: "#CBD5E1" }} /><span style={{ fontSize: 10, fontWeight: 700, color: "#94A3B8" }}>Netral</span></span>
+                <span className="flex items-center gap-1.5"><span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10B981" }} /><span style={{ fontSize: 10, fontWeight: 700, color: "#94A3B8" }}>Positif</span></span>
               </div>
             </div>
           </div>
